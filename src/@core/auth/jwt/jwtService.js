@@ -103,6 +103,10 @@ export default class JwtService {
     return this.axiosIns.post(this.jwtConfig.registerEndpoint, ...args)
   }
 
+  verifyEmail(...args) {
+    return this.axiosIns.post(this.jwtConfig.verifyEmailEndpoint, ...args)
+  }
+
   refreshToken() {
     return this.axiosIns.post(this.jwtConfig.refreshEndpoint, {
       refreshToken: this.getRefreshToken(),

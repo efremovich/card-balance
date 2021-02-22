@@ -32,7 +32,7 @@ router.beforeEach((to, _, next) => {
     if (!isLoggedIn) return next({ name: 'auth-login' })
 
     // If logged in => not authorized
-    return next({ name: 'misc-not-authorized' })
+    // return next({ name: 'misc-not-authorized' })
   }
 
   // Redirect if logged in

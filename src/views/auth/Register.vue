@@ -6,16 +6,13 @@
       <b-card class="mb-0">
         <b-link class="brand-logo">
           <vuexy-logo />
-          <h2 class="brand-text text-primary ml-1">
-            Vuexy
-          </h2>
         </b-link>
 
         <b-card-title class="mb-1">
-          Adventure starts here 🚀
+          Регистрация нового пользователя.
         </b-card-title>
         <b-card-text class="mb-2">
-          Make your app management easy and fun!
+          Заполните поля для регистрации.
         </b-card-text>
 
         <!-- form -->
@@ -26,12 +23,12 @@
           >
             <!-- username -->
             <b-form-group
-              label="Username"
+              label="Имя пользователя"
               label-for="username"
             >
               <validation-provider
                 #default="{ errors }"
-                name="Username"
+                name="Имя пользователя"
                 rules="required"
               >
                 <b-form-input
@@ -39,7 +36,7 @@
                   v-model="username"
                   :state="errors.length > 0 ? false:null"
                   name="register-username"
-                  placeholder="johndoe"
+                  placeholder="Иван Рябов"
                 />
                 <small class="text-danger">{{ errors[0] }}</small>
               </validation-provider>
@@ -47,12 +44,12 @@
 
             <!-- email -->
             <b-form-group
-              label="Email"
+              label="Электронная почта"
               label-for="email"
             >
               <validation-provider
                 #default="{ errors }"
-                name="Email"
+                name="Электронная почта"
                 rules="required|email"
               >
                 <b-form-input
@@ -60,7 +57,7 @@
                   v-model="regEmail"
                   :state="errors.length > 0 ? false:null"
                   name="register-email"
-                  placeholder="john@example.com"
+                  placeholder="ivan@mail.ru"
                 />
                 <small class="text-danger">{{ errors[0] }}</small>
               </validation-provider>
@@ -68,12 +65,12 @@
 
             <!-- password -->
             <b-form-group
-              label="Password"
+              label="Пароль"
               label-for="password"
             >
               <validation-provider
                 #default="{ errors }"
-                name="Password"
+                name="Пароль"
                 rules="required"
               >
                 <b-input-group
@@ -108,8 +105,8 @@
                 v-model="status"
                 name="checkbox-1"
               >
-                I agree to
-                <b-link>privacy policy & terms</b-link>
+                Я сограсен с
+                <b-link>правилами использования</b-link>
               </b-form-checkbox>
             </b-form-group>
 
@@ -119,51 +116,18 @@
               block
               type="submit"
             >
-              Sign up
+              Регистрация
             </b-button>
           </b-form>
         </validation-observer>
 
         <b-card-text class="text-center mt-2">
-          <span>Already have an account? </span>
-          <b-link :to="{name:'auth-login-v1'}">
-            <span>Sign in instead</span>
+          <span>У вас уже есть аккаунт? </span>
+          <b-link :to="{name:'auth-login'}">
+            <span>Авторизация</span>
           </b-link>
         </b-card-text>
 
-        <div class="divider my-2">
-          <div class="divider-text">
-            or
-          </div>
-        </div>
-
-        <!-- social buttons -->
-        <div class="auth-footer-btn d-flex justify-content-center">
-          <b-button
-            variant="facebook"
-            href="javascript:void(0)"
-          >
-            <feather-icon icon="FacebookIcon" />
-          </b-button>
-          <b-button
-            variant="twitter"
-            href="javascript:void(0)"
-          >
-            <feather-icon icon="TwitterIcon" />
-          </b-button>
-          <b-button
-            variant="google"
-            href="javascript:void(0)"
-          >
-            <feather-icon icon="MailIcon" />
-          </b-button>
-          <b-button
-            variant="github"
-            href="javascript:void(0)"
-          >
-            <feather-icon icon="GithubIcon" />
-          </b-button>
-        </div>
       </b-card>
       <!-- /Register v1 -->
     </div>
@@ -241,7 +205,10 @@ export default {
             })
             .then(response => {
               if (response.data.status) {
-                console.log(response.data)
+                this.$router.push({
+                  name: 'auth-verify-email',
+                  params: { userEmail: this.regEmail },
+                })
               } else {
                 this.$toast({
                   component: ToastificationContent,

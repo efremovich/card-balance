@@ -59,13 +59,13 @@
         </validation-observer>
 
         <b-card-text class="text-center mt-2">
-          <b-link :to="{name:'auth-login-v1'}">
+          <b-link :to="{name:'auth-login'}">
             <feather-icon icon="ChevronLeftIcon" /> Back to login
           </b-link>
         </b-card-text>
 
       </b-card>
-    <!-- /Forgot Password v1 -->
+      <!-- /Forgot Password v1 -->
     </div>
   </div>
 </template>
@@ -74,7 +74,14 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
-  BCard, BLink, BCardText, BCardTitle, BFormGroup, BFormInput, BForm, BButton,
+  BCard,
+  BLink,
+  BCardText,
+  BCardTitle,
+  BFormGroup,
+  BFormInput,
+  BForm,
+  BButton,
 } from 'bootstrap-vue'
 import { required, email } from '@validations'
 
@@ -104,7 +111,7 @@ export default {
     validationForm() {
       this.$refs.simpleRules.validate().then(success => {
         if (success) {
-          this.$router.push({ name: 'auth-reset-password-v1' })
+          this.$router.push({ name: 'auth-reset-password' })
         }
       })
     },
@@ -113,5 +120,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@core/scss/vue/pages/page-auth.scss';
+@import "@core/scss/vue/pages/page-auth.scss";
 </style>

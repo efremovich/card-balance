@@ -1,6 +1,6 @@
 export default [
   {
-    path: '/dashboard',
+    path: '/',
     name: 'dashboard',
     component: () => import('@/views/Home.vue'),
   },
@@ -48,6 +48,17 @@ export default [
     path: '/reset-password',
     name: 'auth-reset-password',
     component: () => import('@/views/auth/ResetPassword.vue'),
+    meta: {
+      layout: 'full',
+      resource: 'Auth',
+      redirectIfLoggedIn: true,
+    },
+  },
+  {
+    path: '/verify-email',
+    name: 'auth-verify-email',
+    component: () => import('@/views/auth/VerifyEmail.vue'),
+    props: true,
     meta: {
       layout: 'full',
       resource: 'Auth',

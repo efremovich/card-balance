@@ -6,17 +6,13 @@
       <b-card class="mb-0">
         <b-link class="brand-logo">
           <vuexy-logo />
-
-          <h2 class="brand-text text-primary ml-1">
-            Vuexy
-          </h2>
         </b-link>
 
         <b-card-title class="mb-1">
-          Welcome to Vuexy! 👋
+          Добро пожаловать.
         </b-card-title>
         <b-card-text class="mb-2">
-          Please sign-in to your account and start the adventure
+          Для использования топливного кабинета, пожалуйста, авторизуйтесь.
         </b-card-text>
 
         <!-- form -->
@@ -32,7 +28,7 @@
             <!-- email -->
             <b-form-group
               label-for="email"
-              label="Email"
+              label="Электронная почта"
             >
               <validation-provider
                 #default="{ errors }"
@@ -44,7 +40,7 @@
                   v-model="userEmail"
                   name="login-email"
                   :state="errors.length > 0 ? false:null"
-                  placeholder="john@example.com"
+                  placeholder="ivan@mail.ru"
                   autofocus
                 />
                 <small class="text-danger">{{ errors[0] }}</small>
@@ -54,14 +50,14 @@
             <!-- password -->
             <b-form-group>
               <div class="d-flex justify-content-between">
-                <label for="password">Password</label>
+                <label for="password">Пароль</label>
                 <b-link :to="{name:'auth-forgot-password'}">
-                  <small>Forgot Password?</small>
+                  <small>Забыли пароль?</small>
                 </b-link>
               </div>
               <validation-provider
                 #default="{ errors }"
-                name="Password"
+                name="Пароль"
                 rules="required"
               >
                 <b-input-group
@@ -75,7 +71,7 @@
                     class="form-control-merge"
                     :state="errors.length > 0 ? false:null"
                     name="login-password"
-                    placeholder="Password"
+                    placeholder="Пароль"
                   />
 
                   <b-input-group-append is-text>
@@ -97,7 +93,7 @@
                 v-model="status"
                 name="checkbox-1"
               >
-                Remember Me
+                Запомнить меня
               </b-form-checkbox>
             </b-form-group>
 
@@ -108,51 +104,17 @@
               block
               :disabled="invalid"
             >
-              Sign in
+              Авторизация
             </b-button>
           </b-form>
         </validation-observer>
 
         <b-card-text class="text-center mt-2">
-          <span>New on our platform? </span>
+          <span>Вы здесь впервые? </span>
           <b-link :to="{name:'auth-register'}">
-            <span>Create an account</span>
+            <span>Создать аккаунт</span>
           </b-link>
         </b-card-text>
-
-        <div class="divider my-2">
-          <div class="divider-text">
-            or
-          </div>
-        </div>
-
-        <!-- social button -->
-        <div class="auth-footer-btn d-flex justify-content-center">
-          <b-button
-            href="javascript:void(0)"
-            variant="facebook"
-          >
-            <feather-icon icon="FacebookIcon" />
-          </b-button>
-          <b-button
-            href="javascript:void(0)"
-            variant="twitter"
-          >
-            <feather-icon icon="TwitterIcon" />
-          </b-button>
-          <b-button
-            href="javascript:void(0)"
-            variant="google"
-          >
-            <feather-icon icon="MailIcon" />
-          </b-button>
-          <b-button
-            href="javascript:void(0)"
-            variant="github"
-          >
-            <feather-icon icon="GithubIcon" />
-          </b-button>
-        </div>
       </b-card>
       <!-- /Login v1 -->
     </div>

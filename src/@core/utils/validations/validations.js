@@ -14,6 +14,7 @@ import {
   length as rule_length,
 } from 'vee-validate/dist/rules'
 import ar from 'vee-validate/dist/locale/ar.json'
+import ru from 'vee-validate/dist/locale/ru.json'
 import en from 'vee-validate/dist/locale/en.json'
 
 // eslint-disable-next-line object-curly-newline
@@ -69,6 +70,7 @@ export const url = extend('url', {
 
 // Install English and Arabic localizations.
 localize({
+  ru,
   en: {
     messages: en.messages,
     names: {
@@ -94,6 +96,7 @@ localize({
     },
   },
 })
+localize('ru')
 // ////////////////////////////////////////////////////////
 // NOTE:
 // Quasar validation for reference only
