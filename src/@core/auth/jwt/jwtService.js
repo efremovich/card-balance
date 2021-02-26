@@ -99,6 +99,13 @@ export default class JwtService {
     return this.axiosIns.post(this.jwtConfig.loginEndpoint, ...args)
   }
 
+  logout() {
+    const userData = JSON.parse(localStorage.getItem('userData'))
+    return this.axiosIns.post(this.jwtConfig.logoutEndpoint, {
+      id: userData.id,
+    })
+  }
+
   register(...args) {
     return this.axiosIns.post(this.jwtConfig.registerEndpoint, ...args)
   }

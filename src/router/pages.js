@@ -65,4 +65,15 @@ export default [
       redirectIfLoggedIn: true,
     },
   },
+  {
+    path: '/not-authorized',
+    name: 'not-authorized',
+    component: () => import('@/views/auth/NotAuthorized.vue'),
+    props: true,
+    meta: {
+      layout: 'full',
+      resource: 'Auth',
+    },
+  },
+
 ]
