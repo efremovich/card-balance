@@ -73,6 +73,7 @@ import ToastificationContent from '@core/components/toastification/Toastificatio
 import useJwt from '@/auth/jwt/useJwt'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
+import { getHomeRouteForLoggedInUser } from '@/auth/utils'
 import {
   BCard,
   BLink,
@@ -148,32 +149,9 @@ export default {
               confirm_code: this.confirm_code,
             })
             .then(response => {
-              console.log(response.data)
-
               if (response.data.status) {
-                const { userData } = response.data
-                useJwt.setToken(response.data.account.accessToken)
-                useJwt.setRefreshToken(response.data.account.refreshToken)
-                localStorage.setItem('userData', JSON.stringify(userData))
-                /* this.$ability.update(userData.ability) */
-                // ? This is just for demo purpose. Don't think CASL is role based in this case, we used role in if condition just for ease
-                /* this.$router.replace('/') */
-                /* .then(() => { */
-                /* this.$toast({ */
-                /* component: ToastificationContent, */
-                /* position: 'top-right', */
-                /* props: { */
-                /* title: `Welcome ${userData.fullName */
-                /* || userData.username}`, */
-                /* icon: 'CoffeeIcon', */
-                /* variant: 'success', */
-                /* text: `You have successfully logged in as ${userData.role}. Now you can start to explore!`, */
-                /* }, */
-                /* }) */
-                /* }) */
-                /* .catch(error => { */
-                /* this.$refs.loginForm.setErrors(error.response.data.message) */
-                /* }) */
+                this.$store.dispatch('user/getUserData', response.data)
+                this.$router.replace(getHomeRouteForLoggedInUser('admin'))
               } else {
                 this.$toast({
                   component: ToastificationContent,
@@ -187,8 +165,6 @@ export default {
                 })
               }
             })
-
-          /* this.$router.push({ name: 'auth-reset-password' }) */
         }
       })
     },

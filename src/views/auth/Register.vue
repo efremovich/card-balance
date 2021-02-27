@@ -36,7 +36,7 @@
                   v-model="username"
                   :state="errors.length > 0 ? false:null"
                   name="register-username"
-                  placeholder="Иван Рябов"
+                  placeholder="Имя пользователя"
                 />
                 <small class="text-danger">{{ errors[0] }}</small>
               </validation-provider>

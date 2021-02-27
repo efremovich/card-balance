@@ -95,15 +95,26 @@ export default class JwtService {
     localStorage.setItem(this.jwtConfig.storageRefreshTokenKeyName, value)
   }
 
+  deleteToken() {
+    localStorage.removeItem(this.jwtConfig.storageTokenKeyName)
+    localStorage.removeItem('refreshToken')
+    if (localStorage.getItem('userData')) {
+      localStorage.removeItem('userData')
+    }
+  }
+
   login(...args) {
     return this.axiosIns.post(this.jwtConfig.loginEndpoint, ...args)
   }
 
   logout() {
     const userData = JSON.parse(localStorage.getItem('userData'))
-    return this.axiosIns.post(this.jwtConfig.logoutEndpoint, {
-      id: userData.id,
-    })
+    if (userData) {
+      return this.axiosIns.post(this.jwtConfig.logoutEndpoint, {
+        id: userData.id,
+      }).then(this.deleteToken())
+    }
+    return null
   }
 
   register(...args) {
@@ -112,6 +123,15 @@ export default class JwtService {
 
   verifyEmail(...args) {
     return this.axiosIns.post(this.jwtConfig.verifyEmailEndpoint, ...args)
+  }
+
+  async getCurrenUser() {
+    const userData = JSON.parse(localStorage.getItem('userData'))
+    if (userData) {
+      const respons = await this.axiosIns.get(`/api/user/${userData.account.uid}`)
+      return respons
+    }
+    return { data: { status: false } }
   }
 
   refreshToken() {

@@ -171,6 +171,7 @@ export default {
       // validation rules
       required,
       email,
+      userData: '',
     }
   },
   computed: {
@@ -189,13 +190,8 @@ export default {
             })
             .then(response => {
               if (response.data.status) {
-                const { userData } = response.data.account
-                useJwt.setToken(response.data.account.accessToken)
-                useJwt.setRefreshToken(response.account.data.refreshToken)
-                localStorage.setItem('userData', JSON.stringify(userData))
-                this.$ability.update(userData.ability)
-                // ? This is just for demo purpose. Don't think CASL is role based in this case, we used role in if condition just for ease
-                this.$router.replace(getHomeRouteForLoggedInUser(userData.role))
+                this.$store.dispatch('user/getUserData', response.data)
+                this.$router.replace(getHomeRouteForLoggedInUser('admin'))
                 /* .then(() => { */
                 /* this.$toast({ */
                 /* component: ToastificationContent, */
