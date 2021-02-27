@@ -42,14 +42,32 @@
           </b-card-body>
         </b-col>
         <b-col>
-          <b-card title="Kick start your project 🚀">
-            <b-card-text>All the best for your new project.</b-card-text>
-            <b-card-text>Please make sure to read our <b-link
-              href="https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/documentation/"
-              target="_blank"
-            >
-              Template Documentation
-            </b-link> to understand where to go from here and how to use our template.</b-card-text>
+          <b-card title="7824861010047300291">
+            <div class="d-flex justify-content-between">
+              <div>Баланс:</div>
+              <div class="text-success">155255 руб.
+                <div />
+
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div>
+                <h4>Статус:</h4>
+              </div>
+              <div>Активна
+                <div />
+
+              </div>
+            </div>
+            <div class="d-flex justify-content-center">
+              <b-button
+                variant="flat-primary"
+                @click="logout"
+              >
+                <feather-icon icon="LockIcon" /> Заблокировать карту
+              </b-button>
+
+            </div>
           </b-card>
         </b-col>
       </b-row>
@@ -66,7 +84,6 @@
 import {
   BCard,
   BCardText,
-  BLink,
   BButton,
   BContainer,
   BCol,
@@ -81,7 +98,6 @@ export default {
   components: {
     BCard,
     BCardText,
-    BLink,
     BButton,
     BContainer,
     BCol,
