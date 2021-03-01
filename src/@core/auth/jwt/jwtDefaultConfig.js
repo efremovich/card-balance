@@ -5,7 +5,6 @@ export default {
   refreshEndpoint: '/api/user/refreshtoken',
   logoutEndpoint: '/api/user/logout',
   verifyEmailEndpoint: '/api/user/verify-email',
-
   // This will be prefixed in authorization header with token
   // e.g. Authorization: Bearer <token>
   tokenType: 'Bearer',

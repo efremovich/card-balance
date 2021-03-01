@@ -1,4 +1,5 @@
 import jwtDefaultConfig from './jwtDefaultConfig'
+import router from '@/router'
 
 export default class JwtService {
   // Will be used by this service for making API calls
@@ -53,8 +54,6 @@ export default class JwtService {
 
               this.onAccessTokenFetched(r.data.accessToken)
             })
-            console.log(error)
-            // .catch(() => response)
           }
           const retryOriginalRequest = new Promise(resolve => {
             this.addSubscriber(accessToken => {
@@ -66,6 +65,14 @@ export default class JwtService {
             })
           })
           return retryOriginalRequest
+        }
+        if (response && response.status === 403) {
+          if (response.config.url.includes('/api/user/refreshtoken')) {
+            this.deleteToken()
+            console.log(response)
+            router.push({ name: 'auth-login' })
+            return Promise.reject(error)
+          }
         }
         return Promise.reject(error)
       },
@@ -129,16 +136,15 @@ export default class JwtService {
   getCurrenUser() {
     const userData = JSON.parse(localStorage.getItem('userData'))
     if (userData) {
-      return this.axiosIns.get(`/api/user/${userData.account.uid}`)
+      return this.axiosIns.get(`/api/user/${userData.account.uid}`).catch(err => { throw err })
     }
     return { data: { status: false } }
   }
 
-  async refreshToken() {
-    const rt = await this.axiosIns.post(this.jwtConfig.refreshEndpoint, {
+  refreshToken() {
+    return this.axiosIns.post(this.jwtConfig.refreshEndpoint, {
       refreshToken: this.getRefreshToken(),
     })
-    console.log('tyt', rt)
-    return rt
+    // .catch(err => {throw err})
   }
 }
