@@ -190,24 +190,28 @@ export default {
             })
             .then(response => {
               if (response.data.status) {
-                this.$store.dispatch('user/getUserData', response.data)
-                this.$router.replace(getHomeRouteForLoggedInUser('admin'))
-                /* .then(() => { */
-                /* this.$toast({ */
-                /* component: ToastificationContent, */
-                /* position: 'top-right', */
-                /* props: { */
-                /* title: `Welcome ${userData.fullName */
-                /* || userData.username}`, */
-                /* icon: 'CoffeeIcon', */
-                /* variant: 'success', */
-                /* text: `You have successfully logged in as ${userData.role}. Now you can start to explore!`, */
-                /* }, */
-                /* }) */
-                /* }) */
-                /* .catch(error => { */
-                /* this.$refs.loginForm.setErrors(error.response.data.message) */
-                /* }) */
+                const userData = this.$store.dispatch(
+                  'user/getUserData',
+                  response.data,
+                )
+                this.$router
+                  .replace(getHomeRouteForLoggedInUser('admin'))
+                  .then(() => {
+                    this.$toast({
+                      component: ToastificationContent,
+                      position: 'top-right',
+                      props: {
+                        title: `Welcome ${userData.fullName
+                          || userData.username}`,
+                        icon: 'CoffeeIcon',
+                        variant: 'success',
+                        text: `You have successfully logged in as ${userData.role}. Now you can start to explore!`,
+                      },
+                    })
+                  })
+                  .catch(error => {
+                    this.$refs.loginForm.setErrors(error.response.data.message)
+                  })
               } else {
                 this.$toast({
                   component: ToastificationContent,

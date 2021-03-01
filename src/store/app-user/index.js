@@ -24,6 +24,7 @@ export default {
       useJwt.setToken(userData.account.accessToken)
       useJwt.setRefreshToken(userData.account.refreshToken)
       localStorage.setItem('userData', JSON.stringify(userData))
+      return userData
     },
   },
 }

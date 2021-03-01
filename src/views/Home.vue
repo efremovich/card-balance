@@ -26,20 +26,15 @@
     >
       <b-row>
         <b-col>
-          <b-card-body
-            class="pb-0 cursor-pointer"
-            @click="addCard"
-          >
-            <b-card title="Добавить карту">
-              <div class="d-flex justify-content-center mb-3">
-                <feather-icon
-                  size="60"
-                  icon="PlusIcon"
-                  class="text-muted cursor-pointer"
-                />
-              </div>
-            </b-card>
-          </b-card-body>
+          <b-card title="Добавить карту">
+            <div class="d-flex justify-content-center mb-3">
+              <feather-icon
+                size="60"
+                icon="PlusIcon"
+                class="text-muted cursor-pointer"
+              />
+            </div>
+          </b-card>
         </b-col>
         <b-col>
           <b-card title="7824861010047300291">
@@ -61,7 +56,7 @@
             </div>
             <div class="d-flex justify-content-center">
               <b-button
-                variant="flat-primary"
+                variant="primary"
                 @click="logout"
               >
                 <feather-icon icon="LockIcon" /> Заблокировать карту
@@ -105,23 +100,27 @@ export default {
     VuexyLogo,
   },
   created() {
-    useJwt.getCurrenUser().then(response => {
-      if (response.data.status) {
-        this.$store.dispatch('user/getUserData', response.data)
-      } else {
-        this.$toast({
-          component: ToastificationContent,
-          position: 'top-right',
-          props: {
-            title: 'Oшибка',
-            icon: 'alertoctagonicon',
-            variant: 'danger',
-            text: 'Ошибка авторизации',
-          },
-        })
-        this.$router.push({ name: 'auth-login' })
-      }
-    })
+    useJwt
+      .getCurrenUser()
+      .then(response => {
+        console.log('На форме:', response)
+        if (response.data.status) {
+          this.$store.dispatch('user/getUserData', response.data)
+        } else {
+          this.$toast({
+            component: ToastificationContent,
+            position: 'top-right',
+            props: {
+              title: 'Oшибка',
+              icon: 'alertoctagonicon',
+              variant: 'danger',
+              text: 'Ошибка авторизации',
+            },
+          })
+          this.$router.push({ name: 'auth-login' })
+        }
+      })
+      .catch(err => console.log('err', err))
   },
   methods: {
     logout() {

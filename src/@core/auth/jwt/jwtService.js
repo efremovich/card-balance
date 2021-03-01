@@ -40,7 +40,6 @@ export default class JwtService {
         // const { config, response: { status } } = error
         const { config, response } = error
         const originalRequest = config
-
         // if (status === 401) {
         if (response && response.status === 401) {
           if (!this.isAlreadyFetchingAccessToken) {
@@ -54,6 +53,8 @@ export default class JwtService {
 
               this.onAccessTokenFetched(r.data.accessToken)
             })
+            console.log(error)
+            // .catch(() => response)
           }
           const retryOriginalRequest = new Promise(resolve => {
             this.addSubscriber(accessToken => {
@@ -125,18 +126,19 @@ export default class JwtService {
     return this.axiosIns.post(this.jwtConfig.verifyEmailEndpoint, ...args)
   }
 
-  async getCurrenUser() {
+  getCurrenUser() {
     const userData = JSON.parse(localStorage.getItem('userData'))
     if (userData) {
-      const respons = await this.axiosIns.get(`/api/user/${userData.account.uid}`)
-      return respons
+      return this.axiosIns.get(`/api/user/${userData.account.uid}`)
     }
     return { data: { status: false } }
   }
 
-  refreshToken() {
-    return this.axiosIns.post(this.jwtConfig.refreshEndpoint, {
+  async refreshToken() {
+    const rt = await this.axiosIns.post(this.jwtConfig.refreshEndpoint, {
       refreshToken: this.getRefreshToken(),
     })
+    console.log('tyt', rt)
+    return rt
   }
 }
