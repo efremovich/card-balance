@@ -4,12 +4,22 @@
       fluid
       class="pb-2"
     >
-      <b-row>
+      <b-row align-v="center">
         <b-col />
         <b-col class="d-flex justify-content-center">
           <vuexy-logo />
         </b-col>
-        <b-col class="d-flex justify-content-end">
+        <b-col
+          class="d-flex justify-content-end align-items-center"
+          align-self="center"
+        >
+          <b-avatar
+            variant="light-primary"
+            class="mr-1"
+          />
+          <span class="text-primary">
+            {{ userData.account.name }}
+          </span>
           <b-button
             variant="flat-primary"
             @click="logout"
@@ -83,6 +93,7 @@ import {
   BContainer,
   BCol,
   BRow,
+  BAvatar,
 } from 'bootstrap-vue'
 
 import useJwt from '@/auth/jwt/useJwt'
@@ -98,29 +109,34 @@ export default {
     BCol,
     BRow,
     VuexyLogo,
+    BAvatar,
+  },
+  data() {
+    return {
+      userData: '',
+    }
   },
   created() {
-    useJwt
-      .getCurrenUser()
-      .then(response => {
-        console.log('На форме:', response)
-        if (response.data.status) {
-          this.$store.dispatch('user/getUserData', response.data)
-        } else {
-          this.$toast({
-            component: ToastificationContent,
-            position: 'top-right',
-            props: {
-              title: 'Oшибка',
-              icon: 'alertoctagonicon',
-              variant: 'danger',
-              text: 'Ошибка авторизации',
-            },
-          })
-          this.$router.push({ name: 'auth-login' })
-        }
-      })
-      .catch(err => console.log('err', err))
+    useJwt.getCurrenUser().then(response => {
+      console.log('На форме:', response)
+      if (response.data.status) {
+        this.$store.dispatch('user/getUserData', response.data).then(() => {
+          this.userData = response.data
+        })
+      } else {
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: 'Oшибка',
+            icon: 'alertoctagonicon',
+            variant: 'danger',
+            text: 'Ошибка авторизации',
+          },
+        })
+        this.$router.push({ name: 'auth-login' })
+      }
+    })
   },
   methods: {
     logout() {

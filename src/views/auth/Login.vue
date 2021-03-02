@@ -129,6 +129,7 @@ import { togglePasswordVisibility } from '@core/mixins/ui/forms'
 import { getHomeRouteForLoggedInUser } from '@/auth/utils'
 import useJwt from '@/auth/jwt/useJwt'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import { initialAbility } from '@/libs/acl/config'
 
 import {
   BButton,
@@ -190,22 +191,29 @@ export default {
             })
             .then(response => {
               if (response.data.status) {
-                const userData = this.$store.dispatch(
-                  'user/getUserData',
-                  response.data,
-                )
+                const userData = response.data
+                console.log(userData)
+                userData.ability = initialAbility
+                useJwt.setToken(userData.account.accessToken)
+                useJwt.setRefreshToken(userData.account.refreshToken)
+                localStorage.setItem('userData', JSON.stringify(userData))
+
+                this.$ability.update(userData.ability)
+
+                /* this.$store.dispatch('user/getUserData', response.data) */
+                /* this.userData = getUserData() */
                 this.$router
-                  .replace(getHomeRouteForLoggedInUser('admin'))
+                  .replace(getHomeRouteForLoggedInUser(userData.account.role))
                   .then(() => {
                     this.$toast({
                       component: ToastificationContent,
                       position: 'top-right',
                       props: {
-                        title: `Welcome ${userData.fullName
-                          || userData.username}`,
+                        title: `Welcome ${userData.account.fullName
+                          || userData.account.name}`,
                         icon: 'CoffeeIcon',
                         variant: 'success',
-                        text: `You have successfully logged in as ${userData.role}. Now you can start to explore!`,
+                        text: `You have successfully logged in as ${userData.account.role}. Now you can start to explore!`,
                       },
                     })
                   })

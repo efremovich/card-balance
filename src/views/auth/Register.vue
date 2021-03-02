@@ -105,7 +105,7 @@
                 v-model="status"
                 name="checkbox-1"
               >
-                Я сограсен с
+                Я согласен с
                 <b-link>правилами использования</b-link>
               </b-form-checkbox>
             </b-form-group>

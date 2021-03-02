@@ -1,5 +1,5 @@
-import jwtDefaultConfig from './jwtDefaultConfig'
 import router from '@/router'
+import jwtDefaultConfig from '@/@core/auth/jwt/jwtDefaultConfig'
 
 export default class JwtService {
   // Will be used by this service for making API calls
@@ -69,8 +69,7 @@ export default class JwtService {
         if (response && response.status === 403) {
           if (response.config.url.includes('/api/user/refreshtoken')) {
             this.deleteToken()
-            console.log(response)
-            router.push({ name: 'auth-login' })
+            router.push({ name: 'auth-login', params: { error } })
             return Promise.reject(error)
           }
         }
@@ -133,10 +132,11 @@ export default class JwtService {
     return this.axiosIns.post(this.jwtConfig.verifyEmailEndpoint, ...args)
   }
 
-  getCurrenUser() {
+  async getCurrenUser() {
     const userData = JSON.parse(localStorage.getItem('userData'))
     if (userData) {
-      return this.axiosIns.get(`/api/user/${userData.account.uid}`).catch(err => { throw err })
+      const response = await this.axiosIns.get(`/api/user/${userData.account.uid}`)
+      return response
     }
     return { data: { status: false } }
   }
@@ -145,6 +145,5 @@ export default class JwtService {
     return this.axiosIns.post(this.jwtConfig.refreshEndpoint, {
       refreshToken: this.getRefreshToken(),
     })
-    // .catch(err => {throw err})
   }
 }
