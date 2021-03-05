@@ -218,6 +218,8 @@ export default {
                     })
                   })
                   .catch(error => {
+                    console.log('На форме:', error)
+
                     this.$refs.loginForm.setErrors(error.response.data.message)
                   })
               } else {

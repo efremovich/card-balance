@@ -15,7 +15,7 @@ export const validatorPassword = password => {
 
 export const validatorCreditCard = creditnum => {
   /* eslint-disable no-useless-escape */
-  const cRegExp = /^(?:3[47][0-9]{13})$/
+  const cRegExp = /^7[0-9]{18}(?:[0-9]{3})?$/
   /* eslint-enable no-useless-escape */
   const validCreditCard = cRegExp.test(creditnum)
   return validCreditCard
