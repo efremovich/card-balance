@@ -2,8 +2,91 @@ export default [
   {
     path: '/',
     name: 'dashboard',
-    component: () => import('@/views/Home.vue'),
+    component: () => import('@/views/Dashboard.vue'),
   },
+
+  {
+    path: '/Cards',
+    name: 'cards',
+    component: () => import('@/views/Cards.vue'),
+  },
+
+  {
+    path: '/transactions',
+    name: 'transactions',
+    component: () => import('@/views/transactions.vue'),
+  },
+
+  {
+    path: '/report',
+    name: 'report',
+    component: () => import('@/views/report.vue'),
+  },
+  {
+    path: '/locator',
+    name: 'locator',
+    component: () => import('@/views/locator.vue'),
+  },
+
+  {
+    path: '/documents',
+    name: 'documents',
+    component: () => import('@/views/documents/documents.vue'),
+  },
+
+  {
+    path: '/documents/payments',
+    name: 'payments',
+    component: () => import('@/views/documents/Payments.vue'),
+    meta: {
+      breadcrumb: [
+        { title: 'Главная', url: '/' },
+        { title: 'Документы' },
+        { title: 'Платежи' },
+      ],
+      rule: 'editor',
+    },
+  },
+  {
+    path: '/documents/bill',
+    name: 'bill',
+    component: () => import('@/views/documents/Bill.vue'),
+    meta: {
+      breadcrumb: [
+        { text: 'Главная', url: '/' },
+        { text: 'Документы' },
+        { text: 'Заказать счет', active: true },
+      ],
+      rule: 'editor',
+    },
+  },
+  {
+    path: '/documents/checks',
+    name: 'checks',
+    component: () => import('@/views/documents/Checks.vue'),
+    meta: {
+      breadcrumb: [
+        { title: 'Главная', url: '/' },
+        { title: 'Документы' },
+        { title: 'Электронные чеки' },
+      ],
+      rule: 'editor',
+    },
+  },
+  {
+    path: '/requests',
+    name: 'requests',
+    component: () => import('@/views/documents/Requests.vue'),
+    meta: {
+      breadcrumb: [
+        { title: 'Главная', url: '/' },
+        { title: 'Документы' },
+        { title: 'Заявки' },
+      ],
+      rule: 'editor',
+    },
+  },
+
   {
     path: '/error-404',
     name: 'error-404',

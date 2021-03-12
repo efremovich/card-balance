@@ -18,7 +18,7 @@
         <!-- form -->
         <validation-observer
           ref="loginForm"
-          #default="{invalid}"
+          v-slot="{invalid}"
         >
           <b-form
             class="auth-login-form mt-2"
@@ -31,7 +31,7 @@
               label="Электронная почта"
             >
               <validation-provider
-                #default="{ errors }"
+                v-slot="{ errors }"
                 name="Email"
                 rules="required|email"
               >
@@ -56,7 +56,7 @@
                 </b-link>
               </div>
               <validation-provider
-                #default="{ errors }"
+                v-slot="{ errors }"
                 name="Пароль"
                 rules="required"
               >
@@ -164,10 +164,11 @@ export default {
     ValidationObserver,
   },
   mixins: [togglePasswordVisibility],
+
   data() {
     return {
-      userEmail: '',
-      password: '',
+      userEmail: 'admin@fc.ru',
+      password: 'Haiastan1987',
       status: '',
       // validation rules
       required,
