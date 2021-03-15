@@ -64,57 +64,23 @@
             <hr>
 
             <b-row class="avg-sessions pt-50">
-              <b-col
+              <!-- TEMPLATE -->
+              <template v-for="(item,index) in limits">
+                <b-col
+                  :key="index"
+                  class="mb-2"
+                >
+                  <b-card-text class="mb-50 text-info">
+                    АИ-92:  {{ item }} л.
+                  </b-card-text>
+                  <b-progress
+                    :value="item"
+                    :variant="getPopularityColor(item)"
+                    height="6px"
+                  />
+                </b-col>
+              </template>
 
-                class="mb-2"
-              >
-                <b-card-text class="mb-50">
-                  АИ-92: (значение)
-                </b-card-text>
-                <b-progress
-                  value="10"
-                  max="100"
-                  height="6px"
-                />
-              </b-col>
-              <b-col
-
-                class="mb-2"
-              >
-                <b-card-text class="mb-50">
-                  АИ-95: (значение)
-                </b-card-text>
-                <b-progress
-                  value="60"
-                  max="100"
-                  height="6px"
-                  variant="warning"
-                />
-              </b-col>
-              <b-col class="mb-2">
-                <b-card-text class="mb-50">
-                  АИ-98: (значение)
-                </b-card-text>
-                <b-progress
-                  value="70"
-                  max="100"
-                  height="6px"
-                  variant="danger"
-                  class="mt-25"
-                />
-              </b-col>
-              <b-col class="mb-2">
-                <b-card-text class="mb-50">
-                  АИ-110: (значение)
-                </b-card-text>
-                <b-progress
-                  value="90"
-                  max="100"
-                  variant="success"
-                  height="6px"
-                  class="mt-25"
-                />
-              </b-col>
             </b-row>
           </b-card-actions>
 
@@ -138,11 +104,12 @@
               </h4>
 
             </div>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between align-items-end">
               <h4>Последние изменения по договору:
-                <span>
-                  20/20/21
-                </span></h4>
+              </h4>
+              <h4 class="text-info">
+                20/02/2021
+              </h4>
             </div>
             <b-table
               striped
@@ -344,7 +311,7 @@ export default {
           number: '2308240961',
         },
       },
-
+      limits: ['10', '60', '80', '100'],
       // progress-bar
 
       bars: [
@@ -480,6 +447,22 @@ export default {
         this.$refs[cardName].showLoading = false
       }, 3000)
     },
+    // COLOR
+    getPopularityColor(num) {
+      if (Number(num) > 90) return 'success'
+      if (Number(num) > 70) return 'warning'
+      if (Number(num) >= 50) return 'info'
+      if (Number(num) < 50) return 'danger'
+      return 'primary'
+    },
+  },
+
+  getLimitResidual(limit) {
+    if (Number(limit.value) > 0 && Number(limit.consumption) > 0) {
+      const limitResidual = 100 - Number(limit.consumption) / (Number(limit.value) / 100)
+      return limitResidual
+    }
+    return 5
   },
 
 }
