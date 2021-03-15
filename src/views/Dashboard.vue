@@ -161,18 +161,19 @@
             action-refresh
             @refresh="refreshStop('refreshCard')"
           >
-            <div>
+
+            <div class="mt-1">
               <template v-for="(item,index) in statistics">
                 <div
                   :key="index"
                   class="d-flex justify-content-between"
                 >
-                  <h3 :key="index">
+                  <h4 :key="index">
                     {{ item }}
-                  </h3>
-                  <h3 :key="index">
+                  </h4>
+                  <h4 :key="index">
                     {{ value }}
-                  </h3>
+                  </h4>
                 </div>
 
               </template>
@@ -180,9 +181,12 @@
             </div></b-card-actions>
         </b-col>
 
-        <b-row>
+        <b-row class="padding">
           <b-card-actions
             ref="refreshCard"
+            action-close
+            action-refresh
+            action-collapse
             title="Данные организации:"
           >
 
@@ -200,16 +204,13 @@
       <!--Statistics -->
       <b-card-actions
         ref="refreshCard"
-
+        action-close
         action-refresh
+        action-collapse
+        title="Динамика потребления"
 
         @refresh="refreshStop('refreshCard')"
       >
-        <b-card-header>
-          <b-card-title>
-            ДИНАМИКА ПОТРЕБЛЕНИЯ
-          </b-card-title>
-        </b-card-header>
 
         <b-card-body class="pb-0">
           <div class="d-flex justify-content-start mb-3">
@@ -246,20 +247,30 @@
     </div>
 
     <!-- GEO-->
-    <div>
-      <l-map
-        :zoom="zoom"
-        :center="center"
-      >
-        <l-tile-layer :url="url" />
-        <l-marker :lat-lng="markerLatLng" />
-        <l-circle
-          :lat-lng="circle.center"
-          :radius="circle.radius"
-          :color="circle.color"
-        />
-      </l-map>
-    </div>
+    <b-card-actions
+      ref="refreshCard"
+      action-close
+      action-refresh
+      action-collapse
+      title="Места потребления:"
+      @refresh="refreshStop('refreshCard')"
+    >
+
+      <div class="mt-1">
+        <l-map
+          :zoom="zoom"
+          :center="center"
+        >
+          <l-tile-layer :url="url" />
+          <l-marker :lat-lng="markerLatLng" />
+          <l-circle
+            :lat-lng="circle.center"
+            :radius="circle.radius"
+            :color="circle.color"
+          />
+        </l-map>
+      </div>
+    </b-card-actions>
     <!--GEO-->
   </div>
 
@@ -476,6 +487,15 @@ export default {
 </script>
 
 <style lang="scss">
+.padding {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.card .card-header {
+  padding: 1.5rem !important;
+}
+
 .table th {
   padding: 0.72rem 1rem !important;
 }
