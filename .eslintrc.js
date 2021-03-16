@@ -4,18 +4,82 @@ module.exports = {
     node: true,
   },
   extends: ['plugin:vue/recommended', '@vue/airbnb'],
-  parserOptions: {
-    parser: 'babel-eslint',
-  },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-
-    semi: ['error', 'never'],
-    'max-len': 'off',
-    'linebreak-style': 'off',
-    camelcase: ['error', { properties: 'never', ignoreDestructuring: true, ignoreImports: true }],
-    'arrow-parens': ['error', 'as-needed'],
-    'vue/multiline-html-element-content-newline': 'off',
+    'max-len': [0],
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        optionalDependencies: ['test/unit/index.js'],
+      },
+    ],
+    'import/no-unresolved': 'off',
+    'no-unused-expressions': ['error', { allowTernary: true }],
+    'no-param-reassign': 0,
+    'quote-props': ['error', 'consistent'],
+    // vue rules
+    'vue/order-in-components': [
+      'error',
+      {
+        order: [
+          'el',
+          'name',
+          'parent',
+          'functional',
+          ['delimiters', 'comments'],
+          ['components', 'directives', 'filters'],
+          'extends',
+          'mixins',
+          'inheritAttrs',
+          'model',
+          ['props', 'propsData'],
+          'data',
+          'computed',
+          'watch',
+          'LIFECYCLE_HOOKS',
+          'methods',
+          ['template', 'render'],
+          'renderError',
+        ],
+      },
+    ],
+    'vue/html-closing-bracket-newline': [
+      'error',
+      {
+        singleline: 'never',
+        multiline: 'never',
+      },
+    ],
+    'vue/html-closing-bracket-spacing': [
+      'error',
+      {
+        startTag: 'never',
+        endTag: 'never',
+        selfClosingTag: 'always',
+      },
+    ],
+    'vue/script-indent': [
+      'error',
+      2,
+      {
+        baseIndent: 0,
+        switchCase: 1,
+        ignores: [],
+      },
+    ],
+    'vue/max-attributes-per-line': [
+      2,
+      {
+        singleline: 1,
+        multiline: {
+          max: 1,
+          allowFirstLine: false,
+        },
+      },
+    ],
   },
-}
+  parserOptions: {
+    parser: 'babel-eslint',
+  },
+};
