@@ -1,10 +1,10 @@
 // Theme Colors
 // Initially this will be blank. Later on when app is initialized we will assign bootstrap colors to this from CSS variables.
-export const $themeColors = {}
+export const $themeColors = {};
 
 // App Breakpoints
 // Initially this will be blank. Later on when app is initialized we will assign bootstrap breakpoints to this object from CSS variables.
-export const $themeBreakpoints = {}
+export const $themeBreakpoints = {};
 
 // APP CONFIG
 export const $themeConfig = {
@@ -25,7 +25,7 @@ export const $themeConfig = {
     },
     navbar: {
       // ? For horizontal menu, navbar type will work for navMenu type
-      type: 'static', // static , sticky , floating, hidden
+      type: 'sticky', // static , sticky , floating, hidden
       backgroundColor: '', // BS color options [primary, success, etc]
     },
     footer: {
@@ -34,4 +34,4 @@ export const $themeConfig = {
     customizer: false,
     enableScrollToTop: true,
   },
-}
+};

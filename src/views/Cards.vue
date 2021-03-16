@@ -1,45 +1,39 @@
 <template>
   <div>
-
     <b-row>
       <b-col
         md="2"
         sm="4"
-        class="my-1"
-      >
-        <b-form-group
-          class="mb-0"
-        >
-          <label class="d-inline-block text-sm-left mr-50">Значений на странице </label>
+        class="my-1">
+        <b-form-group class="mb-0">
+          <label
+            class="d-inline-block text-sm-left mr-50">Значений на странице
+          </label>
           <b-form-select
             id="perPageSelect"
             v-model="perPage"
             size="sm"
             :options="pageOptions"
-            class="w-50"
-          />
+            class="w-50" />
         </b-form-group>
       </b-col>
       <b-col
         md="4"
         sm="8"
-        class="my-1"
-      >
+        class="my-1">
         <b-form-group
           label="Сортировка"
           label-cols-sm="3"
           label-align-sm="right"
           label-size="sm"
           label-for="sortBySelect"
-          class="mb-0"
-        >
+          class="mb-0">
           <b-input-group size="sm">
             <b-form-select
               id="sortBySelect"
               v-model="sortBy"
               :options="sortOptions"
-              class="w-75"
-            >
+              class="w-75">
               <template #first>
                 <option value="">
                   -выберите параметр-
@@ -64,28 +58,24 @@
       </b-col>
       <b-col
         md="6"
-        class="my-1"
-      >
+        class="my-1">
         <b-form-group
           label="Найти"
           label-cols-sm="3"
           label-align-sm="right"
           label-size="sm"
           label-for="filterInput"
-          class="mb-0"
-        >
+          class="mb-0">
           <b-input-group size="sm">
             <b-form-input
               id="filterInput"
               v-model="filter"
               type="search"
-              placeholder="Поле для поиска"
-            />
+              placeholder="Поле для поиска" />
             <b-input-group-append>
               <b-button
                 :disabled="!filter"
-                @click="filter = ''"
-              >
+                @click="filter = ''">
                 Очистить
               </b-button>
             </b-input-group-append>
@@ -94,7 +84,6 @@
       </b-col>
 
       <b-col cols="12">
-
         <!--NEW -->
 
         <b-table
@@ -112,8 +101,7 @@
           :filter="filter"
           :filter-included-fields="filterOn"
           @row-selected="onRowSelected"
-          @filtered="onFiltered"
-        >
+          @filtered="onFiltered">
           <template #cell(selected)="{ rowSelected }">
             <template v-if="rowSelected">
               <i class="feather icon-check-circle primary" />
@@ -131,11 +119,9 @@
           </template>
 
           <template #cell(number)="data">
-
             <b-col
               md="6"
-              xl="4"
-            >
+              xl="4">
               <!-- <b-card
                 :img-src="require('@/assets/images/icons/NNK.svg')"
                 overlay
@@ -155,87 +141,80 @@
           </template>
 
           <template #cell(age)="data">
-
             <vue-apex-charts
               type="bar"
-              height="200"
-            />
+              height="200" />
 
             <b-col class="avg-sessions pt-50">
               <!-- TEMPLATE -->
-              <template v-for="(item,index) in data.item.age">
+              <template v-for="(item, index) in data.item.age">
                 <b-col
                   :key="index"
-                  class="mb-2"
-                >
+                  class="mb-2">
                   <b-card-text class="mb-50 text-info">
-                    АИ-92:   {{ data.item.age }}л.
+                    АИ-92: {{ data.item.age }}л.
                   </b-card-text>
                   <b-progress
                     :value="data.item.age"
                     :variant="getPopularityColor(data.item.age)"
-                    height="6px"
-                  />
+                    height="6px" />
                 </b-col>
 
-                <template v-if="index>1">
-                  <app-collapse
-                    :key="index+1"
-                  >
-
+                <template v-if="index > 1">
+                  <app-collapse :key="index + 1">
                     <app-collapse-item title="yet anoter">
                       <b-col
-                        :key="index+1"
-                        class="mb-2"
-                      >
+                        :key="index + 1"
+                        class="mb-2">
                         <b-card-text class="mb-50 text-info">
-                          АИ-92:   {{ data.item.age }}л.
+                          АИ-92: {{ data.item.age }}л.
                         </b-card-text>
                         <b-progress
                           :value="data.item.age"
                           :variant="getPopularityColor(data.item.age)"
-                          height="6px"
-                        />
+                          height="6px" />
                       </b-col>
                     </app-collapse-item>
-
                   </app-collapse>
                 </template>
-
               </template>
-
             </b-col>
-
           </template>
-
         </b-table>
-        <b-col
-          cols="12"
-        >
+        <b-col cols="12">
           <b-pagination
             v-model="currentPage"
             :total-rows="totalRows"
             :per-page="perPage"
             align="center"
             size="sm"
-            class="my-0"
-          />
+            class="my-0" />
         </b-col>
 
         <!-- end -->
       </b-col>
-
     </b-row>
   </div>
 </template>
 
 <script>
 import {
-  BTable, BRow, BProgress, BCol, BFormGroup, BFormSelect, BPagination, BInputGroup, BFormInput, BInputGroupAppend, BButton, BCardText,
-} from 'bootstrap-vue'
-import VueApexCharts from 'vue-apexcharts'
-import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
-import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue'
+  BTable,
+  BRow,
+  BProgress,
+  BCol,
+  BFormGroup,
+  BFormSelect,
+  BPagination,
+  BInputGroup,
+  BFormInput,
+  BInputGroupAppend,
+  BButton,
+  BCardText,
+} from 'bootstrap-vue';
+import VueApexCharts from 'vue-apexcharts';
+import AppCollapse from '@core/components/app-collapse/AppCollapse.vue';
+import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue';
 
 export default {
   components: {
@@ -274,7 +253,8 @@ export default {
       },
       fields: [
         {
-          key: 'selected', label: '',
+          key: 'selected',
+          label: '',
         },
 
         { key: 'number', label: 'номер карты', sortable: true },
@@ -296,7 +276,6 @@ export default {
       },
       items: [
         {
-
           // eslint-disable-next-line global-require
           avatar: require('@/assets/images/avatars/10-small.png'),
           full_name: "Korrie O'Crevy",
@@ -310,7 +289,6 @@ export default {
           status: 2,
         },
         {
-
           // eslint-disable-next-line global-require
           avatar: require('@/assets/images/avatars/1-small.png'),
           full_name: 'Bailie Coulman',
@@ -324,7 +302,6 @@ export default {
           status: 2,
         },
         {
-
           // eslint-disable-next-line global-require
           avatar: require('@/assets/images/avatars/9-small.png'),
           full_name: 'Stella Ganderton',
@@ -338,7 +315,6 @@ export default {
           status: 5,
         },
         {
-
           // eslint-disable-next-line global-require
           avatar: require('@/assets/images/avatars/3-small.png'),
           full_name: 'Dorolice Crossman',
@@ -352,7 +328,6 @@ export default {
           status: 2,
         },
         {
-
           // eslint-disable-next-line global-require
           avatar: require('@/assets/images/avatars/4-small.png'),
           full_name: 'Harmonia Nisius',
@@ -366,7 +341,6 @@ export default {
           status: 2,
         },
         {
-
           // eslint-disable-next-line global-require
           avatar: require('@/assets/images/avatars/5-small.png'),
           full_name: 'Genevra Honeywood',
@@ -380,7 +354,6 @@ export default {
           status: 1,
         },
         {
-
           // eslint-disable-next-line global-require
           avatar: require('@/assets/images/avatars/7-small.png'),
           full_name: 'Eileen Diehn',
@@ -394,7 +367,6 @@ export default {
           status: 3,
         },
         {
-
           // eslint-disable-next-line global-require
           avatar: require('@/assets/images/avatars/9-small.png'),
           full_name: 'Richardo Aldren',
@@ -408,7 +380,6 @@ export default {
           status: 3,
         },
         {
-
           // eslint-disable-next-line global-require
           avatar: require('@/assets/images/avatars/2-small.png'),
           full_name: 'Allyson Moakler',
@@ -422,7 +393,6 @@ export default {
           status: 5,
         },
         {
-
           // eslint-disable-next-line global-require
           avatar: require('@/assets/images/avatars/6-small.png'),
           full_name: 'Merline Penhalewick',
@@ -437,57 +407,66 @@ export default {
         },
       ],
 
-      statusColor: [{
-        1: 'ACTIVE', 2: 'FINANCE', 3: 'BROKEN', 4: 'BLOCK', 5: 'RETURN',
-      },
-      {
-        1: 'light-primary', 2: 'light-success', 3: 'light-danger', 4: 'light-warning', 5: 'light-info',
-      }],
-    }
+      statusColor: [
+        {
+          1: 'ACTIVE',
+          2: 'FINANCE',
+          3: 'BROKEN',
+          4: 'BLOCK',
+          5: 'RETURN',
+        },
+        {
+          1: 'light-primary',
+          2: 'light-success',
+          3: 'light-danger',
+          4: 'light-warning',
+          5: 'light-info',
+        },
+      ],
+    };
   },
   computed: {
     sortOptions() {
       // Create an options list from our fields
       return this.fields
-        .filter(f => f.sortable)
-        .map(f => ({ text: f.label, value: f.key }))
+        .filter((f) => f.sortable)
+        .map((f) => ({ text: f.label, value: f.key }));
     },
     getStatus() {
       // eslint-disable-next-line no-undef
-      return this.cardStatus[data.item.status]
+      return this.cardStatus[data.item.status];
     },
   },
   mounted() {
     // Set the initial number of items
-    this.totalRows = this.items.length
+    this.totalRows = this.items.length;
   },
   methods: {
     info(item, index, button) {
-      this.infoModal.title = `Row index: ${index}`
-      this.infoModal.content = JSON.stringify(item, null, 2)
-      this.$root.$emit('bv::show::modal', this.infoModal.id, button)
+      this.infoModal.title = `Row index: ${index}`;
+      this.infoModal.content = JSON.stringify(item, null, 2);
+      this.$root.$emit('bv::show::modal', this.infoModal.id, button);
     },
     resetInfoModal() {
-      this.infoModal.title = ''
-      this.infoModal.content = ''
+      this.infoModal.title = '';
+      this.infoModal.content = '';
     },
 
     getPopularityColor(num) {
-      if (Number(num) > 90) return 'success'
-      if (Number(num) > 50) return 'secondary'
-      if (Number(num) >= 30) return 'warning'
-      if (Number(num) < 30) return 'danger'
-      return 'primary'
+      if (Number(num) > 90) return 'success';
+      if (Number(num) > 50) return 'secondary';
+      if (Number(num) >= 30) return 'warning';
+      if (Number(num) < 30) return 'danger';
+      return 'primary';
     },
 
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
-      this.totalRows = filteredItems.length
-      this.currentPage = 1
+      this.totalRows = filteredItems.length;
+      this.currentPage = 1;
     },
   },
-}
-
+};
 </script>
 
 <style>

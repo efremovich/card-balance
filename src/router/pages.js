@@ -3,6 +3,9 @@ export default [
     path: '/',
     name: 'dashboard',
     component: () => import('@/views/Dashboard.vue'),
+    meta: {
+      resource: 'Auth',
+    },
   },
 
   {
@@ -158,5 +161,4 @@ export default [
       resource: 'Auth',
     },
   },
-
-]
+];

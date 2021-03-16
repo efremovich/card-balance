@@ -3,14 +3,12 @@
     <div>
       <b-container
         fluid
-        class="pb-2 pt-1"
-      >
+        class="pb-2 pt-1">
         <b-row align-v="center">
           <b-col>
             <b-avatar
               variant="light-primary"
-              class="mr-1"
-            />
+              class="mr-1" />
             <span class="text-primary">
               {{ userData.account.name }}
             </span>
@@ -20,15 +18,12 @@
           </b-col>
           <b-col
             class="d-flex justify-content-end align-items-center"
-            align-self="center"
-          >
+            align-self="center">
             <b-button
               variant="flat-primary"
-              @click="logout"
-            >
+              @click="logout">
               <feather-icon icon="LogOutIcon" /> Выход
             </b-button>
-
           </b-col>
         </b-row>
       </b-container>
@@ -38,14 +33,14 @@
 </template>
 
 <script>
-import useAppConfig from '@core/app-config/useAppConfig'
-import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import useAppConfig from '@core/app-config/useAppConfig';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import {
   BButton, BContainer, BCol, BRow, BAvatar,
-} from 'bootstrap-vue'
+} from 'bootstrap-vue';
 
-import useJwt from '@/auth/jwt/useJwt'
-import VuexyLogo from '@core/layouts/components/Logo.vue'
+import useJwt from '@/auth/jwt/useJwt';
+import VuexyLogo from '@core/layouts/components/Logo.vue';
 
 export default {
   components: {
@@ -57,20 +52,20 @@ export default {
     BAvatar,
   },
   setup() {
-    const { contentWidth } = useAppConfig()
-    return { contentWidth }
+    const { contentWidth } = useAppConfig();
+    return { contentWidth };
   },
   data() {
     return {
       userData: JSON.parse(localStorage.getItem('userData')),
-    }
+    };
   },
   created() {
-    useJwt.getCurrenUser().then(response => {
+    useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
-          this.userData = response.data
-        })
+          this.userData = response.data;
+        });
       } else {
         this.$toast({
           component: ToastificationContent,
@@ -81,16 +76,16 @@ export default {
             variant: 'danger',
             text: 'Ошибка авторизации',
           },
-        })
-        this.$router.push({ name: 'auth-login' })
+        });
+        this.$router.push({ name: 'auth-login' });
       }
-    })
+    });
   },
   methods: {
     logout() {
-      useJwt.logout()
-      this.$router.push({ name: 'auth-login' })
+      useJwt.logout();
+      this.$router.push({ name: 'auth-login' });
     },
   },
-}
+};
 </script>

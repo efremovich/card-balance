@@ -3,87 +3,72 @@
     <div class="column">
       <div class="row">
         <b-col md="6">
-
           <b-card-actions
             ref="refreshCard"
             title="Информация по договору"
             action-refresh
-            @refresh="refreshStop('refreshCard')"
-          >
-            <b-card-text
-              fluid
-            >
-
-              <h3>Баланс: <span> {{ value }}  ₽ </span></h3>
-              <h5>Допустимая задолженность: <span class="text-danger h6"> {{ - value }}  ₽ </span> </h5>
-              <div
-                class="d-flex justify-content-between"
-              >
-                <h3> Договор № </h3>
+            @refresh="refreshStop('refreshCard')">
+            <b-card-text fluid>
+              <h3>
+                Баланс: <span> {{ value }} ₽ </span>
+              </h3>
+              <h5>
+                Допустимая задолженность:
+                <span class="text-danger h6"> {{ -value }} ₽ </span>
+              </h5>
+              <div class="d-flex justify-content-between">
+                <h3>Договор №</h3>
                 <v-select
                   v-model="selected"
                   :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                   label="title"
                   :options="option"
-                  class="w-50"
-                />
-
+                  class="w-50" />
               </div>
-              <h4> Статус: {{ value }} </h4>
-              <h4> Дата начала: {{ value }} </h4>
+              <h4>Статус: {{ value }}</h4>
+              <h4>Дата начала: {{ value }}</h4>
               <b-button
                 v-ripple.400="'rgba(255, 255, 255, 0.15)'"
                 variant="warning"
-                class="d-flex align-items-center"
-              >
+                class="d-flex align-items-center">
                 <feather-icon
                   size="2x"
                   icon="PlusIcon"
-                  class="mr-50"
-                />
+                  class="mr-50" />
                 <span class="align-baseline">Пополнить баланс</span>
               </b-button>
             </b-card-text>
-
           </b-card-actions>
         </b-col>
-
         <b-col md="6">
           <b-card-actions
             ref="refreshCard"
             title="Остатки топлива по контракту:"
             action-refresh
-            @refresh="refreshStop('refreshCard')"
-          >
-
+            @refresh="refreshStop('refreshCard')">
             <vue-apex-charts
               type="bar"
-              height="200"
-            />
+              height="200" />
 
             <hr>
 
             <b-row class="avg-sessions pt-50">
               <!-- TEMPLATE -->
-              <template v-for="(item,index) in limits">
+              <template v-for="(item, index) in limits">
                 <b-col
                   :key="index"
-                  class="mb-2"
-                >
+                  class="mb-2">
                   <b-card-text class="mb-50 text-info">
-                    АИ-92:  {{ item }} л.
+                    АИ-92: {{ item }} л.
                   </b-card-text>
                   <b-progress
                     :value="item"
                     :variant="getPopularityColor(item)"
-                    height="6px"
-                  />
+                    height="6px" />
                 </b-col>
               </template>
-
             </b-row>
           </b-card-actions>
-
         </b-col>
       </div>
       <div class="row">
@@ -92,21 +77,15 @@
             ref="refreshCard"
             title="Расход за текущий месяц"
             action-refresh
-            @refresh="refreshStop('refreshCard')"
-          >
-            <div
-              class="d-flex justify-content-between"
-            >
-              <h4>{{ getDate }}:
-              </h4>
+            @refresh="refreshStop('refreshCard')">
+            <div class="d-flex justify-content-between">
+              <h4>{{ getDate }}:</h4>
               <h4 class="text-danger">
                 4055054 ₽
               </h4>
-
             </div>
             <div class="d-flex justify-content-between align-items-end">
-              <h4>Последние изменения по договору:
-              </h4>
+              <h4>Последние изменения по договору:</h4>
               <h4 class="text-info">
                 20/02/2021
               </h4>
@@ -115,9 +94,7 @@
               striped
               hover
               :items="items"
-              :fields="fields"
-            />
-
+              :fields="fields" />
           </b-card-actions>
         </b-col>
 
@@ -126,15 +103,12 @@
             ref="refreshCard"
             title="Статистика по картам"
             action-refresh
-            @refresh="refreshStop('refreshCard')"
-          >
-
+            @refresh="refreshStop('refreshCard')">
             <div class="mt-1">
-              <template v-for="(item,index) in statistics">
+              <template v-for="(item, index) in statistics">
                 <div
                   :key="index"
-                  class="d-flex justify-content-between"
-                >
+                  class="d-flex justify-content-between">
                   <h4 :key="index">
                     {{ item }}
                   </h4>
@@ -142,10 +116,9 @@
                     {{ value }}
                   </h4>
                 </div>
-
               </template>
-
-            </div></b-card-actions>
+            </div>
+          </b-card-actions>
         </b-col>
 
         <b-row class="padding">
@@ -154,18 +127,17 @@
             action-close
             action-refresh
             action-collapse
-            title="Данные организации:"
-          >
-
+            title="Данные организации:">
             <div class="d-flex flex-column">
               <h3>Название: {{ organization_data.name }}</h3>
-              <h3> Почтовый адрес: <br> {{ organization_data.post }}</h3>
-              <h3> ИНН: {{ organization_data.id.number }}</h3>
-
+              <h3>
+                Почтовый адрес: <br>
+                {{ organization_data.post }}
+              </h3>
+              <h3>ИНН: {{ organization_data.id.number }}</h3>
             </div>
           </b-card-actions>
         </b-row>
-
       </div>
 
       <!--Statistics -->
@@ -175,10 +147,7 @@
         action-refresh
         action-collapse
         title="Динамика потребления"
-
-        @refresh="refreshStop('refreshCard')"
-      >
-
+        @refresh="refreshStop('refreshCard')">
         <b-card-body class="pb-0">
           <div class="d-flex justify-content-start mb-3">
             <div class="mr-2 mt-1">
@@ -206,11 +175,10 @@
             type="line"
             height="240"
             :options="revenueComparisonLine.chartOptions"
-            :series="revenueComparisonLine.series"
-          />
+            :series="revenueComparisonLine.series" />
         </b-card-body>
       </b-card-actions>
-    <!--end statistic -->
+      <!--end statistic -->
     </div>
 
     <!-- GEO-->
@@ -220,21 +188,17 @@
       action-refresh
       action-collapse
       title="Места потребления:"
-      @refresh="refreshStop('refreshCard')"
-    >
-
+      @refresh="refreshStop('refreshCard')">
       <div class="mt-1">
         <l-map
           :zoom="zoom"
-          :center="center"
-        >
+          :center="center">
           <l-tile-layer :url="url" />
           <l-marker :lat-lng="markerLatLng" />
           <l-circle
             :lat-lng="circle.center"
             :radius="circle.radius"
-            :color="circle.color"
-          />
+            :color="circle.color" />
         </l-map>
       </div>
     </b-card-actions>
@@ -243,30 +207,29 @@
 </template>
 
 <script>
-import BCardActions from '@core/components/b-card-actions/BCardActions.vue'
+import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 
 // GEO
 import {
   LMap, LTileLayer, LMarker, LCircle,
-} from 'vue2-leaflet'
+} from 'vue2-leaflet';
 // import { Icon } from 'leaflet'
-import 'leaflet/dist/leaflet.css'
+import 'leaflet/dist/leaflet.css';
 
 // end GEO
-import vSelect from 'vue-select'
-import VueApexCharts from 'vue-apexcharts'
-import { $themeColors } from '@themeConfig'
-import { Icon } from 'leaflet'
+import vSelect from 'vue-select';
+
+import VueApexCharts from 'vue-apexcharts';
+import { ru } from 'apexcharts/dist/locales/ru.json';
+
+import { $themeColors } from '@themeConfig';
+import { Icon } from 'leaflet';
 import {
-  BCardText,
-  BCol,
-  BButton,
-  BTable,
-  BProgress,
-} from 'bootstrap-vue'
+  BCardText, BCol, BButton, BTable, BProgress,
+} from 'bootstrap-vue';
 
 // eslint-disable-next-line no-underscore-dangle
-delete Icon.Default.prototype._getIconUrl
+delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
   // eslint-disable-next-line global-require
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -274,7 +237,7 @@ Icon.Default.mergeOptions({
   iconUrl: require('leaflet/dist/images/marker-icon.png'),
   // eslint-disable-next-line global-require
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-})
+});
 
 export default {
   components: {
@@ -292,7 +255,6 @@ export default {
     LMarker,
     LCircle,
     //
-
   },
   data() {
     return {
@@ -304,7 +266,8 @@ export default {
 
       organization_data: {
         name: 'АБВГД',
-        post: '241050, Брянская обл, Брянск г, Красноармейская ул, дом № 128, офис 314',
+        post:
+          '241050, Брянская обл, Брянск г, Красноармейская ул, дом № 128, офис 314',
         id: {
           number: '2308240961',
         },
@@ -346,6 +309,8 @@ export default {
           },
         ],
         chartOptions: {
+          locales: [ru],
+          defaultLocale: 'ru',
           chart: {
             toolbar: { show: false },
             zoom: { enabled: false },
@@ -404,7 +369,7 @@ export default {
                 fontSize: '1rem',
               },
               formatter(val) {
-                return val > 999 ? `${(val / 1000).toFixed(0)}k` : val
+                return val > 999 ? `${(val / 1000).toFixed(0)}k` : val;
               },
             },
           },
@@ -421,27 +386,33 @@ export default {
           },
         },
       },
-
-    }
     };
   },
   computed: {
     activeUserInfo() {
       return this.$store.state.CurrentUser;
     },
-  },
-
-  computed: {
     getDate() {
-      const Data = new Date()
-      const Month = Data.getMonth()
-      const monthRU = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-      return monthRU[Month]
+      const Data = new Date();
+      const Month = Data.getMonth();
+      const monthRU = [
+        'Январь',
+        'Февраль',
+        'Март',
+        'Апрель',
+        'Май',
+        'Июнь',
+        'Июль',
+        'Август',
+        'Сентябрь',
+        'Октябрь',
+        'Ноябрь',
+        'Декабрь',
+      ];
+      return monthRU[Month];
     },
   },
-  created() {
-    this.$http.get('/card/card-analytics/revenue').then(res => { this.revenue = res.data })
-  },
+  created() {},
 
   methods: {
     // stop refreshing card in 3 sec
@@ -452,24 +423,22 @@ export default {
     },
     // COLOR
     getPopularityColor(num) {
-      if (Number(num) > 90) return 'success'
-      if (Number(num) > 70) return 'warning'
-      if (Number(num) >= 50) return 'info'
-      if (Number(num) < 50) return 'danger'
-      return 'primary'
+      if (Number(num) > 90) return 'success';
+      if (Number(num) > 70) return 'warning';
+      if (Number(num) >= 50) return 'info';
+      if (Number(num) < 50) return 'danger';
+      return 'primary';
     },
   },
 
   getLimitResidual(limit) {
     if (Number(limit.value) > 0 && Number(limit.consumption) > 0) {
-      const limitResidual = 100 - Number(limit.consumption) / (Number(limit.value) / 100)
-      return limitResidual
+      const limitResidual = 100 - Number(limit.consumption) / (Number(limit.value) / 100);
+      return limitResidual;
     }
-    return 5
+    return 5;
   },
-
-}
-
+};
 </script>
 
 <style lang="scss">
