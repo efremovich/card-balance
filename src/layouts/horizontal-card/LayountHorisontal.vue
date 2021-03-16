@@ -5,11 +5,11 @@
 </template>
 
 <script>
-import LayoutFull from '@core/layouts/layout-card/LayoutCard.vue'
+import LayoutFull from '@core/layouts/layout-card/LayoutCard.vue';
 
 export default {
   components: {
     LayoutFull,
   },
-}
+};
 </script>
