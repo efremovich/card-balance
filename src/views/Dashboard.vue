@@ -240,7 +240,6 @@
     </b-card-actions>
     <!--GEO-->
   </div>
-
 </template>
 
 <script>
@@ -295,7 +294,6 @@ export default {
     //
 
   },
-
   data() {
     return {
       value: 100,
@@ -425,6 +423,12 @@ export default {
       },
 
     }
+    };
+  },
+  computed: {
+    activeUserInfo() {
+      return this.$store.state.CurrentUser;
+    },
   },
 
   computed: {
@@ -440,12 +444,11 @@ export default {
   },
 
   methods: {
-
     // stop refreshing card in 3 sec
-    refreshStop(cardName) {
-      setTimeout(() => {
-        this.$refs[cardName].showLoading = false
-      }, 3000)
+    refreshCardStatistic(card) {
+      this.dispatchStoreData('DashBoardData/getConsumptionDinamic', {
+        cid: this.activeUserInfo.contract.id,
+      }).then((this.$refs[card].showLoading = false));
     },
     // COLOR
     getPopularityColor(num) {

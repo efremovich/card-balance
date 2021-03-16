@@ -202,6 +202,7 @@ export default {
               email: this.regEmail,
               password: this.password,
               name: this.username,
+              role: 'user',
             })
             .then(response => {
               if (response.data.status) {
