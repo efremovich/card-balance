@@ -1,5 +1,7 @@
 <template>
+
   <b-card title="Транзакции" />
+
 </template>
 
 <script>
@@ -10,6 +12,7 @@ export default {
     BCard,
 
   },
+
 }
 </script>
 

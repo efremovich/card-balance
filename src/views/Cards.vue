@@ -1,6 +1,5 @@
 <template>
   <div>
-    <b-card title="Здесь поселятся карты!" />
 
     <b-row>
       <b-col
@@ -98,12 +97,6 @@
 
         <!--NEW -->
 
-        <!-- <v-select
-          v-model="selectMode"
-          label="title"
-          :options="modes"
-        /> -->
-
         <b-table
           ref="selectableTable"
           selectable
@@ -131,6 +124,36 @@
             </template>
           </template>
 
+          <template #cell(status)="data">
+            <b-card-text class="mb-50 text-info">
+              {{ data.item.status }}
+            </b-card-text>
+          </template>
+
+          <template #cell(number)="data">
+
+            <b-col
+              md="6"
+              xl="4"
+            >
+              <!-- <b-card
+                :img-src="require('@/assets/images/icons/NNK.svg')"
+                overlay
+                text-variant="white"
+                img-alt="card img"
+                body-class="bg-overlay"
+              > -->
+              <!-- <div class="d-flex">
+                <i class="feather icon-credit-card primary" /> -->
+              <p class="before">
+                {{ data.item.number }}
+              </p>
+              <!-- </div> -->
+
+              <!-- </b-card> -->
+            </b-col>
+          </template>
+
           <template #cell(age)="data">
 
             <vue-apex-charts
@@ -140,21 +163,47 @@
 
             <b-col class="avg-sessions pt-50">
               <!-- TEMPLATE -->
-              <!-- <template v-for="(item,index) in items">
+              <template v-for="(item,index) in data.item.age">
                 <b-col
                   :key="index"
                   class="mb-2"
-                > -->
-              <b-card-text class="mb-50 text-info">
-                АИ-92:   {{ data.item.age }}
-              </b-card-text>
-              <b-progress
-                :value="data.item.age"
-                :variant="getPopularityColor(data.item.age)"
-                height="6px"
-              />
-              <!-- </b-col>
-              </template> -->
+                >
+                  <b-card-text class="mb-50 text-info">
+                    АИ-92:   {{ data.item.age }}л.
+                  </b-card-text>
+                  <b-progress
+                    :value="data.item.age"
+                    :variant="getPopularityColor(data.item.age)"
+                    height="6px"
+                  />
+                </b-col>
+
+                <template v-if="index>1">
+                  <app-collapse
+                    :key="index+1"
+                  >
+
+                    <app-collapse-item title="yet anoter">
+                      <b-col
+                        :key="index+1"
+                        class="mb-2"
+                      >
+                        <b-card-text class="mb-50 text-info">
+                          АИ-92:   {{ data.item.age }}л.
+                        </b-card-text>
+                        <b-progress
+                          :value="data.item.age"
+                          :variant="getPopularityColor(data.item.age)"
+                          height="6px"
+                        />
+                      </b-col>
+                    </app-collapse-item>
+
+                  </app-collapse>
+                </template>
+
+              </template>
+
             </b-col>
 
           </template>
@@ -182,9 +231,11 @@
 
 <script>
 import {
-  BTable, BRow, BProgress, BCol, BFormGroup, BFormSelect, BPagination, BInputGroup, BFormInput, BInputGroupAppend, BButton,
+  BTable, BRow, BProgress, BCol, BFormGroup, BFormSelect, BPagination, BInputGroup, BFormInput, BInputGroupAppend, BButton, BCardText,
 } from 'bootstrap-vue'
 import VueApexCharts from 'vue-apexcharts'
+import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
+import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue'
 
 export default {
   components: {
@@ -200,6 +251,9 @@ export default {
     BFormInput,
     BInputGroupAppend,
     BButton,
+    BCardText,
+    AppCollapse,
+    AppCollapseItem,
   },
   data() {
     return {
@@ -220,7 +274,7 @@ export default {
       },
       fields: [
         {
-          key: 'selected', label: 'check',
+          key: 'selected', label: '',
         },
 
         { key: 'number', label: 'номер карты', sortable: true },
@@ -251,7 +305,7 @@ export default {
           city: 'Krasnosilka',
           start_date: '09/23/2016',
           number: '7824861010059713787',
-          age: '61',
+          age: '70',
           experience: '1 Year',
           status: 2,
         },
@@ -265,7 +319,7 @@ export default {
           city: 'Hinigaran',
           start_date: '05/20/2018',
           number: '7824861010059713787',
-          age: '63',
+          age: '30',
           experience: '3 Years',
           status: 2,
         },
@@ -307,7 +361,7 @@ export default {
           city: 'Lucan',
           start_date: '08/25/2017',
           number: '7824861010059713787',
-          age: '33',
+          age: '91',
           experience: '3 Years',
           status: 2,
         },
@@ -321,7 +375,7 @@ export default {
           city: 'Maofan',
           start_date: '06/01/2017',
           number: '7824861010059713787',
-          age: '61',
+          age: '101',
           experience: '1 Year',
           status: 1,
         },
@@ -335,7 +389,7 @@ export default {
           city: 'Lampuyang',
           start_date: '10/15/2017',
           number: '7824861010059713787',
-          age: '59',
+          age: '9',
           experience: '9 Years',
           status: 3,
         },
@@ -383,7 +437,7 @@ export default {
         },
       ],
 
-      status: [{
+      statusColor: [{
         1: 'ACTIVE', 2: 'FINANCE', 3: 'BROKEN', 4: 'BLOCK', 5: 'RETURN',
       },
       {
@@ -397,6 +451,10 @@ export default {
       return this.fields
         .filter(f => f.sortable)
         .map(f => ({ text: f.label, value: f.key }))
+    },
+    getStatus() {
+      // eslint-disable-next-line no-undef
+      return this.cardStatus[data.item.status]
     },
   },
   mounted() {
@@ -416,9 +474,9 @@ export default {
 
     getPopularityColor(num) {
       if (Number(num) > 90) return 'success'
-      if (Number(num) > 70) return 'warning'
-      if (Number(num) >= 50) return 'info'
-      if (Number(num) < 50) return 'danger'
+      if (Number(num) > 50) return 'secondary'
+      if (Number(num) >= 30) return 'warning'
+      if (Number(num) < 30) return 'danger'
       return 'primary'
     },
 
@@ -438,12 +496,51 @@ export default {
 }
 
 .table td {
-  padding: 0.72rem 1rem !important;
+  padding: 0.72rem 0rem !important;
+}
+
+td:first-child {
+  width: 1px !important;
+  padding: 10px 20px !important;
+}
+
+td:nth-child(2) {
+  width: 15% !important;
 }
 
 .mb-2,
 .pt-50 {
   padding-left: 0 !important;
   padding-right: 0 !important;
+}
+
+.card .card-img-overlay.bg-overlay {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.shadow {
+  color: black;
+  font-size: 1rem !important;
+  letter-spacing: 1.5px !important;
+  position: relative !important;
+  bottom: 4% !important;
+}
+
+.col-xl-4 {
+  padding: 1rem 0 0 !important;
+}
+
+.before {
+  margin-right: 15px;
+  display: flex;
+}
+
+.before::before {
+  content: "💳";
+  text-align: center;
+  filter: grayscale(100%);
+  margin-right: 10px;
 }
 </style>
