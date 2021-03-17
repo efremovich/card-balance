@@ -75,7 +75,7 @@
         <b-col md="6">
           <b-card-actions
             ref="refreshCard"
-            title="Расход за текущий месяц"
+            title="Расход за текущий месяц:"
             action-refresh
             @refresh="refreshStop('refreshCard')">
             <div class="d-flex justify-content-between">
@@ -207,6 +207,7 @@
 </template>
 
 <script>
+
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 // GEO
 import {
@@ -253,6 +254,7 @@ export default {
     LTileLayer,
     LMarker,
     LCircle,
+    // formatDate,
     //
   },
   data() {
@@ -272,16 +274,6 @@ export default {
         },
       },
       limits: ['10', '60', '80', '100'],
-      // progress-bar
-
-      bars: [
-        { variant: 'success', value: 75 },
-        { variant: 'info', value: 75 },
-        { variant: 'warning', value: 75 },
-        { variant: 'danger', value: 75 },
-        { variant: 'primary', value: 75 },
-      ],
-      // end progress-bar
 
       // GEO
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -392,26 +384,16 @@ export default {
       return this.$store.state.CurrentUser;
     },
     getDate() {
-      const Data = new Date();
-      const Month = Data.getMonth();
-      const monthRU = [
-        'Январь',
-        'Февраль',
-        'Март',
-        'Апрель',
-        'Май',
-        'Июнь',
-        'Июль',
-        'Август',
-        'Сентябрь',
-        'Октябрь',
-        'Ноябрь',
-        'Декабрь',
-      ];
-      return monthRU[Month];
+      const date = new Date();
+      const formatDate = (value, formatting = { month: 'long' }, locale = 'ru-RU') => {
+        if (!value) return value;
+        return new Intl.DateTimeFormat(locale, formatting).format(new Date(value));
+      };
+      return formatDate(date);
     },
+
   },
-  created() {},
+  created() { },
   methods: {
     // stop refreshing card in 3 sec
     refreshCardStatistic(card) {
@@ -427,6 +409,7 @@ export default {
       if (Number(num) < 50) return 'danger';
       return 'primary';
     },
+
   },
 
   getLimitResidual(limit) {

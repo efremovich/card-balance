@@ -21,7 +21,6 @@ export default {
 
       for (const property of Object.keys(payload)) {
         if (payload[property] != null) {
-          // If some of user property is null - user default property defined in state.AppActiveUser
           state[property] = payload[property];
 
           // Update key in localStorage

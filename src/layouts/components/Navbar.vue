@@ -99,8 +99,8 @@ import {
 } from 'bootstrap-vue';
 
 import DarkToggler from '@core/layouts/components/app-navbar/components/DarkToggler.vue';
-import useJwt from '@/auth/jwt/useJwt';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import useJwt from '../../auth/jwt/useJwt';
 
 export default {
   components: {
@@ -117,7 +117,7 @@ export default {
   props: {
     toggleVerticalMenuActive: {
       type: Function,
-      default: () => {},
+      default: () => { },
     },
   },
   created() {

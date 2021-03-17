@@ -109,14 +109,6 @@
 </template>
 
 <script>
-import { ValidationProvider, ValidationObserver } from 'vee-validate';
-import VuexyLogo from '@core/layouts/components/Logo.vue';
-import { required, email } from '@validations';
-import { togglePasswordVisibility } from '@core/mixins/ui/forms';
-import { getHomeRouteForLoggedInUser } from '@/auth/utils';
-import useJwt from '@/auth/jwt/useJwt';
-import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
-import { initialAbility } from '@/libs/acl/config';
 
 import {
   BButton,
@@ -131,6 +123,15 @@ import {
   BInputGroupAppend,
   BFormCheckbox,
 } from 'bootstrap-vue';
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
+import VuexyLogo from '@core/layouts/components/Logo.vue';
+import { required, email } from '@validations';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import useJwt from '../../auth/jwt/useJwt';
+import { togglePasswordVisibility } from '../../@core/mixins/ui/forms';
+import { getHomeRouteForLoggedInUser } from '../../auth/utils';
+
+import { initialAbility } from '../../libs/acl/config';
 
 export default {
   components: {
@@ -196,11 +197,11 @@ export default {
                       component: ToastificationContent,
                       position: 'top-right',
                       props: {
-                        title: `Welcome ${userData.account.fullName
+                        title: `Добро пожаловать ${userData.account.fullName
                           || userData.account.name}`,
                         icon: 'CoffeeIcon',
                         variant: 'success',
-                        text: `You have successfully logged in as ${userData.account.role}. Now you can start to explore!`,
+                        text: `Добро пожаловать, ${userData.account.role}!`,
                       },
                     });
                   })

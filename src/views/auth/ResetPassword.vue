@@ -3,21 +3,20 @@
     <div class="auth-inner py-2">
       <!-- Reset Password v1 -->
       <b-card class="mb-0">
-
         <!-- logo -->
         <b-link class="brand-logo">
           <vuexy-logo />
 
           <h2 class="brand-text text-primary ml-1">
-            Vuexy
+            КТК
           </h2>
         </b-link>
 
         <b-card-title class="mb-1">
-          Reset Password 🔒
+          Сбросить пароль 🔒
         </b-card-title>
         <b-card-text class="mb-2">
-          Your new password must be different from previously used passwords
+          Ваш новый пароль должен отличаться от используемого ранее
         </b-card-text>
 
         <!-- form -->
@@ -25,24 +24,19 @@
           <b-form
             method="POST"
             class="auth-reset-password-form mt-2"
-            @submit.prevent="validationForm"
-          >
-
+            @submit.prevent="validationForm">
             <!-- password -->
             <b-form-group
               label="New Password"
-              label-for="reset-password-new"
-            >
+              label-for="reset-password-new">
               <validation-provider
-                #default="{ errors }"
+                v-slot="{ errors }"
                 name="Password"
                 vid="Password"
-                rules="required|password"
-              >
+                rules="required|password">
                 <b-input-group
                   class="input-group-merge"
-                  :class="errors.length > 0 ? 'is-invalid':null"
-                >
+                  :class="errors.length > 0 ? 'is-invalid':null">
                   <b-form-input
                     id="reset-password-new"
                     v-model="password"
@@ -50,14 +44,12 @@
                     :state="errors.length > 0 ? false:null"
                     class="form-control-merge"
                     name="reset-password-new"
-                    placeholder="············"
-                  />
+                    placeholder="············" />
                   <b-input-group-append is-text>
                     <feather-icon
                       class="cursor-pointer"
                       :icon="password1ToggleIcon"
-                      @click="togglePassword1Visibility"
-                    />
+                      @click="togglePassword1Visibility" />
                   </b-input-group-append>
                 </b-input-group>
                 <small class="text-danger">{{ errors[0] }}</small>
@@ -67,17 +59,14 @@
             <!-- confirm password -->
             <b-form-group
               label-for="reset-password-confirm"
-              label="Confirm Password"
-            >
+              label="Confirm Password">
               <validation-provider
-                #default="{ errors }"
+                v-slot="{ errors }"
                 name="Confirm Password"
-                rules="required|confirmed:Password"
-              >
+                rules="required|confirmed:Password">
                 <b-input-group
                   class="input-group-merge"
-                  :class="errors.length > 0 ? 'is-invalid':null"
-                >
+                  :class="errors.length > 0 ? 'is-invalid':null">
                   <b-form-input
                     id="reset-password-confirm"
                     v-model="cPassword"
@@ -85,14 +74,12 @@
                     class="form-control-merge"
                     :state="errors.length > 0 ? false:null"
                     name="reset-password-confirm"
-                    placeholder="············"
-                  />
+                    placeholder="············" />
                   <b-input-group-append is-text>
                     <feather-icon
                       class="cursor-pointer"
                       :icon="password2ToggleIcon"
-                      @click="togglePassword2Visibility"
-                    />
+                      @click="togglePassword2Visibility" />
                   </b-input-group-append>
                 </b-input-group>
                 <small class="text-danger">{{ errors[0] }}</small>
@@ -103,34 +90,31 @@
             <b-button
               block
               type="submit"
-              variant="primary"
-            >
-              Set New Password
+              variant="primary">
+              Установите новый пароль
             </b-button>
           </b-form>
         </validation-observer>
 
         <p class="text-center mt-2">
           <b-link :to="{name:'auth-login-v1'}">
-            <feather-icon icon="ChevronLeftIcon" /> Back to login
+            <feather-icon icon="ChevronLeftIcon" /> Вернуться к странице авторизации
           </b-link>
         </p>
-
       </b-card>
     <!-- /Reset Password v1 -->
     </div>
   </div>
-
 </template>
 
 <script>
-import { ValidationProvider, ValidationObserver } from 'vee-validate'
-import VuexyLogo from '@core/layouts/components/Logo.vue'
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
+import VuexyLogo from '@core/layouts/components/Logo.vue';
 import {
   BCard, BCardTitle, BCardText, BForm, BFormGroup, BInputGroup, BInputGroupAppend, BLink, BFormInput, BButton,
-} from 'bootstrap-vue'
-import { required } from '@validations'
-import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+} from 'bootstrap-vue';
+import { required } from '@validations';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 
 export default {
   components: {
@@ -159,25 +143,25 @@ export default {
       // Toggle Password
       password1FieldType: 'password',
       password2FieldType: 'password',
-    }
+    };
   },
   computed: {
     password1ToggleIcon() {
-      return this.password1FieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
+      return this.password1FieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon';
     },
     password2ToggleIcon() {
-      return this.password2FieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
+      return this.password2FieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon';
     },
   },
   methods: {
     togglePassword1Visibility() {
-      this.password1FieldType = this.password1FieldType === 'password' ? 'text' : 'password'
+      this.password1FieldType = this.password1FieldType === 'password' ? 'text' : 'password';
     },
     togglePassword2Visibility() {
-      this.password2FieldType = this.password2FieldType === 'password' ? 'text' : 'password'
+      this.password2FieldType = this.password2FieldType === 'password' ? 'text' : 'password';
     },
     validationForm() {
-      this.$refs.simpleRules.validate().then(success => {
+      this.$refs.simpleRules.validate().then((success) => {
         if (success) {
           this.$toast({
             component: ToastificationContent,
@@ -186,14 +170,14 @@ export default {
               icon: 'EditIcon',
               variant: 'success',
             },
-          })
+          });
         }
-      })
+      });
     },
   },
-}
+};
 </script>
 
 <style lang="scss">
-@import '@core/scss/vue/pages/page-auth.scss';
+@import "@core/scss/vue/pages/page-auth.scss";
 </style>

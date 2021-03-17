@@ -17,24 +17,24 @@ export default [
   {
     path: '/transactions',
     name: 'transactions',
-    component: () => import('@/views/transactions.vue'),
+    component: () => import('@/views/Transactions.vue'),
   },
 
   {
     path: '/report',
     name: 'report',
-    component: () => import('@/views/report.vue'),
+    component: () => import('@/views/Report.vue'),
   },
   {
     path: '/locator',
     name: 'locator',
-    component: () => import('@/views/locator.vue'),
+    component: () => import('@/views/Locator.vue'),
   },
 
   {
     path: '/documents',
     name: 'documents',
-    component: () => import('@/views/documents/documents.vue'),
+    component: () => import('@/views/documents/Documents.vue'),
   },
 
   {

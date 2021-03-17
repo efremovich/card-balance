@@ -103,12 +103,36 @@
           @row-selected="onRowSelected"
           @filtered="onFiltered">
           <template #cell(selected)="{ rowSelected }">
-            <template v-if="rowSelected">
-              <i class="feather icon-check-circle primary" />
+            <template
+              v-if="rowSelected">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#ea5455"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="feather feather-check-circle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
             </template>
 
             <template v-else>
-              <i class="feather icon-circle" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="grey"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="feather feather-circle"><circle
+                  cx="12"
+                  cy="12"
+                  r="10" /></svg>
             </template>
           </template>
 
@@ -147,36 +171,40 @@
 
             <b-col class="avg-sessions pt-50">
               <!-- TEMPLATE -->
-              <template v-for="(item, index) in data.item.age">
+              <template v-for="(item, index) in 2">
                 <b-col
                   :key="index"
                   class="mb-2">
                   <b-card-text class="mb-50 text-info">
-                    АИ-92: {{ data.item.age }}л.
+                    АИ-92:   {{ data.item.age[index] }}л.
                   </b-card-text>
                   <b-progress
-                    :value="data.item.age"
-                    :variant="getPopularityColor(data.item.age)"
+                    :value="data.item.age[index]"
+                    :variant="getPopularityColor(data.item.age[index])"
                     height="6px" />
                 </b-col>
+              </template>
 
-                <template v-if="index > 1">
-                  <app-collapse :key="index + 1">
-                    <app-collapse-item title="yet anoter">
-                      <b-col
-                        :key="index + 1"
-                        class="mb-2">
-                        <b-card-text class="mb-50 text-info">
-                          АИ-92: {{ data.item.age }}л.
-                        </b-card-text>
-                        <b-progress
-                          :value="data.item.age"
-                          :variant="getPopularityColor(data.item.age)"
-                          height="6px" />
-                      </b-col>
-                    </app-collapse-item>
-                  </app-collapse>
-                </template>
+              <template v-if="data.item.age.length>2">
+                <app-collapse class="bgc">
+                  <app-collapse-item
+
+                    title="ещё... ">
+                    <b-col
+                      v-for="(item, index) in data.item.age.length-2"
+                      :key="index+2"
+
+                      class="mb-2">
+                      <b-card-text class="mb-50 text-info">
+                        АИ-92:   {{ data.item.age[index+2] }}
+                      </b-card-text>
+                      <b-progress
+                        :value="data.item.age[index+2]"
+                        :variant="getPopularityColor(data.item.age[index+2])"
+                        height="6px" />
+                    </b-col>
+                  </app-collapse-item>
+                </app-collapse>
               </template>
             </b-col>
           </template>
@@ -264,146 +292,20 @@ export default {
         { key: 'status', label: 'статус', sortable: true },
       ],
 
-      cardStatus: {
-        1: 'Активна',
-        2: 'Заблокирована',
-        4: 'Неисправна',
-        5: 'Удалена',
-        3: 'Финансовая блокировка',
-        LOST: 'Утеряна',
-        RETURN: 'Сдана',
-        SOLD: 'Продана',
-      },
       items: [
         {
-          // eslint-disable-next-line global-require
-          avatar: require('@/assets/images/avatars/10-small.png'),
-          full_name: "Korrie O'Crevy",
-          post: 'Nuclear Power Engineer',
-          email: 'kocrevy0@thetimes.co.uk',
-          city: 'Krasnosilka',
-          start_date: '09/23/2016',
           number: '7824861010059713787',
-          age: '70',
-          experience: '1 Year',
-          status: 2,
+          age: ['101', '5', '1', '80', '40'],
+
         },
         {
-          // eslint-disable-next-line global-require
-          avatar: require('@/assets/images/avatars/1-small.png'),
-          full_name: 'Bailie Coulman',
-          post: 'VP Quality Control',
-          email: 'bcoulman1@yolasite.com',
-          city: 'Hinigaran',
-          start_date: '05/20/2018',
           number: '7824861010059713787',
-          age: '30',
-          experience: '3 Years',
-          status: 2,
+          age: ['9', '90'],
+
         },
         {
-          // eslint-disable-next-line global-require
-          avatar: require('@/assets/images/avatars/9-small.png'),
-          full_name: 'Stella Ganderton',
-          post: 'Operator',
-          email: 'sganderton2@tuttocitta.it',
-          city: 'Golcowa',
-          start_date: '03/24/2018',
           number: '7824861010059713787',
-          age: '66',
-          experience: '6 Years',
-          status: 5,
-        },
-        {
-          // eslint-disable-next-line global-require
-          avatar: require('@/assets/images/avatars/3-small.png'),
-          full_name: 'Dorolice Crossman',
-          post: 'Cost Accountant',
-          email: 'dcrossman3@google.co.jp',
-          city: 'Paquera',
-          start_date: '12/03/2017',
-          number: '7824861010059713787',
-          age: '22',
-          experience: '2 Years',
-          status: 2,
-        },
-        {
-          // eslint-disable-next-line global-require
-          avatar: require('@/assets/images/avatars/4-small.png'),
-          full_name: 'Harmonia Nisius',
-          post: 'Senior Cost Accountant',
-          email: 'hnisius4@gnu.org',
-          city: 'Lucan',
-          start_date: '08/25/2017',
-          number: '7824861010059713787',
-          age: '91',
-          experience: '3 Years',
-          status: 2,
-        },
-        {
-          // eslint-disable-next-line global-require
-          avatar: require('@/assets/images/avatars/5-small.png'),
-          full_name: 'Genevra Honeywood',
-          post: 'Geologist',
-          email: 'ghoneywood5@narod.ru',
-          city: 'Maofan',
-          start_date: '06/01/2017',
-          number: '7824861010059713787',
-          age: '101',
-          experience: '1 Year',
-          status: 1,
-        },
-        {
-          // eslint-disable-next-line global-require
-          avatar: require('@/assets/images/avatars/7-small.png'),
-          full_name: 'Eileen Diehn',
-          post: 'Environmental Specialist',
-          email: 'ediehn6@163.com',
-          city: 'Lampuyang',
-          start_date: '10/15/2017',
-          number: '7824861010059713787',
-          age: '9',
-          experience: '9 Years',
-          status: 3,
-        },
-        {
-          // eslint-disable-next-line global-require
-          avatar: require('@/assets/images/avatars/9-small.png'),
-          full_name: 'Richardo Aldren',
-          post: 'Senior Sales Associate',
-          email: 'raldren7@mtv.com',
-          city: 'Skoghall',
-          start_date: '11/05/2016',
-          number: '7824861010059713787',
-          age: '55',
-          experience: '5 Years',
-          status: 3,
-        },
-        {
-          // eslint-disable-next-line global-require
-          avatar: require('@/assets/images/avatars/2-small.png'),
-          full_name: 'Allyson Moakler',
-          post: 'Safety Technician',
-          email: 'amoakler8@shareasale.com',
-          city: 'Mogilany',
-          start_date: '12/29/2018',
-          number: '7824861010059713787',
-          age: '39',
-          experience: '9 Years',
-          status: 5,
-        },
-        {
-          // eslint-disable-next-line global-require
-          avatar: require('@/assets/images/avatars/6-small.png'),
-          full_name: 'Merline Penhalewick',
-          post: 'Junior Executive',
-          email: 'mpenhalewick9@php.net',
-          city: 'Kanuma',
-          start_date: '04/19/2019',
-          number: '7824861010059713787',
-          age: '23',
-          experience: '3 Years',
-          status: 2,
+          age: ['55', '1', '20'],
         },
       ],
 
@@ -471,7 +373,19 @@ export default {
 
 <style>
 .table.b-table > tbody .b-table-row-selected.table-active td {
+  background-color: #283046 !important;
+}
+
+/*
+ */
+
+/* .card .card-body,
+.card-header {
   background-color: darkslategrey !important;
+} */
+
+.card {
+  border-radius: 5px !important;
 }
 
 .table td {
@@ -480,7 +394,7 @@ export default {
 
 td:first-child {
   width: 1px !important;
-  padding: 10px 20px !important;
+  padding: 10px !important;
 }
 
 td:nth-child(2) {

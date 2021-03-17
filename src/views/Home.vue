@@ -2,8 +2,7 @@
   <div>
     <b-container
       fluid
-      class="pb-2"
-    >
+      class="pb-2">
       <b-row>
         <b-col>
           <b-card title="Добавить карту">
@@ -11,8 +10,7 @@
               <feather-icon
                 size="60"
                 icon="PlusIcon"
-                class="text-muted cursor-pointer"
-              />
+                class="text-muted cursor-pointer" />
             </div>
           </b-card>
         </b-col>
@@ -20,31 +18,29 @@
           <b-card title="7824861010047300291">
             <div class="d-flex justify-content-between">
               <div>Баланс:</div>
-              <div class="text-success">155255 руб.
+              <div class="text-success">
+                155255 руб.
                 <div />
-
               </div>
             </div>
             <div class="d-flex justify-content-between">
               <div>
                 <h4>Статус:</h4>
               </div>
-              <div>Активна
+              <div>
+                Активна
                 <div />
-
               </div>
             </div>
             <div class="d-flex justify-content-center">
               <b-button variant="primary">
                 <feather-icon icon="LockIcon" /> Заблокировать карту
               </b-button>
-
             </div>
           </b-card>
         </b-col>
       </b-row>
     </b-container>
-
   </div>
 </template>
 
@@ -56,7 +52,7 @@ import {
   BContainer,
   BCol,
   BRow,
-} from 'bootstrap-vue'
+} from 'bootstrap-vue';
 
 export default {
   components: {
@@ -69,9 +65,9 @@ export default {
   data() {
     return {
       userData: '',
-    }
+    };
   },
-}
+};
 </script>
 
 <style>
