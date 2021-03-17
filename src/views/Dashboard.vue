@@ -208,7 +208,6 @@
 
 <script>
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
-
 // GEO
 import {
   LMap, LTileLayer, LMarker, LCircle,
@@ -413,7 +412,6 @@ export default {
     },
   },
   created() {},
-
   methods: {
     // stop refreshing card in 3 sec
     refreshCardStatistic(card) {

@@ -97,8 +97,10 @@ import {
   BDropdownDivider,
   BAvatar,
 } from 'bootstrap-vue';
+
 import DarkToggler from '@core/layouts/components/app-navbar/components/DarkToggler.vue';
 import useJwt from '@/auth/jwt/useJwt';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 
 export default {
   components: {
@@ -118,9 +120,32 @@ export default {
       default: () => {},
     },
   },
+  created() {
+    useJwt.getCurrenUser().then((response) => {
+      console.log('На форме:', response);
+      if (response.data.status) {
+        this.$store.dispatch('user/getUserData', response.data).then(() => {
+          this.userData = response.data;
+        });
+      } else {
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: 'Oшибка',
+            icon: 'alertoctagonicon',
+            variant: 'danger',
+            text: 'Ошибка авторизации',
+          },
+        });
+        this.$router.push({ name: 'auth-login' });
+      }
+    });
+  },
   methods: {
     logout() {
       useJwt.logout();
+      this.$router.push({ name: 'auth-login' });
     },
   },
 };
