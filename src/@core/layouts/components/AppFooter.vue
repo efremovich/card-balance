@@ -5,27 +5,26 @@
       <b-link
         class="ml-25"
         href="https://re-base.ru"
-        target="_blank"
-      >ReBase</b-link>
+        target="_blank">ReBase</b-link>
       <span class="d-none d-sm-inline-block">, Все права защищены.</span>
     </span>
 
-    <span class="float-md-right d-none d-md-block">Приложения созданные с
+    <span
+      class="float-md-right d-none d-md-block">Приложения созданные с
       <feather-icon
         icon="HeartIcon"
         size="21"
-        class="text-danger stroke-current"
-      />
+        class="text-danger stroke-current" />
     </span>
   </p>
 </template>
 
 <script>
-import { BLink } from 'bootstrap-vue'
+import { BLink } from 'bootstrap-vue';
 
 export default {
   components: {
     BLink,
   },
-}
+};
 </script>
