@@ -5,34 +5,28 @@
         <a
           data-action="collapse"
           :class="{ rotate: isCollapsed }"
-          @click="$emit('collapse')"
-        >
+          @click="$emit('collapse')">
           <feather-icon
             icon="ChevronDownIcon"
-            size="16"
-          />
+            size="16" />
         </a>
       </li>
       <li v-if="availableActions.includes('refresh')">
         <a
           data-action="reload"
-          @click="$emit('refresh')"
-        >
+          @click="$emit('refresh')">
           <feather-icon
             icon="RotateCwIcon"
-            size="14"
-          />
+            size="14" />
         </a>
       </li>
       <li v-if="availableActions.includes('close')">
         <a
           data-action="close"
-          @click="$emit('close')"
-        >
+          @click="$emit('close')">
           <feather-icon
             icon="XIcon"
-            size="14"
-          />
+            size="14" />
         </a>
       </li>
     </ul>
@@ -51,5 +45,5 @@ export default {
       default: () => [],
     },
   },
-}
+};
 </script>

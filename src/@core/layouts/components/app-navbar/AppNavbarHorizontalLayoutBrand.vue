@@ -4,13 +4,11 @@
       <li class="nav-item">
         <b-link
           class="navbar-brand"
-          to="/"
-        >
+          to="/">
           <span class="brand-logo">
             <b-img
               :src="appLogoImage"
-              alt="logo"
-            />
+              alt="logo" />
           </span>
           <h2 class="brand-text mb-0">
             {{ appName }}
@@ -22,8 +20,8 @@
 </template>
 
 <script>
-import { BLink, BImg } from 'bootstrap-vue'
-import { $themeConfig } from '@themeConfig'
+import { BLink, BImg } from 'bootstrap-vue';
+import { $themeConfig } from '@themeConfig';
 
 export default {
   components: {
@@ -32,15 +30,14 @@ export default {
   },
   setup() {
     // App Name
-    const { appName, appLogoImage } = $themeConfig.app
+    const { appName, appLogoImage } = $themeConfig.app;
     return {
       appName,
       appLogoImage,
-    }
+    };
   },
-}
+};
 </script>
 
 <style>
-
 </style>

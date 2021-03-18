@@ -25,8 +25,8 @@
     </template>
 
     <b-dropdown-item
-      :to="{ name: 'pages-profile'}"
-      link-class="d-flex align-items-center">
+      :to="{ name: 'pages-profile' }">
+      <link class="d-flex align-items-center">
       <feather-icon
         size="16"
         icon="UserIcon"
@@ -104,10 +104,16 @@
 
 <script>
 import {
-  BNavItemDropdown, BDropdownItem, BDropdownDivider, BAvatar,
+  BNavItemDropdown,
+  BDropdownItem,
+  BDropdownDivider,
+  BAvatar,
 } from 'bootstrap-vue';
+// eslint-disable-next-line import/extensions
 import { initialAbility } from '@/libs/acl/config';
+// eslint-disable-next-line import/extensions
 import useJwt from '@/auth/jwt/useJwt';
+// eslint-disable-next-line import/extensions
 import { avatarText } from '@core/utils/filter';
 
 export default {

@@ -1,16 +1,13 @@
 <template>
   <li
     class="timeline-item"
-    :class="[`timeline-variant-${variant}`, fillBorder ? `timeline-item-fill-border-${variant}` : null]"
-  >
+    :class="[`timeline-variant-${variant}`, fillBorder ? `timeline-item-fill-border-${variant}` : null]">
     <div
       v-if="!icon"
-      class="timeline-item-point"
-    />
+      class="timeline-item-point" />
     <div
       v-else
-      class="timeline-item-icon d-flex align-items-center justify-content-center rounded-circle"
-    >
+      class="timeline-item-icon d-flex align-items-center justify-content-center rounded-circle">
       <feather-icon :icon="icon" />
     </div>
 
@@ -19,13 +16,11 @@
         <h6 v-text="title" />
         <small
           class="timeline-item-time text-nowrap text-muted"
-          v-text="time"
-        />
+          v-text="time" />
       </div>
       <p
         class="mb-0"
-        v-text="subtitle"
-      />
+        v-text="subtitle" />
     </slot>
   </li>
 </template>
@@ -58,15 +53,15 @@ export default {
       default: false,
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
-@import '~@core/scss/base/bootstrap-extended/include'; // Bootstrap includes
-@import '~@core/scss/base/components/include'; // Components includes
+@import "~@core/scss/base/bootstrap-extended/include"; // Bootstrap includes
+@import "~@core/scss/base/components/include"; // Components includes
 
 // Color palettes
-@import '~@core/scss/base/core/colors/palette-variables.scss';
+@import "~@core/scss/base/core/colors/palette-variables.scss";
 
 $timeline-border-color: $border-color;
 
@@ -75,7 +70,7 @@ $timeline-border-color: $border-color;
 */
 @each $color_name, $color in $colors {
   @each $color_type, $color_value in $color {
-    @if $color_type== 'base' {
+    @if $color_type== "base" {
       .timeline-variant-#{$color_name} {
         &.timeline-item-fill-border-#{$color_name} {
           border-color: $color_value !important;
@@ -113,7 +108,7 @@ $timeline-border-color: $border-color;
   // This gives shade to last timeline-item but isn't that revolutionary
   &:last-of-type {
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       bottom: 0;
@@ -133,7 +128,7 @@ $timeline-border-color: $border-color;
     z-index: 1;
 
     &:before {
-      content: '';
+      content: "";
       z-index: 1;
       border-radius: 50%;
       width: 20px;
@@ -165,7 +160,10 @@ $timeline-border-color: $border-color;
   .timeline-item {
     &:last-of-type {
       &:after {
-        background: linear-gradient($theme-dark-border-color, $theme-dark-card-bg);
+        background: linear-gradient(
+          $theme-dark-border-color,
+          $theme-dark-card-bg
+        );
       }
     }
     &:not(:last-of-type) {
@@ -177,5 +175,4 @@ $timeline-border-color: $border-color;
     }
   }
 }
-
 </style>

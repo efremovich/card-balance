@@ -9,7 +9,8 @@
       <span class="d-none d-sm-inline-block">, Все права защищены.</span>
     </span>
 
-    <span class="float-md-right d-none d-md-block">Приложения созданные с
+    <span
+      class="float-md-right d-none d-md-block">Приложения созданные с
       <feather-icon
         icon="HeartIcon"
         size="21"

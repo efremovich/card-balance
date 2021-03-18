@@ -88,9 +88,8 @@
 
         <b-table
           ref="selectableTable"
-          :sticky-header="stickyHeader"
+          
           selectable
-          :small="small"
           :items="items"
           :fields="fields"
           responsive="sm"
@@ -189,13 +188,13 @@
                 </b-col>
               </template>
 
-              <template
-                v-if="data.item.age.length>2">
-                <app-collapse
-                  id="collapse-1">
-                  <app-collapse-item
-                    id="collapse-2"
-                    title="ещё...  ">
+              <template v-if="data.item.age.length>2">
+                <b-collapse id="collapse-1">
+                  <b-card-body
+
+                    >
+                    <b-button>Ещё
+                    </b-button>
                     <b-col
                       v-for="(item, index) in data.item.age.length-2"
                       :key="index+2"
@@ -209,8 +208,8 @@
                         :variant="getPopularityColor(data.item.age[index+2])"
                         height="6px" />
                     </b-col>
-                  </app-collapse-item>
-                </app-collapse>
+                  </b-card-body>
+                </b-collapse>
               </template>
             </b-col>
           </template>
@@ -246,11 +245,11 @@ import {
   BButton,
   BCardText,
   VBToggle,
-  // BCollapse,
+  BCollapse,
 } from 'bootstrap-vue';
 import VueApexCharts from 'vue-apexcharts';
-import AppCollapse from '@core/components/app-collapse/AppCollapse.vue';
-import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue';
+// import AppCollapse from '@core/components/app-collapse/AppCollapse.vue';
+// import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue';
 import Ripple from 'vue-ripple-directive';
 
 export default {
@@ -268,9 +267,9 @@ export default {
     BInputGroupAppend,
     BButton,
     BCardText,
-    AppCollapse,
-    AppCollapseItem,
-    // BCollapse,
+    // AppCollapse,
+    // AppCollapseItem,
+    BCollapse,
     // VBToggle,
   },
 
@@ -281,8 +280,7 @@ export default {
   },
   data() {
     return {
-      selectMode: [],
-
+      selected: [],
       limits: ['10', '60', '80', '100'],
       perPage: 5,
       pageOptions: [3, 5, 10],
@@ -321,52 +319,6 @@ export default {
           age: ['9', '90'],
 
         },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-
-        },
-
         {
           number: '7824861010059713787',
           age: ['55', '1', '20'],
@@ -418,10 +370,6 @@ export default {
       this.infoModal.content = '';
     },
 
-    cons() {
-      console.log(55);
-    },
-
     getPopularityColor(num) {
       if (Number(num) > 90) return 'success';
       if (Number(num) > 50) return 'secondary';
@@ -444,15 +392,19 @@ export default {
   background-color: #283046 !important;
 }
 
+/*
+ */
+
+/* .card .card-body,
+.card-header {
+  background-color: darkslategrey !important;
+} */
+
 .card {
   border-radius: 5px !important;
 }
 
-.card .card-header {
-  padding: 1rem !important;
-}
-
-.row td {
+.tbody tr {
   height: 202px !important;
 }
 
@@ -496,7 +448,6 @@ td:nth-child(2) {
 .before {
   margin-right: 15px;
   display: flex;
-  font-size: 13px;
 }
 
 .before::before {

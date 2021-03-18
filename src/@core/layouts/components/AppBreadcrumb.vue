@@ -86,7 +86,13 @@
 
 <script>
 import {
-  BBreadcrumb, BBreadcrumbItem, BRow, BCol, BDropdown, BDropdownItem, BButton,
+  BBreadcrumb,
+  BBreadcrumbItem,
+  BRow,
+  BCol,
+  BDropdown,
+  BDropdownItem,
+  BButton,
 } from 'bootstrap-vue';
 import Ripple from 'vue-ripple-directive';
 

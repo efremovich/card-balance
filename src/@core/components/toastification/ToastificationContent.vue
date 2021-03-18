@@ -4,12 +4,10 @@
       <b-avatar
         :variant="variant"
         size="1.8rem"
-        class="mr-75 flex-shrink-0"
-      >
+        class="mr-75 flex-shrink-0">
         <feather-icon
           :icon="icon"
-          size="15"
-        />
+          size="15" />
       </b-avatar>
       <div class="d-flex flex-grow-1">
         <div>
@@ -17,23 +15,19 @@
             v-if="title"
             class="mb-0 font-weight-bolder toastification-title"
             :class="`text-${variant}`"
-            v-text="title"
-          />
+            v-text="title" />
           <small
             v-if="text"
             class="d-inline-block text-body"
-            v-text="text"
-          />
+            v-text="text" />
         </div>
         <span
           class="cursor-pointer toastification-close-icon ml-auto "
-          @click="$emit('close-toast')"
-        >
+          @click="$emit('close-toast')">
           <feather-icon
             v-if="!hideClose"
             icon="XIcon"
-            class="text-body"
-          />
+            class="text-body" />
         </span>
       </div>
     </div>
@@ -41,7 +35,7 @@
 </template>
 
 <script>
-import { BAvatar } from 'bootstrap-vue'
+import { BAvatar } from 'bootstrap-vue';
 
 export default {
   components: {
@@ -69,7 +63,7 @@ export default {
       default: false,
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>

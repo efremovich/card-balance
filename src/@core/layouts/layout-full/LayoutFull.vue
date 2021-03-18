@@ -5,12 +5,13 @@
 </template>
 
 <script>
-import useAppConfig from '@core/app-config/useAppConfig'
+// eslint-disable-next-line import/extensions
+import useAppConfig from '@core/app-config/useAppConfig';
 
 export default {
   setup() {
-    const { contentWidth } = useAppConfig()
-    return { contentWidth }
+    const { contentWidth } = useAppConfig();
+    return { contentWidth };
   },
-}
+};
 </script>

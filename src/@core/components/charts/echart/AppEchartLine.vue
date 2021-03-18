@@ -4,18 +4,17 @@
     autoresize
     :options="line"
     theme="theme-color"
-    auto-resize
-  />
+    auto-resize />
 </template>
 
 <script>
-import ECharts from 'vue-echarts'
-import 'echarts/lib/component/tooltip'
-import 'echarts/lib/component/legend'
-import 'echarts/lib/chart/line'
-import theme from './theme.json'
+import ECharts from 'vue-echarts';
+import 'echarts/lib/component/tooltip';
+import 'echarts/lib/component/legend';
+import 'echarts/lib/chart/line';
+import theme from './theme.json';
 
-ECharts.registerTheme('theme-color', theme)
+ECharts.registerTheme('theme-color', theme);
 
 export default {
   components: {
@@ -60,9 +59,9 @@ export default {
           data: this.optionData.series,
         },
       },
-    }
+    };
   },
-}
+};
 </script>
 
 <style>

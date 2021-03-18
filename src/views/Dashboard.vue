@@ -168,6 +168,15 @@
                 <span>{{ revenue.lastMonth }}</span>
               </h3>
             </div>
+            <div class="mr-2 mt-1">
+              <b-card-text class="mb-50">
+                В месяце:
+              </b-card-text>
+              <h3 class="font-weight-bolder">
+                <sup class="font-medium-1">₽ </sup>
+                <span>{{ revenue.Month }}</span>
+              </h3>
+            </div>
           </div>
 
           <!-- apex chart -->
@@ -296,7 +305,11 @@ export default {
           },
           {
             name: 'Last Month',
-            data: [46000, 48000, 45500, 46600, 44500, 46500, 45000, 47000],
+            data: [16000, 28000, 35500, 26600, 24500, 16500, 25000, 17000],
+          },
+          {
+            name: 'Month',
+            data: [40000, 27000, 40800, 37500, 25500, 18000, 16500, 68600],
           },
         ],
         chartOptions: {
