@@ -1,4 +1,4 @@
-import axios from '@axios'
+import axios from '@axios';
 
 export default {
   namespaced: true,
@@ -8,12 +8,12 @@ export default {
   },
   mutations: {
     LOGUOT(state) {
-      state.accessToken = ''
-      state.refreshToken = ''
+      state.accessToken = '';
+      state.refreshToken = '';
 
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
-      localStorage.removeItem('userData')
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('userData');
     },
   },
   actions: {
@@ -21,9 +21,9 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .get('/api/user/logout', { id: payload })
-          .then(response => resolve(response))
-          .catch(error => reject(error))
-      })
+          .then((response) => resolve(response))
+          .catch((error) => reject(error));
+      });
     },
   },
-}
+};

@@ -1,3 +1,34 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+
+@Igo987
+efremovich
+/
+card-balance
+1
+01
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+card-balance/src/views/Cards.vue
+@Igo987
+Igo987 fix
+Latest commit a3ee37b 3 hours ago
+ History
+ 2 contributors
+@Igo987@efremovich
+508 lines (459 sloc)  12.2 KB
+
 <template>
   <div>
     <b-row>
@@ -273,16 +304,13 @@ export default {
     // BCollapse,
     // VBToggle,
   },
-
   directives: {
     'b-toggle': VBToggle,
     Ripple,
-
   },
   data() {
     return {
       selectMode: [],
-
       limits: ['10', '60', '80', '100'],
       perPage: 5,
       pageOptions: [3, 5, 10],
@@ -302,77 +330,61 @@ export default {
           key: 'selected',
           label: '',
         },
-
         { key: 'number', label: 'номер карты', sortable: true },
         { key: 'age', label: 'лимиты', sortable: true },
         // { key: 'information', label: 'информация' },
-
         { key: 'status', label: 'статус', sortable: true },
       ],
-
       items: [
         {
           number: '7824861010059713787',
           age: ['101', '5', '1', '80', '40'],
-
         },
         {
           number: '7824861010059713787',
           age: ['9', '90'],
-
         },
         {
           number: '7824861010059713787',
           age: ['101', '5', '1', '80', '40'],
-
         },
         {
           number: '7824861010059713787',
           age: ['101', '5', '1', '80', '40'],
-
         },
         {
           number: '7824861010059713787',
           age: ['101', '5', '1', '80', '40'],
-
         },
         {
           number: '7824861010059713787',
           age: ['101', '5', '1', '80', '40'],
-
         },
         {
           number: '7824861010059713787',
           age: ['101', '5', '1', '80', '40'],
-
         },
         {
           number: '7824861010059713787',
           age: ['101', '5', '1', '80', '40'],
-
         },
         {
           number: '7824861010059713787',
           age: ['101', '5', '1', '80', '40'],
-
         },
         {
           number: '7824861010059713787',
           age: ['101', '5', '1', '80', '40'],
-
         },
         {
           number: '7824861010059713787',
           age: ['101', '5', '1', '80', '40'],
-
         },
-
         {
           number: '7824861010059713787',
           age: ['55', '1', '20'],
         },
       ],
-
       statusColor: [
         {
           1: 'ACTIVE',
@@ -417,11 +429,9 @@ export default {
       this.infoModal.title = '';
       this.infoModal.content = '';
     },
-
     cons() {
       console.log(55);
     },
-
     getPopularityColor(num) {
       if (Number(num) > 90) return 'success';
       if (Number(num) > 50) return 'secondary';
@@ -429,7 +439,6 @@ export default {
       if (Number(num) < 30) return 'danger';
       return 'primary';
     },
-
     onFiltered(filteredItems) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
@@ -443,44 +452,35 @@ export default {
 .table.b-table > tbody .b-table-row-selected.table-active td {
   background-color: #283046 !important;
 }
-
 .card {
   border-radius: 5px !important;
 }
-
 .card .card-header {
   padding: 1rem !important;
 }
-
 .row td {
   height: 202px !important;
 }
-
 .table td {
   padding: 0.72rem 0rem !important;
 }
-
 td:first-child {
   width: 1px !important;
   padding: 10px !important;
 }
-
 td:nth-child(2) {
   width: 15% !important;
 }
-
 .mb-2,
 .pt-50 {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
-
 .card .card-img-overlay.bg-overlay {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
 }
-
 .shadow {
   color: black;
   font-size: 1rem !important;
@@ -488,17 +488,14 @@ td:nth-child(2) {
   position: relative !important;
   bottom: 4% !important;
 }
-
 .col-xl-4 {
   padding: 1rem 0 0 !important;
 }
-
 .before {
   margin-right: 15px;
   display: flex;
   font-size: 13px;
 }
-
 .before::before {
   content: "💳";
   text-align: center;

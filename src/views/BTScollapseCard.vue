@@ -88,12 +88,12 @@
 
         <b-table
           ref="selectableTable"
-          
           selectable
+          select-mode="single"
           :items="items"
           :fields="fields"
           responsive="sm"
-          :select-mode="selectMode"
+
           :per-page="perPage"
           :current-page="currentPage"
           :sort-by.sync="sortBy"
@@ -102,9 +102,9 @@
           :filter="filter"
           :filter-included-fields="filterOn"
           @row-selected="onRowSelected"
+          @row-clicked="onRowClicked"
           @filtered="onFiltered">
           <template
-
             #cell(selected)="{ rowSelected }">
             <template
               v-if="rowSelected">
@@ -189,12 +189,8 @@
               </template>
 
               <template v-if="data.item.age.length>2">
-                <b-collapse id="collapse-1">
-                  <b-card-body
-
-                    >
-                    <b-button>Ещё
-                    </b-button>
+                <b-collapse id="1">
+                  <b-card-body>
                     <b-col
                       v-for="(item, index) in data.item.age.length-2"
                       :key="index+2"
@@ -368,6 +364,13 @@ export default {
     resetInfoModal() {
       this.infoModal.title = '';
       this.infoModal.content = '';
+    },
+
+    onRowClicked(selectedItems, index) {
+      const n = Array.from(document.querySelectorAll('.collapse'));
+      console.log(selectedItems);
+      // const c = n[index].classList.add('ddd');
+      console.log(n[index]);
     },
 
     getPopularityColor(num) {
