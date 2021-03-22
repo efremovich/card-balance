@@ -8,6 +8,7 @@
             title="Информация по договору"
             action-refresh
             @refresh="refreshStop('refreshCard')">
+            <hr>
             <b-card-text fluid>
               <h3>
                 Баланс: <span> {{ getInfo.contract.balance }} ₽ </span>
@@ -22,7 +23,7 @@
                   v-model="selected"
                   :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                   label="title"
-                  :options="option"
+                  :options="getOptions"
                   class="w-50" />
               </div>
               <h4>Статус: {{ getInfo.contract.status }}</h4>
@@ -49,7 +50,6 @@
             <vue-apex-charts
               type="bar"
               height="200" />
-
             <hr>
 
             <b-row class="avg-sessions pt-50">
@@ -78,6 +78,7 @@
             title="Расход за текущий месяц:"
             action-refresh
             @refresh="refreshStop('refreshCard')">
+            <hr>
             <div class="d-flex justify-content-between">
               <h4>{{ getDate }}:</h4>
               <h4 class="text-danger">
@@ -104,6 +105,7 @@
             title="Статистика по картам"
             action-refresh
             @refresh="refreshStop('refreshCard')">
+            <hr>
             <div class="mt-1">
               <div
 
@@ -152,6 +154,7 @@
             action-refresh
             action-collapse
             title="Данные организации:">
+            <hr>
             <div class="d-flex flex-column">
               <h3>Название: &#8195; {{ getInfo.contract.company.full_name }}</h3>
               <h3>
@@ -172,6 +175,7 @@
         action-collapse
         title="Динамика потребления"
         @refresh="refreshStop('refreshCard')">
+        <hr>
         <b-card-body class="pb-0">
           <div class="d-flex justify-content-start mb-3">
             <div class="mr-2 mt-1">
@@ -290,13 +294,8 @@ export default {
     return {
       getInfo: null,
       userInfo: null,
-      value: 100,
-      selected: [],
-      option: [],
+      selected: 'Выберете договор',
       fields: ['Товар', 'Количество', 'Сумма'],
-
-      limits: ['10', '60', '80', '100'],
-
       // GEO
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       zoom: 10,
@@ -424,11 +423,14 @@ export default {
     getNotActiveCard() {
       return this.userInfo.cardStatistic.filter((status) => status.card_status_id !== 'ACTIVE').length;
     },
+    getOptions() {
+      return this.getInfo.contracts.map((el) => el.number);
+    },
+
   },
 
   mounted() {
     const userData = JSON.parse(localStorage.getItem('userInfo'));
-    // console.log(userData);
     if (userData) {
       this.getInfo = userData;
       console.log(this.getInfo);
@@ -439,7 +441,6 @@ export default {
 
   beforeMount() {
     const userData = JSON.parse(localStorage.getItem('dashBoardData'));
-    // console.log(userData);
     if (userData) {
       this.userInfo = userData;
       console.log(this.userInfo);
@@ -463,10 +464,6 @@ export default {
       if (Number(num) < 50) return 'danger';
       return 'primary';
     },
-    // getOption() {
-    //   this.option = this.getInfo.contracts.number;
-    //   return this.option;
-    // },
 
   },
 
