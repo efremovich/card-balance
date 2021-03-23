@@ -155,7 +155,51 @@ export default class JwtService {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/card/getCardStatistic/${userData.account.contract_id}`,
+        `/api/card/getcardstatistic/${userData.account.contract_id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getCurrentConsumption() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getCurrentConsumption/${userData.account.contract_id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getConsumptionDinamic() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getConsumptionDinamic/${userData.account.contract_id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getBalance() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getBalance/${userData.account.contract_id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async changeContract() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/changeContract/${userData.account.uid}/${userData.account.contract_id}`,
       );
       return response;
     }

@@ -11,27 +11,28 @@
             <hr>
             <b-card-text fluid>
               <h3>
-                Баланс: <span> {{ getInfo.contract.balance }} ₽ </span>
+                Баланс: <span> {{ cardBalance.contract.balance }} ₽ </span>
               </h3>
-              <h5>
+              <h5 v-if="cardBalance.contract.company.deposit !== 0">
                 Допустимая задолженность:
-                <span class="text-danger h5">  {{ getInfo.contract.deposit }} ₽ </span>
+                <span class="text-danger h5">  {{ cardBalance.contract.deposit }} ₽ </span>
               </h5>
-              <div class="d-flex justify-content-between">
-                <h3>Договор №</h3>
+              <div class="d-flex flex-column">
+                <!-- <h3>Договор №</h3> -->
                 <v-select
                   v-model="selected"
                   :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                   label="title"
                   :options="getOptions"
-                  class="w-50" />
+                  class="w-100 mt-1 mb-1"
+                  @input="changeContracts" />
               </div>
-              <h4>Статус: {{ getInfo.contract.status }}</h4>
-              <h4>Дата начала: {{ getInfo.contract.created }}</h4>
+              <h4>Статус: {{ userData.contract.status }} </h4>
+              <h4>От: {{ userData.contract.date }}</h4>
               <b-button
                 v-ripple.400="'rgba(255, 255, 255, 0.15)'"
                 variant="warning"
-                class="d-flex align-items-center">
+                class="d-flex align-items-center margin">
                 <feather-icon
                   size="2x"
                   icon="PlusIcon"
@@ -54,16 +55,16 @@
 
             <b-row class="avg-sessions pt-50">
               <!-- TEMPLATE -->
-              <template v-for="( item, index) in userInfo.currentConsumption.length">
+              <template v-for="( item, index) in currentConsumption.currentConsumption.length">
                 <b-col
                   :key="index"
                   class="mb-2">
                   <b-card-text class="mb-50 text-info">
-                    {{ userInfo.currentConsumption[index].service.full_name }} : {{ userInfo.currentConsumption[index].quantity }} л.
+                    {{ currentConsumption.currentConsumption[index].service.full_name }} : {{ currentConsumption.currentConsumption[index].quantity }} л.
                   </b-card-text>
                   <b-progress
-                    :value="userInfo.currentConsumption[index].quantity"
-                    :variant="getPopularityColor(userInfo.currentConsumption[index].quantity)"
+                    :value="currentConsumption.currentConsumption[index].quantity"
+                    :variant="getPopularityColor(currentConsumption.currentConsumption[index].quantity)"
                     height="6px" />
                 </b-col>
               </template>
@@ -82,19 +83,19 @@
             <div class="d-flex justify-content-between">
               <h4>{{ getDate }}:</h4>
               <h4 class="text-danger">
-                {{ userInfo.consumptionData.this_month }}
+                {{ currentConsumptionDynamic.consumptionData.this_month }}
               </h4>
             </div>
             <div class="d-flex justify-content-between align-items-end">
               <h4>Последние изменения по договору:</h4>
               <h4 class="text-info">
-                20/02/2021
+                {{ userData.contract.updated }}
               </h4>
             </div>
             <b-table
-              striped
               hover
-              :items="items"
+              responsive="sm"
+              :items="currentConsumption.currentConsumption"
               :fields="fields" />
           </b-card-actions>
         </b-col>
@@ -114,7 +115,7 @@
                   Всего карт:
                 </h4>
                 <h4>
-                  {{ userInfo.cardStatistic.length }}
+                  {{ cardBalance.card_statistic.length }}
                 </h4>
               </div>
             </div>
@@ -156,12 +157,12 @@
             title="Данные организации:">
             <hr>
             <div class="d-flex flex-column">
-              <h3>Название: &#8195; {{ getInfo.contract.company.full_name }}</h3>
+              <h3>Название: &#8195; {{ cardBalance.contract.company.full_name }}</h3>
+              <h3>ИНН: &#8195; {{ cardBalance.contract.company.inn }}</h3>
               <h3>
                 Почтовый адрес: &#8195;
-                {{ getInfo.contract.company.legal_address }}
+                {{ cardBalance.contract.company.legal_address }}
               </h3>
-              <h3>ИНН: &#8195; {{ getInfo.contract.company.inn }}</h3>
             </div>
           </b-card-actions>
         </b-row>
@@ -177,13 +178,13 @@
         @refresh="refreshStop('refreshCard')">
         <hr>
         <b-card-body class="pb-0">
-          <div class="d-flex justify-content-start mb-3">
+          <div class="d-flex flex-column mb-3">
             <div class="mr-2 mt-1">
               <b-card-text class="mb-50">
                 В этом месяце:
               </b-card-text>
               <h3 class="font-weight-bolder">
-                <span class="text-primary">{{ userInfo.consumptionData.this_month }} ₽</span>
+                <span class="text-primary">{{ currentConsumptionDynamic.consumptionData.this_month }} ₽</span>
               </h3>
             </div>
             <div class="mr-2 mt-1">
@@ -191,7 +192,7 @@
                 В прошлом месяце:
               </b-card-text>
               <h3 class="font-weight-bolder">
-                <span>{{ userInfo.consumptionData.last_month }} ₽</span>
+                <span>{{ currentConsumptionDynamic.consumptionData.last_month }} ₽</span>
               </h3>
             </div>
             <div class="mr-2 mt-1">
@@ -199,7 +200,7 @@
                 Два месяца назад :
               </b-card-text>
               <h3 class="font-weight-bolder">
-                <span>{{ userInfo.consumptionData.other_month }} ₽</span>
+                <span>{{ currentConsumptionDynamic.consumptionData.other_month }} ₽</span>
               </h3>
             </div>
           </div>
@@ -209,7 +210,7 @@
             type="line"
             height="240"
             :options="revenueComparisonLine.chartOptions"
-            :series="userInfo.consumptionSeries" />
+            :series="currentConsumptionDynamic.consumptionSeries" />
         </b-card-body>
       </b-card-actions>
       <!--end statistic -->
@@ -261,7 +262,8 @@ import { Icon } from 'leaflet';
 import {
   BCardText, BCol, BButton, BTable, BProgress,
 } from 'bootstrap-vue';
-
+// import useJwt from '../@core/auth/jwt/useJwt';
+import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line no-underscore-dangle
 delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
@@ -294,8 +296,31 @@ export default {
     return {
       getInfo: null,
       userInfo: null,
+      selectContract: null,
+      axiosIns: null,
+      cardBalance: null,
+      option: [],
+      items: [{ 'currentConsumption.service.full_name': '1' }],
+      statisticsData: null,
+      currentConsumption: null,
+      consumptionDinamic: null,
+      currentConsumptionDynamic: null,
       selected: 'Выберете договор',
-      fields: ['Товар', 'Количество', 'Сумма'],
+      selectedIndex: 1,
+      fields: [
+        {
+          key: 'service.full_name',
+          label: 'Товар/услуга',
+        },
+        {
+          key: 'quantity',
+          label: 'Количество',
+        },
+        {
+          key: 'summ',
+          label: 'Сумма',
+        },
+      ],
       // GEO
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       zoom: 10,
@@ -310,20 +335,6 @@ export default {
 
       revenue: {},
       revenueComparisonLine: {
-        // series: [
-        //   {
-        //     name: 'This Month',
-        //     data: [45000, 47000, 44800, 47500, 45500, 48000, 46500, 48600],
-        //   },
-        //   {
-        //     name: 'Last Month',
-        //     data: [16000, 28000, 35500, 26600, 24500, 16500, 25000, 17000],
-        //   },
-        //   {
-        //     name: 'Month',
-        //     data: [40000, 27000, 40800, 37500, 25500, 18000, 16500, 68600],
-        //   },
-        // ],
         chartOptions: {
           locales: [ru],
           defaultLocale: 'ru',
@@ -408,6 +419,7 @@ export default {
     activeUserInfo() {
       return this.$store.state.CurrentUser;
     },
+
     getDate() {
       const date = new Date();
       const formatDate = (value, formatting = { month: 'long' }, locale = 'ru-RU') => {
@@ -417,34 +429,60 @@ export default {
       return formatDate(date);
     },
     getActiveCard() {
-      return this.userInfo.cardStatistic.filter((status) => status.card_status_id === 'ACTIVE').length;
+      return this.cardBalance.card_statistic.filter((status) => status.card_status.code === 'ACTIVE').length;
     },
 
     getNotActiveCard() {
-      return this.userInfo.cardStatistic.filter((status) => status.card_status_id !== 'ACTIVE').length;
+      return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
     },
     getOptions() {
-      return this.getInfo.contracts.map((el) => el.number);
+      return this.userData.contracts.map((el) => el.number);
     },
-
   },
-
+  created() {
+    useJwt.getCurrenUser().then((response) => {
+      if (response.data.status) {
+        this.$store.dispatch('user/getUserData', response.data).then(() => {
+          this.userData = response.data;
+          // console.log(this.userData);
+        });
+      }
+    });
+  },
   mounted() {
-    const userData = JSON.parse(localStorage.getItem('userInfo'));
-    if (userData) {
-      this.getInfo = userData;
-      console.log(this.getInfo);
-      return this.getInfo;
-    }
-    return { data: { status: false } };
+    useJwt.getConsumptionDinamic().then((response) => {
+      if (response.data.status) {
+        this.currentConsumptionDynamic = response.data;
+        // console.log(this.currentConsumptionDynamic);
+      }
+    });
+    useJwt.getCardStatistic().then((response) => {
+      if (response.data.status) {
+        this.statisticsData = response.data;
+        console.log(this.statisticsData);
+      }
+    });
+
+    useJwt.getCurrentConsumption().then((response) => {
+      if (response.data.status) {
+        this.currentConsumption = response.data;
+        // console.log(this.currentConsumption);
+      }
+    });
+
+    useJwt.getBalance().then((response) => {
+      if (response.data.status) {
+        this.cardBalance = response.data;
+        // console.log(this.cardBalance);
+      }
+    });
   },
 
   beforeMount() {
-    const userData = JSON.parse(localStorage.getItem('dashBoardData'));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
-      this.userInfo = userData;
-      console.log(this.userInfo);
-      return this.userInfo;
+      this.getInfo = userData;
+      return this.getInfo;
     }
     return { data: { status: false } };
   },
@@ -465,15 +503,32 @@ export default {
       return 'primary';
     },
 
+    // onChange(event) {
+    //   const index = this.getInfo.contracts.map((el) => el.number).indexOf(event);
+    //   this.selectedIndex = index;
+    // },
+
+    changeContracts() {
+      useJwt.changeContract()
+        .then((response) => {
+          // console.log(response);
+          if (response.status) {
+            this.selectContract = response.data;
+            console.log(this.selectContract);
+          }
+        });
+    },
+
+    getLimitResidual(limit) {
+      if (Number(limit.value) > 0 && Number(limit.consumption) > 0) {
+        const limitResidual = 100 - Number(limit.consumption) / (Number(limit.value) / 100);
+        return limitResidual;
+      }
+      return 5;
+    },
+
   },
 
-  getLimitResidual(limit) {
-    if (Number(limit.value) > 0 && Number(limit.consumption) > 0) {
-      const limitResidual = 100 - Number(limit.consumption) / (Number(limit.value) / 100);
-      return limitResidual;
-    }
-    return 5;
-  },
 };
 </script>
 
@@ -483,11 +538,31 @@ export default {
   padding-right: 1rem;
 }
 
+h4 {
+  font-size: 1.2rem !important;
+}
+
+h3 {
+  font-size: 1.2rem !important;
+}
+
+.margin {
+  margin: 3% auto 0 !important;
+}
+
+.card-body {
+  padding: 1rem !important;
+}
+
 .card .card-header {
   padding: 1.5rem !important;
 }
 
 .table th {
+  padding: 0.72rem 1rem !important;
+}
+
+.table td {
   padding: 0.72rem 1rem !important;
 }
 
