@@ -4,33 +4,43 @@
       <div class="row">
         <b-col md="6">
           <b-card-actions
-            ref="refreshCard"
+            ref="userDate"
             title="Информация по договору"
             action-refresh
-            @refresh="refreshStop('refreshCard')">
+            @refresh="refreshMainCard('userDate')">
             <hr>
             <b-card-text fluid>
               <h3>
-                Баланс: <span> {{ cardBalance.contract.balance }} ₽ </span>
+                Баланс: <span> {{
+                  cardBalance.contract.balance.toLocaleString('ru-RU', {
+                    style: 'currency',
+                    currency: 'RUB'
+                  })
+                }} </span>
               </h3>
-              <h5 v-if="cardBalance.contract.company.deposit !== 0">
+              <h5 v-if="cardBalance.contract.deposit !== 0">
                 Допустимая задолженность:
-                <span class="text-danger h5">  {{ cardBalance.contract.deposit }} ₽ </span>
+                <span class="text-danger h5">  {{ cardBalance.contract.deposit.toLocaleString('ru-RU', {
+                  style: 'currency',
+                  currency: 'RUB'
+                }) }}</span>
               </h5>
               <div class="d-flex flex-column">
                 <!-- <h3>Договор №</h3> -->
                 <v-select
                   v-model="selected"
                   :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                  label="title"
-                  :options="getOptions"
+                  label="number"
+                  :options="option"
                   class="w-100 mt-1 mb-1"
-                  @input="changeContracts" />
+                  @input="onChange()" />
               </div>
-              <h4>Статус: {{ userData.contract.status }} </h4>
-              <h4>От: {{ userData.contract.date }}</h4>
+              <h4>Статус: {{ cardBalance.contract.status }} </h4>
+              <h4>
+                От: {{ cardBalance.contract.date }}
+              </h4>
               <b-button
-                v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+
                 variant="warning"
                 class="d-flex align-items-center margin">
                 <feather-icon
@@ -44,10 +54,10 @@
         </b-col>
         <b-col md="6">
           <b-card-actions
-            ref="refreshCard"
+            ref="fuelResidue"
             title="Остатки топлива по контракту:"
             action-refresh
-            @refresh="refreshStop('refreshCard')">
+            @refresh="refreshFuelResidue('fuelResidue')">
             <vue-apex-charts
               type="bar"
               height="200" />
@@ -73,21 +83,27 @@
         </b-col>
       </div>
       <div class="row">
-        <b-col md="6">
+        <b-col
+          v-if="currentConsumptionDynamic.consumptionData.this_month !== 0"
+          md="6">
           <b-card-actions
-            ref="refreshCard"
+            v-if="currentConsumptionDynamic.consumptionData.this_month !== 0"
+            ref="expenses"
             title="Расход за текущий месяц:"
             action-refresh
-            @refresh="refreshStop('refreshCard')">
+            @refresh="refreshExpenses('expenses')">
             <hr>
             <div class="d-flex justify-content-between">
-              <h4>{{ getDate }}:</h4>
+              <!-- <h4>{{ getDate }}:</h4> -->
               <h4 class="text-danger">
-                {{ currentConsumptionDynamic.consumptionData.this_month }}
+                {{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
+                  style: 'currency',
+                  currency: 'RUB'
+                }) }}
               </h4>
             </div>
             <div class="d-flex justify-content-between align-items-end">
-              <h4>Последние изменения по договору:</h4>
+              <h4>Последние изменения <br> по договору:</h4>
               <h4 class="text-info">
                 {{ userData.contract.updated }}
               </h4>
@@ -102,10 +118,10 @@
 
         <b-col md="6">
           <b-card-actions
-            ref="refreshCard"
+            ref="cardStatistic"
             title="Статистика по картам"
             action-refresh
-            @refresh="refreshStop('refreshCard')">
+            @refresh="refreshCardStatistic('cardStatistic')">
             <hr>
             <div class="mt-1">
               <div
@@ -127,7 +143,7 @@
                 <h4>
                   Активно:
                 </h4>
-                <h4 class="text-succes">
+                <h4>
                   {{ getActiveCard }}
                 </h4>
               </div>
@@ -140,7 +156,7 @@
                 <h4>
                   Заблокировано:
                 </h4>
-                <h4>
+                <h4 class="text-danger">
                   {{ getNotActiveCard }}
                 </h4>
               </div>
@@ -150,18 +166,19 @@
 
         <b-row class="padding">
           <b-card-actions
-            ref="refreshCard"
+            ref="information"
             action-close
             action-refresh
             action-collapse
-            title="Данные организации:">
+            title="Данные организации:"
+            @refresh="refreshInformation('information')">
             <hr>
             <div class="d-flex flex-column">
-              <h3>Название: &#8195; {{ cardBalance.contract.company.full_name }}</h3>
-              <h3>ИНН: &#8195; {{ cardBalance.contract.company.inn }}</h3>
+              <h3>Название: &#8195; {{ userData.company.full_name }}</h3>
+              <h3>ИНН: &#8195; {{ userData.company.inn }}</h3>
               <h3>
                 Почтовый адрес: &#8195;
-                {{ cardBalance.contract.company.legal_address }}
+                {{ userData.company.legal_address }}
               </h3>
             </div>
           </b-card-actions>
@@ -170,12 +187,12 @@
 
       <!--Statistics -->
       <b-card-actions
-        ref="refreshCard"
+        ref="consumption"
         action-close
         action-refresh
         action-collapse
         title="Динамика потребления"
-        @refresh="refreshStop('refreshCard')">
+        @refresh="refreshConsumption('consumption')">
         <hr>
         <b-card-body class="pb-0">
           <div class="d-flex flex-column mb-3">
@@ -184,7 +201,10 @@
                 В этом месяце:
               </b-card-text>
               <h3 class="font-weight-bolder">
-                <span class="text-primary">{{ currentConsumptionDynamic.consumptionData.this_month }} ₽</span>
+                <span class="text-primary">{{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
+                  style: 'currency',
+                  currency: 'RUB'
+                }) }}  </span>
               </h3>
             </div>
             <div class="mr-2 mt-1">
@@ -192,7 +212,10 @@
                 В прошлом месяце:
               </b-card-text>
               <h3 class="font-weight-bolder">
-                <span>{{ currentConsumptionDynamic.consumptionData.last_month }} ₽</span>
+                <span>{{ currentConsumptionDynamic.consumptionData.last_month.toLocaleString('ru-RU', {
+                  style: 'currency',
+                  currency: 'RUB'
+                }) }}</span>
               </h3>
             </div>
             <div class="mr-2 mt-1">
@@ -200,7 +223,10 @@
                 Два месяца назад :
               </b-card-text>
               <h3 class="font-weight-bolder">
-                <span>{{ currentConsumptionDynamic.consumptionData.other_month }} ₽</span>
+                <span>{{ currentConsumptionDynamic.consumptionData.other_month.toLocaleString('ru-RU', {
+                  style: 'currency',
+                  currency: 'RUB'
+                }) }}</span>
               </h3>
             </div>
           </div>
@@ -218,12 +244,12 @@
 
     <!-- GEO-->
     <b-card-actions
-      ref="refreshCard"
+      ref="map"
       action-close
       action-refresh
       action-collapse
       title="Места потребления:"
-      @refresh="refreshStop('refreshCard')">
+      @refresh="refreshMap('map')">
       <div class="mt-1">
         <l-map
           :zoom="zoom"
@@ -242,8 +268,11 @@
 </template>
 
 <script>
-
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
+// import { formatDate } from '@core/utils/filter';
+// import { title } from '@core/utils/filter';
+
 // GEO
 import {
   LMap, LTileLayer, LMarker, LCircle,
@@ -299,14 +328,13 @@ export default {
       selectContract: null,
       axiosIns: null,
       cardBalance: null,
-      option: [],
-      items: [{ 'currentConsumption.service.full_name': '1' }],
       statisticsData: null,
+      selectedIndex: null,
       currentConsumption: null,
       consumptionDinamic: null,
       currentConsumptionDynamic: null,
+      option: [],
       selected: 'Выберете договор',
-      selectedIndex: 1,
       fields: [
         {
           key: 'service.full_name',
@@ -376,13 +404,14 @@ export default {
             labels: {
               style: {
                 colors: '#b9b9c3',
-                fontSize: '1rem',
+                fontSize: '10px',
               },
             },
             axisTicks: {
               show: false,
             },
-            categories: ['01', '05', '09', '13', '17', '21', '26', '31'],
+            // categories: [1, 10, 20, 30],
+            // categories: ['01', '03', '05', '07', '09', '11', '13', '15', '17', '19', '21', '23', '26', '28', '31'],
             axisBorder: {
               show: false,
             },
@@ -420,14 +449,28 @@ export default {
       return this.$store.state.CurrentUser;
     },
 
-    getDate() {
-      const date = new Date();
-      const formatDate = (value, formatting = { month: 'long' }, locale = 'ru-RU') => {
-        if (!value) return value;
-        return new Intl.DateTimeFormat(locale, formatting).format(new Date(value));
-      };
-      return formatDate(date);
-    },
+    // getDate(date) {
+    //   return console.log(formatDate(date));
+    // },
+
+    // getStartDate() {
+    //   const { date } = this.cardBalance.contract;
+    //   const formatDate = (value, formatting = { month: 'numeric', year: 'numeric', day: 'numeric' }, locale = 'ru-RU') => {
+    //     if (!value) return value;
+    //     return new Intl.DateTimeFormat(locale, formatting).format(new Date(value));
+    //   };
+    //   return formatDate(date);
+    // },
+
+    // getLastActivity() {
+    //   const { updated } = this.userData.contract;
+    //   const formatDate = (value, formatting = { month: 'numeric', year: 'numeric', day: 'numeric' }, locale = 'ru-RU') => {
+    //     if (!value) return value;
+    //     return new Intl.DateTimeFormat(locale, formatting).format(new Date(value));
+    //   };
+    //   return formatDate(updated);
+    // },
+
     getActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code === 'ACTIVE').length;
     },
@@ -435,45 +478,56 @@ export default {
     getNotActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
     },
-    getOptions() {
-      return this.userData.contracts.map((el) => el.number);
-    },
+    // getOptions() {
+    //   return this.userData.contracts.map((el) => el.number);
+    // },
   },
+
   created() {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
+          this.makeOptions();
+          this.getSelected();
           // console.log(this.userData);
         });
       }
     });
   },
+
   mounted() {
     useJwt.getConsumptionDinamic().then((response) => {
       if (response.data.status) {
-        this.currentConsumptionDynamic = response.data;
-        // console.log(this.currentConsumptionDynamic);
+        this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
+          this.currentConsumptionDynamic = response.data;
+          // console.log(this.currentConsumptionDynamic);
+        });
       }
     });
     useJwt.getCardStatistic().then((response) => {
       if (response.data.status) {
         this.statisticsData = response.data;
-        console.log(this.statisticsData);
+        // console.log(this.statisticsData);
       }
     });
 
     useJwt.getCurrentConsumption().then((response) => {
       if (response.data.status) {
-        this.currentConsumption = response.data;
-        // console.log(this.currentConsumption);
+        this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
+          this.currentConsumption = response.data;
+          // console.log(this.currentConsumption);
+        });
       }
     });
 
     useJwt.getBalance().then((response) => {
       if (response.data.status) {
-        this.cardBalance = response.data;
-        // console.log(this.cardBalance);
+        this.$store.dispatch('user/getBalance', response.data).then(() => {
+          this.cardBalance = response.data;
+
+          // console.log(this.cardBalance);
+        });
       }
     });
   },
@@ -488,12 +542,86 @@ export default {
   },
 
   methods: {
+    showToast() {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: 'Уведомление',
+          icon: 'BellIcon',
+          text: '🙄 Данные обновить не удалось. Попробуйте позже, а мы пока починим 👨‍🔧',
+        },
+      });
+    },
+    getSelected() {
+      this.selected = this.userData.contract.number;
+    },
+
+    makeOptions() {
+      this.userData.contracts.forEach((el) => {
+        this.option.push({ 'number': el.number, 'id': el.id });
+      });
+      console.log(this.option);
+    },
+
     // stop refreshing card in 3 sec
     refreshCardStatistic(card) {
-      this.dispatchStoreData('DashBoardData/getConsumptionDinamic', {
-        cid: this.activeUserInfo.contract.id,
-      }).then((this.$refs[card].showLoading = false));
+      useJwt.getCardStatistic().then((response) => {
+        if (response.data.status) {
+          this.statisticsData = response.data;
+          this.$refs[card].showLoading = false;
+        } else {
+          this.showToast();
+        }
+      });
     },
+
+    refreshMainCard(card) {
+      useJwt.getBalance().then((response) => {
+        if (response.data.status) {
+          this.cardBalance = response.data;
+          this.$refs[card].showLoading = false;
+          console.log(this.cardBalance);
+        } else {
+          this.showToast();
+        }
+      });
+    },
+
+    refreshExpenses(card) {
+      useJwt.getCurrentConsumption().then((response) => {
+        if (response.data.status) {
+          this.currentConsumption = response.data;
+          this.$refs[card].showLoading = false;
+          console.log(this.currentConsumption);
+        } else {
+          this.showToast();
+        }
+      });
+    },
+
+    refreshInformation(card) {
+      useJwt.getCurrenUser().then((response) => {
+        if (response.data.status) {
+          this.userData = response.data;
+          this.$refs[card].showLoading = false;
+          console.log(this.userData);
+        } else {
+          this.showToast();
+        }
+      });
+    },
+    refreshConsumption(card) {
+      useJwt.getConsumptionDinamic().then((response) => {
+        if (response.data.status) {
+          this.currentConsumptionDynamic = response.data;
+          this.$refs[card].showLoading = false;
+          console.log(this.currentConsumptionDynamic);
+        } else {
+          this.showToast();
+        }
+      });
+    },
+
     // COLOR
     getPopularityColor(num) {
       if (Number(num) > 90) return 'success';
@@ -503,18 +631,12 @@ export default {
       return 'primary';
     },
 
-    // onChange(event) {
-    //   const index = this.getInfo.contracts.map((el) => el.number).indexOf(event);
-    //   this.selectedIndex = index;
-    // },
-
-    changeContracts() {
-      useJwt.changeContract()
+    onChange() {
+      useJwt.changeContract(this.selected.id)
         .then((response) => {
           // console.log(response);
           if (response.status) {
-            this.selectContract = response.data;
-            console.log(this.selectContract);
+            this.cardBalance = response.data;
           }
         });
     },

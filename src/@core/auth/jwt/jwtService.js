@@ -195,11 +195,12 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
-  async changeContract() {
+  async changeContract(id) {
     const userData = JSON.parse(localStorage.getItem('userData'));
+
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/changeContract/${userData.account.uid}/${userData.account.contract_id}`,
+        `/api/changeContract/${userData.account.uid}/${id}`,
       );
       return response;
     }
