@@ -1,6 +1,50 @@
+import Vue from 'vue';
 import { isToday } from './utils';
 
-export const kFormatter = (num) => (num > 999 ? `${(num / 1000).toFixed(1)}k` : num);
+Vue.filter('formatDate', (value, withtime = false) => {
+  value = new Date(value);
+  let options = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+
+  };
+
+  if (withtime) {
+    options = {
+      hours: 'numeric',
+      min: 'numeric',
+    };
+  }
+  return value.toLocaleString('ru-RU', options);
+});
+
+Vue.filter('date', (value, fullDate = false) => {
+  value = String(value);
+
+  const date = value.slice(8, 10).trim();
+  const month = value.slice(4, 7).trim();
+  const year = value.slice(11, 15);
+
+  if (!fullDate) return `${date} ${month}`;
+  return `${date} ${month} ${year}`;
+});
+
+Vue.filter('title', (value, replacer = '_') => {
+  if (!value) return '';
+  value = value.toString();
+
+  const arr = value.split(replacer);
+  // eslint-disable-next-line camelcase
+  const capitalized_array = [];
+  arr.forEach((word) => {
+    const capitalized = word.charAt(0).toUpperCase() + word.slice(1);
+    capitalized_array.push(capitalized);
+  });
+  return capitalized_array.join(' ');
+});
+
+export const kFormatter = (num) => (num > 999 ? `${(num / 1000).toFixed(1)} тыс` : num);
 
 export const title = (value, replacer = ' ') => {
   if (!value) return '';

@@ -3,30 +3,39 @@
     <div class="column">
       <div class="row">
         <b-col md="6">
-          <b-card-actions
-            ref="userDate"
-            title="Информация по договору"
-            action-refresh
-            @refresh="refreshMainCard('userDate')">
-            <hr>
-            <b-card-text fluid>
-              <h3>
-                Баланс: <span> {{
-                  cardBalance.contract.balance.toLocaleString('ru-RU', {
+          <b-overlay
+            :show="showLoading"
+            variant="black"
+            spinner-variant="primary"
+            blur="0"
+            opacity=".75"
+            rounded="sm">
+            <b-card-actions
+              ref="userDate"
+              title="Информация по договору"
+              action-refresh
+              @refresh="refreshMainCard('userDate')">
+              <hr>
+              <b-card-text fluid>
+                <h3>
+                  Баланс: <span> {{
+                    cardBalance.contract.balance.toLocaleString('ru-RU', {
+                      style: 'currency',
+                      currency: 'RUB'
+                    })
+                  }} </span>
+                </h3>
+                <h5 v-if="cardBalance.contract.deposit !== 0">
+                  Допустимая задолженность:
+                  <span class="text-danger h5">  {{ cardBalance.contract.deposit.toLocaleString('ru-RU', {
                     style: 'currency',
                     currency: 'RUB'
-                  })
-                }} </span>
-              </h3>
-              <h5 v-if="cardBalance.contract.deposit !== 0">
-                Допустимая задолженность:
-                <span class="text-danger h5">  {{ cardBalance.contract.deposit.toLocaleString('ru-RU', {
-                  style: 'currency',
-                  currency: 'RUB'
-                }) }}</span>
-              </h5>
-              <div class="d-flex flex-column">
-                <!-- <h3>Договор №</h3> -->
+                  }) }}</span>
+                </h5>
+                <!-- <div class="d-flex align-items-baseline"> -->
+                <h3 class="mr-1">
+                  Договор № :
+                </h3>
                 <v-select
                   v-model="selected"
                   :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
@@ -34,235 +43,284 @@
                   :options="option"
                   class="w-100 mt-1 mb-1"
                   @input="onChange()" />
-              </div>
-              <h4>Статус: {{ cardBalance.contract.status }} </h4>
-              <h4>
-                От: {{ cardBalance.contract.date }}
-              </h4>
-              <b-button
+                <!-- </div> -->
+                <h4>Статус: {{ cardBalance.contract.status }} </h4>
+                <h4>
+                  От: {{ cardBalance.contract.date | formatDate }}
+                </h4>
+                <b-button
 
-                variant="warning"
-                class="d-flex align-items-center margin">
-                <feather-icon
-                  size="2x"
-                  icon="PlusIcon"
-                  class="mr-50" />
-                <span class="align-baseline">Пополнить баланс</span>
-              </b-button>
-            </b-card-text>
-          </b-card-actions>
+                  variant="warning"
+                  class="d-flex align-items-center margin">
+                  <feather-icon
+                    size="2x"
+                    icon="PlusIcon"
+                    class="mr-50" />
+                  <span class="align-baseline">Пополнить баланс</span>
+                </b-button>
+              </b-card-text>
+            </b-card-actions>
+          </b-overlay>
         </b-col>
         <b-col md="6">
-          <b-card-actions
-            ref="fuelResidue"
-            title="Остатки топлива по контракту:"
-            action-refresh
-            @refresh="refreshFuelResidue('fuelResidue')">
-            <vue-apex-charts
-              type="bar"
-              height="200" />
-            <hr>
+          <b-overlay
+            :show="showLoading"
+            variant="black"
+            spinner-variant="primary"
+            blur="0"
+            opacity=".75"
+            rounded="sm">
+            <b-card-actions
+              ref="fuelResidue"
+              title="Остатки топлива по контракту:"
+              action-refresh
+              @refresh="refreshFuelResidue('fuelResidue')">
+              <vue-apex-charts
+                type="bar"
+                height="200" />
+              <hr>
 
-            <b-row class="avg-sessions pt-50">
-              <!-- TEMPLATE -->
-              <template v-for="( item, index) in currentConsumption.currentConsumption.length">
-                <b-col
-                  :key="index"
-                  class="mb-2">
-                  <b-card-text class="mb-50 text-info">
-                    {{ currentConsumption.currentConsumption[index].service.full_name }} : {{ currentConsumption.currentConsumption[index].quantity }} л.
-                  </b-card-text>
-                  <b-progress
-                    :value="currentConsumption.currentConsumption[index].quantity"
-                    :variant="getPopularityColor(currentConsumption.currentConsumption[index].quantity)"
-                    height="6px" />
-                </b-col>
-              </template>
-            </b-row>
-          </b-card-actions>
+              <b-row class="avg-sessions pt-50">
+                <!-- TEMPLATE -->
+                <template v-for="( item, index) in currentConsumption.currentConsumption.length">
+                  <b-col
+                    :key="index"
+                    class="mb-2">
+                    <b-card-text class="mb-50 text-info">
+                      {{ currentConsumption.currentConsumption[index].service.full_name }} : {{ currentConsumption.currentConsumption[index].quantity }} л.
+                    </b-card-text>
+                    <b-progress
+                      :value="currentConsumption.currentConsumption[index].quantity"
+                      :variant="getPopularityColor(currentConsumption.currentConsumption[index].quantity)"
+                      height="6px" />
+                  </b-col>
+                </template>
+              </b-row>
+            </b-card-actions>
+          </b-overlay>
         </b-col>
       </div>
       <div class="row">
         <b-col
           v-if="currentConsumptionDynamic.consumptionData.this_month !== 0"
           md="6">
-          <b-card-actions
-            v-if="currentConsumptionDynamic.consumptionData.this_month !== 0"
-            ref="expenses"
-            title="Расход за текущий месяц:"
-            action-refresh
-            @refresh="refreshExpenses('expenses')">
-            <hr>
-            <div class="d-flex justify-content-between">
-              <!-- <h4>{{ getDate }}:</h4> -->
-              <h4 class="text-danger">
-                {{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
-                  style: 'currency',
-                  currency: 'RUB'
-                }) }}
-              </h4>
-            </div>
-            <div class="d-flex justify-content-between align-items-end">
-              <h4>Последние изменения <br> по договору:</h4>
-              <h4 class="text-info">
-                {{ userData.contract.updated }}
-              </h4>
-            </div>
-            <b-table
-              hover
-              responsive="sm"
-              :items="currentConsumption.currentConsumption"
-              :fields="fields" />
-          </b-card-actions>
+          <b-overlay
+            :show="showLoading"
+            variant="black"
+            spinner-variant="primary"
+            blur="0"
+            opacity=".75"
+            rounded="sm">
+            <b-card-actions
+              v-if="currentConsumptionDynamic.consumptionData.this_month !== 0"
+              ref="expenses"
+              title="Расход за текущий месяц:"
+              action-refresh
+              @refresh="refreshExpenses('expenses')">
+              <hr>
+              <div class="d-flex justify-content-between">
+                <h4>{{ getMonthName(-1) | title }}:</h4>
+                <h4 class="text-danger">
+                  {{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
+                    style: 'currency',
+                    currency: 'RUB'
+                  }) }}
+                </h4>
+              </div>
+              <div class="d-flex justify-content-between align-items-end">
+                <h4>Последние изменения <br> по договору:</h4>
+                <h4 class="text-info">
+                  {{ userData.contract.updated | formatDate }}
+                </h4>
+              </div>
+              <b-table
+                hover
+                responsive="sm"
+                :items="currentConsumption.currentConsumption"
+                :fields="fields" />
+            </b-card-actions>
+          </b-overlay>
         </b-col>
 
         <b-col md="6">
-          <b-card-actions
-            ref="cardStatistic"
-            title="Статистика по картам"
-            action-refresh
-            @refresh="refreshCardStatistic('cardStatistic')">
-            <hr>
-            <div class="mt-1">
-              <div
+          <b-overlay
+            :show="showLoading"
+            variant="black"
+            spinner-variant="primary"
+            blur="0"
+            opacity=".75"
+            rounded="sm">
+            <b-card-actions
+              ref="cardStatistic"
+              title="Статистика по картам"
+              action-refresh
+              @refresh="refreshCardStatistic('cardStatistic')">
+              <hr>
+              <div class="mt-1">
+                <div
 
-                class="d-flex justify-content-between">
-                <h4>
-                  Всего карт:
-                </h4>
-                <h4>
-                  {{ cardBalance.card_statistic.length }}
-                </h4>
+                  class="d-flex justify-content-between">
+                  <h4>
+                    Всего карт:
+                  </h4>
+                  <h4>
+                    {{ cardBalance.card_statistic.length }}
+                  </h4>
+                </div>
               </div>
-            </div>
 
-            <div class="mt-1">
-              <div
+              <div class="mt-1">
+                <div
 
-                class="d-flex justify-content-between">
-                <h4>
-                  Активно:
-                </h4>
-                <h4>
-                  {{ getActiveCard }}
-                </h4>
+                  class="d-flex justify-content-between">
+                  <h4>
+                    Активно:
+                  </h4>
+                  <h4>
+                    {{ getActiveCard }}
+                  </h4>
+                </div>
               </div>
-            </div>
 
-            <div class="mt-1">
-              <div
+              <div class="mt-1">
+                <div
 
-                class="d-flex justify-content-between">
-                <h4>
-                  Заблокировано:
-                </h4>
-                <h4 class="text-danger">
-                  {{ getNotActiveCard }}
-                </h4>
+                  class="d-flex justify-content-between">
+                  <h4>
+                    Заблокировано:
+                  </h4>
+                  <h4 class="text-danger">
+                    {{ getNotActiveCard }}
+                  </h4>
+                </div>
               </div>
-            </div>
-          </b-card-actions>
+            </b-card-actions>
+          </b-overlay>
         </b-col>
 
         <b-row class="padding">
-          <b-card-actions
-            ref="information"
-            action-close
-            action-refresh
-            action-collapse
-            title="Данные организации:"
-            @refresh="refreshInformation('information')">
-            <hr>
-            <div class="d-flex flex-column">
-              <h3>Название: &#8195; {{ userData.company.full_name }}</h3>
-              <h3>ИНН: &#8195; {{ userData.company.inn }}</h3>
-              <h3>
-                Почтовый адрес: &#8195;
-                {{ userData.company.legal_address }}
-              </h3>
-            </div>
-          </b-card-actions>
+          <b-overlay
+            :show="showLoading"
+            variant="black"
+            spinner-variant="primary"
+            blur="0"
+            opacity=".75"
+            rounded="sm">
+            <b-card-actions
+              ref="information"
+              action-close
+              action-refresh
+              action-collapse
+              title="Данные организации:"
+              @refresh="refreshInformation('information')">
+              <hr>
+              <div class="d-flex flex-column">
+                <h3>Название: &#8195; {{ userData.company.full_name }}</h3>
+                <h3>ИНН: &#8195; {{ userData.company.inn }}</h3>
+                <h3>
+                  Почтовый адрес: &#8195;
+                  {{ userData.company.legal_address }}
+                </h3>
+              </div>
+            </b-card-actions>
+          </b-overlay>
         </b-row>
       </div>
 
       <!--Statistics -->
-      <b-card-actions
-        ref="consumption"
-        action-close
-        action-refresh
-        action-collapse
-        title="Динамика потребления"
-        @refresh="refreshConsumption('consumption')">
-        <hr>
-        <b-card-body class="pb-0">
-          <div class="d-flex flex-column mb-3">
-            <div class="mr-2 mt-1">
-              <b-card-text class="mb-50">
-                В этом месяце:
-              </b-card-text>
-              <h3 class="font-weight-bolder">
-                <span class="text-primary">{{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
-                  style: 'currency',
-                  currency: 'RUB'
-                }) }}  </span>
-              </h3>
+      <b-overlay
+        :show="showLoading"
+        variant="black"
+        spinner-variant="primary"
+        blur="0"
+        opacity=".75"
+        rounded="sm">
+        <b-card-actions
+          ref="consumption"
+          action-close
+          action-refresh
+          action-collapse
+          title="Динамика потребления"
+          @refresh="refreshConsumption('consumption')">
+          <hr>
+          <b-card-body class="pb-0">
+            <div class="d-flex flex-column mb-3 mix">
+              <div class="mr-2 mt-1">
+                <b-card-text class="mb-50">
+                  В этом месяце:
+                </b-card-text>
+                <h3 class="font-weight-bolder">
+                  <span class="text-primary">{{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
+                    style: 'currency',
+                    currency: 'RUB'
+                  }) }}  </span>
+                </h3>
+              </div>
+              <div class="mr-2 mt-1">
+                <b-card-text class="mb-50">
+                  В прошлом месяце:
+                </b-card-text>
+                <h3 class="font-weight-bolder">
+                  <span>{{ currentConsumptionDynamic.consumptionData.last_month.toLocaleString('ru-RU', {
+                    style: 'currency',
+                    currency: 'RUB'
+                  }) }}</span>
+                </h3>
+              </div>
+              <div class="mr-2 mt-1">
+                <b-card-text class="mb-50">
+                  Два месяца назад :
+                </b-card-text>
+                <h3 class="font-weight-bolder">
+                  <span>{{ currentConsumptionDynamic.consumptionData.other_month.toLocaleString('ru-RU', {
+                    style: 'currency',
+                    currency: 'RUB'
+                  }) }}</span>
+                </h3>
+              </div>
             </div>
-            <div class="mr-2 mt-1">
-              <b-card-text class="mb-50">
-                В прошлом месяце:
-              </b-card-text>
-              <h3 class="font-weight-bolder">
-                <span>{{ currentConsumptionDynamic.consumptionData.last_month.toLocaleString('ru-RU', {
-                  style: 'currency',
-                  currency: 'RUB'
-                }) }}</span>
-              </h3>
-            </div>
-            <div class="mr-2 mt-1">
-              <b-card-text class="mb-50">
-                Два месяца назад :
-              </b-card-text>
-              <h3 class="font-weight-bolder">
-                <span>{{ currentConsumptionDynamic.consumptionData.other_month.toLocaleString('ru-RU', {
-                  style: 'currency',
-                  currency: 'RUB'
-                }) }}</span>
-              </h3>
-            </div>
-          </div>
 
-          <!-- apex chart -->
-          <vue-apex-charts
-            type="line"
-            height="240"
-            :options="revenueComparisonLine.chartOptions"
-            :series="currentConsumptionDynamic.consumptionSeries" />
-        </b-card-body>
-      </b-card-actions>
+            <!-- apex chart -->
+            <vue-apex-charts
+              type="line"
+              height="240"
+              :options="revenueComparisonLine.chartOptions"
+              :series="currentConsumptionDynamic.consumptionSeries" />
+          </b-card-body>
+        </b-card-actions>
+      </b-overlay>
       <!--end statistic -->
     </div>
 
     <!-- GEO-->
-    <b-card-actions
-      ref="map"
-      action-close
-      action-refresh
-      action-collapse
-      title="Места потребления:"
-      @refresh="refreshMap('map')">
-      <div class="mt-1">
-        <l-map
-          :zoom="zoom"
-          :center="center">
-          <l-tile-layer :url="url" />
-          <l-marker :lat-lng="markerLatLng" />
-          <l-circle
-            :lat-lng="circle.center"
-            :radius="circle.radius"
-            :color="circle.color" />
-        </l-map>
-      </div>
-    </b-card-actions>
+    <b-overlay
+      :show="showLoading"
+      variant="black"
+      spinner-variant="primary"
+      blur="0"
+      opacity=".75"
+      rounded="sm">
+      <b-card-actions
+        ref="map"
+        action-close
+        action-refresh
+        action-collapse
+        title="Места потребления:"
+        @refresh="refreshMap('map')">
+        <div class="mt-1">
+          <l-map
+            :zoom="zoom"
+            :center="center">
+            <l-tile-layer :url="url" />
+            <l-marker :lat-lng="markerLatLng" />
+            <l-circle
+              :lat-lng="circle.center"
+              :radius="circle.radius"
+              :color="circle.color" />
+          </l-map>
+        </div>
+      </b-card-actions>
+    </b-overlay>
     <!--GEO-->
   </div>
 </template>
@@ -270,14 +328,12 @@
 <script>
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
-// import { formatDate } from '@core/utils/filter';
-// import { title } from '@core/utils/filter';
 
 // GEO
 import {
   LMap, LTileLayer, LMarker, LCircle,
 } from 'vue2-leaflet';
-// import { Icon } from 'leaflet'
+
 import 'leaflet/dist/leaflet.css';
 
 // end GEO
@@ -289,9 +345,8 @@ import { ru } from 'apexcharts/dist/locales/ru.json';
 import { $themeColors } from '@themeConfig';
 import { Icon } from 'leaflet';
 import {
-  BCardText, BCol, BButton, BTable, BProgress,
+  BCardText, BCol, BButton, BTable, BProgress, BOverlay,
 } from 'bootstrap-vue';
-// import useJwt from '../@core/auth/jwt/useJwt';
 import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line no-underscore-dangle
 delete Icon.Default.prototype._getIconUrl;
@@ -319,7 +374,7 @@ export default {
     LTileLayer,
     LMarker,
     LCircle,
-    // formatDate,
+    BOverlay,
   },
   data() {
     return {
@@ -329,12 +384,11 @@ export default {
       axiosIns: null,
       cardBalance: null,
       statisticsData: null,
-      selectedIndex: null,
       currentConsumption: null,
       consumptionDinamic: null,
       currentConsumptionDynamic: null,
       option: [],
-      selected: 'Выберете договор',
+      selected: null,
       fields: [
         {
           key: 'service.full_name',
@@ -404,14 +458,13 @@ export default {
             labels: {
               style: {
                 colors: '#b9b9c3',
-                fontSize: '10px',
+                fontSize: '1rem',
               },
             },
             axisTicks: {
               show: false,
             },
-            // categories: [1, 10, 20, 30],
-            // categories: ['01', '03', '05', '07', '09', '11', '13', '15', '17', '19', '21', '23', '26', '28', '31'],
+            categories: ['01', '', '03', '', '05', '', '07', '', '09', '', '11', '', '13', '', '15', '', '17', '', '19', '', '21', '', '23', '', '26', '', '28', '', '30'],
             axisBorder: {
               show: false,
             },
@@ -425,7 +478,7 @@ export default {
                 fontSize: '1rem',
               },
               formatter(val) {
-                return val > 999 ? `${(val / 1000).toFixed(0)}k` : val;
+                return val > 999 ? `${(val / 1000).toFixed(0)} тыс.` : val;
               },
             },
           },
@@ -448,29 +501,6 @@ export default {
     activeUserInfo() {
       return this.$store.state.CurrentUser;
     },
-
-    // getDate(date) {
-    //   return console.log(formatDate(date));
-    // },
-
-    // getStartDate() {
-    //   const { date } = this.cardBalance.contract;
-    //   const formatDate = (value, formatting = { month: 'numeric', year: 'numeric', day: 'numeric' }, locale = 'ru-RU') => {
-    //     if (!value) return value;
-    //     return new Intl.DateTimeFormat(locale, formatting).format(new Date(value));
-    //   };
-    //   return formatDate(date);
-    // },
-
-    // getLastActivity() {
-    //   const { updated } = this.userData.contract;
-    //   const formatDate = (value, formatting = { month: 'numeric', year: 'numeric', day: 'numeric' }, locale = 'ru-RU') => {
-    //     if (!value) return value;
-    //     return new Intl.DateTimeFormat(locale, formatting).format(new Date(value));
-    //   };
-    //   return formatDate(updated);
-    // },
-
     getActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code === 'ACTIVE').length;
     },
@@ -478,9 +508,6 @@ export default {
     getNotActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
     },
-    // getOptions() {
-    //   return this.userData.contracts.map((el) => el.number);
-    // },
   },
 
   created() {
@@ -490,7 +517,6 @@ export default {
           this.userData = response.data;
           this.makeOptions();
           this.getSelected();
-          // console.log(this.userData);
         });
       }
     });
@@ -500,6 +526,7 @@ export default {
     useJwt.getConsumptionDinamic().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
+          // response.data.consumptionSeries.forEach();
           this.currentConsumptionDynamic = response.data;
           // console.log(this.currentConsumptionDynamic);
         });
@@ -508,7 +535,6 @@ export default {
     useJwt.getCardStatistic().then((response) => {
       if (response.data.status) {
         this.statisticsData = response.data;
-        // console.log(this.statisticsData);
       }
     });
 
@@ -516,7 +542,6 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
           this.currentConsumption = response.data;
-          // console.log(this.currentConsumption);
         });
       }
     });
@@ -525,8 +550,6 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getBalance', response.data).then(() => {
           this.cardBalance = response.data;
-
-          // console.log(this.cardBalance);
         });
       }
     });
@@ -552,6 +575,16 @@ export default {
         },
       });
     },
+
+    getMonthName(i) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+      date.setDate(0);
+      return date.toLocaleString('ru-RU', {
+        month: 'long',
+      });
+    },
+
     getSelected() {
       this.selected = this.userData.contract.number;
     },
@@ -560,7 +593,6 @@ export default {
       this.userData.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });
       });
-      console.log(this.option);
     },
 
     // stop refreshing card in 3 sec
@@ -632,11 +664,12 @@ export default {
     },
 
     onChange() {
+      this.showLoading = true;
       useJwt.changeContract(this.selected.id)
         .then((response) => {
-          // console.log(response);
           if (response.status) {
             this.cardBalance = response.data;
+            this.showLoading = false;
           }
         });
     },
@@ -666,6 +699,19 @@ h4 {
 
 h3 {
   font-size: 1.2rem !important;
+}
+
+.mix {
+  @media (min-width: 550px) {
+    flex-direction: row !important;
+    justify-content: space-evenly !important;
+  }
+}
+
+.mr-2 mt-1 {
+  display: flex;
+  width: 90%;
+  justify-content: space-around;
 }
 
 .margin {
