@@ -135,7 +135,7 @@
               </div>
               <b-table
                 hover
-                responsive="sm"
+                responsive
                 :items="currentConsumption.currentConsumption"
                 :fields="fields" />
             </b-card-actions>
@@ -198,7 +198,7 @@
           </b-overlay>
         </b-col>
 
-        <b-row class="padding">
+        <b-col md="6">
           <b-overlay
             :show="showLoading"
             variant="black"
@@ -224,7 +224,7 @@
               </div>
             </b-card-actions>
           </b-overlay>
-        </b-row>
+        </b-col>
       </div>
 
       <!--Statistics -->
@@ -333,9 +333,7 @@ import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 import {
   LMap, LTileLayer, LMarker, LCircle,
 } from 'vue2-leaflet';
-
 import 'leaflet/dist/leaflet.css';
-
 // end GEO
 import vSelect from 'vue-select';
 
@@ -345,7 +343,7 @@ import { ru } from 'apexcharts/dist/locales/ru.json';
 import { $themeColors } from '@themeConfig';
 import { Icon } from 'leaflet';
 import {
-  BCardText, BCol, BButton, BTable, BProgress, BOverlay,
+  BCardText, BCol, BButton, BTable, BProgress, BOverlay, BRow, BCardBody,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line no-underscore-dangle
@@ -363,13 +361,14 @@ export default {
   components: {
     BCardActions,
     BCol,
+    BCardBody,
+    BRow,
     BCardText,
     vSelect,
     BButton,
     BTable,
     BProgress,
     VueApexCharts,
-    // GEO
     LMap,
     LTileLayer,
     LMarker,
@@ -526,7 +525,6 @@ export default {
     useJwt.getConsumptionDinamic().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
-          // response.data.consumptionSeries.forEach();
           this.currentConsumptionDynamic = response.data;
           // console.log(this.currentConsumptionDynamic);
         });
@@ -706,6 +704,11 @@ h3 {
     flex-direction: row !important;
     justify-content: space-evenly !important;
   }
+}
+
+.avg-sessions {
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .mr-2 mt-1 {

@@ -33,7 +33,7 @@ export default {
   },
 }
 </script>
-`
+`;
 
 export const codeStyleOption = `
 <template>
@@ -213,7 +213,7 @@ export default {
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-select.scss';
 </style>
-`
+`;
 
 export const codeRowColStyle = `
 <template>
@@ -257,7 +257,7 @@ export default {
   },
 }
 </script>
-`
+`;
 
 export const codeResponsive = `
 <template>
@@ -357,7 +357,7 @@ export default {
   },
 }
 </script>
-`
+`;
 
 export const codeFormatterCallback = `
 <template>
@@ -411,7 +411,7 @@ export default {
   },
 }
 </script>
-`
+`;
 
 export const codeDataRendering = `
 <template>
@@ -529,7 +529,7 @@ export default {
   },
 }
 </script>
-`
+`;
 
 export const codeSticky = `
 <template>
@@ -785,7 +785,7 @@ export default {
   },
 }
 </script>
-`
+`;
 
 export const codeRowDetailsSupport = `
 <template>
@@ -1047,7 +1047,7 @@ export default {
   },
 }
 </script>
-`
+`;
 
 export const codeRowSelectSupport = `
 <template>
@@ -1340,7 +1340,7 @@ export default {
 }
 
 </style>
-`
+`;
 
 export const codeKitchenSink = `
 <template>
@@ -1712,7 +1712,7 @@ export default {
   },
 }
 </script>
-`
+`;
 
 export const codeLight = `
 <template>
@@ -1754,7 +1754,7 @@ export default {
   },
 }
 </script>
-`
+`;
 
 export const codeSimple = `
 <template>
@@ -1875,4 +1875,4 @@ export const codeSimple = `
     </b-table-simple>
   </div>
 </template>
-`
+`;
