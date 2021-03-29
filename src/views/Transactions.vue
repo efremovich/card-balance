@@ -49,14 +49,14 @@
                 @click="download">
                 Скачать
               </b-button> -->
-              <vue-excel-xlsx
+              <export-excel
                 class="btn btn-secondary"
                 :data="transactions.data"
-                :columns="columns"
-                :filename="'Транзакции'"
-                :sheetname="'Транзакции'">
+                :fields="columns"
+                type="xlsx"
+                name="'Транзакции.xlsx'">
                 Скачать
-              </vue-excel-xlsx>
+              </export-excel>
             </div>
             <div />
           </b-card-body>
@@ -187,8 +187,6 @@ import { required, credit } from '@validations';
 import { formatDate } from '@core/utils/filter';
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import { Russian } from 'flatpickr/dist/l10n/ru';
-// import excel from 'vue-excel-export';
-import XLSX from 'xlsx';
 
 // import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import {
@@ -282,22 +280,17 @@ export default {
           label: 'Сумма',
         },
       ],
-
-      columns: [
-        {
-          label: 'Товар/услуга',
+      columns: {
+        'Товар/услуга': {
           field: 'service.full_name',
         },
-        {
-          label: 'Дата',
+        'Дата': {
           field: 'date',
-          dataFormat: this.priceFormat,
         },
-        {
-          label: 'Сумма',
+        'Сумма': {
           field: 'summ',
         },
-      ],
+      },
       items: {
         transactions: [],
         status_card: '',
@@ -431,13 +424,13 @@ export default {
     //     });
     // },
 
-    download() {
-      const data = XLSX.utils.json_to_sheet(this.transactions.data);
-      const wb = XLSX.utils.book_new();
-      console.log(wb);
-      XLSX.utils.book_append_sheet(wb, data, 'data');
-      XLSX.writeFile(wb, 'Транзакции.xlsx');
-    },
+    // download() {
+    //   const data = XLSX.utils.json_to_sheet(this.transactions.data);
+    //   const wb = XLSX.utils.book_new();
+    //   console.log(wb);
+    //   XLSX.utils.book_append_sheet(wb, data, 'data');
+    //   XLSX.writeFile(wb, 'Транзакции.xlsx');
+    // },
 
     selectDate() {
       const date = this.rangeDate;

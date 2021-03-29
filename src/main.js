@@ -1,8 +1,7 @@
 import Vue from 'vue';
 import { ToastPlugin, ModalPlugin } from 'bootstrap-vue';
 import VueCompositionAPI from '@vue/composition-api';
-// import VueExcelXlsx from 'vue-excel-xlsx';
-
+import excel from 'vue-excel-export';
 import router from './router';
 import store from './store';
 import App from './App.vue';
@@ -18,6 +17,8 @@ import '@/libs/toastification';
 import '@/libs/sweet-alerts';
 import '@/libs/vue-select';
 import '@/libs/tour';
+
+Vue.use(excel);
 // BSV Plugin Registration
 Vue.use(ToastPlugin);
 Vue.use(ModalPlugin);

@@ -48,18 +48,26 @@ export default {
       //   newXlsHeader.push(value.label);
       // };
       createXLSLFormatObj.push(newXlsHeader);
-      $.each(vm.data, (index, value) => {
+      for (let i = 0; i < vm.data.length; i + 1) {
         const innerRowData = [];
-        $.each(vm.columns, (index, val) => {
-          if (val.dataFormat && typeof val.dataFormat === 'function') {
-            innerRowData.push(val.dataFormat(value[val.field]));
-          } else if (val.split('.'.length) > 1) {
-
+        const value = vm.data[i];
+        for (let j = 0; j < vm.columns.length; j + 1) {
+          const column = vm.columns[j];
+          if (column.dataFormat && typeof column.dataFormat === 'function') {
+            innerRowData.push(column.dataFormat(value[column.field]));
+          } else if (column.field.split('.'.length) > 1) {
+            const fields = column.field.split('.');
+            innerRowData.push(value[fields[0].fields[1]]);
           } else {
-            innerRowData.push(value[val.field]);
+            innerRowData.push(value[column.field]);
           }
+          createXLSLFormatObj.push(innerRowData);
+        }
+      }
+
+      $.each(vm.data, (index, value) => {
+        $.each(vm.columns, (index, val) => {
         });
-        createXLSLFormatObj.push(innerRowData);
       });
       const filename = `${vm.filename}.xlsx`;
       const ws_name = vm.sheetname;
