@@ -45,7 +45,7 @@ export default [
       breadcrumb: [
         { title: 'Главная', url: '/' },
         { title: 'Документы' },
-        { title: 'Платежи' },
+        { title: 'Платежи', active: true },
       ],
       rule: 'editor',
     },

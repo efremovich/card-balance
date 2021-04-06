@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { isToday } from './utils';
 
-Vue.filter('formatDate', (value, withtime = false) => {
+Vue.filter('formatDate', (value, withtime = true) => {
   value = new Date(value);
   let options = {
     year: 'numeric',
@@ -12,6 +12,7 @@ Vue.filter('formatDate', (value, withtime = false) => {
 
   if (withtime) {
     options = {
+      timeZone: 'UTC',
       hours: 'numeric',
       min: 'numeric',
     };
@@ -28,6 +29,21 @@ Vue.filter('date', (value, fullDate = false) => {
 
   if (!fullDate) return `${date} ${month}`;
   return `${date} ${month} ${year}`;
+});
+
+// eslint-disable-next-line consistent-return
+Vue.filter('time', (value, is24HrFormat = true) => {
+  if (value) {
+    const date = new Date(Date.parse(value));
+    let hours = date.getHours();
+    const min = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+    if (!is24HrFormat) {
+      const time = hours > 12 ? 'AM' : 'PM';
+      hours = hours % 12 || 12;
+      return `${hours}:${min} ${time}`;
+    }
+    return `${hours}:${min}`;
+  }
 });
 
 Vue.filter('title', (value, replacer = '_') => {

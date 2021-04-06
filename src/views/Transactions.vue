@@ -1,3 +1,6 @@
+/* eslint-disable vue/valid-v-slot */
+/* eslint-disable vue/valid-v-slot */
+/* eslint-disable vue/no-parsing-error */
 <template>
   <div>
     <!-- <div v-if="items.transactions.length>0"> -->
@@ -45,20 +48,28 @@
                   </b-input-group-append>
                 </b-input-group>
               </b-form-group>
-              <!-- <b-button
-                @click="download">
-                Скачать
-              </b-button> -->
-              <export-excel
-                class="btn btn-secondary"
-                :data="transactions.data"
-                :fields="columns"
-                type="xlsx"
-                name="'Транзакции.xlsx'">
-                Скачать
-              </export-excel>
+
+              <div>
+                <export-excel
+                  class="btn btn-primary"
+                  :data="transactions.data"
+                  :fields="columns"
+                  type="xlsx"
+                  name="Транзакции.xlsx">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    fill="currentColor"
+                    class="bi bi-file-earmark-excel"
+                    viewBox="0 0 16 16">
+                    <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                  </svg>
+                  Скачать
+                </export-excel>
+              </div>
             </div>
-            <div />
           </b-card-body>
 
           <b-table
@@ -76,28 +87,37 @@
             :filter-included-fields="filterOn"
             @filtered="onFiltered">
             <!--1-й вариант-->
+
             <template #cell(summ)="row">
               <b-col @click="row.toggleDetails">
                 <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseInt(row.item.summ).toLocaleString('ru-RU', {
                   style: 'currency',
                   currency: 'RUB'
                 }) }}</span><br>
-                <!--
-                  <b-button
-                    pill
-                    size="sm"
-                    @click="row.detailsShowing"
-                  >Детали
-                  </b-button> -->
 
-                <span
-                  class="border-dashed"
-                  @click="row.detailsShowing">Детали</span>
+                <b-button
+                  class="mt-1"
+                  pill
+                  size="sm"
+                  @click="row.detailsShowing">
+                  Детали
+                </b-button>
+
+                <!-- <span
+                  class="border-dashed">Детали</span> -->
+              </b-col>
+            </template>
+
+            <template
+              #cell(date)="row">
+              <b-col @click="row.toggleDetails">
+                {{ row.item.date | formatDate }}
               </b-col>
             </template>
 
             <template #row-details="row">
-              <b-card>
+              <b-card
+                @click="row.toggleDetails">
                 <b-row class="mb-2">
                   <!-- <b-col
                       md="4"
@@ -109,12 +129,17 @@
                   <b-col
                     md="4"
                     class="mb-1">
-                    <strong>Дата/время : </strong>{{ row.item.period }}
+                    <strong>Дата/время : </strong>{{ row.item.date | formatDate }}
                   </b-col>
                   <b-col
                     md="4"
                     class="mb-1">
                     <strong>Количество : </strong>{{ row.item.quantity }}
+                  </b-col>
+                  <b-col
+                    md="4"
+                    class="mb-1">
+                    <strong>услуга : </strong>{{ row.item.service.full_name }}
                   </b-col>
                 </b-row>
 
@@ -129,7 +154,7 @@
 
             <template #cell(period)="row">
               <b-col @click="row.toggleDetails">
-                {{ formatDate(row.item.period, {day:"numeric", month:"long"}, "ru-RU" ) }}
+                {{ row.item.date | formatDate }}
               </b-col>
             </template>
           </b-table>
@@ -244,7 +269,6 @@ export default {
       required,
       Selected: null,
       transactions: [],
-
       rangeDate: null, // датапикер
       dateStart: [],
       dateEnd: [], // new Date()
@@ -254,17 +278,6 @@ export default {
         defaultDate: ['01-03-2021', 'today'],
         locale: Russian,
         dateFormat: 'd.m.Y',
-      },
-      cardStatus: {
-
-        ACTIVE: 'Активна',
-        BLOCK: 'Заблокирована',
-        BROKEN: 'Неисправна',
-        DELETED: 'Удалена',
-        FINANCE: 'Финансовая блокировка',
-        LOST: 'Утеряна',
-        RETURN: 'Сдана',
-        SOLD: 'Продана',
       },
       fields: [
         {
@@ -310,10 +323,10 @@ export default {
     viewStatus() {
       return this.cardStatus[this.items.card_status];
     },
-    getDay() {
-      const Data = new Date();
-      return Data.getDate();
-    },
+    // getDay() {
+    //   const Data = new Date();
+    //   return Data.getDate();
+    // },
   },
 
   // created() {
@@ -353,7 +366,6 @@ export default {
       if (response.data.status) {
         this.transactions = response.data;
         this.totalRows = this.transactions.data.length;
-        console.log(this.transactions);
       }
       return this.transactions;
     });

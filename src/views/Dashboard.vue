@@ -610,7 +610,6 @@ export default {
         if (response.data.status) {
           this.cardBalance = response.data;
           this.$refs[card].showLoading = false;
-          console.log(this.cardBalance);
         } else {
           this.showToast();
         }
@@ -622,7 +621,6 @@ export default {
         if (response.data.status) {
           this.currentConsumption = response.data;
           this.$refs[card].showLoading = false;
-          console.log(this.currentConsumption);
         } else {
           this.showToast();
         }
@@ -634,7 +632,6 @@ export default {
         if (response.data.status) {
           this.userData = response.data;
           this.$refs[card].showLoading = false;
-          console.log(this.userData);
         } else {
           this.showToast();
         }
@@ -645,7 +642,6 @@ export default {
         if (response.data.status) {
           this.currentConsumptionDynamic = response.data;
           this.$refs[card].showLoading = false;
-          console.log(this.currentConsumptionDynamic);
         } else {
           this.showToast();
         }
