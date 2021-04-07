@@ -4,9 +4,11 @@
     <b-card
       title="Электронные чеки">
       <div class="col-12">
-        <p class="mb-3">
-          Номер карты:
-        </p>
+        <!-- <p
+          v-if="selected.length !== 0"
+          class="mb-3">
+          Номер карты: {{ selected }}
+        </p> -->
         <p class="mb-3">
           Держатель: {{ contract.company.full_name }}
         </p>
@@ -291,7 +293,7 @@ export default {
       start: null,
       end: null,
       visible: false,
-      selected: null,
+      selected: [],
       cards: null,
       rangeDate: null,
       currentPage: 1,
@@ -326,10 +328,9 @@ export default {
     // eslint-disable-next-line no-useless-concat
     const endDate = '06.04.2021 00:00:00';
     const ID = this.contractId;
-    useJwt.getTransactions(`contract_id=${ID}&startDate=${startDate}&endDate=${endDate}&card_nuber=7826010113259838`).then((response) => {
+    useJwt.getTransactions(`contract_id=${ID}&startDate=${startDate}&endDate=${endDate}`).then((response) => {
       if (response.data.status) {
         this.transactions = response.data;
-        console.log(this.transactions.length);
         this.totalRows = this.transactions.tol.Total;
         this.start = startDate;
         this.end = endDate;
@@ -337,6 +338,7 @@ export default {
           this.option.push(el.card_number);
         });
         this.unique(this.option);
+        console.log(this.option.length);
       }
       return this.transactions;
     });
@@ -357,11 +359,12 @@ export default {
       // eslint-disable-next-line prefer-template
       this.end = arr[1] + ' 00:00:00';
       const ID = this.contractId;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_nuber=7826010113259838&offset=10&limit=10`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
         }
+
         return this.transactions;
       });
     },
@@ -371,7 +374,7 @@ export default {
       const { end } = this;
       const ID = this.contractId;
 
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_nuber=7826010113259838&offset=${10 * page}&limit=10`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&offset=${10 * page}&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
         }
@@ -380,14 +383,14 @@ export default {
     },
 
     onChange() {
-      const { selected } = this;
+      const selected = String(this.selected[0]);
+      console.log(selected);
       const { start } = this;
       const { end } = this;
       const ID = this.contractId;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_nuber=${selected}&offset=10&limit=10`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          console.log(this.transactions.length);
         }
         return this.transactions;
       });
@@ -395,6 +398,7 @@ export default {
 
     toogle() {
       this.visible = !this.visible;
+      this.selectPage('1');
     },
   },
 
