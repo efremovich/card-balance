@@ -1,4 +1,3 @@
-/* eslint-disable prefer-destructuring */
 <template>
   <div>
     <b-card
@@ -9,58 +8,64 @@
           class="mb-3">
           Номер карты: {{ selected }}
         </p> -->
-        <p class="mb-3">
+        <!-- <p class="mb-3">
           Держатель: {{ contract.company.full_name }}
         </p>
       </div>
-      <p>Выберете карту:</p>
+      <p>Выберете держателя карты:</p>
       <v-select
-        v-model="selected"
-        multiple
-        :options="option"
+        v-model="selectedHolder"
+        :options="names"
         class="w-100 mt-1 mb-1"
-        @input="onChange()" />
-      <flat-pickr
-        v-model="rangeDate"
-        size="sm"
-        class="form-control mb-0"
-        :config="config"
-        @on-change="selectDate" />
-      <b-button
-        v-print="'#check'"
-        :disabled="!visible"
-        class="btn btn-primary mt-3 mb-3">
-        Печать
-      </b-button>
+        @input="onChange()" /> -->
+        <p>Выберете карту:</p>
+        <v-select
+          v-model="selected"
+          multiple
+          :options="option"
+          class="w-100 mt-1 mb-1"
+          @input="onChange()" />
+        <flat-pickr
+          v-model="rangeDate"
+          size="sm"
+          class="form-control mb-0"
+          :config="config"
+          @on-change="selectDate" />
+        <b-button
+          v-print="'#check'"
+          class="btn btn-primary mt-3 mb-3">
+          Печать
+        </b-button>
 
-      <b-button
-        class="btn btn-primary mt-3 mb-3 ml-3"
-        @click="toogle">
-        {{ visible ? "Скрыть чеки" : "Показать чеки" }}
-      </b-button>
-      <b-pagination
-        v-if="visible"
-        v-model="currentPage"
-        :total-rows="totalRows"
+        <b-button
+          class="btn btn-primary mt-3 mb-3 ml-3"
 
-        first-number
-        last-number
-        prev-class="prev-item"
-        next-class="next-item"
-        class="mb-0 "
-        align="center"
-        @change="selectPage">
-        <template #prev-text>
-          <feather-icon
-            icon="ChevronLeftIcon"
-            size="18" />
-        </template>
-        <template #next-text>
-          <feather-icon
-            icon="ChevronRightIcon"
-            size="18" />
-        </template>
-      </b-pagination>
+          @click="toogle">
+          {{ visible ? "Скрыть чеки" : "Показать чеки" }}
+        </b-button>
+        <b-pagination
+          v-if="hidden"
+          v-model="currentPage"
+          :total-rows="totalRows"
+          first-number
+          last-number
+          prev-class="prev-item"
+          next-class="next-item"
+          class="mb-0 "
+          align="center"
+          @change="selectPage">
+          <template #prev-text>
+            <feather-icon
+              icon="ChevronLeftIcon"
+              size="18" />
+          </template>
+          <template #next-text>
+            <feather-icon
+              icon="ChevronRightIcon"
+              size="18" />
+          </template>
+        </b-pagination>
+      </div>
     </b-card>
     <div
       v-if="visible"
@@ -261,11 +266,14 @@
 
 <script>
 import { BCard, BButton, BPagination } from 'bootstrap-vue';
-import useJwt from '@/auth/jwt/useJwt';
+
 import print from 'vue-print-nb';
 import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+
+import useJwt from '../../auth/jwt/useJwt';
 
 export default {
   components: {
@@ -274,7 +282,6 @@ export default {
     flatPickr,
     vSelect,
     BPagination,
-
   },
 
   directives: {
@@ -290,7 +297,11 @@ export default {
       contractId: null,
       transactions: null,
       option: [],
+      selectedHolder: null,
+      names: [],
+      response: null,
       start: null,
+      hidden: false,
       end: null,
       visible: false,
       selected: [],
@@ -301,7 +312,7 @@ export default {
       config: {
         mode: 'range',
         maxDate: 'today',
-        defaultDate: ['01-04-2021', 'today'],
+        defaultDate: ['01.04.2021', 'today'],
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
@@ -314,40 +325,68 @@ export default {
     if (userData) {
       this.contract = userData;
       this.contractId = this.contract.contract.id;
+      this.start = this.getFirstDay();
+      this.end = this.isToday();
     }
-
     return this.contract;
   },
 
   beforeMount() {
-    // eslint-disable-next-line no-template-curly-in-string
-    // eslint-disable-next-line quotes
-    // eslint-disable-next-line prefer-template
-    const startDate = '01.04.2021 00:00:00';
-    // eslint-disable-next-line prefer-template
-    // eslint-disable-next-line no-useless-concat
-    const endDate = '06.04.2021 00:00:00';
-    const ID = this.contractId;
-    useJwt.getTransactions(`contract_id=${ID}&startDate=${startDate}&endDate=${endDate}`).then((response) => {
-      if (response.data.status) {
-        this.transactions = response.data;
-        this.totalRows = this.transactions.tol.Total;
-        this.start = startDate;
-        this.end = endDate;
-        this.transactions.data.forEach((el) => {
-          this.option.push(el.card_number);
-        });
-        this.unique(this.option);
-        console.log(this.option.length);
-      }
-      return this.transactions;
-    });
+    this.getOptions();
+    console.log();
   },
 
   methods: {
+    isToday() {
+      const today = new Date();
+      return today.toLocaleDateString();
+    },
+
+    getFirstDay() {
+      const date = new Date();
+      const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
+      return firstDay;
+    },
+
     unique(arr) {
       this.option = Array.from(new Set(arr));
       return this.option;
+    },
+
+    getOptions() {
+      const startDate = `${this.getFirstDay()} 00:00:00`;
+      // eslint-disable-next-line prefer-template
+      const endDate = `${this.isToday()} 00:00:00`;
+      const ID = this.contractId;
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${startDate}&endDate=${endDate}`).then((response) => {
+        if (response.data.status) {
+          this.response = response.data;
+          this.response.data.forEach((el) => {
+            this.option.push(el.card_number);
+          });
+          this.option = this.unique(this.option);
+        }
+      });
+    },
+
+    getAllTransactions() {
+      const startDate = `${this.getFirstDay()} 00:00:00`;
+      // eslint-disable-next-line prefer-template
+      const endDate = `${this.isToday()} 00:00:00`;
+      const ID = this.contractId;
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${startDate}&endDate=${endDate}`).then((response) => {
+        if (response.data.status) {
+          this.transactions = response.data;
+          this.totalRows = this.transactions.tol.Total;
+          this.start = startDate;
+          this.end = endDate;
+          this.transactions.data.forEach((el) => {
+            this.option.push(el.card_number);
+          });
+          this.unique(this.option);
+        }
+        return this.transactions;
+      });
     },
 
     selectDate() {
@@ -359,7 +398,8 @@ export default {
       // eslint-disable-next-line prefer-template
       this.end = arr[1] + ' 00:00:00';
       const ID = this.contractId;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&offset=10&limit=10`).then((response) => {
+      const { selected } = this;
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}&offset=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
@@ -370,35 +410,59 @@ export default {
     },
 
     selectPage(page) {
+      const { selected } = this;
       const { start } = this;
       const { end } = this;
       const ID = this.contractId;
-
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&offset=${10 * page}&limit=10`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&offset=${10 * page}&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
+        }
+
+        if (this.transactions.data.length < 1) {
+          this.visible = false;
         }
         return this.transactions;
       });
     },
 
     onChange() {
-      const selected = String(this.selected[0]);
-      console.log(selected);
+      const { selected } = this;
+      this.hidden = false;
       const { start } = this;
       const { end } = this;
       const ID = this.contractId;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&offset=10&limit=10`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&offset=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
+          this.totalRows = this.transactions.tol.Total;
+          if (this.transactions.data.length < 1) {
+            this.visible = false;
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют операции по карте за период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
         }
         return this.transactions;
       });
+      // if (this.selected.length < 1) {
+      //   this.getAllTransactions();
+      //   // this.hidden = true;
+      // }
     },
 
     toogle() {
       this.visible = !this.visible;
-      this.selectPage('1');
+      this.hidden = !this.hidden;
+      this.selectPage(1);
+      // if (this.selected.length < 1) {
+      //   this.getAllTransactions();
+      // } else this.onChange();
     },
   },
 
@@ -408,6 +472,7 @@ export default {
 <style lang="scss" scoped>
 @import "@core/scss/vue/libs/vue-select.scss";
 @import "@core/scss/vue/libs/vue-flatpicker.scss";
+
 .flex {
   display: flex;
   flex-wrap: wrap;
@@ -918,114 +983,114 @@ h3 {
   flex: 0 0 100%;
   max-width: 100%;
 }
-.order-first {
-  -webkit-box-ordinal-group: 0;
-  -ms-flex-order: -1;
-  order: -1;
-}
-.order-last {
-  -webkit-box-ordinal-group: 14;
-  -ms-flex-order: 13;
-  order: 13;
-}
-.order-0 {
-  -webkit-box-ordinal-group: 1;
-  -ms-flex-order: 0;
-  order: 0;
-}
-.order-1 {
-  -webkit-box-ordinal-group: 2;
-  -ms-flex-order: 1;
-  order: 1;
-}
-.order-2 {
-  -webkit-box-ordinal-group: 3;
-  -ms-flex-order: 2;
-  order: 2;
-}
-.order-3 {
-  -webkit-box-ordinal-group: 4;
-  -ms-flex-order: 3;
-  order: 3;
-}
-.order-4 {
-  -webkit-box-ordinal-group: 5;
-  -ms-flex-order: 4;
-  order: 4;
-}
-.order-5 {
-  -webkit-box-ordinal-group: 6;
-  -ms-flex-order: 5;
-  order: 5;
-}
-.order-6 {
-  -webkit-box-ordinal-group: 7;
-  -ms-flex-order: 6;
-  order: 6;
-}
-.order-7 {
-  -webkit-box-ordinal-group: 8;
-  -ms-flex-order: 7;
-  order: 7;
-}
-.order-8 {
-  -webkit-box-ordinal-group: 9;
-  -ms-flex-order: 8;
-  order: 8;
-}
-.order-9 {
-  -webkit-box-ordinal-group: 10;
-  -ms-flex-order: 9;
-  order: 9;
-}
-.order-10 {
-  -webkit-box-ordinal-group: 11;
-  -ms-flex-order: 10;
-  order: 10;
-}
-.order-11 {
-  -webkit-box-ordinal-group: 12;
-  -ms-flex-order: 11;
-  order: 11;
-}
-.order-12 {
-  -webkit-box-ordinal-group: 13;
-  -ms-flex-order: 12;
-  order: 12;
-}
-.offset-1 {
-  margin-left: 8.33333%;
-}
-.offset-2 {
-  margin-left: 16.66667%;
-}
-.offset-3 {
-  margin-left: 25%;
-}
-.offset-4 {
-  margin-left: 33.33333%;
-}
-.offset-5 {
-  margin-left: 41.66667%;
-}
-.offset-6 {
-  margin-left: 50%;
-}
-.offset-7 {
-  margin-left: 58.33333%;
-}
-.offset-8 {
-  margin-left: 66.66667%;
-}
-.offset-9 {
-  margin-left: 75%;
-}
-.offset-10 {
-  margin-left: 83.33333%;
-}
-.offset-11 {
-  margin-left: 91.66667%;
-}
+// .order-first {
+//   -webkit-box-ordinal-group: 0;
+//   -ms-flex-order: -1;
+//   order: -1;
+// }
+// .order-last {
+//   -webkit-box-ordinal-group: 14;
+//   -ms-flex-order: 13;
+//   order: 13;
+// }
+// .order-0 {
+//   -webkit-box-ordinal-group: 1;
+//   -ms-flex-order: 0;
+//   order: 0;
+// }
+// .order-1 {
+//   -webkit-box-ordinal-group: 2;
+//   -ms-flex-order: 1;
+//   order: 1;
+// }
+// .order-2 {
+//   -webkit-box-ordinal-group: 3;
+//   -ms-flex-order: 2;
+//   order: 2;
+// }
+// .order-3 {
+//   -webkit-box-ordinal-group: 4;
+//   -ms-flex-order: 3;
+//   order: 3;
+// }
+// .order-4 {
+//   -webkit-box-ordinal-group: 5;
+//   -ms-flex-order: 4;
+//   order: 4;
+// }
+// .order-5 {
+//   -webkit-box-ordinal-group: 6;
+//   -ms-flex-order: 5;
+//   order: 5;
+// }
+// .order-6 {
+//   -webkit-box-ordinal-group: 7;
+//   -ms-flex-order: 6;
+//   order: 6;
+// }
+// .order-7 {
+//   -webkit-box-ordinal-group: 8;
+//   -ms-flex-order: 7;
+//   order: 7;
+// }
+// .order-8 {
+//   -webkit-box-ordinal-group: 9;
+//   -ms-flex-order: 8;
+//   order: 8;
+// }
+// .order-9 {
+//   -webkit-box-ordinal-group: 10;
+//   -ms-flex-order: 9;
+//   order: 9;
+// }
+// .order-10 {
+//   -webkit-box-ordinal-group: 11;
+//   -ms-flex-order: 10;
+//   order: 10;
+// }
+// .order-11 {
+//   -webkit-box-ordinal-group: 12;
+//   -ms-flex-order: 11;
+//   order: 11;
+// }
+// .order-12 {
+//   -webkit-box-ordinal-group: 13;
+//   -ms-flex-order: 12;
+//   order: 12;
+// }
+// .offset-1 {
+//   margin-left: 8.33333%;
+// }
+// .offset-2 {
+//   margin-left: 16.66667%;
+// }
+// .offset-3 {
+//   margin-left: 25%;
+// }
+// .offset-4 {
+//   margin-left: 33.33333%;
+// }
+// .offset-5 {
+//   margin-left: 41.66667%;
+// }
+// .offset-6 {
+//   margin-left: 50%;
+// }
+// .offset-7 {
+//   margin-left: 58.33333%;
+// }
+// .offset-8 {
+//   margin-left: 66.66667%;
+// }
+// .offset-9 {
+//   margin-left: 75%;
+// }
+// .offset-10 {
+//   margin-left: 83.33333%;
+// }
+// .offset-11 {
+//   margin-left: 91.66667%;
+// }
 .d-none {
   display: none !important;
 }
