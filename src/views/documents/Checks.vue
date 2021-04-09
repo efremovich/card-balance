@@ -66,56 +66,56 @@
           </template>
         </b-pagination>
       </div>
-    </b-card>
-    <div
-      v-if="visible"
-      id="check"
-      class="flex">
-      <template
-        v-for="(item,index) in transactions.data">
-        <div
-          :key="index"
-          class="col-4"
-          style="
+      <!-- </b-card> -->
+      <div
+        v-if="visible"
+        id="check"
+        class="flex">
+        <template
+          v-for="(item,index) in transactions.data">
+          <div
+            :key="index"
+            class="col-4"
+            style="
   page-break-after:always;
             ">
-          <!-- begin .check -->
-          <div
-            class="check"
-            style="padding: 40px 0;
+            <!-- begin .check -->
+            <div
+              class="check"
+              style="padding: 40px 0;
             margin: 0 20px;
 
             page-break-after:always
              ">
-            <div
-              class="check__header"
-              style="margin-bottom: 20px;
+              <div
+                class="check__header"
+                style="margin-bottom: 20px;
               ">
-              <!-- begin .check__header -->
-              <div
-                class="check__organization"
-                style="text-align: center;
+                <!-- begin .check__header -->
+                <div
+                  class="check__organization"
+                  style="text-align: center;
                 ">
-                {{ item.pos.seller }}
-              </div>
-              <!-- end .check__header -->
+                  {{ item.pos.seller }}
+                </div>
+                <!-- end .check__header -->
 
-              <div
-                class="check__organization"
-                style="text-align: center;
+                <div
+                  class="check__organization"
+                  style="text-align: center;
                 ">
-                Адрес места расчётов:<br>
-                {{ item.pos.address }}
+                  Адрес места расчётов:<br>
+                  {{ item.pos.address }}
+                </div>
               </div>
-            </div>
 
-            <!-- begin .check__content -->
-            <div
-              class="check__content"
-              style="margin-bottom: 20px;">
+              <!-- begin .check__content -->
               <div
-                class="check__row"
-                style="display: -webkit-box;
+                class="check__content"
+                style="margin-bottom: 20px;">
+                <div
+                  class="check__row"
+                  style="display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-align: centerl;
@@ -126,117 +126,117 @@
   justify-content: space-between;
   line-height: 1.4;
   ">
-                <div
-                  class="check__label">
-                  ИНН:
+                  <div
+                    class="check__label">
+                    ИНН:
+                  </div>
+                  <div
+                    class="check__value">
+                    2309051942
+                  </div>
                 </div>
-                <div
-                  class="check__value">
-                  2309051942
-                </div>
-              </div>
 
-              <div
-                class="check__row"
-                style="width: 100%;
+                <div
+                  class="check__row"
+                  style="width: 100%;
                 ">
-                <div class="check__label" />
-                <div class="check__value">
-                  {{ item.operation_type }}
+                  <div class="check__label" />
+                  <div class="check__value">
+                    {{ item.operation_type }}
+                  </div>
                 </div>
-              </div>
 
-              <div class="check__column">
-                <div
-                  class="check__row"
-                  style="width: 100%;
+                <div class="check__column">
+                  <div
+                    class="check__row"
+                    style="width: 100%;
                   page-break-inside: avoid;">
-                  <div class="check__label">
-                    Бензин <br> автомобильный
+                    <div class="check__label">
+                      Бензин <br> автомобильный
+                    </div>
+                    <div class="check__value">
+                      {{ item.service.full_name }}
+                    </div>
                   </div>
-                  <div class="check__value">
-                    {{ item.service.full_name }}
-                  </div>
-                </div>
 
-                <div
-                  class="check__row"
-                  style="width: 100%;">
-                  <div class="check__label">
-                    Объем топлива
+                  <div
+                    class="check__row"
+                    style="width: 100%;">
+                    <div class="check__label">
+                      Объем топлива
+                    </div>
+                    <div class="check__value">
+                      {{ item.quantity }}
+                    </div>
                   </div>
-                  <div class="check__value">
-                    {{ item.quantity }}
-                  </div>
-                </div>
 
-                <div
-                  class="check__row"
-                  style="width: 100%;">
-                  <div class="check__label">
-                    Цена
+                  <div
+                    class="check__row"
+                    style="width: 100%;">
+                    <div class="check__label">
+                      Цена
+                    </div>
+                    <div class="check__value">
+                      определяется договором
+                    </div>
                   </div>
-                  <div class="check__value">
-                    определяется договором
-                  </div>
-                </div>
 
-                <div
-                  class="check__row"
-                  style="width: 100%;">
-                  <div class="check__label">
-                    Сумма
+                  <div
+                    class="check__row"
+                    style="width: 100%;">
+                    <div class="check__label">
+                      Сумма
+                    </div>
+                    <div class="check__value">
+                      {{ item.summ }}
+                    </div>
                   </div>
-                  <div class="check__value">
-                    {{ item.summ }}
+                  <div
+                    class="check__row"
+                    style="width: 100%;">
+                    <div class="check__label">
+                      ТК:
+                    </div>
+                    <div class="check__value">
+                      {{ item.card_number }}
+                    </div>
                   </div>
-                </div>
-                <div
-                  class="check__row"
-                  style="width: 100%;">
-                  <div class="check__label">
-                    ТК:
-                  </div>
-                  <div class="check__value">
-                    {{ item.card_number }}
-                  </div>
-                </div>
 
-                <div
-                  class="check__row"
-                  style="width: 100%;">
-                  <div class="check__label">
-                    {{ item.date | formatDate }}
+                  <div
+                    class="check__row"
+                    style="width: 100%;">
+                    <div class="check__label">
+                      {{ item.date | formatDate }}
+                    </div>
                   </div>
-                </div>
 
-                <div
-                  class="check__row"
-                  style="width: 100%;">
-                  <div class="check__label">
-                    RNN
+                  <div
+                    class="check__row"
+                    style="width: 100%;">
+                    <div class="check__label">
+                      RNN
+                    </div>
+                    <div class="check__value">
+                      921303719885
+                    </div>
                   </div>
-                  <div class="check__value">
-                    921303719885
-                  </div>
-                </div>
 
-                <div
-                  class="check__row"
-                  style="width: 100%;
+                  <div
+                    class="check__row"
+                    style="width: 100%;
                                     ">
-                  <div class="check__label">
-                    Операция подтверждена
+                    <div class="check__label">
+                      Операция подтверждена
+                    </div>
+                    <div class="check__value">
+                      Вводом ПИН
+                    </div>
                   </div>
-                  <div class="check__value">
-                    Вводом ПИН
-                  </div>
-                </div>
 
-                <!-- begin .check__row -->
-                <div
-                  class="check__row check__row--black"
-                  style="width: 100%;
+                  <!-- begin .check__row -->
+                  <div
+                    class="check__row check__row--black"
+                    style="width: 100%;
                  -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
@@ -246,21 +246,22 @@
   background-color: #000;
   -webkit-transition: all 0.25s ease;
   transition: all 0.25s ease;">
-                  ОДОБРЕНО (RC: 0)
-                </div>
+                    ОДОБРЕНО (RC: 0)
+                  </div>
                 <!-- end .check__row -->
-              </div>
+                </div>
               <!-- end .check__content -->
-            </div>
+              </div>
             <!-- end .check -->
-          </div>
+            </div>
           <!-- end .col-4 -->
 
           <!-- end .row -->
-        </div>
+          </div>
         <!-- </div> -->
-      </template>
-    </div>
+        </template>
+      </div>
+    </b-card>
   </div>
 </template>
 
@@ -421,6 +422,14 @@ export default {
 
         if (this.transactions.data.length < 1) {
           this.visible = false;
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Отсутвуют операции по карте за период',
+              icon: 'AlertTriangleIcon',
+              variant: 'danger',
+            },
+          });
         }
         return this.transactions;
       });
@@ -428,7 +437,7 @@ export default {
 
     onChange() {
       const { selected } = this;
-      this.hidden = false;
+      // this.hidden = false;
       const { start } = this;
       const { end } = this;
       const ID = this.contractId;
@@ -436,6 +445,7 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
+          this.selectDate();
           if (this.transactions.data.length < 1) {
             this.visible = false;
             this.$toast({
