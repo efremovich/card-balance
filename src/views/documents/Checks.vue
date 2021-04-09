@@ -3,23 +3,16 @@
     <b-card
       title="Электронные чеки">
       <div class="col-12">
-        <!-- <p
-          v-if="selected.length !== 0"
-          class="mb-3">
-          Номер карты: {{ selected }}
-        </p> -->
-        <!-- <p class="mb-3">
-          Держатель: {{ contract.company.full_name }}
-        </p>
-      </div>
-      <p>Выберете держателя карты:</p>
-      <v-select
-        v-model="selectedHolder"
-        :options="names"
-        class="w-100 mt-1 mb-1"
-        @input="onChange()" /> -->
+        <p>Выберете держателя карты:</p>
+        <v-select
+
+          v-model="selectedHolder"
+          :options="names"
+          class="w-100 mt-1 mb-1"
+          @input="onChange()" />
         <p>Выберете карту:</p>
         <v-select
+
           v-model="selected"
           multiple
           :options="option"
@@ -273,7 +266,6 @@ import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
-
 import useJwt from '../../auth/jwt/useJwt';
 
 export default {
@@ -333,9 +325,21 @@ export default {
   },
 
   beforeMount() {
-    this.getOptions();
-    console.log();
+    this.getAllCards();
   },
+
+  // mounted() {
+  //   const ID = this.contractId;
+  //   useJwt.getCards(`contract_id=${ID}`).then((response) => {
+  //     if (response.data.status) {
+  //       this.response = response.data;
+  //       this.response.data.forEach((el) => {
+  //         this.option.push(el.number);
+  //         this.names.push(el.holder);
+  //       });
+  //     }
+  //   });
+  // },
 
   methods: {
     isToday() {
@@ -350,25 +354,40 @@ export default {
     },
 
     unique(arr) {
-      this.option = Array.from(new Set(arr));
-      return this.option;
+      this.arr = Array.from(new Set(arr));
+      return this.arr;
     },
 
-    getOptions() {
-      const startDate = `${this.getFirstDay()} 00:00:00`;
-      // eslint-disable-next-line prefer-template
-      const endDate = `${this.isToday()} 00:00:00`;
+    getAllCards() {
       const ID = this.contractId;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${startDate}&endDate=${endDate}`).then((response) => {
+      useJwt.getCards(`contract_id=${ID}`).then((response) => {
         if (response.data.status) {
           this.response = response.data;
           this.response.data.forEach((el) => {
-            this.option.push(el.card_number);
+            this.option.push(el.number);
+            this.names.push(el.holder);
           });
-          this.option = this.unique(this.option);
         }
+        this.names = this.unique(this.names);
+        this.option = this.unique(this.option);
       });
     },
+
+    // getOptions() {
+    //   const startDate = `${this.getFirstDay()} 00:00:00`;
+    //   // eslint-disable-next-line prefer-template
+    //   const endDate = `${this.isToday()} 00:00:00`;
+    //   const ID = this.contractId;
+    //   useJwt.getTransactions(`contract_id=${ID}&startDate=${startDate}&endDate=${endDate}`).then((response) => {
+    //     if (response.data.status) {
+    //       this.response = response.data;
+    //       this.response.data.forEach((el) => {
+    //         this.option.push(el.card_number);
+    //       });
+    //       this.option = this.unique(this.option);
+    //     }
+    //   });
+    // },
 
     getAllTransactions() {
       const startDate = `${this.getFirstDay()} 00:00:00`;
