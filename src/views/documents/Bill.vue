@@ -11,9 +11,15 @@
         class="btn btn-primary mt-1">
         Печать
       </b-button>
+      <b-button
+        class="btn btn-primary mt-1 ml-1"
+        @click="getVisible()">
+        {{ visible ? "Убрать счёт" : "Показать счёт" }}
+      </b-button>
     </b-card>
 
     <div
+      v-if="visible"
       id="check"
       class="A4"
       style="width: 797px;
@@ -360,6 +366,7 @@ export default {
       today: null,
       contract: null,
       summ: '',
+      visible: false,
 
     };
   },
@@ -401,10 +408,11 @@ export default {
       const today = new Date();
       return today.toLocaleDateString();
     },
-    // print() {
-    //   window.print();
-    // },
+    getVisible() {
+      this.visible = !this.visible;
+    },
   },
+
 };
 
 </script>

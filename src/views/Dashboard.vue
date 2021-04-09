@@ -62,7 +62,7 @@
             </b-card-actions>
           </b-overlay>
         </b-col>
-        <b-col md="6">
+        <!-- <b-col md="6">
           <b-overlay
             :show="showLoading"
             variant="black"
@@ -81,7 +81,7 @@
               <hr>
 
               <b-row class="avg-sessions pt-50">
-                <!-- TEMPLATE -->
+
                 <template v-for="( item, index) in currentConsumption.currentConsumption.length">
                   <b-col
                     :key="index"
@@ -98,7 +98,7 @@
               </b-row>
             </b-card-actions>
           </b-overlay>
-        </b-col>
+        </b-col> -->
       </div>
       <div class="row">
         <b-col
@@ -343,7 +343,7 @@ import { ru } from 'apexcharts/dist/locales/ru.json';
 import { $themeColors } from '@themeConfig';
 import { Icon } from 'leaflet';
 import {
-  BCardText, BCol, BButton, BTable, BProgress, BOverlay, BRow, BCardBody,
+  BCardText, BCol, BButton, BTable, BOverlay, BCardBody,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line no-underscore-dangle
@@ -362,12 +362,12 @@ export default {
     BCardActions,
     BCol,
     BCardBody,
-    BRow,
+    // BRow,
     BCardText,
     vSelect,
     BButton,
     BTable,
-    BProgress,
+    // BProgress,
     VueApexCharts,
     LMap,
     LTileLayer,
