@@ -62,6 +62,35 @@
             </b-card-actions>
           </b-overlay>
         </b-col>
+
+        <b-col md="6">
+          <b-overlay
+            :show="showLoading"
+            variant="black"
+            spinner-variant="primary"
+            blur="0"
+            opacity=".75"
+            rounded="sm">
+            <b-card-actions
+              ref="information"
+              action-close
+              action-refresh
+              action-collapse
+              title="Данные организации:"
+              @refresh="refreshInformation('information')">
+              <hr>
+              <div class="d-flex flex-column">
+                <h3>Название: &#8195; {{ userData.company.full_name }}</h3>
+                <h3>ИНН: &#8195; {{ userData.company.inn }}</h3>
+                <h3>
+                  Почтовый адрес: &#8195;
+                  {{ userData.company.legal_address }}
+                </h3>
+              </div>
+            </b-card-actions>
+          </b-overlay>
+        </b-col>
+
         <!-- <b-col md="6">
           <b-overlay
             :show="showLoading"
@@ -198,7 +227,63 @@
           </b-overlay>
         </b-col>
 
-        <b-col md="6">
+        <!-- <b-col md="6">
+          <b-overlay
+            :show="showLoading"
+            variant="black"
+            spinner-variant="primary"
+            blur="0"
+            opacity=".75"
+            rounded="sm">
+            <b-card-actions
+              ref="cardStatistic"
+              title="Статистика по картам"
+              action-refresh
+              @refresh="refreshCardStatistic('cardStatistic')">
+              <hr>
+              <div class="mt-1">
+                <div
+
+                  class="d-flex justify-content-between">
+                  <h4>
+                    Всего карт:
+                  </h4>
+                  <h4>
+                    {{ cardBalance.card_statistic.length }}
+                  </h4>
+                </div>
+              </div>
+
+              <div class="mt-1">
+                <div
+
+                  class="d-flex justify-content-between">
+                  <h4>
+                    Активно:
+                  </h4>
+                  <h4>
+                    {{ getActiveCard }}
+                  </h4>
+                </div>
+              </div>
+
+              <div class="mt-1">
+                <div
+
+                  class="d-flex justify-content-between">
+                  <h4>
+                    Заблокировано:
+                  </h4>
+                  <h4 class="text-danger">
+                    {{ getNotActiveCard }}
+                  </h4>
+                </div>
+              </div>
+            </b-card-actions>
+          </b-overlay>
+        </b-col> -->
+
+        <!-- <b-col md="6">
           <b-overlay
             :show="showLoading"
             variant="black"
@@ -224,7 +309,7 @@
               </div>
             </b-card-actions>
           </b-overlay>
-        </b-col>
+        </b-col> -->
       </div>
 
       <!--Statistics -->

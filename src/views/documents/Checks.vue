@@ -8,8 +8,7 @@
         <b-overlay
           :show="busy"
           rounded="lg"
-          opacity="0.6"
-          @hidden="onHidden">
+          opacity="0.6">
           <template #overlay>
             <div class="d-flex align-items-center">
               <b-spinner
@@ -40,8 +39,7 @@
         <b-overlay
           :show="busy"
           rounded="lg"
-          opacity="0.6"
-          @hidden="onHidden">
+          opacity="0.6">
           <template #overlay>
             <div class="d-flex align-items-center">
               <b-spinner
@@ -79,6 +77,8 @@
           @on-change="selectDate" />
         <b-button
           v-print="'#check'"
+          :disabled="!visible"
+          :variant="color"
           class="btn btn-primary mt-1">
           Печать
         </b-button>
@@ -121,17 +121,12 @@
           v-for="(item,index) in transactions.data">
           <div
             :key="index"
-            class="col-4"
-            style="
-  page-break-after:always;
-            ">
+            class="col-4">
             <!-- begin .check -->
             <div
               class="check"
               style="padding: 40px 0;
             margin: 0 20px;
-
-            page-break-after:always
              ">
               <div
                 class="check__header"
@@ -164,8 +159,8 @@
                   style="display: -webkit-box;
                   display: -ms-flexbox;
                   display: flex;
-                  -webkit-box-align: centerl;
-                  -ms-flex-align: centerl;
+                  -webkit-box-align: center;
+                  -ms-flex-align: center;
                   align-items: centerl;
                   -webkit-box-pack: justify;
                   -ms-flex-pack: justify;
@@ -196,7 +191,7 @@
                   <div
                     class="check__row"
                     style="width: 100%;
-                  page-break-inside: avoid;">
+                  ">
                     <div class="check__label">
                       Бензин <br> автомобильный
                     </div>
@@ -371,6 +366,11 @@ export default {
 
     };
   },
+  computed: {
+    color() {
+      return this.visible ? 'success' : '';
+    },
+  },
 
   created() {
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -392,10 +392,6 @@ export default {
     isToday() {
       const today = new Date();
       return today.toLocaleDateString();
-    },
-
-    onClick() {
-      this.busy = !this.busy;
     },
 
     getFirstDay() {
@@ -442,10 +438,6 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
-          // this.transactions.data.forEach((el) => {
-          //   this.option.push(el.card_number);
-          // });
-          // this.unique(this.option);
         }
 
         return this.transactions;
@@ -811,22 +803,22 @@ h3 {
   font-style: normal;
 }
 
-@media only screen and (min-width: 480px) {
+@media only screen and (min-device-width: 480px) {
   .container {
     max-width: 290px;
   }
 }
-@media only screen and (min-width: 768px) {
+@media only screen and (min-device-width: 768px) {
   .container {
     max-width: 708px;
   }
 }
-@media only screen and (min-width: 1025px) {
+@media only screen and (min-device-width: 1025px) {
   .container {
     max-width: 964px;
   }
 }
-@media only screen and (min-width: 1230px) {
+@media only screen and (min-device-width: 1230px) {
   .container {
     max-width: 1170px;
   }
@@ -836,33 +828,51 @@ h3 {
   text-align: end;
 }
 
-@media only screen and (min-width: 1024px) {
+@media only screen and (min-device-width: 1024px) {
   .col-4 {
-    -ms-flex: 0 0 33.33333%;
-    flex: 0 0 33.33333%;
+    // -ms-flex: 0 0 33.33333%;
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 33.33333%;
     max-width: 320px;
   }
 }
 
 @media only screen and(min-device-width: 768px) and (max-device-width: 1023px) {
   .col-4 {
-    -ms-flex: 0 0 33.33333%;
-    flex: 0 0 33.33333%;
+    display: flex;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 33.33333%;
     max-width: 50.33333%;
   }
 }
 
 @media only screen and(min-device-width: 620px) and (max-device-width: 767px) {
   .col-4 {
-    -ms-flex: 0 0 33.33333%;
-    flex: 0 0 33.33333%;
+    display: flex;
+    display: -moz-flex;
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: flex;
+    // -ms-flex: 0 0 33.33333%;
+    // flex: 0 0 33.33333%;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 33.33333%;
     max-width: 60.33333%;
   }
 }
 
 @media only screen and (min-device-width: 380px) and (max-device-width: 619px) {
   .col-4 {
-    -ms-flex: 0 0 33.33333%;
+    display: flex;
+    display: -moz-flex;
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: flex;
+    // -ms-flex: 0 0 33.33333%;
     flex: 0 0 33.33333%;
     max-width: 100%;
   }
