@@ -2,6 +2,7 @@ import Vue from 'vue';
 import { ToastPlugin, ModalPlugin } from 'bootstrap-vue';
 import VueCompositionAPI from '@vue/composition-api';
 import excel from 'vue-excel-export';
+import VueHtmlToPaper from 'vue-html-to-paper';
 import router from './router';
 import store from './store';
 import App from './App.vue';
@@ -18,10 +19,24 @@ import '@/libs/sweet-alerts';
 import '@/libs/vue-select';
 import '@/libs/tour';
 
+const options = {
+  'name': '_blank',
+  // 'specs': [
+  //   'fullscreen=no',
+  //   'titlebar=yes',
+  //   'scrollbars=no',
+  // ],
+  'styles': [
+    'https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css',
+
+  ],
+};
+
 Vue.use(excel);
 // BSV Plugin Registration
 Vue.use(ToastPlugin);
 Vue.use(ModalPlugin);
+Vue.use(VueHtmlToPaper, options);
 // Vue.use(VueExcelXlsx);
 
 // Composition API

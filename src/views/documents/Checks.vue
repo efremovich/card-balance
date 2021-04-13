@@ -76,12 +76,14 @@
           :config="config"
           @on-change="selectDate" />
         <b-button
-          v-print="'#check'"
           :disabled="!visible"
           :variant="color"
-          class="btn btn-primary mt-1">
+          class="btn btn-primary mt-1"
+          @click="print">
           Печать
         </b-button>
+
+        <p> <!-- v-print="'#check'" --> </p>
 
         <b-button
           class="btn btn-primary mt-1 ml-3"
@@ -121,32 +123,29 @@
           v-for="(item,index) in transactions.data">
           <div
             :key="index"
-            class="col-4">
+            class="col-5">
             <!-- begin .check -->
             <div
-              class="check"
-              style="padding: 40px 0;
-            margin: 0 20px;
-             ">
+              class="check">
               <div
-                class="check__header"
+                class="d-flex flex-column align-items-center"
                 style="margin-bottom: 20px;
               ">
                 <!-- begin .check__header -->
                 <div
-                  class="check__organization"
-                  style="text-align: center;
-                ">
+                  class="check__organization">
                   {{ item.pos.seller }}
                 </div>
                 <!-- end .check__header -->
 
                 <div
-                  class="check__organization"
-                  style="text-align: center;
-                ">
-                  Адрес места расчётов:<br>
-                  {{ item.pos.address }}
+                  class="d-flex flex-column">
+                  <p class="text-center">
+                    Адрес места расчётов:
+                  </p>
+                  <p class="text-center">
+                    {{ item.pos.address }}
+                  </p>
                 </div>
               </div>
 
@@ -178,10 +177,12 @@
                 </div>
 
                 <div
-                  class="check__row"
+                  class="d-flex justify-content-between mb-1"
                   style="width: 100%;
                 ">
-                  <div class="check__label" />
+                  <div class="check__label">
+                    Тип операции
+                  </div>
                   <div class="check__value">
                     {{ item.operation_type }}
                   </div>
@@ -189,9 +190,9 @@
 
                 <div class="check__column">
                   <div
-                    class="check__row"
+                    class="d-flex justify-content-between mb-1"
                     style="width: 100%;
-                  ">
+                ">
                     <div class="check__label">
                       Бензин <br> автомобильный
                     </div>
@@ -201,8 +202,9 @@
                   </div>
 
                   <div
-                    class="check__row"
-                    style="width: 100%;">
+                    class="d-flex justify-content-between mb-1"
+                    style="width: 100%;
+                ">
                     <div class="check__label">
                       Объем топлива
                     </div>
@@ -212,8 +214,9 @@
                   </div>
 
                   <div
-                    class="check__row"
-                    style="width: 100%;">
+                    class="d-flex justify-content-between mb-1"
+                    style="width: 100%;
+                ">
                     <div class="check__label">
                       Цена
                     </div>
@@ -223,8 +226,9 @@
                   </div>
 
                   <div
-                    class="check__row"
-                    style="width: 100%;">
+                    class="d-flex justify-content-between mb-1"
+                    style="width: 100%;
+                ">
                     <div class="check__label">
                       Сумма
                     </div>
@@ -232,9 +236,11 @@
                       {{ item.summ }}
                     </div>
                   </div>
+
                   <div
-                    class="check__row"
-                    style="width: 100%;">
+                    class="d-flex justify-content-between mb-1"
+                    style="width: 100%;
+                ">
                     <div class="check__label">
                       ТК:
                     </div>
@@ -278,15 +284,15 @@
                   <div
                     class="check__row check__row--black"
                     style="width: 100%;
-                 -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  text-transform: uppercase;
-  text-align: center;
-  color: #fff;
-  background-color: #000;
-  -webkit-transition: all 0.25s ease;
-  transition: all 0.25s ease;">
+                    -webkit-box-pack: center;
+                    -ms-flex-pack: center;
+                    justify-content: center;
+                    text-transform: uppercase;
+                    text-align: center;
+                    color: #fff;
+                    background-color: #000;
+                    -webkit-transition: all 0.25s ease;
+                    transition: all 0.25s ease;">
                     ОДОБРЕНО (RC: 0)
                   </div>
                 <!-- end .check__row -->
@@ -359,7 +365,7 @@ export default {
       config: {
         mode: 'range',
         maxDate: 'today',
-        defaultDate: ['01.04.2021 00:00:00', 'today'],
+        // defaultDate: ['01.04.2021 00:00:00', 'today'],
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
@@ -411,11 +417,15 @@ export default {
       useJwt.getCards(`contract_id=${ID}`).then((response) => {
         if (response.data.status) {
           this.response = response.data;
-          this.response.data.forEach((el) => {
+
+          this.response.cards.forEach((el) => {
             this.option.push(el.number);
+          });
+          this.response.holders.forEach((el) => {
             this.names.push(el.holder);
           });
         }
+
         this.busy = false;
         this.names = this.unique(this.names);
         this.names = this.names.filter((el) => el !== '');
@@ -425,28 +435,37 @@ export default {
 
     getAllTransactions() {
       const holder = this.selectedHolder;
-      const date = this.rangeDate;
-      const newDate = Array.from(date).filter((n) => n !== '—');
-      const arr = (newDate.join('').split('  '));
-      // eslint-disable-next-line prefer-template
-      this.start = arr[0] + ' 00:00:00';
-      // eslint-disable-next-line prefer-template
-      this.end = arr[1] + ' 00:00:00';
+      // const date = this.rangeDate;
+      // const newDate = Array.from(date).filter((n) => n !== '—');
+      // const arr = (newDate.join('').split('  '));
+      // // eslint-disable-next-line prefer-template
+      // this.start = arr[0] + ' 00:00:00';
+      // // eslint-disable-next-line prefer-template
+      // this.end = arr[1] + ' 00:00:00';
       const ID = this.contractId;
       const { selected } = this;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}&holder=${holder}`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&holder=${holder}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
         }
-
         return this.transactions;
       });
+      setTimeout(this.clickPrint, 3000);
+    },
+
+    print() {
+      this.getAllTransactions();
+    },
+
+    clickPrint() {
+      this.$htmlToPaper('check');
     },
 
     selectDate() {
       const holder = this.selectedHolder;
       const date = this.rangeDate;
+      const { selected } = this;
       const newDate = Array.from(date).filter((n) => n !== '—');
       const arr = (newDate.join('').split('  '));
       // eslint-disable-next-line prefer-template
@@ -454,7 +473,6 @@ export default {
       // eslint-disable-next-line prefer-template
       this.end = arr[1] + ' 00:00:00';
       const ID = this.contractId;
-      const { selected } = this;
       useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}&holder=${holder}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
@@ -540,11 +558,12 @@ export default {
 <style lang="scss" scoped>
 @import "@core/scss/vue/libs/vue-select.scss";
 @import "@core/scss/vue/libs/vue-flatpicker.scss";
+// @import "../../assets/scss/components/Checks";
 
 .flex {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-evenly !important;
 }
 
 .container,
@@ -829,18 +848,18 @@ h3 {
 }
 
 @media only screen and (min-device-width: 1024px) {
-  .col-4 {
+  .col-5 {
     // -ms-flex: 0 0 33.33333%;
     display: flex;
     flex-grow: 0;
     flex-shrink: 0;
-    flex-basis: 33.33333%;
-    max-width: 320px;
+    flex-basis: 35.33333%;
+    max-width: 330px;
   }
 }
 
 @media only screen and(min-device-width: 768px) and (max-device-width: 1023px) {
-  .col-4 {
+  .col-5 {
     display: flex;
     flex-grow: 0;
     flex-shrink: 0;
@@ -850,7 +869,7 @@ h3 {
 }
 
 @media only screen and(min-device-width: 620px) and (max-device-width: 767px) {
-  .col-4 {
+  .col-5 {
     display: flex;
     display: -moz-flex;
     display: -webkit-flex;
@@ -866,7 +885,7 @@ h3 {
 }
 
 @media only screen and (min-device-width: 380px) and (max-device-width: 619px) {
-  .col-4 {
+  .col-5 {
     display: flex;
     display: -moz-flex;
     display: -webkit-flex;

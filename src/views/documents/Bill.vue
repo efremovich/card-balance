@@ -1,47 +1,50 @@
 <template>
   <div>
-    <b-card title="Создать счёт по договору №:">
-      <b-form-input v-model="contract" />
+    <b-card>
+      <p>Создать счёт по договору №  {{ contract }}</p>
+      <b-form-input
+        v-model="text" />
       <b-form-input
         v-model="summ"
         placeholder="Введите сумму"
-        class="mt-1" />
+        class="mt-1"
+        @input="getVisible" />
       <b-button
+        v-if="visible"
         v-print="'#check'"
-        :disabled="!visible"
-        :variant="color"
+        variant="success"
         class="btn btn-primary mt-1">
         Печать
       </b-button>
-      <b-button
+      <!-- <b-button
 
         class="btn btn-primary mt-1 ml-1"
         @click="getVisible()">
         {{ visible ? "Убрать счёт" : "Показать счёт" }}
-      </b-button>
+      </b-button> -->
 
       <div
         v-show="visible"
         id="check"
         class="A4 mt-2 flex-column mx-auto"
         style="max-width: 797px;
-  max-height: 1127px;
-  background-color: white;">
+        max-height: 1127px;
+        background-color: white;">
         <div
           class="grid-container"
           style="border: 1px solid black;
-  width: 90%;
-  height: 300px;
-  margin: 0 auto;
-  position: relative;
-  top: 50px;">
+          width: 90%;
+          height: 300px;
+          margin: 0 auto;
+          position: relative;
+          top: 50px;">
           <div
             class="bank-pol"
             style="border-right: 1px solid black;
-  border-bottom: 1px solid black;">
+            border-bottom: 1px solid black;">
             <p
               style="text-align: left;
-    padding-left: 10px;padding-top: 10px;">
+              padding-left: 10px;padding-top: 10px;">
               {{ getInfo.contract.pay_account.name }}
               <br>
               Банк получателя
@@ -227,7 +230,7 @@
                 style="
   text-align: left;
     padding-left: 10px;">
-                Оплата согласно договора № {{ contract }}
+                {{ text }}№ {{ contract }}
               </p>
             </div>
             <div
@@ -370,6 +373,8 @@ export default {
       contract: null,
       summ: '',
       visible: false,
+      // eslint-disable-next-line no-undef
+      text: 'Оплата согласно договора ',
 
     };
   },
@@ -387,9 +392,6 @@ export default {
         currency: 'RUB',
       });
     },
-    color() {
-      return this.visible ? 'success' : '';
-    },
 
     getRandom() {
       return Math.floor(Math.random() * 10000);
@@ -401,7 +403,6 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.getInfo = response.data;
-          console.log(this.getInfo);
           const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
           this.contract = `${this.getInfo.contract.number} от ${dateContract}`;
         });
@@ -415,7 +416,7 @@ export default {
       return today.toLocaleDateString();
     },
     getVisible() {
-      this.visible = !this.visible;
+      this.visible = true;
     },
   },
 

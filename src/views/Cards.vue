@@ -1,34 +1,3 @@
-Skip to content
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
-
-@Igo987
-efremovich
-/
-card-balance
-1
-01
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-card-balance/src/views/Cards.vue
-@Igo987
-Igo987 fix
-Latest commit a3ee37b 3 hours ago
- History
- 2 contributors
-@Igo987@efremovich
-508 lines (459 sloc)  12.2 KB
-
 <template>
   <div>
     <b-row>
@@ -420,18 +389,18 @@ export default {
     this.totalRows = this.items.length;
   },
   methods: {
-    info(item, index, button) {
-      this.infoModal.title = `Row index: ${index}`;
-      this.infoModal.content = JSON.stringify(item, null, 2);
-      this.$root.$emit('bv::show::modal', this.infoModal.id, button);
-    },
-    resetInfoModal() {
-      this.infoModal.title = '';
-      this.infoModal.content = '';
-    },
-    cons() {
-      console.log(55);
-    },
+    // info(item, index, button) {
+    //   this.infoModal.title = `Row index: ${index}`;
+    //   this.infoModal.content = JSON.stringify(item, null, 2);
+    //   this.$root.$emit('bv::show::modal', this.infoModal.id, button);
+    // },
+    // resetInfoModal() {
+    //   this.infoModal.title = '';
+    //   this.infoModal.content = '';
+    // },
+    // cons() {
+    //   console.log(55);
+    // },
     getPopularityColor(num) {
       if (Number(num) > 90) return 'success';
       if (Number(num) > 50) return 'secondary';

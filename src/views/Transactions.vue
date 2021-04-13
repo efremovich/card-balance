@@ -259,9 +259,11 @@ export default {
       pageOptions: [3, 5, 10],
       totalRows: null,
       contract: null,
+      start: null,
+      end: null,
       contractId: null,
       currentPage: 1,
-      sortBy: '',
+      sortBy: 'date',
       sortDesc: false,
       sortDirection: 'asc',
       filter: null,
@@ -275,7 +277,7 @@ export default {
       config: {
         mode: 'range',
         maxDate: 'today',
-        defaultDate: ['01-03-2021', 'today'],
+        // defaultDate: ['01-03-2021', 'today'],
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
@@ -283,14 +285,17 @@ export default {
         {
           key: 'service.full_name',
           label: 'Товар/услуга',
+          sortable: true,
         },
         {
           key: 'date',
           label: 'Дата',
+          sortable: true,
         },
         {
           key: 'summ',
           label: 'Сумма',
+          sortable: true,
         },
       ],
       columns: {
@@ -302,6 +307,21 @@ export default {
         },
         'Сумма': {
           field: 'summ',
+        },
+        'Держатель': {
+          field: 'holder',
+        },
+        'Номер договора': {
+          field: 'contract.number',
+        },
+        'Номер карты': {
+          field: 'card_number',
+        },
+        'Тип операции': {
+          field: 'operation_type',
+        },
+        'Адрес операции': {
+          field: 'pos.address',
         },
       },
       items: {
@@ -354,18 +374,20 @@ export default {
     if (userData) {
       this.contract = userData;
       this.contractId = this.contract.contract.id;
+      this.start = `${this.getFirstDay()} 00:00:00`;
+      this.end = `${this.isToday()} 00:00:00`;
+      this.rangeDate = [this.start, this.end];
     }
     return this.contract;
   },
 
   beforeMount() {
-    // eslint-disable-next-line no-template-curly-in-string
-    // eslint-disable-next-line quotes
     const ID = this.contractId;
-    useJwt.getTransactions(`contract_id=${ID}&startDate=01.03.2021 00:00:00&endDate=01.04.2021 00:00:00&card_nuber=7826010113259838`).then((response) => {
+    useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
       if (response.data.status) {
         this.transactions = response.data;
         this.totalRows = this.transactions.data.length;
+        console.log(this.transactions);
       }
       return this.transactions;
     });
@@ -444,6 +466,17 @@ export default {
     //   XLSX.writeFile(wb, 'Транзакции.xlsx');
     // },
 
+    isToday() {
+      const today = new Date();
+      return today.toLocaleDateString();
+    },
+
+    getFirstDay() {
+      const date = new Date();
+      const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
+      return firstDay;
+    },
+
     selectDate() {
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
@@ -453,7 +486,7 @@ export default {
       // eslint-disable-next-line prefer-template
       const end = arr[1] + ' 00:00:00';
       const ID = this.contractId;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_nuber=7826010113259838`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.length;
