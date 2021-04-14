@@ -24,8 +24,7 @@
       </b-avatar>
     </template>
 
-    <b-dropdown-item
-      :to="{ name: 'pages-profile' }">
+    <b-dropdown-item :to="{ name: 'pages-profile' }">
       <link class="d-flex align-items-center">
       <feather-icon
         size="16"
@@ -129,6 +128,15 @@ export default {
       avatarText,
     };
   },
+  beforeCreate() {
+    useJwt.getCurrenUser().then((response) => {
+      if (!response.status) {
+        this.$ability.update(initialAbility);
+        // Redirect to login page
+        this.$router.push({ name: 'auth-login' });
+      }
+    });
+  },
   methods: {
     logout() {
       // Remove userData from localStorage
@@ -148,3 +156,4 @@ export default {
   },
 };
 </script>
+<style></style>
