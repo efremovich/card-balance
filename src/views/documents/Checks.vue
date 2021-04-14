@@ -118,7 +118,7 @@
       <div
         v-if="visible"
         id="check"
-        class="flex">
+        class="d-flex flex-row flex-wrap justify-content-between">
         <template
           v-for="(item,index) in transactions.data">
           <div
@@ -177,7 +177,7 @@
                 </div>
 
                 <div
-                  class="d-flex justify-content-between mb-1"
+                  class="d-flex justify-content-between"
                   style="width: 100%;
                 ">
                   <div class="check__label">
@@ -190,7 +190,7 @@
 
                 <div class="check__column">
                   <div
-                    class="d-flex justify-content-between mb-1"
+                    class="d-flex justify-content-between"
                     style="width: 100%;
                 ">
                     <div class="check__label">
@@ -202,7 +202,7 @@
                   </div>
 
                   <div
-                    class="d-flex justify-content-between mb-1"
+                    class="d-flex justify-content-between"
                     style="width: 100%;
                 ">
                     <div class="check__label">
@@ -214,7 +214,7 @@
                   </div>
 
                   <div
-                    class="d-flex justify-content-between mb-1"
+                    class="d-flex justify-content-between"
                     style="width: 100%;
                 ">
                     <div class="check__label">
@@ -226,7 +226,7 @@
                   </div>
 
                   <div
-                    class="d-flex justify-content-between mb-1"
+                    class="d-flex justify-content-between"
                     style="width: 100%;
                 ">
                     <div class="check__label">
@@ -238,7 +238,7 @@
                   </div>
 
                   <div
-                    class="d-flex justify-content-between mb-1"
+                    class="d-flex justify-content-between"
                     style="width: 100%;
                 ">
                     <div class="check__label">
@@ -250,9 +250,13 @@
                   </div>
 
                   <div
-                    class="check__row"
-                    style="width: 100%;">
+                    class="d-flex justify-content-between"
+                    style="width: 100%;
+                ">
                     <div class="check__label">
+                      Дата:
+                    </div>
+                    <div class="check__value">
                       {{ item.date | formatDate }}
                     </div>
                   </div>
@@ -269,7 +273,7 @@
                   </div>
 
                   <div
-                    class="check__row"
+                    class="check__row mb-1"
                     style="width: 100%;
                                     ">
                     <div class="check__label">
@@ -477,6 +481,7 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
+          console.log(this.transactions);
         }
 
         return this.transactions;

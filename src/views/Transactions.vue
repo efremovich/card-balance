@@ -378,6 +378,7 @@ export default {
       this.end = `${this.isToday()} 00:00:00`;
       this.rangeDate = [this.start, this.end];
     }
+    console.log(this.contract, this.start, this.contractId);
     return this.contract;
   },
 
