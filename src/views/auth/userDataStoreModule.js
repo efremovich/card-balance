@@ -2,10 +2,8 @@ import axios from '@axios';
 
 export default {
   namespaced: true,
-  state: {
-  },
-  getters: {
-  },
+  state: {},
+  getters: {},
   mutations: {
     LOGUOT(state) {
       state.accessToken = '';

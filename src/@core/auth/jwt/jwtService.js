@@ -49,10 +49,10 @@ export default class JwtService {
               this.isAlreadyFetchingAccessToken = false;
 
               // Update accessToken in localStorage
-              this.setToken(r.data.accessToken);
-              this.setRefreshToken(r.data.refreshToken);
+              this.setToken(r.data.account.accessToken);
+              this.setRefreshToken(r.data.account.refreshToken);
 
-              this.onAccessTokenFetched(r.data.accessToken);
+              this.onAccessTokenFetched(r.data.account.accessToken);
             });
           }
           const retryOriginalRequest = new Promise((resolve) => {
@@ -188,9 +188,7 @@ export default class JwtService {
   async getTransactions(params) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
-      const response = await this.axiosIns.get(
-        `/api/transactions?${params}`,
-      );
+      const response = await this.axiosIns.get(`/api/transactions?${params}`);
       return response;
     }
     return { data: { status: false } };
