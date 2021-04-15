@@ -378,7 +378,6 @@ export default {
       this.end = `${this.isToday()} 00:00:00`;
       this.rangeDate = [this.start, this.end];
     }
-    console.log(this.contract, this.start, this.contractId);
     return this.contract;
   },
 
@@ -388,7 +387,6 @@ export default {
       if (response.data.status) {
         this.transactions = response.data;
         this.totalRows = this.transactions.data.length;
-        console.log(this.transactions);
       }
       return this.transactions;
     });

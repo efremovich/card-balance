@@ -91,6 +91,13 @@
           @click="toogle">
           {{ visible ? "Скрыть чеки" : "Показать чеки" }}
         </b-button>
+
+        <b-button
+          class="btn btn-primary mt-1 ml-3"
+
+          @click="download">
+          Скачать чеки
+        </b-button>
         <b-pagination
           v-if="hidden"
           v-model="currentPage"
@@ -115,35 +122,52 @@
         </b-pagination>
       </div>
       <!-- </b-card> -->
+
       <div
         v-if="visible"
-        id="check"
-        class="d-flex flex-row flex-wrap justify-content-between">
+        id="checks"
+        ref="pdf"
+
+        class="d-flex flex-row flex-wrap justify-content-around">
         <template
           v-for="(item,index) in transactions.data">
+          <p
+            v-if="item.card_number[index] === item.card_number[index+2]"
+            :key="item.card_number"
+            class="text-center">
+            Операции по карте   {{ item.card_number }} <br> за период {{ rangeDate }}
+          </p>
           <div
+            id="check"
             :key="index"
             class="col-5">
             <!-- begin .check -->
             <div
+
               class="check">
               <div
                 class="d-flex flex-column align-items-center"
-                style="margin-bottom: 20px;
+                style="margin-bottom: 20px; page-break-inside: avoid;
               ">
                 <!-- begin .check__header -->
                 <div
-                  class="check__organization">
+                  class="check__organization"
+                  style="page-break-inside: avoid;">
                   {{ item.pos.seller }}
                 </div>
                 <!-- end .check__header -->
 
                 <div
-                  class="d-flex flex-column">
-                  <p class="text-center">
+                  class="d-flex flex-column"
+                  style="page-break-inside: avoid;">
+                  <p
+                    class="text-center"
+                    style="page-break-inside: avoid;">
                     Адрес места расчётов:
                   </p>
-                  <p class="text-center">
+                  <p
+                    class="text-center"
+                    style="page-break-inside: avoid;">
                     {{ item.pos.address }}
                   </p>
                 </div>
@@ -152,7 +176,8 @@
               <!-- begin .check__content -->
               <div
                 class="check__content"
-                style="margin-bottom: 20px;">
+                style="margin-bottom: 20px;
+                page-break-inside: avoid;">
                 <div
                   class="check__row"
                   style="display: -webkit-box;
@@ -165,82 +190,107 @@
                   -ms-flex-pack: justify;
                   justify-content: space-between;
                   line-height: 1.4;
-  ">
+                  page-break-inside: avoid;
+              ">
                   <div
-                    class="check__label">
+                    class="check__label"
+                    style="page-break-inside: avoid;">
                     ИНН:
                   </div>
                   <div
-                    class="check__value">
+                    class="check__value"
+                    style="page-break-inside: avoid;">
                     2309051942
                   </div>
                 </div>
 
                 <div
                   class="d-flex justify-content-between"
-                  style="width: 100%;
+                  style="width: 100%;page-break-inside: avoid;
                 ">
-                  <div class="check__label">
+                  <div
+                    class="check__label"
+                    style="page-break-inside: avoid;">
                     Тип операции
                   </div>
-                  <div class="check__value">
+                  <div
+                    class="check__value"
+                    style="page-break-inside: avoid;">
                     {{ item.operation_type }}
                   </div>
                 </div>
 
-                <div class="check__column">
+                <div
+                  class="check__column"
+                  style="page-break-inside: avoid;">
                   <div
                     class="d-flex justify-content-between"
-                    style="width: 100%;
+                    style="width: 100%;page-break-inside: avoid;
                 ">
-                    <div class="check__label">
+                    <div
+                      class="check__label"
+                      style="page-break-inside: avoid;">
                       Бензин <br> автомобильный
                     </div>
-                    <div class="check__value">
+                    <div
+                      class="check__value"
+                      style="page-break-inside: avoid;">
                       {{ item.service.full_name }}
                     </div>
                   </div>
 
                   <div
                     class="d-flex justify-content-between"
-                    style="width: 100%;
-                ">
-                    <div class="check__label">
+                    style="width: 100%;page-break-inside: avoid;
+                  ">
+                    <div
+                      class="check__label"
+                      style="page-break-inside: avoid;">
                       Объем топлива
                     </div>
-                    <div class="check__value">
+                    <div
+                      class="check__value"
+                      style="page-break-inside: avoid;">
                       {{ item.quantity }}
                     </div>
                   </div>
 
                   <div
                     class="d-flex justify-content-between"
-                    style="width: 100%;
-                ">
-                    <div class="check__label">
+                    style="width: 100%;page-break-inside: avoid;
+                  ">
+                    <div
+                      class="check__label"
+                      style="page-break-inside: avoid;">
                       Цена
                     </div>
-                    <div class="check__value">
+                    <div
+                      class="check__value"
+                      style="page-break-inside: avoid;">
                       определяется договором
                     </div>
                   </div>
 
                   <div
                     class="d-flex justify-content-between"
-                    style="width: 100%;
-                ">
-                    <div class="check__label">
+                    style="width: 100%;page-break-inside: avoid;
+                  ">
+                    <div
+                      class="check__label"
+                      style="page-break-inside: avoid;">
                       Сумма
                     </div>
-                    <div class="check__value">
+                    <div
+                      class="check__value"
+                      style="page-break-inside: avoid;">
                       {{ item.summ }}
                     </div>
                   </div>
 
                   <div
                     class="d-flex justify-content-between"
-                    style="width: 100%;
-                ">
+                    style="width: 100%;page-break-inside: avoid;
+                  ">
                     <div class="check__label">
                       ТК:
                     </div>
@@ -251,8 +301,8 @@
 
                   <div
                     class="d-flex justify-content-between"
-                    style="width: 100%;
-                ">
+                    style="width: 100%;page-break-inside: avoid;
+                  ">
                     <div class="check__label">
                       Дата:
                     </div>
@@ -263,7 +313,7 @@
 
                   <div
                     class="check__row"
-                    style="width: 100%;">
+                    style="width: 100%;page-break-inside: avoid;">
                     <div class="check__label">
                       RNN
                     </div>
@@ -274,12 +324,14 @@
 
                   <div
                     class="check__row mb-1"
-                    style="width: 100%;
+                    style="width: 100%;page-break-inside: avoid;
                                     ">
                     <div class="check__label">
                       Операция подтверждена
                     </div>
-                    <div class="check__value">
+                    <div
+                      id="end"
+                      class="check__value">
                       Вводом ПИН
                     </div>
                   </div>
@@ -296,20 +348,14 @@
                     color: #fff;
                     background-color: #000;
                     -webkit-transition: all 0.25s ease;
-                    transition: all 0.25s ease;">
+                    transition: all 0.25s ease;
+                    page-break-inside: avoid;">
                     ОДОБРЕНО (RC: 0)
                   </div>
-                <!-- end .check__row -->
                 </div>
-              <!-- end .check__content -->
               </div>
-            <!-- end .check -->
             </div>
-          <!-- end .col-4 -->
-
-          <!-- end .row -->
           </div>
-        <!-- </div> -->
         </template>
       </div>
     </b-card>
@@ -320,12 +366,14 @@
 import {
   BCard, BButton, BPagination, BOverlay, BSpinner,
 } from 'bootstrap-vue';
-
+import html2pdf from 'html2pdf.js';
 import print from 'vue-print-nb';
 import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+
+// import JSPDF from 'jspdf';
 import useJwt from '../../auth/jwt/useJwt';
 
 export default {
@@ -337,6 +385,7 @@ export default {
     BPagination,
     BOverlay,
     BSpinner,
+
   },
 
   directives: {
@@ -448,13 +497,17 @@ export default {
       // this.end = arr[1] + ' 00:00:00';
       const ID = this.contractId;
       const { selected } = this;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&holder=${holder}&card_number=${selected}`).then((response) => {
-        if (response.data.status) {
-          this.transactions = response.data;
-          this.totalRows = this.transactions.tol.Total;
-        }
-        return this.transactions;
-      });
+      // eslint-disable-next-line consistent-return
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&holder=${holder}&card_number=${selected}`)
+        .then((response) => {
+          if (response.data.status) {
+            this.transactions = response.data;
+            this.totalRows = this.transactions.tol.Total;
+            this.transactions.data = this.order(this.transactions.data);
+            console.log(this.transactions.data.map((el) => el.card_number));
+          }
+        });
+
       setTimeout(this.clickPrint, 3000);
     },
 
@@ -462,8 +515,40 @@ export default {
       this.getAllTransactions();
     },
 
+    order(arr) {
+      return arr.slice().sort((a, b) => a.card_number - b.card_number);
+      // this.transactions.data.forEach((el) => console.log(el.card_number));
+    },
+
     clickPrint() {
-      this.$htmlToPaper('check');
+      this.$htmlToPaper('checks');
+    },
+
+    download() {
+      const holder = this.selectedHolder;
+      const ID = this.contractId;
+      const { selected } = this;
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&holder=${holder}&card_number=${selected}`).then((response) => {
+        if (response.data.status) {
+          this.transactions = response.data;
+        }
+        return this.order(this.transactions.data);
+      });
+      setTimeout(this.getAllChecks, 4000);
+    },
+
+    getAllChecks() {
+      // const html = this.$refs.pdf.innerHTML;
+      // console.log(html);
+      html2pdf(this.$refs.pdf, {
+        filename: 'Чеки.pdf',
+        image: { type: 'png', quality: 1 },
+        html2canvas: { dpi: 140, letterRendering: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+      });
+      html2pdf().set({
+        pagebreak: { mode: 'avoid-all', after: '#end' },
+      });
     },
 
     selectDate() {
@@ -481,10 +566,9 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
-          console.log(this.transactions);
         }
 
-        return this.transactions;
+        return this.order(this.transactions.data);
       });
     },
 
@@ -539,7 +623,7 @@ export default {
             });
           }
         }
-        return this.transactions;
+        return this.order(this.transactions.data);
       });
       // if (this.selected.length < 1) {
       //   this.getAllTransactions();
@@ -563,7 +647,6 @@ export default {
 <style lang="scss" scoped>
 @import "@core/scss/vue/libs/vue-select.scss";
 @import "@core/scss/vue/libs/vue-flatpicker.scss";
-// @import "../../assets/scss/components/Checks";
 
 .flex {
   display: flex !important;

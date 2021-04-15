@@ -27,7 +27,7 @@
         v-show="visible"
         id="check"
         class="A4 mt-2 flex-column mx-auto"
-        style="max-width: 797px;
+        style="max-width: 1100px;
         max-height: 1127px;
         background-color: white;">
         <div
