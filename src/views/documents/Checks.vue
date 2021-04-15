@@ -504,7 +504,6 @@ export default {
             this.transactions = response.data;
             this.totalRows = this.transactions.tol.Total;
             this.transactions.data = this.order(this.transactions.data);
-            console.log(this.transactions.data.map((el) => el.card_number));
           }
         });
 
@@ -517,7 +516,6 @@ export default {
 
     order(arr) {
       return arr.slice().sort((a, b) => a.card_number - b.card_number);
-      // this.transactions.data.forEach((el) => console.log(el.card_number));
     },
 
     clickPrint() {
