@@ -15,7 +15,6 @@
               title="Информация по договору"
               action-refresh
               @refresh="refreshMainCard('userDate')">
-              <hr>
               <b-card-text fluid>
                 <h3>
                   Баланс: <span> {{

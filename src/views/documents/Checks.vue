@@ -125,238 +125,11 @@
 
       <div
         v-if="visible"
-        id="checks"
+        id="check"
         ref="pdf"
 
         class="d-flex flex-row flex-wrap justify-content-around">
-        <template
-          v-for="(item,index) in transactions.data">
-          <p
-            v-if="item.card_number[index] === item.card_number[index+2]"
-            :key="item.card_number"
-            class="text-center">
-            Операции по карте   {{ item.card_number }} <br> за период {{ rangeDate }}
-          </p>
-          <div
-            id="check"
-            :key="index"
-            class="col-5">
-            <!-- begin .check -->
-            <div
-
-              class="check">
-              <div
-                class="d-flex flex-column align-items-center"
-                style="margin-bottom: 20px; page-break-inside: avoid;
-              ">
-                <!-- begin .check__header -->
-                <div
-                  class="check__organization"
-                  style="page-break-inside: avoid;">
-                  {{ item.pos.seller }}
-                </div>
-                <!-- end .check__header -->
-
-                <div
-                  class="d-flex flex-column"
-                  style="page-break-inside: avoid;">
-                  <p
-                    class="text-center"
-                    style="page-break-inside: avoid;">
-                    Адрес места расчётов:
-                  </p>
-                  <p
-                    class="text-center"
-                    style="page-break-inside: avoid;">
-                    {{ item.pos.address }}
-                  </p>
-                </div>
-              </div>
-
-              <!-- begin .check__content -->
-              <div
-                class="check__content"
-                style="margin-bottom: 20px;
-                page-break-inside: avoid;">
-                <div
-                  class="check__row"
-                  style="display: -webkit-box;
-                  display: -ms-flexbox;
-                  display: flex;
-                  -webkit-box-align: center;
-                  -ms-flex-align: center;
-                  align-items: centerl;
-                  -webkit-box-pack: justify;
-                  -ms-flex-pack: justify;
-                  justify-content: space-between;
-                  line-height: 1.4;
-                  page-break-inside: avoid;
-              ">
-                  <div
-                    class="check__label"
-                    style="page-break-inside: avoid;">
-                    ИНН:
-                  </div>
-                  <div
-                    class="check__value"
-                    style="page-break-inside: avoid;">
-                    2309051942
-                  </div>
-                </div>
-
-                <div
-                  class="d-flex justify-content-between"
-                  style="width: 100%;page-break-inside: avoid;
-                ">
-                  <div
-                    class="check__label"
-                    style="page-break-inside: avoid;">
-                    Тип операции
-                  </div>
-                  <div
-                    class="check__value"
-                    style="page-break-inside: avoid;">
-                    {{ item.operation_type }}
-                  </div>
-                </div>
-
-                <div
-                  class="check__column"
-                  style="page-break-inside: avoid;">
-                  <div
-                    class="d-flex justify-content-between"
-                    style="width: 100%;page-break-inside: avoid;
-                ">
-                    <div
-                      class="check__label"
-                      style="page-break-inside: avoid;">
-                      Бензин <br> автомобильный
-                    </div>
-                    <div
-                      class="check__value"
-                      style="page-break-inside: avoid;">
-                      {{ item.service.full_name }}
-                    </div>
-                  </div>
-
-                  <div
-                    class="d-flex justify-content-between"
-                    style="width: 100%;page-break-inside: avoid;
-                  ">
-                    <div
-                      class="check__label"
-                      style="page-break-inside: avoid;">
-                      Объем топлива
-                    </div>
-                    <div
-                      class="check__value"
-                      style="page-break-inside: avoid;">
-                      {{ item.quantity }}
-                    </div>
-                  </div>
-
-                  <div
-                    class="d-flex justify-content-between"
-                    style="width: 100%;page-break-inside: avoid;
-                  ">
-                    <div
-                      class="check__label"
-                      style="page-break-inside: avoid;">
-                      Цена
-                    </div>
-                    <div
-                      class="check__value"
-                      style="page-break-inside: avoid;">
-                      определяется договором
-                    </div>
-                  </div>
-
-                  <div
-                    class="d-flex justify-content-between"
-                    style="width: 100%;page-break-inside: avoid;
-                  ">
-                    <div
-                      class="check__label"
-                      style="page-break-inside: avoid;">
-                      Сумма
-                    </div>
-                    <div
-                      class="check__value"
-                      style="page-break-inside: avoid;">
-                      {{ item.summ }}
-                    </div>
-                  </div>
-
-                  <div
-                    class="d-flex justify-content-between"
-                    style="width: 100%;page-break-inside: avoid;
-                  ">
-                    <div class="check__label">
-                      ТК:
-                    </div>
-                    <div class="check__value">
-                      {{ item.card_number }}
-                    </div>
-                  </div>
-
-                  <div
-                    class="d-flex justify-content-between"
-                    style="width: 100%;page-break-inside: avoid;
-                  ">
-                    <div class="check__label">
-                      Дата:
-                    </div>
-                    <div class="check__value">
-                      {{ item.date | formatDate }}
-                    </div>
-                  </div>
-
-                  <div
-                    class="check__row"
-                    style="width: 100%;page-break-inside: avoid;">
-                    <div class="check__label">
-                      RNN
-                    </div>
-                    <div class="check__value">
-                      921303719885
-                    </div>
-                  </div>
-
-                  <div
-                    class="check__row mb-1"
-                    style="width: 100%;page-break-inside: avoid;
-                                    ">
-                    <div class="check__label">
-                      Операция подтверждена
-                    </div>
-                    <div
-                      id="end"
-                      class="check__value">
-                      Вводом ПИН
-                    </div>
-                  </div>
-
-                  <!-- begin .check__row -->
-                  <div
-                    class="check__row check__row--black"
-                    style="width: 100%;
-                    -webkit-box-pack: center;
-                    -ms-flex-pack: center;
-                    justify-content: center;
-                    text-transform: uppercase;
-                    text-align: center;
-                    color: #fff;
-                    background-color: #000;
-                    -webkit-transition: all 0.25s ease;
-                    transition: all 0.25s ease;
-                    page-break-inside: avoid;">
-                    ОДОБРЕНО (RC: 0)
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </template>
+        <vprint :transactions="transactions" />
       </div>
     </b-card>
   </div>
@@ -367,11 +140,13 @@ import {
   BCard, BButton, BPagination, BOverlay, BSpinner,
 } from 'bootstrap-vue';
 import html2pdf from 'html2pdf.js';
+
 import print from 'vue-print-nb';
 import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import vprint from '../vprint.vue';
 
 // import JSPDF from 'jspdf';
 import useJwt from '../../auth/jwt/useJwt';
@@ -385,6 +160,7 @@ export default {
     BPagination,
     BOverlay,
     BSpinner,
+    vprint,
 
   },
 
@@ -396,7 +172,6 @@ export default {
     return {
       getInfo: null,
       busy: false,
-      value: 'Some value',
       contract: null,
       currentConsumption: null,
       currentConsumptionDynamic: null,
@@ -478,7 +253,6 @@ export default {
             this.names.push(el.holder);
           });
         }
-
         this.busy = false;
         this.names = this.unique(this.names);
         this.names = this.names.filter((el) => el !== '');
@@ -488,13 +262,6 @@ export default {
 
     getAllTransactions() {
       const holder = this.selectedHolder;
-      // const date = this.rangeDate;
-      // const newDate = Array.from(date).filter((n) => n !== '—');
-      // const arr = (newDate.join('').split('  '));
-      // // eslint-disable-next-line prefer-template
-      // this.start = arr[0] + ' 00:00:00';
-      // // eslint-disable-next-line prefer-template
-      // this.end = arr[1] + ' 00:00:00';
       const ID = this.contractId;
       const { selected } = this;
       // eslint-disable-next-line consistent-return
@@ -519,7 +286,12 @@ export default {
     },
 
     clickPrint() {
-      this.$htmlToPaper('checks');
+      // this.dontshow = true;
+      // this.html = document.querySelector('#check').innerHTML;
+      // // console.log(this.html);
+      // // this.$htmlToPaper('wrap');
+      // console.log(document.querySelector('#inner'));
+      // this.$htmlToPaper('inner');
     },
 
     download() {
@@ -536,9 +308,7 @@ export default {
     },
 
     getAllChecks() {
-      // const html = this.$refs.pdf.innerHTML;
-      // console.log(html);
-      html2pdf(this.$refs.pdf, {
+      html2pdf(this.$refs.print, {
         filename: 'Чеки.pdf',
         image: { type: 'png', quality: 1 },
         html2canvas: { dpi: 140, letterRendering: true },
