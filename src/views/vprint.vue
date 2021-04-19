@@ -1,217 +1,195 @@
 <template>
   <div
-    id="print"
-    class="d-flex flex-row flex-wrap justify-content-around"
-    :transactions="transactions">
-    <template
-      v-for="(item,index) in transactions.data">
-      <!-- <div
-        v-if="index>0 && item.card_number[index] === item.card_number[index-1]"
-        :key="item.card_number"
-        class="col-12 text-center">
-        Операции по карте   {{ item.card_number }} <br> за период {{ rangeDate }}
-      </div> -->
-      <div
-        :key="index"
-        class="col-5">
-        <!-- begin .check -->
+    id="vprint">
+    <div
+
+      class="d-flex flex-row flex-wrap justify-content-around"
+
+      :transactions="transactions">
+      <template
+        v-for="(item,index) in transactions.data">
+        <!-- <p
+          v-if="print"
+          :key="item.card_number">
+          Электронные чеки за период {{ rangeDate }}
+        </p> -->
+        <!-- <div
+          v-if="index>0 && item.card_number[index] === item.card_number[index-1]"
+          :key="item.card_number"
+          class="col-12 text-center">
+          Операции по карте   {{ item.card_number }} <br> за период {{ rangeDate }}
+        </div> -->
         <div
-          class="check">
+          :key="index"
+          class="col-5"
+          style="page-break-before: auto;
+          page-break-after:avoid;
+          ">
           <div
-            class="d-flex flex-column align-items-center"
-            style="margin-bottom: 20px; page-break-inside: avoid;
-              ">
-            <!-- begin .check__header -->
+            class="check">
             <div
-              class="check__organization"
-              style="page-break-inside: avoid;">
-              {{ item.pos.seller }}
-            </div>
-            <!-- end .check__header -->
-
-            <div
-              class="d-flex flex-column"
-              style="page-break-inside: avoid;">
-              <p
-                class="text-center"
-                style="page-break-inside: avoid;">
-                Адрес места расчётов:
-              </p>
-              <p
-                class="text-center"
-                style="page-break-inside: avoid;">
-                {{ item.pos.address }}
-              </p>
-            </div>
-          </div>
-
-          <!-- begin .check__content -->
-          <div
-            class="check__content"
-            style="margin-bottom: 20px;
-                page-break-inside: avoid;">
-            <div
-              class="check__row"
-              style="display: -webkit-box;
-                  display: -ms-flexbox;
-                  display: flex;
-                  -webkit-box-align: center;
-                  -ms-flex-align: center;
-                  align-items: centerl;
-                  -webkit-box-pack: justify;
-                  -ms-flex-pack: justify;
-                  justify-content: space-between;
-                  line-height: 1.4;
-                  page-break-inside: avoid;
+              class="d-flex flex-column align-items-center  mt-2 mb-2"
+              style="
+              page-break-inside: avoid;
               ">
               <div
-                class="check__label"
-                style="page-break-inside: avoid;">
-                ИНН:
+                class="check__organization">
+                {{ item.pos.seller }}
               </div>
+
               <div
-                class="check__value"
-                style="page-break-inside: avoid;">
-                2309051942
+                class="d-flex flex-column"
+                style="page-break-after: avoid;">
+                <p
+                  class="text-center">
+                  Адрес места расчётов:
+                  <br>
+                  {{ item.pos.address }}
+                </p>
               </div>
             </div>
 
             <div
-              class="d-flex justify-content-between"
-              style="width: 100%;page-break-inside: avoid;
+              class="check__content"
+              style="margin-bottom: 20px;
                 ">
-              <div
-                class="check__label"
-                style="page-break-inside: avoid;">
-                Тип операции
-              </div>
-              <div
-                class="check__value"
-                style="page-break-inside: avoid;">
-                {{ item.operation_type }}
-              </div>
-            </div>
-
-            <div
-              class="check__column"
-              style="page-break-inside: avoid;">
-              <div
-                class="d-flex justify-content-between"
-                style="width: 100%;page-break-inside: avoid;
-                ">
+              <!-- <div
+                class="check__row">
                 <div
-                  class="check__label"
-                  style="page-break-inside: avoid;">
-                  Бензин <br> автомобильный
+                  class="check__label">
+                  ИНН:
                 </div>
                 <div
-                  class="check__value"
-                  style="page-break-inside: avoid;">
-                  {{ item.service.full_name }}
-                </div>
-              </div>
-
-              <div
-                class="d-flex justify-content-between"
-                style="width: 100%;page-break-inside: avoid;
-                  ">
-                <div
-                  class="check__label"
-                  style="page-break-inside: avoid;">
-                  Объем топлива
-                </div>
-                <div
-                  class="check__value"
-                  style="page-break-inside: avoid;">
-                  {{ item.quantity }}
-                </div>
-              </div>
-
-              <div
-                class="d-flex justify-content-between"
-                style="width: 100%;page-break-inside: avoid;
-                  ">
-                <div
-                  class="check__label"
-                  style="page-break-inside: avoid;">
-                  Цена
-                </div>
-                <div
-                  class="check__value"
-                  style="page-break-inside: avoid;">
-                  определяется договором
-                </div>
-              </div>
-
-              <div
-                class="d-flex justify-content-between"
-                style="width: 100%;page-break-inside: avoid;
-                  ">
-                <div
-                  class="check__label"
-                  style="page-break-inside: avoid;">
-                  Сумма
-                </div>
-                <div
-                  class="check__value"
-                  style="page-break-inside: avoid;">
-                  {{ item.summ }}
-                </div>
-              </div>
-
-              <div
-                class="d-flex justify-content-between"
-                style="width: 100%;page-break-inside: avoid;
-                  ">
-                <div class="check__label">
-                  ТК:
-                </div>
-                <div class="check__value">
-                  {{ item.card_number }}
-                </div>
-              </div>
-
-              <div
-                class="d-flex justify-content-between"
-                style="width: 100%;page-break-inside: avoid;
-                  ">
-                <div class="check__label">
-                  Дата:
-                </div>
-                <div class="check__value">
-                  {{ item.date | formatDate }}
-                </div>
-              </div>
-
-              <div
-                class="check__row"
-                style="width: 100%;page-break-inside: avoid;">
-                <div class="check__label">
-                  RNN
-                </div>
-                <div class="check__value">
-                  921303719885
-                </div>
-              </div>
-
-              <div
-                class="check__row mb-1"
-                style="width: 100%;page-break-inside: avoid;
-                                    ">
-                <div class="check__label">
-                  Операция подтверждена
-                </div>
-                <div
-                  id="end"
                   class="check__value">
-                  Вводом ПИН
+                  2309051942
+                </div>
+              </div> -->
+
+              <div
+                class="d-flex justify-content-between">
+                <div
+                  class="check__label">
+                  Тип операции
+                </div>
+                <div
+                  class="check__value">
+                  {{ item.operation_type }}
                 </div>
               </div>
 
-              <!-- begin .check__row -->
               <div
-                class="check__row check__row--black"
-                style="width: 100%;
+                class="check__column">
+                <div
+                  class="d-flex justify-content-between"
+                  style="width: 100%;
+                ">
+                  <div
+                    class="check__label">
+                    Бензин <br> автомобильный
+                  </div>
+                  <div
+                    class="check__value">
+                    {{ item.service.full_name }}
+                  </div>
+                </div>
+
+                <div
+                  class="d-flex justify-content-between"
+                  style="width: 100%;
+                  ">
+                  <div
+                    class="check__label">
+                    Объем топлива
+                  </div>
+                  <div
+                    class="check__value">
+                    {{ item.quantity }}
+                  </div>
+                </div>
+
+                <div
+                  class="d-flex justify-content-between"
+                  style="width: 100%;
+                  ">
+                  <div
+                    class="check__label">
+                    Цена
+                  </div>
+                  <div
+                    class="check__value">
+                    определяется договором
+                  </div>
+                </div>
+
+                <div
+                  class="d-flex justify-content-between"
+                  style="width: 100%;page-break-inside: avoid;
+                  ">
+                  <div
+                    class="check__label"
+                    style="page-break-inside: avoid;">
+                    Сумма
+                  </div>
+                  <div
+                    class="check__value"
+                    style="page-break-inside: avoid;">
+                    {{ item.summ }}
+                  </div>
+                </div>
+
+                <div
+                  class="d-flex justify-content-between"
+                  style="width: 100%;page-break-inside: avoid;
+                  ">
+                  <div class="check__label">
+                    ТК:
+                  </div>
+                  <div class="check__value">
+                    {{ item.card_number }}
+                  </div>
+                </div>
+
+                <div
+                  class="d-flex justify-content-between"
+                  style="width: 100%;
+                  ">
+                  <div class="check__label">
+                    Дата:
+                  </div>
+                  <div class="check__value">
+                    {{ item.date | formatDate }}
+                  </div>
+                </div>
+
+                <div
+                  class="d-flex justify-content-between"
+                  style="width: 100%;">
+                  <div class="check__label">
+                    RNN
+                  </div>
+                  <div class="check__value">
+                    {{ item.pos_id }}
+                  </div>
+                </div>
+
+                <div
+                  class="d-flex justify-content-between mb-1"
+                  style="width: 100%;
+                                    ">
+                  <div class="check__label">
+                    Операция подтверждена
+                  </div>
+                  <div
+                    id="end"
+                    class="check__value">
+                    Вводом ПИН
+                  </div>
+                </div>
+
+                <!-- begin .check__row -->
+                <div
+                  class="check__row check__row--black"
+                  style="width: 100%;
                     -webkit-box-pack: center;
                     -ms-flex-pack: center;
                     justify-content: center;
@@ -222,22 +200,28 @@
                     -webkit-transition: all 0.25s ease;
                     transition: all 0.25s ease;
                     page-break-inside: avoid;">
-                ОДОБРЕНО (RC: 0)
+                  ОДОБРЕНО (RC: 0)
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </template>
+      </template>
+    </div>
   </div>
 </template>
 
 <script>
+
 export default {
   props: {
     transactions: {
       type: Array,
       default: () => [],
+    },
+    rangeDate: {
+      type: String,
+      default: '',
     },
   },
   data() {
@@ -247,13 +231,19 @@ export default {
   },
 
   mounted() {
-    // console.log(document.querySelector('#print'));
-    setTimeout(this.print, 2000);
+    // setTimeout(this.print, 2000);
   },
 
   methods: {
-    print() {
-      this.$htmlToPaper('print');
+    isToday() {
+      const today = new Date();
+      return today.toLocaleDateString();
+    },
+
+    getFirstDay() {
+      const date = new Date();
+      const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
+      return firstDay;
     },
   },
 };
@@ -322,11 +312,10 @@ h3 {
 
 @media only screen and (min-device-width: 1024px) {
   .col-5 {
-    // -ms-flex: 0 0 33.33333%;
     display: flex;
     flex-grow: 0;
     flex-shrink: 0;
-    flex-basis: 35.33333%;
+    flex-basis: 10%;
     max-width: 330px;
   }
 }
@@ -336,7 +325,7 @@ h3 {
     display: flex;
     flex-grow: 0;
     flex-shrink: 0;
-    flex-basis: 33.33333%;
+    flex-basis: 10%;
     max-width: 50.33333%;
   }
 }
@@ -352,7 +341,7 @@ h3 {
     // flex: 0 0 33.33333%;
     flex-grow: 0;
     flex-shrink: 0;
-    flex-basis: 33.33333%;
+    flex-basis: 10%;
     max-width: 60.33333%;
   }
 }
@@ -365,14 +354,14 @@ h3 {
     display: -ms-flex;
     display: flex;
     // -ms-flex: 0 0 33.33333%;
-    flex: 0 0 33.33333%;
+    flex: 0 0 10%;
     max-width: 100%;
   }
 }
 
 .check {
-  padding: 40px 0;
-  min-width: 290px;
+  padding: 20px 0;
+  min-width: 320px;
 }
 .check__content,
 .check__header {

@@ -83,18 +83,14 @@
           Печать
         </b-button>
 
-        <p> <!-- v-print="'#check'" --> </p>
-
         <b-button
           class="btn btn-primary mt-1 ml-3"
-
           @click="toogle">
           {{ visible ? "Скрыть чеки" : "Показать чеки" }}
         </b-button>
 
         <b-button
           class="btn btn-primary mt-1 ml-3"
-
           @click="download">
           Скачать чеки
         </b-button>
@@ -121,15 +117,16 @@
           </template>
         </b-pagination>
       </div>
-      <!-- </b-card> -->
 
       <div
         v-if="visible"
         id="check"
-        ref="pdf"
+        ref="print"
 
         class="d-flex flex-row flex-wrap justify-content-around">
-        <vprint :transactions="transactions" />
+        <vprint
+          ref="print"
+          :transactions="transactions" />
       </div>
     </b-card>
   </div>
@@ -271,6 +268,7 @@ export default {
             this.transactions = response.data;
             this.totalRows = this.transactions.tol.Total;
             this.transactions.data = this.order(this.transactions.data);
+            console.log(this.transactions.data);
           }
         });
 
@@ -291,7 +289,7 @@ export default {
       // // console.log(this.html);
       // // this.$htmlToPaper('wrap');
       // console.log(document.querySelector('#inner'));
-      // this.$htmlToPaper('inner');
+      this.$htmlToPaper('vprint');
     },
 
     download() {
@@ -304,7 +302,7 @@ export default {
         }
         return this.order(this.transactions.data);
       });
-      setTimeout(this.getAllChecks, 4000);
+      setTimeout(this.getAllChecks, 2000);
     },
 
     getAllChecks() {
