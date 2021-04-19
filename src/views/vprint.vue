@@ -4,8 +4,11 @@
     <div
 
       class="d-flex flex-row flex-wrap justify-content-around"
-
+      :today="today"
+      :firstDay="firstDay"
+      :rangeDate="rangeDate"
       :transactions="transactions">
+      <!-- <p> {{ rangeDate.length }}</p> -->
       <template
         v-for="(item,index) in transactions.data">
         <!-- <p
@@ -16,8 +19,9 @@
         <!-- <div
           v-if="index>0 && item.card_number[index] === item.card_number[index-1]"
           :key="item.card_number"
+
           class="col-12 text-center">
-          Операции по карте   {{ item.card_number }} <br> за период {{ rangeDate }}
+          Операции по карте   {{ item.card_number }} <br> за период c
         </div> -->
         <div
           :key="index"
@@ -180,13 +184,11 @@
                     Операция подтверждена
                   </div>
                   <div
-                    id="end"
                     class="check__value">
                     Вводом ПИН
                   </div>
                 </div>
 
-                <!-- begin .check__row -->
                 <div
                   class="check__row check__row--black"
                   style="width: 100%;
@@ -220,32 +222,25 @@ export default {
       default: () => [],
     },
     rangeDate: {
-      type: String,
-      default: '',
+      type: Array,
+      default: () => [],
     },
   },
+  //   firstDay: {
+  //     type: String,
+  //     default: this.firstDay,
+  //   },
+  //   today: {
+  //     type: String,
+  //     default: this.today,
+  //   },
+  // },
   data() {
     return {
 
     };
   },
 
-  mounted() {
-    // setTimeout(this.print, 2000);
-  },
-
-  methods: {
-    isToday() {
-      const today = new Date();
-      return today.toLocaleDateString();
-    },
-
-    getFirstDay() {
-      const date = new Date();
-      const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
-      return firstDay;
-    },
-  },
 };
 
 </script>

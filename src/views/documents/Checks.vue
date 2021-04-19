@@ -181,6 +181,8 @@ export default {
       start: null,
       hidden: false,
       end: null,
+      firstDay: null,
+      today: null,
       visible: false,
       selected: [],
       cards: null,
@@ -212,6 +214,9 @@ export default {
       this.end = `${this.isToday()} 00:00:00`;
       this.rangeDate = [this.start, this.end];
     }
+    this.firstDay = this.getFirstDay();
+    this.today = this.isToday();
+
     return this.contract;
   },
 
@@ -268,7 +273,6 @@ export default {
             this.transactions = response.data;
             this.totalRows = this.transactions.tol.Total;
             this.transactions.data = this.order(this.transactions.data);
-            console.log(this.transactions.data);
           }
         });
 
@@ -375,7 +379,6 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
-
           if (this.transactions.data.length < 1) {
             this.transactions = [];
             // this.visible = false;
@@ -400,6 +403,7 @@ export default {
     toogle() {
       this.visible = !this.visible;
       this.hidden = !this.hidden;
+
       // this.selectPage(1);
       // if (this.selected.length < 1) {
       //   this.getAllTransactions();

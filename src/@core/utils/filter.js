@@ -15,6 +15,7 @@ Vue.filter('formatDate', (value, withtime = true) => {
       timeZone: 'UTC',
       hours: 'numeric',
       min: 'numeric',
+      hour24: 'true',
     };
   }
   return value.toLocaleString('ru-RU', options);
