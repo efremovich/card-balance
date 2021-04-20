@@ -84,7 +84,7 @@ export default [
       breadcrumb: [
         { title: 'Главная', url: '/' },
         { title: 'Документы' },
-        { title: 'Заявки' },
+        { title: 'Заявки', active: true },
       ],
       rule: 'editor',
     },

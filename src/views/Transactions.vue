@@ -1,6 +1,3 @@
-/* eslint-disable vue/valid-v-slot */
-/* eslint-disable vue/valid-v-slot */
-/* eslint-disable vue/no-parsing-error */
 <template>
   <div>
     <!-- <div v-if="items.transactions.length>0"> -->
@@ -233,6 +230,7 @@ import 'swiper/css/swiper.css';
 // import axios from '@axios';
 import useJwt from '@/auth/jwt/useJwt';
 // import { isToday } from '@core/utils/utils';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { codeRowDetailsSupport } from './code';
 import 'bootstrap-vue/dist/bootstrap-vue-icons.min.css';
 
@@ -252,6 +250,7 @@ export default {
     BFormInput,
     BInputGroupAppend,
     BCardBody,
+
   },
   data() {
     return {
@@ -489,7 +488,18 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.length;
+          if (this.rangeDate.length > 10 && this.transactions.data.length < 1) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют транзакции за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
         }
+
         return this.transactions;
       });
     },

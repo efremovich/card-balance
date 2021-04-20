@@ -4,11 +4,13 @@
     <div
 
       class="d-flex flex-row flex-wrap justify-content-around"
-      :today="today"
-      :firstDay="firstDay"
-      :rangeDate="rangeDate"
-      :transactions="transactions">
-      <!-- <p> {{ rangeDate.length }}</p> -->
+      :rangeStart="today"
+      :rangeEnd="firstDay"
+      :transactions="transactions"
+      :toogle="onlyForPrintandDownload">
+      <p>
+        {{ rangeStart }}
+      </p>
       <template
         v-for="(item,index) in transactions.data">
         <!-- <p
@@ -16,13 +18,7 @@
           :key="item.card_number">
           Электронные чеки за период {{ rangeDate }}
         </p> -->
-        <!-- <div
-          v-if="index>0 && item.card_number[index] === item.card_number[index-1]"
-          :key="item.card_number"
 
-          class="col-12 text-center">
-          Операции по карте   {{ item.card_number }} <br> за период c
-        </div> -->
         <div
           :key="index"
           class="col-5"
@@ -31,6 +27,14 @@
           ">
           <div
             class="check">
+            <div
+              v-if="toogle
+                && item.card_number[index] === item.card_number[index+1]"
+              :key="item.card_number"
+
+              class="col-12 text-center">
+              Операции по карте   {{ item.card_number }} <br> за период c {{ firstDay }} по {{ today }}
+            </div>
             <div
               class="d-flex flex-column align-items-center  mt-2 mb-2"
               style="
@@ -57,18 +61,6 @@
               class="check__content"
               style="margin-bottom: 20px;
                 ">
-              <!-- <div
-                class="check__row">
-                <div
-                  class="check__label">
-                  ИНН:
-                </div>
-                <div
-                  class="check__value">
-                  2309051942
-                </div>
-              </div> -->
-
               <div
                 class="d-flex justify-content-between">
                 <div
@@ -221,22 +213,30 @@ export default {
       type: Array,
       default: () => [],
     },
-    rangeDate: {
-      type: Array,
-      default: () => [],
+    today: {
+      type: [String],
+      default() {
+        const today = new Date();
+        return today.toLocaleDateString();
+      },
+    },
+    firstDay: {
+      type: [String],
+      default() {
+        const date = new Date();
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
+        return firstDay;
+      },
+    },
+    onlyForPrintandDownload: {
+      type: Boolean,
+      default: false,
     },
   },
-  //   firstDay: {
-  //     type: String,
-  //     default: this.firstDay,
-  //   },
-  //   today: {
-  //     type: String,
-  //     default: this.today,
-  //   },
-  // },
+
   data() {
     return {
+      toogle: this.onlyForPrintandDownload,
 
     };
   },
