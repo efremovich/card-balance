@@ -17,7 +17,44 @@
               class="form-control mb-0"
               :config="config"
               @on-change="selectDate" />
+
+            <div
+              class="d-flex flex-column">
+              <p class="mt-1">
+                Выберете карту:
+              </p>
+              <b-overlay
+                :show="busy"
+                rounded="lg"
+                opacity="0.6">
+                <template #overlay>
+                  <div class="d-flex align-items-center">
+                    <b-spinner
+                      style="width: 1rem; height: 1rem;"
+                      type="grow"
+                      variant="secondary" />
+                    <b-spinner
+                      type="grow"
+                      style="width: 1.5rem; height: 1.5rem;"
+                      variant="dark" />
+                    <b-spinner
+                      style="width: 1rem; height: 1rem;"
+                      type="grow"
+                      variant="secondary" />
+                    <!-- We add an SR only text for screen readers -->
+                    <span class="sr-only">Данные загружаются</span>
+                  </div>
+                </template>
+                <v-select
+                  v-model="selected"
+                  :disabled="busy"
+                  :options="option"
+                  class="w-100 mb-1"
+                  @input="onChange()" />
+              </b-overlay>
+            </div>
           </b-form-group>
+
           <!-- filter -->
           <b-form-group
             label="Найти"
@@ -44,15 +81,14 @@
       </b-card-body>
 
       <b-table
-        :sticky-header="stickyHeader"
         :no-border-collapse="noCollapse"
         hover
+        :item="request"
         responsive
-        class="position-relative table-hover"
-
+        :per-page="perPage"
+        :current-page="currentPage"
+        class="position-relative table-hover text-center"
         :fields="fields">
-        <!--1-й вариант-->
-
         <template #cell(summ)="row">
           <b-col @click="row.toggleDetails">
             <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseInt(row.item.summ).toLocaleString('ru-RU', {
@@ -111,6 +147,47 @@
           </b-col>
         </template>
       </b-table>
+      <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
+        <!-- page length -->
+        <b-form-group
+          label="На странице"
+          label-cols="7"
+          label-align="left"
+          label-size="sm"
+          label-for="sortBySelect"
+          class="text-nowrap mb-md-0">
+          <b-form-select
+            id="perPageSelect"
+            v-model="perPage"
+            size="sm"
+            inline
+            :options="pageOptions" />
+        </b-form-group>
+
+        <!-- pagination -->
+        <div>
+          <b-pagination
+            v-model="currentPage"
+            :total-rows="totalRows"
+            :per-page="perPage"
+            first-number
+            last-number
+            prev-class="prev-item"
+            next-class="next-item"
+            class="mb-0">
+            <template #prev-text>
+              <feather-icon
+                icon="ChevronLeftIcon"
+                size="18" />
+            </template>
+            <template #next-text>
+              <feather-icon
+                icon="ChevronRightIcon"
+                size="18" />
+            </template>
+          </b-pagination>
+        </div>
+      </b-card-body>
     </b-card>
   </div>
 </template>
@@ -118,10 +195,13 @@
 <script>
 import {
   BCard, BTable, BFormGroup,
-  BFormInput, BCardBody, BButton, BInputGroup, BInputGroupAppend,
+  BFormInput, BCardBody, BButton, BInputGroup, BInputGroupAppend, BOverlay, BPagination, BFormSelect,
 } from 'bootstrap-vue';
+import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import useJwt from '../../auth/jwt/useJwt';
 
 export default {
   components: {
@@ -134,23 +214,55 @@ export default {
     BButton,
     BInputGroup,
     BInputGroupAppend,
+    vSelect,
+    BOverlay,
+    BPagination,
+    BFormSelect,
 
   },
   data() {
     return {
-      rangeDate: null,
+      perPage: 5,
+      pageOptions: [3, 5, 10],
+      totalRows: null,
+      rangeDate: [],
       contract: null,
       contractId: null,
+      selected: null,
       start: null,
       end: null,
       filter: null,
+      option: [],
+      currentPage: 1,
+      request: null,
       config: {
         mode: 'range',
         maxDate: 'today',
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
-      fields: ['№ п/п', 'Номер карты', 'Держатель', 'Операция', 'Статус/Дата'],
+      fields: [
+        {
+          key: 'UpdatedAt',
+          label: 'Дата заявки',
+          sortable: true,
+        },
+        {
+          key: 'request_status.name',
+          label: 'Статус заявки',
+          sortable: true,
+        },
+        {
+          key: 'request_type.name',
+          label: 'Тип заявки',
+          sortable: true,
+        },
+        {
+          key: 'card_number',
+          label: 'Номер карты',
+          sortable: true,
+        },
+      ],
 
     };
   },
@@ -168,6 +280,10 @@ export default {
     return this.contract;
   },
 
+  beforeMount() {
+    this.getAllCards();
+  },
+
   methods: {
     isToday() {
       const today = new Date();
@@ -179,7 +295,54 @@ export default {
       const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
       return firstDay;
     },
+
+    unique(arr) {
+      this.arr = Array.from(new Set(arr));
+      return this.arr;
+    },
+
+    getAllCards() {
+      const ID = this.contractId;
+      this.busy = true;
+      useJwt.getCards(`contract_id=${ID}`).then((response) => {
+        if (response.data.status) {
+          this.response = response.data;
+          this.busy = false;
+          this.response.cards.forEach((el) => {
+            this.option.push(el.number);
+          });
+        }
+        this.option = this.unique(this.option);
+      });
+    },
+
+    selectDate() {
+      const date = this.rangeDate;
+      const newDate = Array.from(date).filter((n) => n !== '—');
+      const arr = (newDate.join('').split('  '));
+      // eslint-disable-next-line prefer-template
+      this.start = arr[0] + ' 00:00:00';
+      // eslint-disable-next-line prefer-template
+      this.end = arr[1] + ' 00:00:00';
+      const ID = this.contractId;
+      useJwt.GetRequests(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=7824861010051464017`).then((response) => {
+        if (response.data.status) {
+          this.request = response.data;
+          if (this.rangeDate.length > 10 && this.request.data.length < 1) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют заявки за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
+        }
+      });
+    },
   },
+
 };
 </script>
 

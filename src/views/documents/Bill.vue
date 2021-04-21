@@ -6,6 +6,7 @@
         v-model="text" />
       <b-form-input
         v-model="summ"
+        autofocus
         placeholder="Введите сумму"
         class="mt-1"
         @input="getVisible" />
@@ -416,8 +417,11 @@ export default {
       return today.toLocaleDateString();
     },
     getVisible() {
-      this.visible = true;
+      if (this.summ.split('').length > 0) {
+        this.visible = true;
+      } else this.visible = false;
     },
+
   },
 
 };

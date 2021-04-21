@@ -9,20 +9,58 @@
           <!-- ТАБЛИЦА -->
           <b-card-body>
             <div class="d-flex justify-content-between  flex-wrap">
-              <b-form-group
-                label="Период"
-                label-cols-sm="3"
-                label-align-sm="left"
-                label-size="sm"
-                label-for="filterInput"
-                class="mb-1">
-                <flat-pickr
-                  v-model="rangeDate"
-                  size="sm"
-                  class="form-control mb-0"
-                  :config="config"
-                  @on-change="selectDate" />
-              </b-form-group>
+              <div class="d-flex flex-column">
+                <b-form-group
+                  label="Период"
+                  label-cols-sm="3"
+                  label-align-sm="left"
+                  label-size="sm"
+                  label-for="filterInput"
+                  class="mb-1">
+                  <flat-pickr
+                    v-model="rangeDate"
+                    size="sm"
+                    class="form-control mb-0"
+                    :config="config"
+                    @on-change="selectDate" />
+                </b-form-group>
+
+                <div
+                  class="d-flex flex-column">
+                  <p class="mt-1">
+                    Выберете карту:
+                  </p>
+                  <b-overlay
+                    :show="busy"
+                    rounded="lg"
+                    opacity="0.6">
+                    <template #overlay>
+                      <div class="d-flex align-items-center">
+                        <b-spinner
+                          style="width: 1rem; height: 1rem;"
+                          type="grow"
+                          variant="secondary" />
+                        <b-spinner
+                          type="grow"
+                          style="width: 1.5rem; height: 1.5rem;"
+                          variant="dark" />
+                        <b-spinner
+                          style="width: 1rem; height: 1rem;"
+                          type="grow"
+                          variant="secondary" />
+                        <!-- We add an SR only text for screen readers -->
+                        <span class="sr-only">Данные загружаются</span>
+                      </div>
+                    </template>
+                    <v-select
+                      v-model="selected"
+                      :disabled="busy"
+                      :options="option"
+                      class="w-100 mb-1"
+                      @input="onChange()" />
+                  </b-overlay>
+                </div>
+              </div>
               <!-- filter -->
               <b-form-group
                 label="Найти"
@@ -72,7 +110,7 @@
           <b-table
             hover
             responsive
-            class="position-relative table-hover"
+            class="position-relative table-hover text-center"
             :per-page="perPage"
             :current-page="currentPage"
             :items="transactions.data"
@@ -159,7 +197,7 @@
             <!-- page length -->
             <b-form-group
               label="На странице"
-              label-cols="6"
+              label-cols="7"
               label-align="left"
               label-size="sm"
               label-for="sortBySelect"
@@ -214,6 +252,8 @@ import { Russian } from 'flatpickr/dist/l10n/ru';
 import {
   BRow,
   BCol,
+  BOverlay,
+
   BFormGroup,
   BFormInput,
   BCard,
@@ -227,6 +267,7 @@ import {
   BCardBody,
 } from 'bootstrap-vue';
 import 'swiper/css/swiper.css';
+import vSelect from 'vue-select';
 // import axios from '@axios';
 import useJwt from '@/auth/jwt/useJwt';
 // import { isToday } from '@core/utils/utils';
@@ -250,6 +291,8 @@ export default {
     BFormInput,
     BInputGroupAppend,
     BCardBody,
+    BOverlay,
+    vSelect,
 
   },
   data() {
@@ -268,7 +311,8 @@ export default {
       filter: null,
       filterOn: [],
       required,
-      Selected: null,
+      option: [],
+      selected: [],
       transactions: [],
       rangeDate: null, // датапикер
       dateStart: [],
@@ -294,6 +338,11 @@ export default {
         {
           key: 'summ',
           label: 'Сумма',
+          sortable: true,
+        },
+        {
+          key: 'card_number',
+          label: 'Номер карты',
           sortable: true,
         },
       ],
@@ -342,10 +391,7 @@ export default {
     viewStatus() {
       return this.cardStatus[this.items.card_status];
     },
-    // getDay() {
-    //   const Data = new Date();
-    //   return Data.getDate();
-    // },
+
   },
 
   // created() {
@@ -381,17 +427,72 @@ export default {
   },
 
   beforeMount() {
-    const ID = this.contractId;
-    useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
-      if (response.data.status) {
-        this.transactions = response.data;
-        this.totalRows = this.transactions.data.length;
-      }
-      return this.transactions;
-    });
+    this.getAllCards();
+    this.getAllTransactions();
   },
 
   methods: {
+    unique(arr) {
+      this.arr = Array.from(new Set(arr));
+      return this.arr;
+    },
+
+    getAllTransactions() {
+      const ID = this.contractId;
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+        if (response.data.status) {
+          this.transactions = response.data;
+          this.totalRows = this.transactions.data.length;
+        }
+        return this.transactions;
+      });
+    },
+
+    getAllCards() {
+      const ID = this.contractId;
+      this.busy = true;
+      useJwt.getCards(`contract_id=${ID}`).then((response) => {
+        if (response.data.status) {
+          this.response = response.data;
+
+          this.response.cards.forEach((el) => {
+            this.option.push(el.number);
+          });
+        }
+        this.busy = false;
+
+        this.option = this.unique(this.option);
+      });
+    },
+
+    onChange() {
+      const { selected } = this;
+
+      const { start } = this;
+      const { end } = this;
+      const ID = this.contractId;
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&offset=10&limit=10`).then((response) => {
+        if (response.data.status) {
+          this.transactions = response.data;
+          this.totalRows = this.transactions.tol.Total;
+
+          if (this.transactions.data.length < 1 && selected !== null) {
+            this.transactions = [];
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют транзакции по карте за период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
+        }
+        if (selected === null) {
+          this.getAllTransactions();
+        }
+      });
+    },
     // getData() {
     //   this.$refs.simpleRules.validate().then((success) => {
     //     if (success) {
