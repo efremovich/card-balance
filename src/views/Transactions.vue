@@ -467,17 +467,15 @@ export default {
 
     onChange() {
       const { selected } = this;
-
       const { start } = this;
       const { end } = this;
       const ID = this.contractId;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&offset=10&limit=10`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
-
           if (this.transactions.data.length < 1 && selected !== null) {
-            this.transactions = [];
+            // this.transactions = [];
             this.$toast({
               component: ToastificationContent,
               props: {
@@ -488,10 +486,12 @@ export default {
             });
           }
         }
-        if (selected === null) {
-          this.getAllTransactions();
-        }
+        return this.transactions;
       });
+
+      if (selected == null) {
+        this.getAllTransactions();
+      }
     },
     // getData() {
     //   this.$refs.simpleRules.validate().then((success) => {
