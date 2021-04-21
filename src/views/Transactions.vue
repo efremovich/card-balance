@@ -10,13 +10,10 @@
           <b-card-body>
             <div class="d-flex justify-content-between  flex-wrap">
               <div class="d-flex flex-column">
-                <b-form-group
-                  label="Период"
-                  label-cols-sm="3"
-                  label-align-sm="left"
-                  label-size="sm"
-                  label-for="filterInput"
-                  class="mb-1">
+                <b-form-group>
+                  <p class="mt-1">
+                    Выберете период:
+                  </p>
                   <flat-pickr
                     v-model="rangeDate"
                     size="sm"
@@ -37,15 +34,15 @@
                     <template #overlay>
                       <div class="d-flex align-items-center">
                         <b-spinner
-                          style="width: 1rem; height: 1rem;"
+                          style="width: .5rem; height: .5rem;"
                           type="grow"
                           variant="secondary" />
                         <b-spinner
                           type="grow"
-                          style="width: 1.5rem; height: 1.5rem;"
+                          style="width: 1rem; height: 1rem;"
                           variant="dark" />
                         <b-spinner
-                          style="width: 1rem; height: 1rem;"
+                          style="width: .5rem; height: .5rem;"
                           type="grow"
                           variant="secondary" />
                         <!-- We add an SR only text for screen readers -->
@@ -253,7 +250,6 @@ import {
   BRow,
   BCol,
   BOverlay,
-
   BFormGroup,
   BFormInput,
   BCard,
@@ -300,6 +296,7 @@ export default {
       perPage: 5,
       pageOptions: [3, 5, 10],
       totalRows: null,
+      busy: false,
       contract: null,
       start: null,
       end: null,
@@ -449,6 +446,7 @@ export default {
     },
 
     getAllCards() {
+      this.busy = true;
       const ID = this.contractId;
       this.busy = true;
       useJwt.getCards(`contract_id=${ID}`).then((response) => {
@@ -469,6 +467,13 @@ export default {
       const { selected } = this;
       const { start } = this;
       const { end } = this;
+      // const date = this.rangeDate;
+      // const newDate = Array.from(date).filter((n) => n !== '—');
+      // const arr = (newDate.join('').split('  '));
+      // // eslint-disable-next-line prefer-template
+      // const start = arr[0] + ' 00:00:00';
+      // // eslint-disable-next-line prefer-template
+      // const end = arr[1] + ' 00:00:00';
       const ID = this.contractId;
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
@@ -489,8 +494,18 @@ export default {
         return this.transactions;
       });
 
-      if (selected == null) {
-        this.getAllTransactions();
+      if (selected === null) {
+        const date = this.rangeDate;
+        const newDate = Array.from(date).filter((n) => n !== '—');
+        const arr = (newDate.join('').split('  '));
+        // eslint-disable-next-line prefer-template
+        const Start = arr[0] + ' 00:00:00';
+        // eslint-disable-next-line prefer-template
+        const End = arr[1] + ' 00:00:00';
+        useJwt.getTransactions(`contract_id=${ID}&startDate=${Start}&endDate=${End}`).then((response) => {
+          this.transactions = response.data;
+          this.totalRows = this.transactions.data.length;
+        });
       }
     },
     // getData() {
@@ -585,7 +600,8 @@ export default {
       // eslint-disable-next-line prefer-template
       const end = arr[1] + ' 00:00:00';
       const ID = this.contractId;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}`).then((response) => {
+      const { selected } = this;
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.length;
@@ -600,9 +616,14 @@ export default {
             });
           }
         }
-
         return this.transactions;
       });
+      if (selected === null) {
+        useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}`).then((response) => {
+          this.transactions = response.data;
+          this.totalRows = this.transactions.data.length;
+        });
+      }
     },
 
     onFiltered(filteredItems) {
