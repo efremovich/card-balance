@@ -1,3 +1,4 @@
+/* eslint-disable vue/valid-v-slot */
 <template>
   <div>
     <b-row>
@@ -91,7 +92,7 @@
           :sticky-header="stickyHeader"
           selectable
           :small="small"
-          :items="items"
+          :items="items.data"
           :fields="fields"
           responsive="sm"
           :select-mode="selectMode"
@@ -140,9 +141,10 @@
             </template>
           </template>
 
-          <template #cell(status)="data">
-            <b-card-text class="mb-50 text-info">
-              {{ data.item.status }}
+          <template #cell(card_status_id)="data">
+            <b-card-text
+              class="mb-50 text-info">
+              {{ viewStatus(data.item.card_status_id) }}
             </b-card-text>
           </template>
 
@@ -150,63 +152,51 @@
             <b-col
               md="6"
               xl="4">
-              <!-- <b-card
-                :img-src="require('@/assets/images/icons/NNK.svg')"
-                overlay
-                text-variant="white"
-                img-alt="card img"
-                body-class="bg-overlay"
-              > -->
-              <!-- <div class="d-flex">
-                <i class="feather icon-credit-card primary" /> -->
               <p class="before">
                 {{ data.item.number }}
               </p>
-              <!-- </div> -->
-
-              <!-- </b-card> -->
             </b-col>
           </template>
 
-          <template #cell(age)="data">
+          <template #cell(limits[0])="data">
             <vue-apex-charts
               type="bar"
               height="200" />
 
             <b-col class="avg-sessions pt-50">
               <!-- TEMPLATE -->
-              <template v-for="(item, index) in 2">
+              <template v-for="(item, index) in data.limit_commons">
                 <b-col
                   :key="index"
                   class="mb-2">
                   <b-card-text class="mb-50 text-info">
-                    АИ-92:   {{ data.item.age[index] }}л.
+                    {{ item.service_id[index] }}
                   </b-card-text>
                   <b-progress
-                    :value="data.item.age[index]"
-                    :variant="getPopularityColor(data.item.age[index])"
+                    :value="item[index].limits.id"
+                    :variant="getPopularityColor(item[index].limits.id)"
                     height="6px" />
                 </b-col>
               </template>
 
               <template
-                v-if="data.item.age.length>2">
+                v-if="item[index].length>2">
                 <app-collapse
                   id="collapse-1">
                   <app-collapse-item
                     id="collapse-2"
                     title="ещё...  ">
                     <b-col
-                      v-for="(item, index) in data.item.age.length-2"
+                      v-for="(item, index) in item.length-2"
                       :key="index+2"
 
                       class="mb-2">
                       <b-card-text class="mb-50 text-info">
-                        АИ-92:   {{ data.item.age[index+2] }}
+                        АИ-92:   {{ item.limits.id[index+2] }}
                       </b-card-text>
                       <b-progress
-                        :value="data.item.age[index+2]"
-                        :variant="getPopularityColor(data.item.age[index+2])"
+                        :value="item[index+2]"
+                        :variant="getPopularityColor(item[index+2])"
                         height="6px" />
                     </b-col>
                   </app-collapse-item>
@@ -216,13 +206,28 @@
           </template>
         </b-table>
         <b-col cols="12">
-          <b-pagination
-            v-model="currentPage"
-            :total-rows="totalRows"
-            :per-page="perPage"
-            align="center"
-            size="sm"
-            class="my-0" />
+          <div>
+            <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              first-number
+              last-number
+              prev-class="prev-item"
+              next-class="next-item"
+              class="mb-0">
+              <template #prev-text>
+                <feather-icon
+                  icon="ChevronLeftIcon"
+                  size="18" />
+              </template>
+              <template #next-text>
+                <feather-icon
+                  icon="ChevronRightIcon"
+                  size="18" />
+              </template>
+            </b-pagination>
+          </div>
         </b-col>
 
         <!-- end -->
@@ -245,13 +250,12 @@ import {
   BInputGroupAppend,
   BButton,
   BCardText,
-  VBToggle,
-  // BCollapse,
+
 } from 'bootstrap-vue';
+import useJwt from '@/auth/jwt/useJwt';
 import VueApexCharts from 'vue-apexcharts';
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue';
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue';
-import Ripple from 'vue-ripple-directive';
 
 export default {
   components: {
@@ -270,91 +274,45 @@ export default {
     BCardText,
     AppCollapse,
     AppCollapseItem,
-    // BCollapse,
-    // VBToggle,
   },
-  directives: {
-    'b-toggle': VBToggle,
-    Ripple,
-  },
+
   data() {
     return {
       selectMode: [],
-      limits: ['10', '60', '80', '100'],
+
       perPage: 5,
       pageOptions: [3, 5, 10],
       totalRows: 1,
       currentPage: 1,
+
       sortBy: '',
       sortDesc: false,
       filter: null,
       filterOn: [],
-      infoModal: {
-        id: 'info-modal',
-        title: '',
-        content: '',
-      },
       fields: [
         {
           key: 'selected',
           label: '',
         },
         { key: 'number', label: 'номер карты', sortable: true },
-        { key: 'age', label: 'лимиты', sortable: true },
-        // { key: 'information', label: 'информация' },
-        { key: 'status', label: 'статус', sortable: true },
+        { key: 'limits[0].limit_commons', label: 'лимиты', sortable: true },
+        { key: 'card_status_id', label: 'статус', sortable: true },
       ],
-      items: [
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-        },
-        {
-          number: '7824861010059713787',
-          age: ['9', '90'],
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-        },
-        {
-          number: '7824861010059713787',
-          age: ['101', '5', '1', '80', '40'],
-        },
-        {
-          number: '7824861010059713787',
-          age: ['55', '1', '20'],
-        },
-      ],
-      statusColor: [
+      items: [],
+
+      cardStatus: {
+        // key: "items.card_status"
+        ACTIVE: 'Активна',
+        BLOCK: 'Заблокирована',
+        BROKEN: 'Неисправна',
+        DELETED: 'Удалена',
+        FINANCE: 'Финансовая блокировка',
+        LOST: 'Утеряна',
+        RETURN: 'Сдана',
+        SOLD: 'Продана',
+      },
+
+      status: [
         {
           1: 'ACTIVE',
           2: 'FINANCE',
@@ -363,44 +321,56 @@ export default {
           5: 'RETURN',
         },
         {
-          1: 'light-primary',
-          2: 'light-success',
-          3: 'light-danger',
-          4: 'light-warning',
-          5: 'light-info',
+          1: 'primary',
+          2: 'success',
+          3: 'danger',
+          4: 'warning',
+          5: 'info',
         },
       ],
     };
   },
+
   computed: {
-    sortOptions() {
-      // Create an options list from our fields
-      return this.fields
-        .filter((f) => f.sortable)
-        .map((f) => ({ text: f.label, value: f.key }));
+    statusVariant() {
+      const statusColor = {
+        /* eslint-disable key-spacing */
+        ACTIVE: 'primary',
+        FINANCE: 'success',
+        BROKEN: 'danger',
+        BLOCK: 'warning',
+        RETURN: 'info',
+        /* eslint-enable key-spacing */
+      };
+      return (status) => statusColor[status];
     },
-    getStatus() {
-      // eslint-disable-next-line no-undef
-      return this.cardStatus[data.item.status];
-    },
+
+  },
+
+  beforeMount() {
+    this.getAllCards();
   },
   mounted() {
     // Set the initial number of items
-    this.totalRows = this.items.length;
+    this.totalRows = this.items.data.data.length;
   },
+
   methods: {
-    // info(item, index, button) {
-    //   this.infoModal.title = `Row index: ${index}`;
-    //   this.infoModal.content = JSON.stringify(item, null, 2);
-    //   this.$root.$emit('bv::show::modal', this.infoModal.id, button);
-    // },
-    // resetInfoModal() {
-    //   this.infoModal.title = '';
-    //   this.infoModal.content = '';
-    // },
-    // cons() {
-    //   console.log(55);
-    // },
+    viewStatus(value) {
+      return this.cardStatus[value];
+    },
+
+    getAllCards() {
+      const ID = this.contractId;
+      this.busy = true;
+      useJwt.getCardsDate(`contract_id=${ID}`).then((response) => {
+        if (response.data.status) {
+          this.items = response.data;
+          this.totalRows = this.items.data.length;
+          console.log(this.items.data);
+        }
+      });
+    },
     getPopularityColor(num) {
       if (Number(num) > 90) return 'success';
       if (Number(num) > 50) return 'secondary';

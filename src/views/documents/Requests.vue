@@ -57,16 +57,13 @@
 
           <!-- filter -->
           <b-form-group
-            label="Найти"
-            label-cols-sm="2"
-            label-align-sm="left"
-            label-size="sm"
-            label-for="filterInput"
+
             class="mt-2">
             <b-input-group size="sm">
               <b-form-input
                 id="filterInput"
                 v-model="filter"
+                placeholder="Найти"
                 type="search" />
               <b-input-group-append>
                 <b-button
@@ -328,6 +325,7 @@ export default {
       useJwt.GetRequests(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=7824861010051464017`).then((response) => {
         if (response.data.status) {
           this.request = response.data;
+          console.log(this.request);
           if (this.rangeDate.length > 10 && this.request.data.length < 1) {
             this.$toast({
               component: ToastificationContent,

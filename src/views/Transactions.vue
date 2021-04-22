@@ -23,7 +23,8 @@
                 </b-form-group>
 
                 <div
-                  class="d-flex flex-column">
+                  class="d-flex flex-column justify-content-around
+                  ">
                   <p class="mt-1">
                     Выберете карту:
                   </p>
@@ -34,15 +35,15 @@
                     <template #overlay>
                       <div class="d-flex align-items-center">
                         <b-spinner
-                          style="width: .5rem; height: .5rem;"
+                          style="width: 1rem; height: 1rem;"
                           type="grow"
                           variant="secondary" />
                         <b-spinner
                           type="grow"
-                          style="width: 1rem; height: 1rem;"
+                          style="width: 1.5rem; height: 1.5rem;"
                           variant="dark" />
                         <b-spinner
-                          style="width: .5rem; height: .5rem;"
+                          style="width: 1rem; height: 1rem;"
                           type="grow"
                           variant="secondary" />
                         <!-- We add an SR only text for screen readers -->
@@ -59,47 +60,45 @@
                 </div>
               </div>
               <!-- filter -->
-              <b-form-group
-                label="Найти"
-                label-cols-sm="2"
-                label-align-sm="left"
-                label-size="sm"
-                label-for="filterInput"
-                class="mb-0">
-                <b-input-group size="sm">
-                  <b-form-input
-                    id="filterInput"
-                    v-model="filter"
-                    type="search" />
-                  <b-input-group-append>
-                    <b-button
-                      :disabled="!filter"
-                      @click="filter = ''">
-                      Очистить
-                    </b-button>
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form-group>
+              <div class="d-flex flex-column-reverse justify-content-around align-items-end">
+                <b-form-group
+                  class="mb-0 mt-2">
+                  <b-input-group size="sm">
+                    <b-form-input
+                      id="filterInput"
+                      v-model="filter"
+                      placeholder="Найти"
+                      type="search" />
+                    <b-input-group-append>
+                      <b-button
+                        :disabled="!filter"
+                        @click="filter = ''">
+                        Очистить
+                      </b-button>
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
 
-              <div>
-                <export-excel
-                  class="btn btn-primary"
-                  :data="transactions.data"
-                  :fields="columns"
-                  type="xlsx"
-                  name="Транзакции.xlsx">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    fill="currentColor"
-                    class="bi bi-file-earmark-excel"
-                    viewBox="0 0 16 16">
-                    <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-                  </svg>
-                  Скачать
-                </export-excel>
+                <div>
+                  <export-excel
+                    class="btn btn-primary"
+                    :data="transactions.data"
+                    :fields="columns"
+                    type="xlsx"
+                    name="Транзакции.xlsx">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      fill="currentColor"
+                      class="bi bi-file-earmark-excel"
+                      viewBox="0 0 16 16">
+                      <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                      <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                    </svg>
+                    Скачать
+                  </export-excel>
+                </div>
               </div>
             </div>
           </b-card-body>
@@ -118,8 +117,6 @@
             :filter="filter"
             :filter-included-fields="filterOn"
             @filtered="onFiltered">
-            <!--1-й вариант-->
-
             <template #cell(summ)="row">
               <b-col @click="row.toggleDetails">
                 <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseInt(row.item.summ).toLocaleString('ru-RU', {
@@ -134,9 +131,6 @@
                   @click="row.detailsShowing">
                   Детали
                 </b-button>
-
-                <!-- <span
-                  class="border-dashed">Детали</span> -->
               </b-col>
             </template>
 
@@ -245,7 +239,6 @@ import { formatDate } from '@core/utils/filter';
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import { Russian } from 'flatpickr/dist/l10n/ru';
 
-// import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import {
   BRow,
   BCol,
@@ -261,12 +254,11 @@ import {
   BInputGroup,
   BInputGroupAppend,
   BCardBody,
+  BSpinner,
 } from 'bootstrap-vue';
 import 'swiper/css/swiper.css';
 import vSelect from 'vue-select';
-// import axios from '@axios';
 import useJwt from '@/auth/jwt/useJwt';
-// import { isToday } from '@core/utils/utils';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { codeRowDetailsSupport } from './code';
 import 'bootstrap-vue/dist/bootstrap-vue-icons.min.css';
@@ -289,6 +281,7 @@ export default {
     BCardBody,
     BOverlay,
     vSelect,
+    BSpinner,
 
   },
   data() {
@@ -312,8 +305,6 @@ export default {
       selected: [],
       transactions: [],
       rangeDate: null, // датапикер
-      dateStart: [],
-      dateEnd: [], // new Date()
       config: {
         mode: 'range',
         maxDate: 'today',
@@ -391,26 +382,6 @@ export default {
 
   },
 
-  // created() {
-  //   useJwt.getTransactions().then((response) => {
-  //     if (response.data.status) {
-  //       this.$store.dispatch('user/getTransactions', response.data).then(() => {
-  //         this.transactions = response.data;
-  //         console.log(this.transactions);
-  //       });
-  //     }
-  //   });
-  // },
-
-  // beforeCreate() {
-  //   const userData = JSON.parse(localStorage.getItem('userData'));
-  //   if (userData) {
-  //     this.contract = userData;
-  //   }
-  //   console.log(this.contract);
-  //   return this.contract;
-  // },
-
   created() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
@@ -467,18 +438,12 @@ export default {
       const { selected } = this;
       const { start } = this;
       const { end } = this;
-      // const date = this.rangeDate;
-      // const newDate = Array.from(date).filter((n) => n !== '—');
-      // const arr = (newDate.join('').split('  '));
-      // // eslint-disable-next-line prefer-template
-      // const start = arr[0] + ' 00:00:00';
-      // // eslint-disable-next-line prefer-template
-      // const end = arr[1] + ' 00:00:00';
       const ID = this.contractId;
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
+          console.log(this.transactions.data.length, selected);
           if (this.transactions.data.length < 1 && selected !== null) {
             // this.transactions = [];
             this.$toast({
@@ -508,77 +473,6 @@ export default {
         });
       }
     },
-    // getData() {
-    //   this.$refs.simpleRules.validate().then((success) => {
-    //     if (success) {
-    //       return new Promise((resolve, reject) => {
-    //         axios
-    //           .post('http://cabinet.autocard-yug.ru/api/transaction/new', {
-    //             // ДАТА К ТАБЛИЦЕ
-    //             card_number: this.NumberCard,
-    //             pin: this.pinCard,
-    //             start_date: '2021-01-01', // this.rangeDate ()
-    //             end_date: new Date(),
-    //           })
-    //           .then((response) => {
-    //             if (response.data.status) {
-    //               this.items = response.data.message;
-    //               this.totalRows = this.items.transactions.length;
-    //             } else {
-    //               this.$toast({
-    //                 component: ToastificationContent,
-    //                 props: {
-    //                   title: 'Уведомление',
-    //                   icon: 'BellIcon',
-    //                   text: response.data.message,
-    //                   // variant,
-    //                 },
-    //               });
-    //             }
-    //           })
-    //           .catch((error) => reject(error));
-    //       });
-    //     }
-    //     return null;
-    //   });
-    // },
-    // getTransactions() {
-    //   const urlParams = new URLSearchParams(window.location.search);
-
-    //   urlParams.set('startDate', 'date');
-
-    //   useJwt.getTransactions('contract_id=afed3af7-b90c-11e9-94d2-7054d2199b65&startDate=01.03.2021 00:00:00&endDate=01.04.2021 00:00:00&card_nuber=7826010113259838');
-    // },
-    // getDate() {
-    //   const date = this.rangeDate;
-    //   const newDate = Array.from(date).filter((n) => n !== '—');
-    //   const arr = (newDate.join('').split('  '));
-    //   const start = arr[0].split('.').reverse().join('-');
-    //   const end = arr[1].split('.').reverse().join('-');
-    //   axios
-    //     .post('http://cabinet.autocard-yug.ru/api/gettransactionPin', {
-    //       // ДАТА К ТАБЛИЦЕ
-    //       card_number: this.NumberCard,
-    //       start_date: start,
-    //       end_date: end,
-    //     })
-    //     .then((response) => {
-    //       if (response.data.status) {
-    //         this.items = response.data.message;
-    //         this.totalRows = this.items.transactions.length;
-    //       } else {
-    //         this.items.transactions = [];
-    //       }
-    //     });
-    // },
-
-    // download() {
-    //   const data = XLSX.utils.json_to_sheet(this.transactions.data);
-    //   const wb = XLSX.utils.book_new();
-    //   console.log(wb);
-    //   XLSX.utils.book_append_sheet(wb, data, 'data');
-    //   XLSX.writeFile(wb, 'Транзакции.xlsx');
-    // },
 
     isToday() {
       const today = new Date();
@@ -605,6 +499,7 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.length;
+
           if (this.rangeDate.length > 10 && this.transactions.data.length < 1) {
             this.$toast({
               component: ToastificationContent,
