@@ -84,38 +84,18 @@
         </b-button>
 
         <b-button
+          :disabled="!haveTransactions"
           class="btn btn-primary mt-1 ml-3"
           @click="toogle">
           {{ visible ? "Скрыть чеки" : "Показать чеки" }}
         </b-button>
 
         <b-button
+          :disabled="!haveTransactions"
           class="btn btn-primary mt-1 ml-3"
           @click="download">
           Скачать чеки
         </b-button>
-        <b-pagination
-          v-if="hidden"
-          v-model="currentPage"
-          :total-rows="totalRows"
-          first-number
-          last-number
-          prev-class="prev-item"
-          next-class="next-item"
-          class="mb-0 "
-          align="center"
-          @change="selectPage">
-          <template #prev-text>
-            <feather-icon
-              icon="ChevronLeftIcon"
-              size="18" />
-          </template>
-          <template #next-text>
-            <feather-icon
-              icon="ChevronRightIcon"
-              size="18" />
-          </template>
-        </b-pagination>
       </div>
 
       <div
@@ -128,6 +108,28 @@
           ref="print"
           :transactions="transactions" />
       </div>
+      <b-pagination
+        v-if="hidden"
+        v-model="currentPage"
+        :total-rows="totalRows"
+        first-number
+        last-number
+        prev-class="prev-item"
+        next-class="next-item"
+        class="mb-0 "
+        align="center"
+        @change="selectPage">
+        <template #prev-text>
+          <feather-icon
+            icon="ChevronLeftIcon"
+            size="18" />
+        </template>
+        <template #next-text>
+          <feather-icon
+            icon="ChevronRightIcon"
+            size="18" />
+        </template>
+      </b-pagination>
     </b-card>
   </div>
 </template>
@@ -188,6 +190,7 @@ export default {
       selected: [],
       cards: null,
       rangeDate: null,
+      haveTransactions: false,
       currentPage: 1,
       totalRows: null,
       config: {
@@ -334,7 +337,12 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
+          if (this.transactions.data.length > 1) {
+            this.haveTransactions = true;
+          }
+
           if (this.rangeDate.length > 10 && this.transactions.data.length < 1) {
+            this.haveTransactions = false;
             this.$toast({
               component: ToastificationContent,
               props: {
@@ -390,7 +398,11 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.tol.Total;
-          if (this.transactions.data.length < 1) {
+          if (this.transactions.data.length > 1) {
+            this.haveTransactions = true;
+          } else {
+            this.haveTransactions = false;
+            this.visible = false;
             this.transactions = [];
             // this.visible = false;
             this.$toast({
@@ -415,11 +427,6 @@ export default {
     toogle() {
       this.visible = !this.visible;
       this.hidden = !this.hidden;
-
-      // this.selectPage(1);
-      // if (this.selected.length < 1) {
-      //   this.getAllTransactions();
-      // } else this.onChange();
     },
   },
 

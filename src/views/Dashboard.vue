@@ -427,7 +427,7 @@ import { ru } from 'apexcharts/dist/locales/ru.json';
 import { $themeColors } from '@themeConfig';
 import { Icon } from 'leaflet';
 import {
-  BCardText, BCol, BButton, BTable, BOverlay, BCardBody,
+  BCardText, BCol, BButton, BTable, BCardBody,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line no-underscore-dangle
@@ -457,7 +457,7 @@ export default {
     LTileLayer,
     LMarker,
     LCircle,
-    BOverlay,
+
   },
   data() {
     return {

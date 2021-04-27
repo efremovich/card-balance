@@ -1,221 +1,71 @@
-/* eslint-disable vue/valid-v-slot */
 <template>
-  <div>
-    <b-row>
-      <b-col
-        md="2"
-        sm="4"
-        class="my-1">
-        <b-form-group class="mb-0">
-          <label
-            class="d-inline-block text-sm-left mr-50">Значений на странице
-          </label>
-          <b-form-select
-            id="perPageSelect"
-            v-model="perPage"
-            size="sm"
-            :options="pageOptions"
-            class="w-50" />
-        </b-form-group>
-      </b-col>
-      <b-col
-        md="4"
-        sm="8"
-        class="my-1">
-        <b-form-group
-          label="Сортировка"
-          label-cols-sm="3"
-          label-align-sm="right"
-          label-size="sm"
-          label-for="sortBySelect"
-          class="mb-0">
-          <b-input-group size="sm">
-            <b-form-select
-              id="sortBySelect"
-              v-model="sortBy"
-              :options="sortOptions"
-              class="w-75">
-              <template #first>
-                <option value="">
-                  -выберите параметр-
-                </option>
-              </template>
-            </b-form-select>
-            <!-- <b-form-select
-              v-model="sortDesc"
-              size="sm"
-              :disabled="!sortBy"
-              class="w-25"
-            >
-              <option :value="false">
-                Asc
-              </option>
-              <option :value="true">
-                Desc
-              </option>
-            </b-form-select> -->
-          </b-input-group>
-        </b-form-group>
-      </b-col>
-      <b-col
-        md="6"
-        class="my-1">
-        <b-form-group
-          label="Найти"
-          label-cols-sm="3"
-          label-align-sm="right"
-          label-size="sm"
-          label-for="filterInput"
-          class="mb-0">
-          <b-input-group size="sm">
-            <b-form-input
-              id="filterInput"
-              v-model="filter"
-              type="search"
-              placeholder="Поле для поиска" />
-            <b-input-group-append>
-              <b-button
-                :disabled="!filter"
-                @click="filter = ''">
-                Очистить
-              </b-button>
-            </b-input-group-append>
-          </b-input-group>
-        </b-form-group>
-      </b-col>
+  <div style="height: inherit">
+    <b-overlay
+      :show="loadDone"
+      spinner-variant="primary"
+      variant="transparent"
+      spinner-medium
+      rounded="md">
+      <!-- Prodcuts -->
+      <section :class="itemView">
+        <b-card
+          v-for="(product,index) in products.value"
+          :key="index"
+          class="ecommerce-card"
+          no-body>
+          <div class="item-img text-center">
+            <b-img
+              fluid
+              class="card-img-top"
+              src="../assets/images/cards-icon/LUK.svg" />
+          </div>
 
-      <b-col cols="12">
-        <!--NEW -->
+          <!-- Product Actions -->
+          <div class="item-options text-center">
+            <div class="item-wrapper">
+              <div class="item-cost">
+                <h4 class="item-price">
+                  {{ index }}
+                </h4>
+              </div>
+            </div>
+            <b-button
+              variant="light"
+              tag="a"
+              class="btn-wishlist"
+              @click="toggleProductInWishlist(product)">
+              <feather-icon
+                icon="HeartIcon"
+                class="mr-50" />
+              <span>Wishlist</span>
+            </b-button>
+            <b-button
+              variant="primary"
+              tag="a"
+              class="btn-cart"
+              @click="handleCartActionClick(product)">
+              <feather-icon
+                icon="ShoppingCartIcon"
+                class="mr-50" />
+              <!-- <span>{{ product.isInCart ? 'View In Cart' : 'Add to Cart' }}</span> -->
+            </b-button>
+          </div>
+        </b-card>
+      </section>
 
-        <b-table
-          ref="selectableTable"
-          :sticky-header="stickyHeader"
-          selectable
-          :small="small"
-          :items="items.data"
-          :fields="fields"
-          responsive="sm"
-          :select-mode="selectMode"
-          :per-page="perPage"
-          :current-page="currentPage"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :sort-direction="sortDirection"
-          :filter="filter"
-          :filter-included-fields="filterOn"
-          @row-selected="onRowSelected"
-          @filtered="onFiltered">
-          <template
-
-            #cell(selected)="{ rowSelected }">
-            <template
-              v-if="rowSelected">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#ea5455"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-check-circle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
-            </template>
-
-            <template v-else>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="grey"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-circle"><circle
-                  cx="12"
-                  cy="12"
-                  r="10" /></svg>
-            </template>
-          </template>
-
-          <template #cell(card_status_id)="data">
-            <b-card-text
-              class="mb-50 text-info">
-              {{ viewStatus(data.item.card_status_id) }}
-            </b-card-text>
-          </template>
-
-          <template #cell(number)="data">
-            <b-col
-              md="6"
-              xl="4">
-              <p class="before">
-                {{ data.item.number }}
-              </p>
-            </b-col>
-          </template>
-
-          <template #cell(limits[0])="data">
-            <vue-apex-charts
-              type="bar"
-              height="200" />
-
-            <b-col class="avg-sessions pt-50">
-              <!-- TEMPLATE -->
-              <template v-for="(item, index) in data.limit_commons">
-                <b-col
-                  :key="index"
-                  class="mb-2">
-                  <b-card-text class="mb-50 text-info">
-                    {{ item.service_id[index] }}
-                  </b-card-text>
-                  <b-progress
-                    :value="item[index].limits.id"
-                    :variant="getPopularityColor(item[index].limits.id)"
-                    height="6px" />
-                </b-col>
-              </template>
-
-              <template
-                v-if="item[index].length>2">
-                <app-collapse
-                  id="collapse-1">
-                  <app-collapse-item
-                    id="collapse-2"
-                    title="ещё...  ">
-                    <b-col
-                      v-for="(item, index) in item.length-2"
-                      :key="index+2"
-
-                      class="mb-2">
-                      <b-card-text class="mb-50 text-info">
-                        АИ-92:   {{ item.limits.id[index+2] }}
-                      </b-card-text>
-                      <b-progress
-                        :value="item[index+2]"
-                        :variant="getPopularityColor(item[index+2])"
-                        height="6px" />
-                    </b-col>
-                  </app-collapse-item>
-                </app-collapse>
-              </template>
-            </b-col>
-          </template>
-        </b-table>
-        <b-col cols="12">
-          <div>
+      <!-- Pagination -->
+      <section>
+        <b-row>
+          <b-col cols="12">
             <b-pagination
-              v-model="currentPage"
-              :total-rows="totalRows"
-              :per-page="perPage"
+              v-model="filters.page"
+              :total-rows="totalProducts"
+              :per-page="filters.perPage"
               first-number
+              align="center"
               last-number
               prev-class="prev-item"
-              next-class="next-item"
-              class="mb-0">
+              next-class="next-item">
               <template #prev-text>
                 <feather-icon
                   icon="ChevronLeftIcon"
@@ -227,218 +77,108 @@
                   size="18" />
               </template>
             </b-pagination>
-          </div>
-        </b-col>
-
-        <!-- end -->
-      </b-col>
-    </b-row>
+          </b-col>
+        </b-row>
+      </section>
+    </b-overlay>
   </div>
 </template>
 
 <script>
 import {
-  BTable,
-  BRow,
-  BProgress,
-  BCol,
-  BFormGroup,
-  BFormSelect,
-  BPagination,
-  BInputGroup,
-  BFormInput,
-  BInputGroupAppend,
-  BButton,
-  BCardText,
-
+  BRow, BCol, BCard, BImg, BButton, BPagination, BOverlay,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
-import VueApexCharts from 'vue-apexcharts';
-import AppCollapse from '@core/components/app-collapse/AppCollapse.vue';
-import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue';
+import Ripple from 'vue-ripple-directive';
+
+import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
+import { useShopFiltersSortingAndPagination, useShopUi, useShopRemoteData } from './useECommerceShop';
+import { useEcommerceUi } from './useEcommerce';
 
 export default {
+  directives: {
+    Ripple,
+  },
   components: {
-    BTable,
-    BProgress,
-    VueApexCharts,
+    // BSV
     BRow,
     BCol,
-    BFormGroup,
-    BFormSelect,
-    BPagination,
-    BInputGroup,
-    BFormInput,
-    BInputGroupAppend,
+    BCard,
+
+    BImg,
     BButton,
-    BCardText,
-    AppCollapse,
-    AppCollapseItem,
+    BOverlay,
+    BPagination,
+
+    // SFC
+
   },
+  setup() {
+    const {
+      filters, filterOptions, sortBy, sortByOptions,
+    } = useShopFiltersSortingAndPagination();
 
-  data() {
-    return {
-      selectMode: [],
+    const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
 
-      perPage: 5,
-      pageOptions: [3, 5, 10],
-      totalRows: 1,
-      currentPage: 1,
+    let loadDone = false;
 
-      sortBy: '',
-      sortDesc: false,
-      filter: null,
-      filterOn: [],
-      fields: [
-        {
-          key: 'selected',
-          label: '',
-        },
-        { key: 'number', label: 'номер карты', sortable: true },
-        { key: 'limits[0].limit_commons', label: 'лимиты', sortable: true },
-        { key: 'card_status_id', label: 'статус', sortable: true },
-      ],
-      items: [],
+    const {
+      itemView, itemViewOptions, totalProducts,
+    } = useShopUi();
 
-      cardStatus: {
-        // key: "items.card_status"
-        ACTIVE: 'Активна',
-        BLOCK: 'Заблокирована',
-        BROKEN: 'Неисправна',
-        DELETED: 'Удалена',
-        FINANCE: 'Финансовая блокировка',
-        LOST: 'Утеряна',
-        RETURN: 'Сдана',
-        SOLD: 'Продана',
-      },
+    const { products } = useShopRemoteData();
 
-      status: [
-        {
-          1: 'ACTIVE',
-          2: 'FINANCE',
-          3: 'BROKEN',
-          4: 'BLOCK',
-          5: 'RETURN',
-        },
-        {
-          1: 'primary',
-          2: 'success',
-          3: 'danger',
-          4: 'warning',
-          5: 'info',
-        },
-      ],
+    const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
+
+    // Wrapper Function for `fetchProducts` which can be triggered initially and upon changes of filters
+
+    const fetchShopProducts = () => {
+      loadDone = true;
+      useJwt.getCardsDate()
+        .then((response) => {
+          products.value = response.data;
+          totalProducts.value = products.value.data.length;
+          console.log(products.value);
+          loadDone = false;
+        });
+      return products.value;
     };
-  },
 
-  computed: {
-    statusVariant() {
-      const statusColor = {
-        /* eslint-disable key-spacing */
-        ACTIVE: 'primary',
-        FINANCE: 'success',
-        BROKEN: 'danger',
-        BLOCK: 'warning',
-        RETURN: 'info',
-        /* eslint-enable key-spacing */
-      };
-      return (status) => statusColor[status];
-    },
+    fetchShopProducts();
 
-  },
+    return {
+      // useShopFiltersSortingAndPagination
+      filters,
+      filterOptions,
+      sortBy,
+      sortByOptions,
+      loadDone,
+      // useShopUi
+      itemView,
+      itemViewOptions,
+      totalProducts,
+      toggleProductInWishlist,
+      handleCartActionClick,
 
-  beforeMount() {
-    this.getAllCards();
-  },
-  mounted() {
-    // Set the initial number of items
-    this.totalRows = this.items.data.data.length;
-  },
+      // useShopRemoteData
+      products,
 
-  methods: {
-    viewStatus(value) {
-      return this.cardStatus[value];
-    },
-
-    getAllCards() {
-      const ID = this.contractId;
-      this.busy = true;
-      useJwt.getCardsDate(`contract_id=${ID}`).then((response) => {
-        if (response.data.status) {
-          this.items = response.data;
-          this.totalRows = this.items.data.length;
-          console.log(this.items.data);
-        }
-      });
-    },
-    getPopularityColor(num) {
-      if (Number(num) > 90) return 'success';
-      if (Number(num) > 50) return 'secondary';
-      if (Number(num) >= 30) return 'warning';
-      if (Number(num) < 30) return 'danger';
-      return 'primary';
-    },
-    onFiltered(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
-      this.totalRows = filteredItems.length;
-      this.currentPage = 1;
-    },
+      // mqShallShowLeftSidebar
+      mqShallShowLeftSidebar,
+    };
   },
 };
 </script>
 
-<style>
-.table.b-table > tbody .b-table-row-selected.table-active td {
-  background-color: #283046 !important;
-}
-.card {
-  border-radius: 5px !important;
-}
-.card .card-header {
-  padding: 1rem !important;
-}
-.row td {
-  height: 202px !important;
-}
-.table td {
-  padding: 0.72rem 0rem !important;
-}
-td:first-child {
-  width: 1px !important;
-  padding: 10px !important;
-}
-td:nth-child(2) {
-  width: 15% !important;
-}
-.mb-2,
-.pt-50 {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-.card .card-img-overlay.bg-overlay {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-}
-.shadow {
-  color: black;
-  font-size: 1rem !important;
-  letter-spacing: 1.5px !important;
-  position: relative !important;
-  bottom: 4% !important;
-}
-.col-xl-4 {
-  padding: 1rem 0 0 !important;
-}
-.before {
-  margin-right: 15px;
-  display: flex;
-  font-size: 13px;
-}
-.before::before {
-  content: "💳";
-  text-align: center;
-  filter: grayscale(100%);
-  margin-right: 10px;
+<style lang="scss">
+@import "~@core/scss/base/pages/app-ecommerce.scss";
+</style>
+
+<style lang="scss" scoped>
+.item-view-radio-group ::v-deep {
+  .btn {
+    display: flex;
+    align-items: center;
+  }
 }
 </style>
