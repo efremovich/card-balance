@@ -15,6 +15,12 @@ export default [
   },
 
   {
+    path: '/Cards2',
+    name: 'card',
+    component: () => import('@/views/Cards2.vue'),
+  },
+
+  {
     path: '/transactions',
     name: 'transactions',
     component: () => import('@/views/Transactions.vue'),

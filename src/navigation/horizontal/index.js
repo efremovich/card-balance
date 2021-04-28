@@ -10,6 +10,11 @@ export default [
     icon: 'FileIcon',
   },
   {
+    title: 'Топливные карты II',
+    route: 'card',
+    icon: 'FileIcon',
+  },
+  {
     title: 'Транзакции',
     route: 'transactions',
     icon: 'ListIcon',

@@ -6,10 +6,25 @@
       variant="transparent"
       spinner-medium
       rounded="md">
+      <b-form-radio-group
+        v-model="itemView"
+        class="ml-1 list item-view-radio-group"
+        buttons
+        size="sm"
+        button-variant="outline-primary">
+        <b-form-radio
+          v-for="option in itemViewOptions"
+          :key="option.value"
+          :value="option.value">
+          <feather-icon
+            :icon="option.icon"
+            size="18" />
+        </b-form-radio>
+      </b-form-radio-group>
       <!-- Prodcuts -->
-      <section :class="itemView">
+      <section class="views">
         <b-card
-          v-for="(product,index) in products.value"
+          v-for="(product,index) in products.data"
           :key="index"
           class="ecommerce-card"
           no-body>
@@ -17,44 +32,82 @@
             <b-img
               fluid
               class="card-img-top"
-              src="../assets/images/cards-icon/LUK.svg" />
-          </div>
-
-          <!-- Product Actions -->
-          <div class="item-options text-center">
-            <div class="item-wrapper">
-              <div class="item-cost">
-                <h4 class="item-price">
-                  {{ index }}
-                </h4>
+              src="../assets/images/cards-icon/TAT.svg" />
+            <div class="item-options text-center">
+              <div class="item-wrapper">
+                <div class="item-cost ">
+                  <h6 class="item-price">
+                    {{ product.number }}
+                  </h6>
+                </div>
+              </div>
+              <div class="d-flex flex-row flex-wrap justify-content-around mt-2">
+                <b-button
+                  v-b-tooltip.hover.right="'Внести изменения'"
+                  variant="light"
+                  tag="a"
+                  class="btn-wishlist mb-1"
+                  @click="toggleProductInWishlist(product)">
+                  <feather-icon
+                    icon="SettingsIcon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.right="'Внести изменения'"
+                  variant="light"
+                  tag="a"
+                  class="btn-wishlist mb-1"
+                  @click="toggleProductInWishlist(product)">
+                  <feather-icon
+                    icon="Edit3Icon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.right="'Удалить карту'"
+                  variant="light"
+                  tag="a"
+                  class="btn-cart mb-1"
+                  @click="handleCartActionClick(product)">
+                  <feather-icon
+                    icon="Trash2Icon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.right="'Заблокировать карту'"
+                  variant="light"
+                  tag="a"
+                  class="btn-cart mb-1"
+                  @click="handleCartActionClick(product)">
+                  <feather-icon
+                    icon="LockIcon"
+                    class="mr-50" />
+                </b-button>
               </div>
             </div>
-            <b-button
-              variant="light"
-              tag="a"
-              class="btn-wishlist"
-              @click="toggleProductInWishlist(product)">
-              <feather-icon
-                icon="HeartIcon"
-                class="mr-50" />
-              <span>Wishlist</span>
-            </b-button>
-            <b-button
-              variant="primary"
-              tag="a"
-              class="btn-cart"
-              @click="handleCartActionClick(product)">
-              <feather-icon
-                icon="ShoppingCartIcon"
-                class="mr-50" />
-              <!-- <span>{{ product.isInCart ? 'View In Cart' : 'Add to Cart' }}</span> -->
-            </b-button>
           </div>
+          <div
+            v-for="item in product.limits"
+            :key="item.value"
+            class="limits ml-1 pb-2">
+            <div
+
+              v-for="(i) in item.limit_commons"
+              :key="i.limit_id">
+              <label>{{ i.service_id }}</label>
+              <b-progress
+                :variant="getPopularityColor(i.limit_id)"
+                show-value
+                class="mb-1 mt-1 "
+                :value="i.limit_id"
+                :max="max" />
+            </div>
+          </div>
+          <!-- Product Actions -->
         </b-card>
       </section>
 
       <!-- Pagination -->
-      <section>
+      <!-- <section>
         <b-row>
           <b-col cols="12">
             <b-pagination
@@ -79,38 +132,35 @@
             </b-pagination>
           </b-col>
         </b-row>
-      </section>
+      </section> -->
     </b-overlay>
   </div>
 </template>
 
 <script>
 import {
-  BRow, BCol, BCard, BImg, BButton, BPagination, BOverlay,
+  BCard, BImg, BButton, BOverlay, VBTooltip, BProgress,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
-
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
 import { useShopFiltersSortingAndPagination, useShopUi, useShopRemoteData } from './useECommerceShop';
 import { useEcommerceUi } from './useEcommerce';
 
 export default {
   directives: {
+    'b-tooltip': VBTooltip,
     Ripple,
   },
   components: {
-    // BSV
-    BRow,
-    BCol,
+
     BCard,
+    BProgress,
 
     BImg,
     BButton,
     BOverlay,
-    BPagination,
-
-    // SFC
+    // BPagination,
 
   },
   setup() {
@@ -121,10 +171,19 @@ export default {
     const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
 
     let loadDone = false;
+    const max = 10000;
 
     const {
       itemView, itemViewOptions, totalProducts,
     } = useShopUi();
+
+    const getPopularityColor = (num) => {
+      if (Number(num) > 7000) return 'success';
+      if (Number(num) > 4000) return 'primary';
+      if (Number(num) >= 2000) return 'warning';
+      if (Number(num) < 1000) return 'danger';
+      return 'success';
+    };
 
     const { products } = useShopRemoteData();
 
@@ -138,10 +197,9 @@ export default {
         .then((response) => {
           products.value = response.data;
           totalProducts.value = products.value.data.length;
-          console.log(products.value);
-          loadDone = false;
+          console.log(products.value.data);
         });
-      return products.value;
+      loadDone = false;
     };
 
     fetchShopProducts();
@@ -153,13 +211,14 @@ export default {
       sortBy,
       sortByOptions,
       loadDone,
+      getPopularityColor,
       // useShopUi
       itemView,
       itemViewOptions,
       totalProducts,
       toggleProductInWishlist,
       handleCartActionClick,
-
+      max,
       // useShopRemoteData
       products,
 
@@ -171,10 +230,71 @@ export default {
 </script>
 
 <style lang="scss">
-@import "~@core/scss/base/pages/app-ecommerce.scss";
+// @import "../@core/scss/base/ecommerce";
 </style>
 
 <style lang="scss" scoped>
+// .ecommerce-card {
+//   max-width: 80% !important;
+// }
+
+.card {
+  flex-direction: row !important;
+  align-items: flex-start;
+  max-width: 390px;
+}
+
+.item-wrapper {
+  position: relative !important;
+  bottom: 35% !important;
+  right: 8% !important;
+}
+
+.item-options {
+  position: relative !important;
+  bottom: 45px !important;
+}
+
+.ecommerce-card {
+  background-color: inherit !important;
+  margin-bottom: 0 !important;
+  cursor: pointer;
+  margin: 3px;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 25px 0 rgba(white, 0.25);
+  }
+}
+
+.item-price {
+  position: relative;
+  left: 10px;
+}
+
+.item-img {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  min-width: 40%;
+}
+.limits {
+  max-width: 60%;
+  padding: 0 10px 0 0;
+  height: fit-content;
+  min-width: 200px;
+}
+.views {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+.progress {
+  width: 100%;
+  height: 12px;
+}
 .item-view-radio-group ::v-deep {
   .btn {
     display: flex;
