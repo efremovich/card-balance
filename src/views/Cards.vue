@@ -1,7 +1,6 @@
 <template>
   <div style="height: inherit">
     <b-overlay
-      :show="loadDone"
       spinner-variant="primary"
       variant="transparent"
       spinner-medium
@@ -12,7 +11,7 @@
           <b-col cols="12">
             <b-input-group class="input-group-merge">
               <b-form-input
-                v-model="filters.q"
+                v-model="filters"
                 placeholder="Найти по номеру карты"
                 class="search-product" />
               <b-input-group-append is-text>
@@ -27,21 +26,20 @@
       <!-- Prodcuts -->
       <section class="views">
         <b-card
-          v-for="(product,index) in products.data"
+          v-for="(product, index) in products.data"
           :key="index"
           class="ecommerce-card mb-1"
           no-body>
           <b-link
-            :to="{ name: 'card'}">
+            :to="{ name: 'card', params: { card_number: product.number } }">
             <b-img
               fluid
               class="card-img-top"
-              src="../assets/images/cards-icon/LUK.svg"
-              @click="cardNumber(index)" />
+              src="../assets/images/cards-icon/LUK.svg" />
           </b-link>
           <div class="item-options">
             <div class="item-wrapper">
-              <h6 class="item-price ">
+              <h6 class="item-price">
                 PIN: {{ product.pin }}
               </h6>
               <h5 class="item-price">
@@ -49,7 +47,8 @@
               </h5>
             </div>
 
-            <div class="d-flex flex-row flex-nowrap justify-content-around mt-2">
+            <div
+              class="d-flex flex-row flex-nowrap justify-content-around mt-2">
               <b-button-group>
                 <b-button
                   v-b-tooltip.hover.top="'Внести изменения'"
@@ -94,8 +93,7 @@
               </b-button-group>
             </div>
           </div>
-          <div
-            class="limits pb-1">
+          <div class="limits pb-1">
             <label>Остаток по карте </label>
             <b-progress
               variant="success"
@@ -159,13 +157,25 @@
 
 <script>
 import {
-  BCard, BImg, BButton, BOverlay, VBTooltip, BProgress, BInputGroupAppend, BButtonGroup, BLink, BRow, BCol, BInputGroup, BFormInput,
+  BCard,
+  BImg,
+  BButton,
+  BOverlay,
+  VBTooltip,
+  BProgress,
+  BInputGroupAppend,
+  BButtonGroup,
+  BLink,
+  BRow,
+  BCol,
+  BInputGroup,
+  BFormInput,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
 import { watch, ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
-import { useShopFiltersSortingAndPagination, useShopUi, useShopRemoteData } from './useECommerceShop';
+import { useShopUi, useShopRemoteData } from './useECommerceShop';
 import { useEcommerceUi } from './useEcommerce';
 
 export default {
@@ -187,20 +197,15 @@ export default {
     BFormInput,
     BInputGroupAppend,
     // BPagination,
-
   },
   setup() {
-    const {
-      filters,
-    } = useShopFiltersSortingAndPagination();
-    const filter = ref('');
+    // const filters = ''; // = useShopFiltersSortingAndPagination();
+    const filters = ref('');
     const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
 
     const max = 10000;
 
-    const {
-      itemView, itemViewOptions, totalProducts,
-    } = useShopUi();
+    const { itemView, itemViewOptions, totalProducts } = useShopUi();
 
     const getPopularityColor = (num) => {
       if (Number(num) > 7000) return 'success';
@@ -223,24 +228,17 @@ export default {
     // Wrapper Function for `fetchProducts` which can be triggered initially and upon changes of filters
 
     const fetchShopProducts = () => {
-      useJwt.getCardsDate()
-        .then((response) => {
-          products.value = response.data;
-          console.log(products.value.data);
-          // console.log(products.value.data.forEach((item) => {
-          //   const someArr = [];
-          //   if (item.number.includes('78')) {
-          //     someArr.push(item);
-          //   }
-          //   return someArr;
-          // }));
-          totalProducts.value = products.value.data.length;
-        });
+      useJwt.getCardsDate().then((response) => {
+        products.value = response.data;
+        if (filters.value !== '') {
+          products.value.data = response.data.data.filter((product) => product.number.includes(filters.value));
+        }
+      });
     };
 
     fetchShopProducts();
 
-    watch([filter], () => {
+    watch([filters], () => {
       fetchShopProducts();
     });
 
@@ -262,7 +260,6 @@ export default {
     return {
       number: null,
       // filter: '',
-
     };
   },
   // methods: {
