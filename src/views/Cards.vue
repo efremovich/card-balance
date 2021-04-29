@@ -6,44 +6,53 @@
       variant="transparent"
       spinner-medium
       rounded="md">
-      <b-form-radio-group
-        v-model="itemView"
-        class="ml-1 list item-view-radio-group"
-        buttons
-        size="sm"
-        button-variant="outline-primary">
-        <b-form-radio
-          v-for="option in itemViewOptions"
-          :key="option.value"
-          :value="option.value">
-          <feather-icon
-            :icon="option.icon"
-            size="18" />
-        </b-form-radio>
-      </b-form-radio-group>
+      <!-- Searchbar -->
+      <div class="ecommerce-searchbar mt-1 mb-1">
+        <b-row>
+          <b-col cols="12">
+            <b-input-group class="input-group-merge">
+              <b-form-input
+                v-model="filters.q"
+                placeholder="Найти по номеру карты"
+                class="search-product" />
+              <b-input-group-append is-text>
+                <feather-icon
+                  icon="SearchIcon"
+                  class="text-muted" />
+              </b-input-group-append>
+            </b-input-group>
+          </b-col>
+        </b-row>
+      </div>
       <!-- Prodcuts -->
       <section class="views">
         <b-card
           v-for="(product,index) in products.data"
           :key="index"
-          class="ecommerce-card"
+          class="ecommerce-card mb-1"
           no-body>
-          <div class="item-img text-center">
+          <b-link
+            :to="{ name: 'card'}">
             <b-img
               fluid
               class="card-img-top"
-              src="../assets/images/cards-icon/TAT.svg" />
-            <div class="item-options text-center">
-              <div class="item-wrapper">
-                <div class="item-cost ">
-                  <h6 class="item-price">
-                    {{ product.number }}
-                  </h6>
-                </div>
-              </div>
-              <div class="d-flex flex-row flex-wrap justify-content-around mt-2">
+              src="../assets/images/cards-icon/LUK.svg"
+              @click="cardNumber(index)" />
+          </b-link>
+          <div class="item-options">
+            <div class="item-wrapper">
+              <h6 class="item-price ">
+                PIN: {{ product.pin }}
+              </h6>
+              <h5 class="item-price">
+                {{ product.number }}
+              </h5>
+            </div>
+
+            <div class="d-flex flex-row flex-nowrap justify-content-around mt-2">
+              <b-button-group>
                 <b-button
-                  v-b-tooltip.hover.right="'Внести изменения'"
+                  v-b-tooltip.hover.top="'Внести изменения'"
                   variant="light"
                   tag="a"
                   class="btn-wishlist mb-1"
@@ -53,7 +62,7 @@
                     class="mr-50" />
                 </b-button>
                 <b-button
-                  v-b-tooltip.hover.right="'Внести изменения'"
+                  v-b-tooltip.hover.top="'Внести изменения'"
                   variant="light"
                   tag="a"
                   class="btn-wishlist mb-1"
@@ -63,7 +72,7 @@
                     class="mr-50" />
                 </b-button>
                 <b-button
-                  v-b-tooltip.hover.right="'Удалить карту'"
+                  v-b-tooltip.hover.top="'Удалить карту'"
                   variant="light"
                   tag="a"
                   class="btn-cart mb-1"
@@ -73,7 +82,7 @@
                     class="mr-50" />
                 </b-button>
                 <b-button
-                  v-b-tooltip.hover.right="'Заблокировать карту'"
+                  v-b-tooltip.hover.top="'Заблокировать карту'"
                   variant="light"
                   tag="a"
                   class="btn-cart mb-1"
@@ -82,10 +91,21 @@
                     icon="LockIcon"
                     class="mr-50" />
                 </b-button>
-              </div>
+              </b-button-group>
             </div>
           </div>
           <div
+            class="limits pb-1">
+            <label>Остаток по карте </label>
+            <b-progress
+              variant="success"
+              show-value
+              class="mb-1"
+              value="8000"
+              :max="max" />
+          </div>
+
+          <!-- <div
             v-for="item in product.limits"
             :key="item.value"
             class="limits ml-1 pb-2">
@@ -101,7 +121,7 @@
                 :value="i.limit_id"
                 :max="max" />
             </div>
-          </div>
+          </div> -->
           <!-- Product Actions -->
         </b-card>
       </section>
@@ -139,10 +159,11 @@
 
 <script>
 import {
-  BCard, BImg, BButton, BOverlay, VBTooltip, BProgress,
+  BCard, BImg, BButton, BOverlay, VBTooltip, BProgress, BInputGroupAppend, BButtonGroup, BLink, BRow, BCol, BInputGroup, BFormInput,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
+import { watch, ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
 import { useShopFiltersSortingAndPagination, useShopUi, useShopRemoteData } from './useECommerceShop';
 import { useEcommerceUi } from './useEcommerce';
@@ -153,24 +174,28 @@ export default {
     Ripple,
   },
   components: {
-
+    BLink,
     BCard,
     BProgress,
-
+    BButtonGroup,
     BImg,
     BButton,
     BOverlay,
+    BRow,
+    BCol,
+    BInputGroup,
+    BFormInput,
+    BInputGroupAppend,
     // BPagination,
 
   },
   setup() {
     const {
-      filters, filterOptions, sortBy, sortByOptions,
+      filters,
     } = useShopFiltersSortingAndPagination();
-
+    const filter = ref('');
     const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
 
-    let loadDone = false;
     const max = 10000;
 
     const {
@@ -187,45 +212,66 @@ export default {
 
     const { products } = useShopRemoteData();
 
+    const cardNumber = (index) => {
+      this.number = this.products.data[index].number;
+      console.log(this.number);
+      return this.number;
+    };
+
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
 
     // Wrapper Function for `fetchProducts` which can be triggered initially and upon changes of filters
 
     const fetchShopProducts = () => {
-      loadDone = true;
       useJwt.getCardsDate()
         .then((response) => {
           products.value = response.data;
-          totalProducts.value = products.value.data.length;
           console.log(products.value.data);
+          // console.log(products.value.data.forEach((item) => {
+          //   const someArr = [];
+          //   if (item.number.includes('78')) {
+          //     someArr.push(item);
+          //   }
+          //   return someArr;
+          // }));
+          totalProducts.value = products.value.data.length;
         });
-      loadDone = false;
     };
 
     fetchShopProducts();
 
+    watch([filter], () => {
+      fetchShopProducts();
+    });
+
     return {
-      // useShopFiltersSortingAndPagination
       filters,
-      filterOptions,
-      sortBy,
-      sortByOptions,
-      loadDone,
+      cardNumber,
       getPopularityColor,
-      // useShopUi
       itemView,
       itemViewOptions,
       totalProducts,
       toggleProductInWishlist,
       handleCartActionClick,
       max,
-      // useShopRemoteData
       products,
-
-      // mqShallShowLeftSidebar
       mqShallShowLeftSidebar,
     };
   },
+  data() {
+    return {
+      number: null,
+      // filter: '',
+
+    };
+  },
+  // methods: {
+  //   cardNumber(index) {
+  //     this.number = this.products.data[index].number;
+  //     console.log(this.number);
+  //     return this.number;
+  //   },
+  // },
 };
 </script>
 
@@ -239,25 +285,32 @@ export default {
 // }
 
 .card {
-  flex-direction: row !important;
-  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
   max-width: 390px;
+  align-items: center;
+  padding: 3px;
 }
 
 .item-wrapper {
-  position: relative !important;
-  bottom: 35% !important;
-  right: 8% !important;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  left: 20px;
 }
 
 .item-options {
-  position: relative !important;
-  bottom: 45px !important;
+  display: flex;
+  flex-direction: column;
+  position: absolute !important;
+  bottom: 35px !important;
+  width: 100%;
 }
 
 .ecommerce-card {
   background-color: inherit !important;
-  margin-bottom: 0 !important;
   cursor: pointer;
   margin: 3px;
 
@@ -270,6 +323,10 @@ export default {
 .item-price {
   position: relative;
   left: 10px;
+  color: #000;
+  text-align: center;
+  text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.5),
+    1px 1px 1px rgba(0, 0, 0, 0.5);
 }
 
 .item-img {
@@ -278,13 +335,16 @@ export default {
   justify-content: center;
   align-items: center;
   height: auto;
-  min-width: 40%;
+  width: 95%;
 }
 .limits {
   max-width: 60%;
   padding: 0 10px 0 0;
-  height: fit-content;
+  // height: fit-content;
   min-width: 200px;
+  padding: 0 10px 0 0;
+  position: relative;
+  top: 25px;
 }
 .views {
   display: flex;
@@ -294,6 +354,14 @@ export default {
 .progress {
   width: 100%;
   height: 12px;
+}
+
+.btn {
+  max-width: 50px;
+
+  // &:hover {
+  //   background-color: "primary";
+  // }
 }
 .item-view-radio-group ::v-deep {
   .btn {

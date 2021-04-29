@@ -15,9 +15,9 @@ export default [
   },
 
   {
-    path: '/Cards2',
+    path: '/CardDetails',
     name: 'card',
-    component: () => import('@/views/Cards2.vue'),
+    component: () => import('@/views/CardDetails.vue'),
   },
 
   {
