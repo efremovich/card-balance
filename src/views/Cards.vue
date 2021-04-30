@@ -212,12 +212,6 @@ export default {
 
     const { products } = useShopRemoteData();
 
-    const cardNumber = (index) => {
-      this.number = this.products.data[index].number;
-      console.log(this.number);
-      return this.number;
-    };
-
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
 
     // Wrapper Function for `fetchProducts` which can be triggered initially and upon changes of filters
@@ -246,7 +240,6 @@ export default {
 
     return {
       filters,
-      cardNumber,
       getPopularityColor,
       itemView,
       itemViewOptions,
@@ -265,13 +258,13 @@ export default {
 
     };
   },
-  // methods: {
-  //   cardNumber(index) {
-  //     this.number = this.products.data[index].number;
-  //     console.log(this.number);
-  //     return this.number;
-  //   },
-  // },
+  methods: {
+    cardNumber(index) {
+      this.number = this.products.data[index].number;
+      console.log(this.number);
+      return this.number;
+    },
+  },
 };
 </script>
 
@@ -338,11 +331,11 @@ export default {
   width: 95%;
 }
 .limits {
-  max-width: 60%;
-  padding: 0 10px 0 0;
-  // height: fit-content;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   min-width: 200px;
-  padding: 0 10px 0 0;
   position: relative;
   top: 25px;
 }
