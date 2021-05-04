@@ -204,6 +204,16 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // Данные по карте
+  async getCardDate(params) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(`/api/card/${params}`);
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
   async getBalance() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {

@@ -34,8 +34,10 @@
             :to="{ name: 'card', params: { card_number: product.number } }">
             <b-img
               class="card-img-top"
-              :src="getImage(product.emitent.code)" />
-            <!-- require(`@/assets/images/cards-icon/${product.emitent.code}.svg`) -->
+              :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)">
+              <!-- getImage(product.emitent.code)"  -->
+              <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
+            </b-img>
           </b-link>
           <div class="item-options">
             <div class="item-wrapper">
@@ -205,6 +207,11 @@ export default {
 
     const max = 10000;
 
+    // eslint-disable-next-line import/no-dynamic-require
+    // eslint-disable-next-line global-require
+    // eslint-disable-next-line import/no-dynamic-require
+    // const getImage = computed((value) => require(`../assets/images/cards-icon/${value}.svg`));
+
     // const getImage = (value) => {
     //   // eslint-disable-next-line import/no-dynamic-require
     //   const image = require(`../assets/images/cards-icon/${value}.png`);
@@ -230,9 +237,9 @@ export default {
     const fetchShopProducts = () => {
       useJwt.getCardsDate().then((response) => {
         products.value = response.data;
-        console.log(products.value);
+
         if (filters.value !== '') {
-          products.value.data = response.data.data.filter((product) => product.number.includes(filters.value));
+          products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
         }
       });
     };
@@ -260,57 +267,51 @@ export default {
   data() {
     return {
       number: null,
-      // filter: '',
     };
   },
-  computed: {
-    getImage(value) {
-      const images = require.context('../assets/images/cards-icon/');
-      // const image = this.product.emitent.code;
-      console.log((images));
-      return require.toString((`${images}/+${value}.svg`));
-    },
-  },
+  // computed: {
+  //   getImage(value) {
+  //     const address = `require(../assets/images/cards-icon/${value}.svg)`;
+  //     return address;
+  //   },
+
+  // },
   methods: {
     cardNumber(index) {
       this.number = this.products.data.result[index].number;
       console.log(this.number);
       return this.number;
     },
+
     // getImage(pic) {
     //   const images = require.context('../assets/images/cards-icon/', false, /\.png$/);
     //   return images(`./${pic}.png`);
     // },
-    getSrc(item) {
-      let link = '';
-      // const images = require.context('../assets/images/cards-icon/', false, /\.png$/);
-      if (item === 'LUK') {
-        link = '../assets/images/cards-icon/LUK.svg';
-      }
-      if (item === 'GPM') {
-        link = '../assets/images/cards-icon/GPM.svg';
-      }
-      if (item === 'GPO') {
-        link = '../assets/images/cards-icon/GPO.svg';
-      }
-      if (item === 'LUK') {
-        link = '../assets/images/cards-icon/LUK.svg';
-      }
-      if (item === 'NNK') {
-        link = '../assets/images/cards-icon/NNK.svg';
-      }
-      if (item === 'PPR') {
-        link = '../assets/images/cards-icon/PPR.svg';
-      }
+    // getSrc(item) {
+    //   // const images = require.context('../assets/images/cards-icon/', false, /\.png$/);
+    //   if (item === 'LUK') {
+    //     this.link = '../assets/images/cards-icon/LUK.svg';
+    //   }
+    //   if (item === 'GPM') {
+    //     this.link = '../assets/images/cards-icon/GPM.svg';
+    //   }
+    //   if (item === 'GPO') {
+    //     this.link = '../assets/images/cards-icon/GPO.svg';
+    //   }
+    //   if (item === 'LUK') {
+    //     this.link = '../assets/images/cards-icon/LUK.svg';
+    //   }
+    //   if (item === 'NNK') {
+    //     this.link = '../assets/images/cards-icon/NNK.svg';
+    //   }
+    //   if (item === 'PPR') {
+    //     this.link = '../assets/images/cards-icon/PPR.svg';
+    //   }
 
-      console.log(link);
-      return link;
-    },
-    // getImage(value) {
-    //   // eslint-disable-next-line global-require
-    //   const images = require('@/views/cards-icon');
-    //   return images(`/${value}.png`);
+    //   console.log(this.link);
+    //   return this.link;
     // },
+
   },
 };
 </script>
