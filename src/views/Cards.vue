@@ -26,16 +26,16 @@
       <!-- Prodcuts -->
       <section class="views">
         <b-card
-          v-for="(product, index) in products.data"
+          v-for="(product, index) in products.data.result"
           :key="index"
           class="ecommerce-card mb-1"
           no-body>
           <b-link
             :to="{ name: 'card', params: { card_number: product.number } }">
             <b-img
-              fluid
               class="card-img-top"
-              src="../assets/images/cards-icon/LUK.svg" />
+              :src="getImage(product.emitent.code)" />
+            <!-- require(`@/assets/images/cards-icon/${product.emitent.code}.svg`) -->
           </b-link>
           <div class="item-options">
             <div class="item-wrapper">
@@ -205,6 +205,12 @@ export default {
 
     const max = 10000;
 
+    // const getImage = (value) => {
+    //   // eslint-disable-next-line import/no-dynamic-require
+    //   const image = require(`../assets/images/cards-icon/${value}.png`);
+    //   console.log(image);
+    //   return (image);
+    // };
     const { itemView, itemViewOptions, totalProducts } = useShopUi();
 
     const getPopularityColor = (num) => {
@@ -224,6 +230,7 @@ export default {
     const fetchShopProducts = () => {
       useJwt.getCardsDate().then((response) => {
         products.value = response.data;
+        console.log(products.value);
         if (filters.value !== '') {
           products.value.data = response.data.data.filter((product) => product.number.includes(filters.value));
         }
@@ -247,6 +254,7 @@ export default {
       max,
       products,
       mqShallShowLeftSidebar,
+      // getImage,
     };
   },
   data() {
@@ -255,12 +263,54 @@ export default {
       // filter: '',
     };
   },
+  computed: {
+    getImage(value) {
+      const images = require.context('../assets/images/cards-icon/');
+      // const image = this.product.emitent.code;
+      console.log((images));
+      return require.toString((`${images}/+${value}.svg`));
+    },
+  },
   methods: {
     cardNumber(index) {
-      this.number = this.products.data[index].number;
+      this.number = this.products.data.result[index].number;
       console.log(this.number);
       return this.number;
     },
+    // getImage(pic) {
+    //   const images = require.context('../assets/images/cards-icon/', false, /\.png$/);
+    //   return images(`./${pic}.png`);
+    // },
+    getSrc(item) {
+      let link = '';
+      // const images = require.context('../assets/images/cards-icon/', false, /\.png$/);
+      if (item === 'LUK') {
+        link = '../assets/images/cards-icon/LUK.svg';
+      }
+      if (item === 'GPM') {
+        link = '../assets/images/cards-icon/GPM.svg';
+      }
+      if (item === 'GPO') {
+        link = '../assets/images/cards-icon/GPO.svg';
+      }
+      if (item === 'LUK') {
+        link = '../assets/images/cards-icon/LUK.svg';
+      }
+      if (item === 'NNK') {
+        link = '../assets/images/cards-icon/NNK.svg';
+      }
+      if (item === 'PPR') {
+        link = '../assets/images/cards-icon/PPR.svg';
+      }
+
+      console.log(link);
+      return link;
+    },
+    // getImage(value) {
+    //   // eslint-disable-next-line global-require
+    //   const images = require('@/views/cards-icon');
+    //   return images(`/${value}.png`);
+    // },
   },
 };
 </script>

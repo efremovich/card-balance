@@ -276,13 +276,10 @@ export default {
     });
 
     return {
-      // useShopFiltersSortingAndPagination
       filters,
       filterOptions,
       sortBy,
       sortByOptions,
-
-      // useShopUi
       itemView,
       itemViewOptions,
       totalProducts,
