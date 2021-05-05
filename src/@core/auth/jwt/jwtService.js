@@ -204,6 +204,17 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // Все виды топлива
+
+  async getService() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get('/api/services');
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
   // Данные по карте
   async getCardDate(params) {
     const userData = JSON.parse(localStorage.getItem('userData'));

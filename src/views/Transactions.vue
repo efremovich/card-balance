@@ -231,7 +231,7 @@
                 </b-pagination>
               </div>
             </b-card-body>
-          <!-- КОНЕЦ ТАБЛИЦЫ -->
+            <!-- КОНЕЦ ТАБЛИЦЫ -->
           </b-card>
         </b-col>
       </b-container>
@@ -420,6 +420,7 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.length;
+          console.log(this.transactions);
         }
         this.loadDone = false;
         return this.transactions;

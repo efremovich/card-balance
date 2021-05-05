@@ -2,12 +2,8 @@
   <div>
     <b-card
       title="Настройка карты">
-      <h3> Информация по карте № {{ product }}</h3>
-      <p class="mt-1">
-        {{ date.data }}
-      </p>
       <div class="d-flex flex-wrap">
-        <div class="image col-4">
+        <div class="image">
           <b-img
             class="card-img-top"
             :src="require(`../assets/images/cards-icon/${date.data.emitent.code}.svg`)">
@@ -21,24 +17,42 @@
             <h5 class="item-price">
               {{ date.data.number }}
             </h5>
-            <!-- <h4 class="status">
-             Держатель:  {{ date.data.card_status.name }}
-            </h4> -->
-            <!-- <b-button
-              variant="danger"
-              class="btn mt-2 mx-auto"
-              @click="handleCartActionClick(product)">
-              Заблокировать карту
-              <feather-icon
-                icon="LockIcon"
-                class="mr-50" />
-            </b-button> -->
+          </div>
+          <div class="holder">
+            <h6 class="ml-1">
+              Держатель:
+            </h6>
+            <b-form-input
+              id="readOnlyInput"
+              readonly
+              :value="value" />
           </div>
         </div>
-        <div class="col-4 ml-2">
-          <h4>
-            Выдана: {{ date.data.limits[0].CreatedAt | formatDate }}
-          </h4>
+        <div class="d-flex flex-column align-items-start justify-content-start heigth ml-1 mt-2">
+          <b-button
+            variant="danger"
+            class="btn mb-2"
+            @click="handleCartActionClick(product)">
+            Заблокировать карту
+            <feather-icon
+              icon="LockIcon"
+              class="mr-50" />
+          </b-button>
+          <div class="mb-2">
+            <h6>
+              Выдана: {{ date.data.limits[0].CreatedAt | formatDate }}
+            </h6>
+          </div>
+          <div class="mb-2">
+            <h6>
+              Действует до: {{ date.data.limits[0].CreatedAt | formatDate }}
+            </h6>
+          </div>
+          <div class="mb-2">
+            <h6>
+              Последнее изменения:<br> {{ date.data.emitent.last_updated | formatDate }}
+            </h6>
+          </div>
         </div>
         <!-- <div class="appex">
             <vue-apex-charts
@@ -69,10 +83,185 @@
         content-class="pt-1"
         fill>
         <b-tab
-          title="Лимиты" />
+          title="Лимиты">
+          <b-col md="6">
+            <b-card-actions
+              action-close>
+              <v-select
+                v-model="selected"
+
+                multiple
+                label="title"
+                :options="option" />
+            </b-card-actions>
+          </b-col>
+        </b-tab>
         <b-tab
           active
-          title="Транзакции" />
+          title="Транзакции">
+          <h4
+            v-if="totalRows<1"
+            class="text-center">
+            <code> Транзакции по карте №{{ product }} за период c {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют </code>
+          </h4>
+          <div v-if="totalRows>0">
+            <b-card>
+              <div class="d-flex justify-content-between  flex-wrap">
+                <!-- <b-form-group>
+                  <p class="mt-1">
+                    Выберете период:
+                  </p>
+                  <flat-pickr
+                    v-model="rangeDate"
+                    size="sm"
+                    class="form-control mb-0"
+                    :config="config"
+                    @on-change="selectDate" />
+                </b-form-group> -->
+                <!-- sorting  -->
+                <!-- <b-form-group
+                  label="Sort"
+                  label-size="sm"
+                  label-align-sm="left"
+                  label-cols-sm="2"
+                  label-for="sortBySelect"
+                  class="mr-1 mb-md-0">
+                  <b-input-group
+                    size="sm">
+                    <b-form-select
+                      id="sortBySelect"
+                      v-model="sortBy"
+                      :options="sortOptions">
+                      <template #first>
+                        <option value="">
+                          none
+                        </option>
+                      </template>
+                    </b-form-select>
+                     <b-form-select
+                      v-model="sortDesc"
+                      size="sm"
+                      :disabled="!sortBy">
+                      <option :value="false">
+                        Asc
+                      </option>
+                      <option :value="true">
+                        Desc
+                      </option>
+                    </b-form-select>
+                  </b-input-group>
+                </b-form-group> -->
+
+                <!-- filter -->
+                <b-form-group
+
+                  label-align-sm="left"
+                  label-size="sm"
+                  label-for="filterInput"
+                  class="mb-0">
+                  <b-input-group size="sm">
+                    <b-form-input
+                      id="filterInput"
+                      v-model="filter"
+                      type="search"
+                      placeholder="Найти" />
+                    <b-input-group-append>
+                      <b-button
+                        :disabled="!filter"
+                        @click="filter = ''">
+                        Очистить
+                      </b-button>
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
+
+                <div>
+                  <export-excel
+                    class="btn btn-primary"
+                    :data="transactions.data"
+                    :fields="columns"
+                    type="xlsx"
+                    name="Транзакции.xlsx">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      fill="currentColor"
+                      class="bi bi-file-earmark-excel"
+                      viewBox="0 0 16 16">
+                      <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                      <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                    </svg>
+                    Скачать
+                  </export-excel>
+                </div>
+              </div>
+            </b-card>
+            <h6 class="text-center mb-1 mt-1">
+              Транзакции по карте №{{ product }} за период c <code>{{ firstDayOfMonth }}</code>по <code>{{ lastDay }}</code>:
+            </h6>
+            <b-table
+              striped
+              hover
+              responsive
+              class="position-relative"
+              :per-page="perPage"
+              :current-page="currentPage"
+              :items="transactions.data"
+              :fields="fields"
+              :sort-by.sync="sortBy"
+              :filter="filter"
+              :filter-included-fields="filterOn"
+              @filtered="onFiltered">
+              <template
+                #cell(date)="row">
+                {{ row.item.date | formatDate }}
+              </template>
+            </b-table>
+
+            <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
+              <!-- page length -->
+              <b-form-group
+                label="На странице"
+                label-cols="6"
+                label-align="left"
+                label-size="sm"
+                label-for="sortBySelect"
+                class="text-nowrap mb-md-0 mr-2 pr-2">
+                <b-form-select
+                  id="perPageSelect"
+                  v-model="perPage"
+                  size="sm"
+                  inline
+                  :options="pageOptions" />
+              </b-form-group>
+
+              <!-- pagination -->
+              <div>
+                <b-pagination
+                  v-model="currentPage"
+                  :total-rows="totalRows"
+                  :per-page="perPage"
+                  first-number
+                  last-number
+                  prev-class="prev-item"
+                  next-class="next-item"
+                  class="mb-0">
+                  <template #prev-text>
+                    <feather-icon
+                      icon="ChevronLeftIcon"
+                      size="18" />
+                  </template>
+                  <template #next-text>
+                    <feather-icon
+                      icon="ChevronRightIcon"
+                      size="18" />
+                  </template>
+                </b-pagination>
+              </div>
+            </b-card-body>
+          </div>
+        </b-tab>
         <b-tab title="События" />
         <b-tab title="Сообщить о проблеме" />
       </b-tabs>
@@ -82,13 +271,19 @@
 
 <script>
 import {
-  BCard, BImg, BTabs, BTab,
+  BCard, BImg, BTabs, BCol, BTab, BFormInput, BButton, BTable, BPagination, BCardBody, BFormGroup, BFormSelect,
+  BInputGroup,
+  BInputGroupAppend,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
+import vSelect from 'vue-select';
+// import flatPickr from 'vue-flatpickr-component';
+// import { Russian } from 'flatpickr/dist/l10n/ru';
 import { useRouter } from '@core/utils/utils';
 import { ref } from '@vue/composition-api';
 // import VueApexCharts from 'vue-apexcharts';
 // import { formatDate } from '@core/utils/filter';
+import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 
 export default {
   components: {
@@ -96,22 +291,139 @@ export default {
     BImg,
     BTabs,
     BTab,
-    // BButton,
+    BButton,
+    BCardBody,
+    BCol,
+    vSelect,
     // VueApexCharts,
     // formatDate,
+    BCardActions,
+    BFormGroup,
+    BFormInput,
+    BTable,
+    BFormSelect,
+    // flatPickr,
+    BPagination,
+    BInputGroup,
+
+    BInputGroupAppend,
+
   },
 
   setup() {
     // const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
     const date = ref(null);
     const product = ref(null);
+    const value = ref(null);
+    const totalRows = ref(null);
+    const transactions = ref([]);
+    const option = ref([]);
+    const loadDone = ref(false);
+    const lastDay = ref(null);
+    const firstDayOfMonth = ref(null);
+    const perPage = 5;
+    const selected = ref([]);
+    const pageOptions = [3, 5, 10];
+    const currentPage = 1;
+    const filter = ref(null);
+    const start = ref(null);
+    const end = ref(null);
+    const contractId = ref(null);
+    const fields = [
+      {
+        key: 'service.full_name',
+        label: 'Товар/услуга',
+        sortable: true,
+      },
+      {
+        key: 'date',
+        label: 'Дата',
+        sortable: true,
+      },
+      {
+        key: 'summ',
+        label: 'Сумма',
+        sortable: true,
+      },
+    ];
+    const columns = {
+      'Товар/услуга': {
+        field: 'service.full_name',
+      },
+      'Дата': {
+        field: 'date',
+      },
+      'Сумма': {
+        field: 'summ',
+      },
+      'Держатель': {
+        field: 'holder',
+      },
+      'Номер договора': {
+        field: 'contract.number',
+      },
+      'Номер карты': {
+        field: 'card_number',
+      },
+      'Тип операции': {
+        field: 'operation_type',
+      },
+      'Адрес операции': {
+        field: 'pos.address',
+      },
+    };
+    const isToday = () => {
+      const today = new Date();
+      return today.toLocaleDateString();
+    };
 
-    const cardDate = (param) => useJwt.getCardDate(param).then((response) => {
+    const getFirstDay = () => {
+      const newDate = new Date();
+      const firstDay = new Date(newDate.getFullYear(), newDate.getMonth(), 1).toLocaleDateString();
+      return firstDay;
+    };
+
+    const getAllService = () => {
+      useJwt.getService().then((response) => {
+        if (response.data.status) {
+          const allService = response.data;
+          allService.data.forEach((el) => option.value.push(el.full_name));
+          console.log(allService.data, option.value);
+        }
+      });
+    };
+
+    const getAllTransactions = () => {
+      firstDayOfMonth.value = getFirstDay();
+      lastDay.value = isToday();
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      if (userData) {
+        const contract = userData;
+        contractId.value = contract.contract.id;
+        start.value = `${getFirstDay()} 00:00:00`;
+        end.value = `${isToday()} 00:00:00`;
+
+        loadDone.value = true;
+        useJwt.getTransactions(`contract_id=${contractId.value}&startDate=${start.value}&endDate=${end.value}&card_number=${product.value}`).then((response) => {
+          if (response.data.status) {
+            transactions.value = response.data;
+            totalRows.value = transactions.value.data.length;
+          }
+          loadDone.value = false;
+          console.log(transactions.value, totalRows.value);
+          return transactions.value;
+        });
+      }
+    };
+
+    const cardDate = (params) => useJwt.getCardDate(params).then((response) => {
       if (response.data.status) {
         date.value = response.data;
+        value.value = date.value.data.holder;
         console.log(date.value);
       }
     });
+
     // Remote Data
     const fetchProduct = () => {
       // Get product  id from URL
@@ -135,24 +447,39 @@ export default {
     // const selectedColor = ref(null);
 
     fetchProduct();
+    getAllTransactions();
+    getAllService();
     // cardDate();
 
     return {
-      // Fetched Product
       product,
       date,
-      // selectedColor,
-      // handleCartActionClick,
-      // toggleProductInWishlist,
+      value,
+      transactions,
+      totalRows,
+      columns,
+      fields,
+      end,
+      start,
+      perPage,
+      pageOptions,
+      currentPage,
+      filter,
+      getFirstDay,
+      lastDay,
+      firstDayOfMonth,
+      option,
+      selected,
     };
   },
-  // data() {
-  //   return {
-  //     number: null,
-  //   };
-  // },
+
 };
 </script>
+
+<style lang="scss">
+@import "@core/scss/vue/libs/vue-select.scss";
+@import "@core/scss/vue/libs/vue-flatpicker.scss";
+</style>
 
 <style lang="scss" scoped>
 .card {
@@ -160,13 +487,22 @@ export default {
   flex-wrap: wrap;
   justify-content: end;
   max-width: 95%;
-  align-items: center;
+  align-items: left;
   padding: 3px;
+}
+
+.heigth {
+  height: 200px;
 }
 
 .card-img-top {
   max-width: 390px;
   min-width: 350px;
+}
+
+.holder {
+  position: relative;
+  bottom: 70px;
 }
 
 .item-wrapper {
