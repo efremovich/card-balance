@@ -205,11 +205,30 @@ export default class JwtService {
   }
 
   // Все виды топлива
-
   async getService() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get('/api/services');
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Все периоды
+  async getAllPeriods() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get('/api/limitPeriods');
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Литры или рубли
+  async getAllUnits() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get('/api/limitUnits');
       return response;
     }
     return { data: { status: false } };

@@ -84,17 +84,72 @@
         fill>
         <b-tab
           title="Лимиты">
-          <b-col md="6">
-            <b-card-actions
-              action-close>
-              <v-select
-                v-model="selected"
+          <div class="d-flex flex-nowrap">
+            <b-col
+              md="6"
+              class="p-0">
+              <template v-for="( item, index) in date.data.limits">
+                <b-card-actions
+                  :key="index"
+                  no-body
+                  action-close>
+                  <v-select
+                    v-model="selected[index]"
+                    multiple
+                    :options="option" />
+                  <div class="d-flex flex-nowrap align-items-baseline mt-1 ">
+                    <h6 class="mx-auto">
+                      Лимит
+                    </h6>
 
-                multiple
-                label="title"
-                :options="option" />
-            </b-card-actions>
-          </b-col>
+                    <b-col class=" ml-1 mr-1">
+                      <b-form-input
+                        :value="item.value"
+                        readonly />
+                    </b-col>
+                    <b-col class="mr-1">
+                      <v-select
+
+                        v-model="typeUnits[item.limit_unit_code]"
+                        :options="type" />
+                    </b-col>
+                    <b-col>
+                      <v-select
+                        :value="periodLabel[item.limit_period_code]"
+                        :options="period" />
+                    </b-col>
+                  </div>
+                  <div class="mt-1">
+                    <label>Остаток: {{ item.value }} л.</label>
+                    <b-progress
+
+                      :value=" item.value - item.consumption"
+                      :max="item.value" />
+                  </div>
+                </b-card-actions>
+              </template>
+            </b-col>
+            <b-col
+              md="6"
+              class="p-0">
+              <b-card-actions
+                ref="cardAction"
+                @refresh="refreshStop('cardAction')">
+                <h4> Текущие лимиты по карте:</h4>
+                <hr>
+                <template v-for="( item,index) in date.data.limits">
+                  <p :key="index">
+                    {{ item.ID }}
+                  </p>
+                  <template v-for="(el) in item.limit_commons">
+                    <p :key="el">
+                      {{ labelService[el.service_id] }}
+                    </p>
+                  </template>
+                </template>
+              </b-card-actions>
+            </b-col>
+          </div>
         </b-tab>
         <b-tab
           active
@@ -211,8 +266,7 @@
               :fields="fields"
               :sort-by.sync="sortBy"
               :filter="filter"
-              :filter-included-fields="filterOn"
-              @filtered="onFiltered">
+              :filter-included-fields="filterOn">
               <template
                 #cell(date)="row">
                 {{ row.item.date | formatDate }}
@@ -271,19 +325,21 @@
 
 <script>
 import {
-  BCard, BImg, BTabs, BCol, BTab, BFormInput, BButton, BTable, BPagination, BCardBody, BFormGroup, BFormSelect,
+  BCard, BImg, BTabs, BProgress, BCol, BTab, BFormInput, BButton, BTable, BPagination, BCardBody, BFormGroup, BFormSelect,
   BInputGroup,
   BInputGroupAppend,
 } from 'bootstrap-vue';
-import useJwt from '@/auth/jwt/useJwt';
+// import useJwt from '@/auth/jwt/useJwt';
 import vSelect from 'vue-select';
+import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 // import flatPickr from 'vue-flatpickr-component';
 // import { Russian } from 'flatpickr/dist/l10n/ru';
-import { useRouter } from '@core/utils/utils';
 import { ref } from '@vue/composition-api';
+import { useRouter } from '../@core/utils/utils';
+
+import useJwt from '../auth/jwt/useJwt';
+// import { formatDate } from '../@core/utils/filter';
 // import VueApexCharts from 'vue-apexcharts';
-// import { formatDate } from '@core/utils/filter';
-import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 
 export default {
   components: {
@@ -305,7 +361,7 @@ export default {
     // flatPickr,
     BPagination,
     BInputGroup,
-
+    BProgress,
     BInputGroupAppend,
 
   },
@@ -323,12 +379,17 @@ export default {
     const firstDayOfMonth = ref(null);
     const perPage = 5;
     const selected = ref([]);
+    const someValue = ref(null);
     const pageOptions = [3, 5, 10];
     const currentPage = 1;
     const filter = ref(null);
+    const type = ref([]);
+    const period = ref([]);
+    const quantity = ref(null);
     const start = ref(null);
     const end = ref(null);
     const contractId = ref(null);
+    const labelService = ref({});
     const fields = [
       {
         key: 'service.full_name',
@@ -346,6 +407,22 @@ export default {
         sortable: true,
       },
     ];
+
+    const periodLabel = {
+      DAY: 'Суточный',
+      WEEK: 'Недельный',
+      MONTH: 'Месячный',
+      QUARTER: 'Квартальный',
+      HALFYEAR: 'Полугодовой',
+      YEAR: 'Годовой',
+
+    };
+
+    const typeUnits = {
+      RU: 'Руб.',
+      L: 'Литры',
+    };
+
     const columns = {
       'Товар/услуга': {
         field: 'service.full_name',
@@ -388,7 +465,12 @@ export default {
         if (response.data.status) {
           const allService = response.data;
           allService.data.forEach((el) => option.value.push(el.full_name));
-          console.log(allService.data, option.value);
+          const id = allService.data.map((el) => el.id);
+          const label = allService.data.map((el) => el.label);
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < id.length; i++) {
+            labelService.value[id[i]] = label[i];
+          }
         }
       });
     };
@@ -410,17 +492,37 @@ export default {
             totalRows.value = transactions.value.data.length;
           }
           loadDone.value = false;
-          console.log(transactions.value, totalRows.value);
+
           return transactions.value;
         });
       }
+    };
+
+    const getAllPeriods = () => {
+      useJwt.getAllPeriods().then((response) => {
+        if (response.data.status) {
+          const allPeriods = response.data;
+          allPeriods.data.forEach((el) => period.value.push(el.label));
+        }
+      });
+    };
+
+    const getAllUnits = () => {
+      useJwt.getAllUnits().then((response) => {
+        if (response.data.status) {
+          const allPeriods = response.data;
+          allPeriods.data.forEach((el) => type.value.push(el.label));
+        }
+      });
     };
 
     const cardDate = (params) => useJwt.getCardDate(params).then((response) => {
       if (response.data.status) {
         date.value = response.data;
         value.value = date.value.data.holder;
-        console.log(date.value);
+
+        selected.value = ['СУГ', 'Регуляр-92'];
+        console.log(date.value.data.limits);
       }
     });
 
@@ -449,6 +551,8 @@ export default {
     fetchProduct();
     getAllTransactions();
     getAllService();
+    getAllPeriods();
+    getAllUnits();
     // cardDate();
 
     return {
@@ -470,6 +574,13 @@ export default {
       firstDayOfMonth,
       option,
       selected,
+      quantity,
+      type,
+      period,
+      periodLabel,
+      someValue,
+      typeUnits,
+      labelService,
     };
   },
 
@@ -491,6 +602,14 @@ export default {
   padding: 3px;
 }
 
+.col {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+.card .card-header {
+  padding: 1.5rem 0 !important;
+}
+
 .heigth {
   height: 200px;
 }
@@ -499,6 +618,11 @@ export default {
   max-width: 390px;
   min-width: 350px;
 }
+
+// .card-body {
+//   border: 1px solid;
+//   border-radius: 4px;
+// }
 
 .holder {
   position: relative;

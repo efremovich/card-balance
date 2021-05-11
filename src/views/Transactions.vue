@@ -242,7 +242,7 @@
 <script>
 
 import { required, credit } from '@validations';
-import { formatDate } from '@core/utils/filter';
+
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import { Russian } from 'flatpickr/dist/l10n/ru';
 
@@ -265,8 +265,9 @@ import {
 } from 'bootstrap-vue';
 import 'swiper/css/swiper.css';
 import vSelect from 'vue-select';
-import useJwt from '@/auth/jwt/useJwt';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import useJwt from '../auth/jwt/useJwt';
+import { formatDate } from '../@core/utils/filter';
 import { codeRowDetailsSupport } from './code';
 import 'bootstrap-vue/dist/bootstrap-vue-icons.min.css';
 

@@ -277,11 +277,10 @@ export default {
 
   // },
   methods: {
-    cardNumber(index) {
-      this.number = this.products.data.result[index].number;
-      console.log(this.number);
-      return this.number;
-    },
+    // cardNumber(index) {
+    //   this.number = this.products.data.result[index].number;
+    //   return this.number;
+    // },
 
     // getImage(pic) {
     //   const images = require.context('../assets/images/cards-icon/', false, /\.png$/);
