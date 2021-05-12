@@ -752,13 +752,13 @@ export default {
         });
     },
 
-    getLimitResidual(limit) {
-      if (Number(limit.value) > 0 && Number(limit.consumption) > 0) {
-        const limitResidual = 100 - Number(limit.consumption) / (Number(limit.value) / 100);
-        return limitResidual;
-      }
-      return 5;
-    },
+    // getLimitResidual(limit) {
+    //   if (Number(limit.value) > 0 && Number(limit.consumption) > 0) {
+    //     const limitResidual = 100 - Number(limit.consumption) / (Number(limit.value) / 100);
+    //     return limitResidual;
+    //   }
+    //   return 5;
+    // },
 
   },
 

@@ -101,8 +101,8 @@
               variant="success"
               show-value
               class="mb-1"
-              value="8000"
-              :max="max" />
+              :value="product.limits[0].value - product.limits[0].consumption"
+              :max="product.limits[0].value" />
           </div>
 
           <!-- <div

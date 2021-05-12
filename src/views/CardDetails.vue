@@ -2,7 +2,7 @@
   <div>
     <b-card
       title="Настройка карты">
-      <div class="d-flex flex-wrap">
+      <div class="d-flex flex-wrap justify-content-between">
         <div class="image">
           <b-img
             class="card-img-top"
@@ -10,6 +10,7 @@
             <!-- getImage(product.emitent.code)"  -->
             <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
           </b-img>
+
           <div class="item-wrapper">
             <h6 class="item-price">
               PIN: {{ date.data.pin }}
@@ -78,6 +79,15 @@
               <span>{{ data }}</span>
             </div> -->
         <!-- </div> -->
+        <b-link
+          :to="{ name: 'cards' }">
+          <b-img
+            class="icon"
+            src="../assets/images/icons/close.svg">
+          <!-- getImage(product.emitent.code)"  -->
+          <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
+          </b-img>
+        </b-link>
       </div>
       <b-tabs
         content-class="pt-1"
@@ -92,24 +102,27 @@
                 <b-card-actions
                   :key="index"
                   no-body
-                  action-close>
+                  action-close
+                  class="border p-1">
                   <v-select
-                    v-model="selected[index]"
+                    v-model="someValue[index]"
                     multiple
+                    value-field="full_name"
+
                     :options="option" />
-                  <div class="d-flex flex-nowrap align-items-baseline mt-1 ">
+                  <div class="d-flex flex-wrap align-items-baseline mt-1 ">
                     <h6 class="mx-auto">
                       Лимит
                     </h6>
 
-                    <b-col class=" ml-1 mr-1">
+                    <div
+                      class="ml-1 mw-20">
                       <b-form-input
                         :value="item.value"
                         readonly />
-                    </b-col>
+                    </div>
                     <b-col class="mr-1">
                       <v-select
-
                         v-model="typeUnits[item.limit_unit_code]"
                         :options="type" />
                     </b-col>
@@ -120,10 +133,10 @@
                     </b-col>
                   </div>
                   <div class="mt-1">
-                    <label>Остаток: {{ item.value }} л.</label>
+                    <label>Остаток: {{ item.value - item.consumption }} л.</label>
                     <b-progress
 
-                      :value=" item.value - item.consumption"
+                      :value="item.value - item.consumption"
                       :max="item.value" />
                   </div>
                 </b-card-actions>
@@ -131,20 +144,22 @@
             </b-col>
             <b-col
               md="6"
-              class="p-0">
+              class="border ml-1">
               <b-card-actions
                 ref="cardAction"
                 @refresh="refreshStop('cardAction')">
                 <h4> Текущие лимиты по карте:</h4>
                 <hr>
-                <template v-for="( item,index) in date.data.limits">
-                  <p :key="index">
-                    {{ item.ID }}
-                  </p>
+                <template v-for="( item) in date.data.limits">
                   <template v-for="(el) in item.limit_commons">
-                    <p :key="el">
-                      {{ labelService[el.service_id] }}
-                    </p>
+                    <div :key="el.service_id">
+                      <h4>{{ labelService[el.service_id] }}: {{ item.value }} литров.</h4>
+                      <h4>Лимит: {{ periodLabel[item.limit_period_code] }}.</h4>
+                      <h4>
+                        Остаток: {{ item.value - item.consumption }} литров.
+                      </h4>
+                      <hr>
+                    </div>
                   </template>
                 </template>
               </b-card-actions>
@@ -157,56 +172,11 @@
           <h4
             v-if="totalRows<1"
             class="text-center">
-            <code> Транзакции по карте №{{ product }} за период c {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют </code>
+            Транзакции по карте №{{ product }} за период c {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
           </h4>
           <div v-if="totalRows>0">
             <b-card>
               <div class="d-flex justify-content-between  flex-wrap">
-                <!-- <b-form-group>
-                  <p class="mt-1">
-                    Выберете период:
-                  </p>
-                  <flat-pickr
-                    v-model="rangeDate"
-                    size="sm"
-                    class="form-control mb-0"
-                    :config="config"
-                    @on-change="selectDate" />
-                </b-form-group> -->
-                <!-- sorting  -->
-                <!-- <b-form-group
-                  label="Sort"
-                  label-size="sm"
-                  label-align-sm="left"
-                  label-cols-sm="2"
-                  label-for="sortBySelect"
-                  class="mr-1 mb-md-0">
-                  <b-input-group
-                    size="sm">
-                    <b-form-select
-                      id="sortBySelect"
-                      v-model="sortBy"
-                      :options="sortOptions">
-                      <template #first>
-                        <option value="">
-                          none
-                        </option>
-                      </template>
-                    </b-form-select>
-                     <b-form-select
-                      v-model="sortDesc"
-                      size="sm"
-                      :disabled="!sortBy">
-                      <option :value="false">
-                        Asc
-                      </option>
-                      <option :value="true">
-                        Desc
-                      </option>
-                    </b-form-select>
-                  </b-input-group>
-                </b-form-group> -->
-
                 <!-- filter -->
                 <b-form-group
 
@@ -326,7 +296,7 @@
 <script>
 import {
   BCard, BImg, BTabs, BProgress, BCol, BTab, BFormInput, BButton, BTable, BPagination, BCardBody, BFormGroup, BFormSelect,
-  BInputGroup,
+  BInputGroup, BLink,
   BInputGroupAppend,
 } from 'bootstrap-vue';
 // import useJwt from '@/auth/jwt/useJwt';
@@ -335,6 +305,7 @@ import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 // import flatPickr from 'vue-flatpickr-component';
 // import { Russian } from 'flatpickr/dist/l10n/ru';
 import { ref } from '@vue/composition-api';
+// import { some } from 'postcss-rtl/lib/affected-props';
 import { useRouter } from '../@core/utils/utils';
 
 import useJwt from '../auth/jwt/useJwt';
@@ -350,6 +321,7 @@ export default {
     BButton,
     BCardBody,
     BCol,
+    BLink,
     vSelect,
     // VueApexCharts,
     // formatDate,
@@ -379,7 +351,7 @@ export default {
     const firstDayOfMonth = ref(null);
     const perPage = 5;
     const selected = ref([]);
-    const someValue = ref(null);
+    const someValue = ref([]);
     const pageOptions = [3, 5, 10];
     const currentPage = 1;
     const filter = ref(null);
@@ -493,6 +465,12 @@ export default {
           }
           loadDone.value = false;
 
+          // eslint-disable-next-line no-plusplus
+          for (let q = 0; q < selected.value.length; q++) {
+            someValue.value.push(labelService.value[selected.value[q]]);
+          }
+          console.log(someValue.value);
+
           return transactions.value;
         });
       }
@@ -520,11 +498,27 @@ export default {
       if (response.data.status) {
         date.value = response.data;
         value.value = date.value.data.holder;
+        const limitCommons = ref([]);
+        date.value.data.limits.forEach((el) => limitCommons.value.push(el.limit_commons));
+        // selected.value = ['СУГ', 'Регуляр-92'];
+        // console.log(date.value.data.limits);
+        // limitCommons.value.forEach((el) => selected.value.push(el.service_id));
+        // console.log(limitCommons.value);
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < limitCommons.value.length; i++) {
+          // eslint-disable-next-line no-plusplus
+          for (let j = 0; j < limitCommons.value[i].length; j++) {
+            selected.value.push(limitCommons.value[i][j].service_id);
+          }
+        }
 
-        selected.value = ['СУГ', 'Регуляр-92'];
-        console.log(date.value.data.limits);
+        // eslint-disable-next-line no-plusplus
       }
     });
+
+    // const label = () => {
+    //   console.log(selected.value[0]);
+    // };
 
     // Remote Data
     const fetchProduct = () => {
@@ -533,6 +527,7 @@ export default {
       const productSlug = route.value.params.card_number;
       product.value = productSlug;
       cardDate(productSlug);
+
       // store
       //   .dispatch('app-ecommerce/fetchProduct', { productId })
       //   .then((response) => {
@@ -554,6 +549,7 @@ export default {
     getAllPeriods();
     getAllUnits();
     // cardDate();
+    // label();
 
     return {
       product,
@@ -581,6 +577,7 @@ export default {
       someValue,
       typeUnits,
       labelService,
+      // label,
     };
   },
 
@@ -602,12 +599,32 @@ export default {
   padding: 3px;
 }
 
+.border {
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.mw-20 {
+  max-width: 20%;
+}
+
+.icon {
+  max-width: 30px;
+  cursor: pointer;
+  align-self: baseline;
+
+  // &:hover {
+  //   transform: rotate(45deg);
+  // }
+}
+
+.b-overlay-wrap:not(:last-child) {
+  margin-bottom: 1rem !important;
+}
+
 .col {
   padding-right: 0 !important;
   padding-left: 0 !important;
-}
-.card .card-header {
-  padding: 1.5rem 0 !important;
 }
 
 .heigth {
