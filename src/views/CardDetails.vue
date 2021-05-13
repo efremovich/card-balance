@@ -100,49 +100,88 @@
             <b-col
               md="6"
               class="p-0">
-              <template v-for="( item) in date.data.limits">
-                <template v-for="(i,index) in item.limit_commons">
-                  <b-card-actions
-                    :key="index"
-                    no-body
-                    action-close
-                    class="border p-1">
-                    <v-select
-                      v-model="someValue[index]"
-                      multiple
-                      value-field="full_name"
+              <template v-for="(item,index) in date.data.limits">
+                <b-card-actions
+                  v-if="item.limit_commons.length>1"
+                  :key="index[index]"
+                  no-body
+                  action-close
+                  class="border p-1">
+                  <v-select
+                    v-model="someValue"
+                    multiple
 
-                      :options="option" />
-                    <div class="d-flex flex-wrap align-items-baseline mt-1 ">
-                      <h6 class="mx-auto">
-                        Лимит
-                      </h6>
+                    :options="option" />
+                  <div class="d-flex flex-wrap align-items-center mt-1 ">
+                    <h6 class="mx-auto">
+                      Лимит
+                    </h6>
 
-                      <div
-                        class="ml-1 mw-20">
-                        <b-form-input
-                          :value="item.value" />
-                      </div>
-                      <b-col class="mr-1">
-                        <v-select
-                          v-model="typeUnits[item.limit_unit_code]"
-                          :options="type" />
-                      </b-col>
-                      <b-col>
-                        <v-select
-                          :value="periodLabel[item.limit_period_code]"
-                          :options="period" />
-                      </b-col>
+                    <div
+                      class="ml-1 mw-20">
+                      <b-form-input
+                        :value="item.value" />
                     </div>
-                    <div class="mt-1">
-                      <label>Остаток: {{ item.value - item.consumption }} л.</label>
-                      <b-progress
+                    <b-col class="mr-1">
+                      <v-select
+                        v-model="typeUnits[item.limit_unit_code]"
+                        :options="type" />
+                    </b-col>
+                    <b-col>
+                      <v-select
+                        :value="periodLabel[item.limit_period_code]"
+                        :options="period" />
+                    </b-col>
+                  </div>
+                  <div class="mt-1">
+                    <label>Остаток: {{ item.value - item.consumption }} л.</label>
+                    <b-progress
 
-                        :value="item.value - item.consumption"
-                        :max="item.value" />
+                      :value="item.value - item.consumption"
+                      :max="item.value" />
+                  </div>
+                </b-card-actions>
+
+                <b-card-actions
+                  v-if="item.limit_commons.length<2"
+                  :key="index"
+                  no-body
+                  action-close
+                  class="border p-1">
+                  <v-select
+                    v-model="someValue[index]"
+                    multiple
+
+                    :options="option" />
+                  <div class="d-flex flex-wrap align-items-center mt-1 ">
+                    <h6 class="mx-auto">
+                      Лимит
+                    </h6>
+
+                    <div
+                      class="ml-1 mw-20">
+                      <b-form-input
+                        :value="item.value" />
                     </div>
-                  </b-card-actions>
-                </template>
+                    <b-col class="mr-1">
+                      <v-select
+                        v-model="typeUnits[item.limit_unit_code]"
+                        :options="type" />
+                    </b-col>
+                    <b-col>
+                      <v-select
+                        :value="periodLabel[item.limit_period_code]"
+                        :options="period" />
+                    </b-col>
+                  </div>
+                  <div class="mt-1">
+                    <label>Остаток: {{ item.value - item.consumption }} л.</label>
+                    <b-progress
+
+                      :value="item.value - item.consumption"
+                      :max="item.value" />
+                  </div>
+                </b-card-actions>
               </template>
             </b-col>
             <b-col
@@ -237,9 +276,7 @@
               :current-page="currentPage"
               :items="transactions.data"
               :fields="fields"
-              :sort-by.sync="sortBy"
-              :filter="filter"
-              :filter-included-fields="filterOn">
+              :filter="filter">
               <template
                 #cell(date)="row">
                 {{ row.item.date | formatDate }}
@@ -474,12 +511,6 @@ export default {
           }
           loadDone.value = false;
 
-          // eslint-disable-next-line no-plusplus
-          for (let q = 0; q < selected.value.length; q++) {
-            someValue.value.push(labelService.value[selected.value[q]]);
-          }
-          console.log(someValue.value);
-
           return transactions.value;
         });
       }
@@ -520,12 +551,13 @@ export default {
             selected.value.push(limitCommons.value[i][j].service_id);
           }
         }
+        // eslint-disable-next-line no-plusplus
+        for (let q = 0; q < selected.value.length; q++) {
+          someValue.value.push(labelService.value[selected.value[q]]);
+        }
+        // console.log(someValue.value);
       }
     });
-
-    // const label = () => {
-    //   console.log(selected.value[0]);
-    // };
 
     // Remote Data
     const fetchProduct = () => {
@@ -550,13 +582,11 @@ export default {
     // UI
     // const selectedColor = ref(null);
 
-    fetchProduct();
     getAllTransactions();
     getAllService();
     getAllPeriods();
     getAllUnits();
-    // cardDate();
-    // label();
+    fetchProduct();
 
     return {
       product,
