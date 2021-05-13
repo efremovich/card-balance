@@ -2,6 +2,18 @@
   <div>
     <b-card
       title="Настройка карты">
+      <b-card-header>
+        <b-link
+          :to="{ name: 'cards' }">
+          <b-img
+            v-b-tooltip.hover.top="'Назад к списку карт'"
+            class="icon"
+            src="../assets/images/icons/arrow.svg">
+          <!-- getImage(product.emitent.code)"  -->
+          <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
+          </b-img>
+        </b-link>
+      </b-card-header>
       <div class="d-flex flex-wrap justify-content-between">
         <div class="image">
           <b-img
@@ -25,7 +37,6 @@
             </h6>
             <b-form-input
               id="readOnlyInput"
-              readonly
               :value="value" />
           </div>
         </div>
@@ -79,15 +90,6 @@
               <span>{{ data }}</span>
             </div> -->
         <!-- </div> -->
-        <b-link
-          :to="{ name: 'cards' }">
-          <b-img
-            class="icon"
-            src="../assets/images/icons/close.svg">
-          <!-- getImage(product.emitent.code)"  -->
-          <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
-          </b-img>
-        </b-link>
       </div>
       <b-tabs
         content-class="pt-1"
@@ -98,48 +100,49 @@
             <b-col
               md="6"
               class="p-0">
-              <template v-for="( item, index) in date.data.limits">
-                <b-card-actions
-                  :key="index"
-                  no-body
-                  action-close
-                  class="border p-1">
-                  <v-select
-                    v-model="someValue[index]"
-                    multiple
-                    value-field="full_name"
+              <template v-for="( item) in date.data.limits">
+                <template v-for="(i,index) in item.limit_commons">
+                  <b-card-actions
+                    :key="index"
+                    no-body
+                    action-close
+                    class="border p-1">
+                    <v-select
+                      v-model="someValue[index]"
+                      multiple
+                      value-field="full_name"
 
-                    :options="option" />
-                  <div class="d-flex flex-wrap align-items-baseline mt-1 ">
-                    <h6 class="mx-auto">
-                      Лимит
-                    </h6>
+                      :options="option" />
+                    <div class="d-flex flex-wrap align-items-baseline mt-1 ">
+                      <h6 class="mx-auto">
+                        Лимит
+                      </h6>
 
-                    <div
-                      class="ml-1 mw-20">
-                      <b-form-input
-                        :value="item.value"
-                        readonly />
+                      <div
+                        class="ml-1 mw-20">
+                        <b-form-input
+                          :value="item.value" />
+                      </div>
+                      <b-col class="mr-1">
+                        <v-select
+                          v-model="typeUnits[item.limit_unit_code]"
+                          :options="type" />
+                      </b-col>
+                      <b-col>
+                        <v-select
+                          :value="periodLabel[item.limit_period_code]"
+                          :options="period" />
+                      </b-col>
                     </div>
-                    <b-col class="mr-1">
-                      <v-select
-                        v-model="typeUnits[item.limit_unit_code]"
-                        :options="type" />
-                    </b-col>
-                    <b-col>
-                      <v-select
-                        :value="periodLabel[item.limit_period_code]"
-                        :options="period" />
-                    </b-col>
-                  </div>
-                  <div class="mt-1">
-                    <label>Остаток: {{ item.value - item.consumption }} л.</label>
-                    <b-progress
+                    <div class="mt-1">
+                      <label>Остаток: {{ item.value - item.consumption }} л.</label>
+                      <b-progress
 
-                      :value="item.value - item.consumption"
-                      :max="item.value" />
-                  </div>
-                </b-card-actions>
+                        :value="item.value - item.consumption"
+                        :max="item.value" />
+                    </div>
+                  </b-card-actions>
+                </template>
               </template>
             </b-col>
             <b-col
@@ -296,7 +299,7 @@
 <script>
 import {
   BCard, BImg, BTabs, BProgress, BCol, BTab, BFormInput, BButton, BTable, BPagination, BCardBody, BFormGroup, BFormSelect,
-  BInputGroup, BLink,
+  BInputGroup, BLink, BCardHeader, VBTooltip,
   BInputGroupAppend,
 } from 'bootstrap-vue';
 // import useJwt from '@/auth/jwt/useJwt';
@@ -313,6 +316,11 @@ import useJwt from '../auth/jwt/useJwt';
 // import VueApexCharts from 'vue-apexcharts';
 
 export default {
+
+  directives: {
+    'b-tooltip': VBTooltip,
+
+  },
   components: {
     BCard,
     BImg,
@@ -335,6 +343,7 @@ export default {
     BInputGroup,
     BProgress,
     BInputGroupAppend,
+    BCardHeader,
 
   },
 
@@ -511,8 +520,6 @@ export default {
             selected.value.push(limitCommons.value[i][j].service_id);
           }
         }
-
-        // eslint-disable-next-line no-plusplus
       }
     });
 
@@ -611,11 +618,15 @@ export default {
 .icon {
   max-width: 30px;
   cursor: pointer;
-  align-self: baseline;
+  padding: 0 !important;
+}
 
-  // &:hover {
-  //   transform: rotate(45deg);
-  // }
+.card-header {
+  padding: 1.5rem 0 !important;
+}
+
+.card-title {
+  margin-bottom: 0.5rem !important;
 }
 
 .b-overlay-wrap:not(:last-child) {
