@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable vue/no-use-v-if-with-v-for */
 <template>
   <div>
@@ -124,7 +125,7 @@
                     <b-col class="mr-1">
                       <v-select
                         :value="item.limit_unit_code"
-                        :reduce="(zalupa) => zalupa.code"
+                        :reduce="(unit) => unit.code"
                         :options="units" />
                     </b-col>
                     <b-col>
@@ -193,10 +194,11 @@
                 <hr>
                 <template v-for="(el,index) in date.data.limits">
                   <div
-                    v-if="date.data.limits.length>0 && el.limit_commons.length < 2"
+                    v-if="date.data.limits.length>1 && el.limit_commons.length < 2"
                     :key="index">
                     <h4>
-                      Вид топлива: {{ selected[index] }}.
+                      Вид топлива:
+                      {{ selected[index] }}
                     </h4>
                     <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
                     <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
@@ -204,10 +206,10 @@
                   </div>
 
                   <div
-                    v-if="el.limit_commons.length >1 && date.data.limits.length <2 && date.data.limits.length>0"
+                    v-if="el.limit_commons.length > 0 && date.data.limits.length <2"
                     :key="el.number">
                     <h4>
-                      Вид топлива: {{ selected }}.
+                      Вид топлива: {{ labelSelected() }}.
                     </h4>
                     <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
                     <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
@@ -572,15 +574,6 @@ export default {
       }
     });
 
-    const textSelected = () => {
-      const array = Array.from(selected.value);
-      const b = [];
-      // eslint-disable-next-line no-plusplus
-      for (let q = 0; q < array.length; q++) {
-        b.push(selected.value[q]);
-      }
-      console.log(b);
-    };
     // Remote Data
     const fetchProduct = () => {
       // Get product  id from URL
@@ -590,23 +583,23 @@ export default {
       cardDate(productSlug);
     };
 
+    // const labelSelected = computed(() => selected.forEach((el) => labelService[el]));
+
     getAllTransactions();
     getAllService();
     getAllPeriods();
     getAllUnits();
     fetchProduct();
-    textSelected();
-
     // cardDate();
     // label();
     return {
       product,
+      // labelSelected,
       date,
       value,
       transactions,
       totalRows,
       columns,
-      textSelected,
       labelService,
       fields,
       end,
@@ -627,6 +620,38 @@ export default {
       periodLabel,
     };
   },
+
+  // computed: {
+  //   selectedLength(index) {
+  //     return this.selected[index].length;
+  //   },
+  // },
+  methods: {
+    // eslint-disable-next-line vue/return-in-computed-property
+    labelSelected() {
+      const empty = [];
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < this.selected.length; i++) {
+        empty.push(this.labelService[this.selected[i]]);
+      }
+
+      return empty;
+    },
+
+    labelIndex() {
+      const empty = [];
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < this.selected; i++) {
+        empty.push(this.labelService[this.selected[i]]);
+      }
+
+      // return empty;
+      console.log(this.selectedLength);
+      return empty;
+    },
+
+  },
+
 };
 </script>
 
