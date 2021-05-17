@@ -1,5 +1,4 @@
-/* eslint-disable no-plusplus */
-/* eslint-disable vue/no-use-v-if-with-v-for */
+/* eslint-disable no-plusplus */ /* eslint-disable vue/no-use-v-if-with-v-for */
 <template>
   <div>
     <b-card title="Настройка карты">
@@ -19,7 +18,7 @@
           <b-img
             class="card-img-top"
             :src="
-              require(`../assets/images/cards-icon/${date.data.emitent.code}.svg`)
+              require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
             ">
             <!-- getImage(product.emitent.code)"  -->
             <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
@@ -27,18 +26,17 @@
 
           <div class="item-wrapper">
             <h6 class="item-price">
-              PIN: {{ date.data.pin }}
+              PIN: {{ cardData.data.pin }}
             </h6>
             <h5 class="item-price">
-              {{ date.data.number }}
+              {{ cardData.data.number }}
             </h5>
           </div>
           <div class="holder">
             <h6 class="ml-1">
               Держатель:
             </h6>
-            <b-form-input
-              :value="date.data.holder" />
+            <b-form-input :value="cardData.data.holder" />
           </div>
         </div>
         <div
@@ -53,17 +51,19 @@
               class="mr-50" />
           </b-button>
           <div class="mb-2">
-            <h6>Выдана: {{ date.data.limits[0].CreatedAt | formatDate }}</h6>
+            <h6>
+              Выдана: {{ cardData.data.limits[0].CreatedAt | formatDate }}
+            </h6>
           </div>
           <div class="mb-2">
             <h6>
-              Действует до: {{ date.data.limits[0].CreatedAt | formatDate }}
+              Действует до: {{ cardData.data.limits[0].CreatedAt | formatDate }}
             </h6>
           </div>
           <div class="mb-2">
             <h6>
               Последнее изменения:<br>
-              {{ date.data.emitent.last_updated | formatDate }}
+              {{ cardData.data.emitent.last_updated | formatDate }}
             </h6>
           </div>
         </div>
@@ -76,7 +76,7 @@
 
         <!-- chart info -->
         <!-- <div
-              v-for="(data,key,index) in date.data"
+              v-for="(data,key,index) in cardData.data"
               :key="key"
               class="d-flex justify-content-between"
               :class="index === Object.keys(chartInfo.chartInfo).length - 1 ? '':'mb-1'">
@@ -101,18 +101,17 @@
             <b-col
               md="6"
               class="p-0">
-              <template v-for="(item, index) in date.data.limits">
+              <template v-for="limit in cardData.data.limits">
                 <b-card-actions
-                  v-if="item.limit_commons.length > 1"
-                  :key="index"
+                  :key="limit.ID"
                   no-body
                   action-close
                   class="border p-1">
                   <v-select
-                    v-model="selected"
+                    v-model="limit.limit_commons"
                     multiple
-                    :reduce="(service) => service.id"
                     label="full_name"
+                    :reduce="(services) => `${services.id}`"
                     :options="services" />
                   <div class="d-flex flex-wrap align-items-baseline mt-1">
                     <h6 class="mx-auto">
@@ -120,67 +119,26 @@
                     </h6>
 
                     <div class="ml-1 mw-20">
-                      <b-form-input :value="item.value" />
+                      <b-form-input :value="limit.value" />
                     </div>
                     <b-col class="mr-1">
                       <v-select
-                        :value="item.limit_unit_code"
+                        :value="limit.limit_unit_code"
                         :reduce="(unit) => unit.code"
                         :options="units" />
                     </b-col>
                     <b-col>
                       <v-select
-                        :value="item.limit_period_code"
+                        :value="limit.limit_period_code"
                         :reduce="(period) => period.code"
                         :options="periods" />
                     </b-col>
                   </div>
                   <div class="mt-1">
-                    <label>Остаток: {{ item.value - item.consumption }} л.</label>
+                    <label>Остаток: {{ limit.value - limit.consumption }} л.</label>
                     <b-progress
-                      :value="item.value - item.consumption"
-                      :max="item.value" />
-                  </div>
-                </b-card-actions>
-                <b-card-actions
-                  v-if="item.limit_commons.length < 2"
-                  :key="index"
-
-                  no-body
-                  action-close
-                  class="border p-1">
-                  <v-select
-                    v-model="selected[index]"
-                    multiple
-                    :reduce="(service) => service.id"
-                    label="full_name"
-                    :options="services" />
-                  <div class="d-flex flex-wrap align-items-baseline mt-1">
-                    <h6 class="mx-auto">
-                      Лимит
-                    </h6>
-
-                    <div class="ml-1 mw-20">
-                      <b-form-input :value="item.value" />
-                    </div>
-                    <b-col class="mr-1">
-                      <v-select
-                        :value="item.limit_unit_code"
-                        :reduce="(zalupa) => zalupa.code"
-                        :options="units" />
-                    </b-col>
-                    <b-col>
-                      <v-select
-                        :value="item.limit_period_code"
-                        :reduce="(period) => period.code"
-                        :options="periods" />
-                    </b-col>
-                  </div>
-                  <div class="mt-1">
-                    <label>Остаток: {{ item.value - item.consumption }} л.</label>
-                    <b-progress
-                      :value="item.value - item.consumption"
-                      :max="item.value" />
+                      :value="limit.value - limit.consumption"
+                      :max="limit.value" />
                   </div>
                 </b-card-actions>
               </template>
@@ -193,9 +151,12 @@
                 @refresh="refreshStop('cardAction')">
                 <h4>Текущие лимиты по карте:</h4>
                 <hr>
-                <template v-for="(el,index) in date.data.limits">
+                <template v-for="(el, index) in cardData.data.limits">
                   <div
-                    v-if="date.data.limits.length>1 && el.limit_commons.length>0"
+                    v-if="
+                      cardData.data.limits.length > 1 &&
+                        el.limit_commons.length > 0
+                    "
                     :key="index">
                     <h4>
                       Вид топлива:
@@ -207,11 +168,12 @@
                   </div>
 
                   <div
-                    v-if="el.limit_commons.length > 0 && date.data.limits.length <2"
+                    v-if="
+                      el.limit_commons.length > 0 &&
+                        cardData.data.limits.length < 2
+                    "
                     :key="el.number">
-                    <h4>
-                      Вид топлива: {{ labelSelected() }}.
-                    </h4>
+                    <h4>Вид топлива: {{ labelSelected() }}.</h4>
                     <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
                     <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
                     <hr>
@@ -302,11 +264,9 @@
               :current-page="currentPage"
               :items="transactions.data"
               :fields="fields"
-
               :filter="filter">
-              <template
-                #cell(date)="row">
-                {{ row.item.date | formatDate }}
+              <template #cell(cardData)="row">
+                {{ row.item.cardData | formatDate }}
               </template>
             </b-table>
 
@@ -418,7 +378,7 @@ export default {
   },
   setup() {
     // const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
-    const date = ref(null);
+    const cardData = ref({});
     const product = ref(null);
     const value = ref(null);
     const totalRows = ref(null);
@@ -441,6 +401,10 @@ export default {
     const start = ref(null);
     const end = ref(null);
     const contractId = ref(null);
+
+    const limits = ref([]);
+
+    const llc = ref([]);
     const fields = [
       {
         key: 'service.full_name',
@@ -448,7 +412,7 @@ export default {
         sortable: true,
       },
       {
-        key: 'date',
+        key: 'cardData',
         label: 'Дата',
         sortable: true,
       },
@@ -472,7 +436,7 @@ export default {
         field: 'service.full_name',
       },
       'Дата': {
-        field: 'date',
+        field: 'cardData',
       },
       'Сумма': {
         field: 'summ',
@@ -564,10 +528,15 @@ export default {
     };
     const cardDate = (params) => useJwt.getCardDate(params).then((response) => {
       if (response.data.status) {
-        date.value = response.data;
-        console.log(date.value);
+        cardData.value = response.data;
         const limitCommons = ref([]);
-        date.value.data.limits.forEach((el) => limitCommons.value.push(el.limit_commons));
+        // cardData.value.data.limits.forEach((el) => limitCommons.value.push(el.limit_commons));
+        cardData.value.data.limits.forEach((limit) => {
+          limit.llc = [];
+          limit.limit_commons.forEach((lc) => {
+            limit.llc.push(lc.service_id);
+          });
+        });
         // eslint-disable-next-line no-plusplus
         for (let i = 0; i < limitCommons.value.length; i++) {
           // eslint-disable-next-line no-plusplus
@@ -578,13 +547,9 @@ export default {
       }
     });
 
-    // Remote Data
     const fetchProduct = () => {
-      // Get product  id from URL
       const { route } = useRouter();
-      const productSlug = route.value.params.card_number;
-      product.value = productSlug;
-      cardDate(productSlug);
+      cardDate(route.value.params.card_number);
     };
 
     getAllTransactions();
@@ -597,7 +562,7 @@ export default {
     return {
       product,
       // labelSelected,
-      date,
+      cardData,
       value,
       transactions,
       totalRows,
@@ -620,6 +585,9 @@ export default {
       periods,
       services,
       periodLabel,
+
+      limits,
+      llc,
     };
   },
 
@@ -651,9 +619,7 @@ export default {
       console.log(this.selectedLength);
       return empty;
     },
-
   },
-
 };
 </script>
 
