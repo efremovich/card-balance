@@ -1,16 +1,15 @@
+/* eslint-disable vue/no-use-v-if-with-v-for */
 <template>
   <div>
-    <b-card
-      title="Настройка карты">
+    <b-card title="Настройка карты">
       <b-card-header>
-        <b-link
-          :to="{ name: 'cards' }">
+        <b-link :to="{ name: 'cards' }">
           <b-img
             v-b-tooltip.hover.top="'Назад к списку карт'"
             class="icon"
             src="../assets/images/icons/arrow.svg">
-          <!-- getImage(product.emitent.code)"  -->
-          <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
+            <!-- getImage(product.emitent.code)"  -->
+            <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
           </b-img>
         </b-link>
       </b-card-header>
@@ -18,7 +17,9 @@
         <div class="image">
           <b-img
             class="card-img-top"
-            :src="require(`../assets/images/cards-icon/${date.data.emitent.code}.svg`)">
+            :src="
+              require(`../assets/images/cards-icon/${date.data.emitent.code}.svg`)
+            ">
             <!-- getImage(product.emitent.code)"  -->
             <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
           </b-img>
@@ -36,11 +37,11 @@
               Держатель:
             </h6>
             <b-form-input
-              id="readOnlyInput"
-              :value="value" />
+              :value="date.data.holder" />
           </div>
         </div>
-        <div class="d-flex flex-column align-items-start justify-content-start heigth ml-1 mt-2">
+        <div
+          class="d-flex flex-column align-items-start justify-content-start heigth ml-1 mt-2">
           <b-button
             variant="danger"
             class="btn mb-2"
@@ -51,9 +52,7 @@
               class="mr-50" />
           </b-button>
           <div class="mb-2">
-            <h6>
-              Выдана: {{ date.data.limits[0].CreatedAt | formatDate }}
-            </h6>
+            <h6>Выдана: {{ date.data.limits[0].CreatedAt | formatDate }}</h6>
           </div>
           <div class="mb-2">
             <h6>
@@ -62,7 +61,8 @@
           </div>
           <div class="mb-2">
             <h6>
-              Последнее изменения:<br> {{ date.data.emitent.last_updated | formatDate }}
+              Последнее изменения:<br>
+              {{ date.data.emitent.last_updated | formatDate }}
             </h6>
           </div>
         </div>
@@ -86,7 +86,6 @@
                   :class="key === 'finished' ? 'text-primary': key==='pending'?'text-warning':'text-danger'" />
                 <span class="font-weight-bold text-capitalize ml-75">{{ key }}</span>
               </div>
-
               <span>{{ data }}</span>
             </div> -->
         <!-- </div> -->
@@ -95,89 +94,89 @@
         content-class="pt-1"
         fill>
         <b-tab
+          active
           title="Лимиты">
           <div class="d-flex flex-nowrap">
             <b-col
               md="6"
               class="p-0">
-              <template v-for="(item,index) in date.data.limits">
+              <template v-for="(item, index) in date.data.limits">
                 <b-card-actions
-                  v-if="item.limit_commons.length>1"
-                  :key="index[index]"
-                  no-body
-                  action-close
-                  class="border p-1">
-                  <v-select
-                    v-model="someValue"
-                    multiple
-
-                    :options="option" />
-                  <div class="d-flex flex-wrap align-items-center mt-1 ">
-                    <h6 class="mx-auto">
-                      Лимит
-                    </h6>
-
-                    <div
-                      class="ml-1 mw-20">
-                      <b-form-input
-                        :value="item.value" />
-                    </div>
-                    <b-col class="mr-1">
-                      <v-select
-                        v-model="typeUnits[item.limit_unit_code]"
-                        :options="type" />
-                    </b-col>
-                    <b-col>
-                      <v-select
-                        :value="periodLabel[item.limit_period_code]"
-                        :options="period" />
-                    </b-col>
-                  </div>
-                  <div class="mt-1">
-                    <label>Остаток: {{ item.value - item.consumption }} л.</label>
-                    <b-progress
-
-                      :value="item.value - item.consumption"
-                      :max="item.value" />
-                  </div>
-                </b-card-actions>
-
-                <b-card-actions
-                  v-if="item.limit_commons.length<2"
+                  v-if="item.limit_commons.length > 1"
                   :key="index"
                   no-body
                   action-close
                   class="border p-1">
                   <v-select
-                    v-model="someValue[index]"
+                    v-model="selected"
                     multiple
-
-                    :options="option" />
-                  <div class="d-flex flex-wrap align-items-center mt-1 ">
+                    :reduce="(service) => service.id"
+                    label="full_name"
+                    :options="services" />
+                  <div class="d-flex flex-wrap align-items-baseline mt-1">
                     <h6 class="mx-auto">
                       Лимит
                     </h6>
 
-                    <div
-                      class="ml-1 mw-20">
-                      <b-form-input
-                        :value="item.value" />
+                    <div class="ml-1 mw-20">
+                      <b-form-input :value="item.value" />
                     </div>
                     <b-col class="mr-1">
                       <v-select
-                        v-model="typeUnits[item.limit_unit_code]"
-                        :options="type" />
+                        :value="item.limit_unit_code"
+                        :reduce="(zalupa) => zalupa.code"
+                        :options="units" />
                     </b-col>
                     <b-col>
                       <v-select
-                        :value="periodLabel[item.limit_period_code]"
-                        :options="period" />
+                        :value="item.limit_period_code"
+                        :reduce="(period) => period.code"
+                        :options="periods" />
                     </b-col>
                   </div>
                   <div class="mt-1">
                     <label>Остаток: {{ item.value - item.consumption }} л.</label>
                     <b-progress
+                      :value="item.value - item.consumption"
+                      :max="item.value" />
+                  </div>
+                </b-card-actions>
+                <b-card-actions
+                  v-if="item.limit_commons.length < 2"
+                  :key="index"
+                  no-body
+                  action-close
+                  class="border p-1">
+                  <v-select
+                    v-model="selected[index]"
+                    multiple
+                    :reduce="(service) => service.id"
+                    label="full_name"
+                    :options="services" />
+                  <div class="d-flex flex-wrap align-items-baseline mt-1">
+                    <h6 class="mx-auto">
+                      Лимит
+                    </h6>
 
+                    <div class="ml-1 mw-20">
+                      <b-form-input :value="item.value" />
+                    </div>
+                    <b-col class="mr-1">
+                      <v-select
+                        :value="item.limit_unit_code"
+                        :reduce="(zalupa) => zalupa.code"
+                        :options="units" />
+                    </b-col>
+                    <b-col>
+                      <v-select
+                        :value="item.limit_period_code"
+                        :reduce="(period) => period.code"
+                        :options="periods" />
+                    </b-col>
+                  </div>
+                  <div class="mt-1">
+                    <label>Остаток: {{ item.value - item.consumption }} л.</label>
+                    <b-progress
                       :value="item.value - item.consumption"
                       :max="item.value" />
                   </div>
@@ -190,38 +189,59 @@
               <b-card-actions
                 ref="cardAction"
                 @refresh="refreshStop('cardAction')">
-                <h4> Текущие лимиты по карте:</h4>
+                <h4>Текущие лимиты по карте:</h4>
                 <hr>
-                <template v-for="( item) in date.data.limits">
-                  <template v-for="(el) in item.limit_commons">
-                    <div :key="el.service_id">
-                      <h4>{{ labelService[el.service_id] }}: {{ item.value }} литров.</h4>
-                      <h4>Лимит: {{ periodLabel[item.limit_period_code] }}.</h4>
-                      <h4>
-                        Остаток: {{ item.value - item.consumption }} литров.
-                      </h4>
-                      <hr>
-                    </div>
-                  </template>
+                <template v-for="(el,index) in date.data.limits">
+                  <div
+                    v-if="date.data.limits.length>0 && el.limit_commons.length < 2"
+                    :key="index">
+                    <h4>
+                      Вид топлива: {{ selected[index] }}.
+                    </h4>
+                    <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
+                    <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
+                    <hr>
+                  </div>
+
+                  <div
+                    v-if="el.limit_commons.length >1 && date.data.limits.length <2 && date.data.limits.length>0"
+                    :key="el.number">
+                    <h4>
+                      Вид топлива: {{ selected }}.
+                    </h4>
+                    <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
+                    <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
+                    <hr>
+                  </div>
                 </template>
+                <!-- <template v-for="(i,index) in item.limit_commons">
+                  <div
+                    v-if="i.limit_commons.length > 1"
+                    :key="index">
+                    <h4>
+                      Вид топлива:  {{ labelService[selected[index]] }}.
+                    </h4>
+                    <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
+                    <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
+                    <hr>
+                  </div>
+                </template> -->
               </b-card-actions>
             </b-col>
           </div>
         </b-tab>
-        <b-tab
-          active
-          title="Транзакции">
+        <b-tab title="Транзакции">
           <h4
-            v-if="totalRows<1"
+            v-if="totalRows < 1"
             class="text-center">
-            Транзакции по карте №{{ product }} за период c {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
+            Транзакции по карте №{{ product }} за период c
+            {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
           </h4>
-          <div v-if="totalRows>0">
+          <div v-if="totalRows > 0">
             <b-card>
-              <div class="d-flex justify-content-between  flex-wrap">
+              <div class="d-flex justify-content-between flex-wrap">
                 <!-- filter -->
                 <b-form-group
-
                   label-align-sm="left"
                   label-size="sm"
                   label-for="filterInput"
@@ -256,8 +276,10 @@
                       fill="currentColor"
                       class="bi bi-file-earmark-excel"
                       viewBox="0 0 16 16">
-                      <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                      <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                      <path
+                        d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                      <path
+                        d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
                     </svg>
                     Скачать
                   </export-excel>
@@ -265,7 +287,8 @@
               </div>
             </b-card>
             <h6 class="text-center mb-1 mt-1">
-              Транзакции по карте №{{ product }} за период c <code>{{ firstDayOfMonth }}</code>по <code>{{ lastDay }}</code>:
+              Транзакции по карте №{{ product }} за период c
+              <code>{{ firstDayOfMonth }}</code>по <code>{{ lastDay }}</code>:
             </h6>
             <b-table
               striped
@@ -276,9 +299,10 @@
               :current-page="currentPage"
               :items="transactions.data"
               :fields="fields"
-              :filter="filter">
-              <template
-                #cell(date)="row">
+              :sort-by.sync="sortBy"
+              :filter="filter"
+              :filter-included-fields="filterOn">
+              <template #cell(date)="row">
                 {{ row.item.date | formatDate }}
               </template>
             </b-table>
@@ -335,28 +359,35 @@
 
 <script>
 import {
-  BCard, BImg, BTabs, BProgress, BCol, BTab, BFormInput, BButton, BTable, BPagination, BCardBody, BFormGroup, BFormSelect,
-  BInputGroup, BLink, BCardHeader, VBTooltip,
+  BCard,
+  BImg,
+  BTabs,
+  BProgress,
+  BCol,
+  BTab,
+  BFormInput,
+  BButton,
+  BTable,
+  BPagination,
+  BCardBody,
+  BFormGroup,
+  BFormSelect,
+  BInputGroup,
+  BLink,
+  BCardHeader,
+  VBTooltip,
   BInputGroupAppend,
 } from 'bootstrap-vue';
-// import useJwt from '@/auth/jwt/useJwt';
 import vSelect from 'vue-select';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
-// import flatPickr from 'vue-flatpickr-component';
-// import { Russian } from 'flatpickr/dist/l10n/ru';
 import { ref } from '@vue/composition-api';
-// import { some } from 'postcss-rtl/lib/affected-props';
 import { useRouter } from '../@core/utils/utils';
-
 import useJwt from '../auth/jwt/useJwt';
 // import { formatDate } from '../@core/utils/filter';
 // import VueApexCharts from 'vue-apexcharts';
-
 export default {
-
   directives: {
     'b-tooltip': VBTooltip,
-
   },
   components: {
     BCard,
@@ -381,9 +412,7 @@ export default {
     BProgress,
     BInputGroupAppend,
     BCardHeader,
-
   },
-
   setup() {
     // const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
     const date = ref(null);
@@ -395,19 +424,19 @@ export default {
     const loadDone = ref(false);
     const lastDay = ref(null);
     const firstDayOfMonth = ref(null);
+    const labelService = ref({});
     const perPage = 5;
     const selected = ref([]);
-    const someValue = ref([]);
     const pageOptions = [3, 5, 10];
     const currentPage = 1;
     const filter = ref(null);
-    const type = ref([]);
-    const period = ref([]);
+    const units = ref([]);
+    const periods = ref([]);
+    const services = ref([]);
     const quantity = ref(null);
     const start = ref(null);
     const end = ref(null);
     const contractId = ref(null);
-    const labelService = ref({});
     const fields = [
       {
         key: 'service.full_name',
@@ -433,14 +462,7 @@ export default {
       QUARTER: 'Квартальный',
       HALFYEAR: 'Полугодовой',
       YEAR: 'Годовой',
-
     };
-
-    const typeUnits = {
-      RU: 'Руб.',
-      L: 'Литры',
-    };
-
     const columns = {
       'Товар/услуга': {
         field: 'service.full_name',
@@ -471,20 +493,22 @@ export default {
       const today = new Date();
       return today.toLocaleDateString();
     };
-
     const getFirstDay = () => {
       const newDate = new Date();
-      const firstDay = new Date(newDate.getFullYear(), newDate.getMonth(), 1).toLocaleDateString();
+      const firstDay = new Date(
+        newDate.getFullYear(),
+        newDate.getMonth(),
+        1,
+      ).toLocaleDateString();
       return firstDay;
     };
-
     const getAllService = () => {
       useJwt.getService().then((response) => {
         if (response.data.status) {
-          const allService = response.data;
-          allService.data.forEach((el) => option.value.push(el.full_name));
-          const id = allService.data.map((el) => el.id);
-          const label = allService.data.map((el) => el.label);
+          services.value = response.data.data;
+          services.value.forEach((el) => option.value.push(el.full_name));
+          const id = services.value.map((el) => el.id);
+          const label = services.value.map((el) => el.label);
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < id.length; i++) {
             labelService.value[id[i]] = label[i];
@@ -502,48 +526,42 @@ export default {
         contractId.value = contract.contract.id;
         start.value = `${getFirstDay()} 00:00:00`;
         end.value = `${isToday()} 00:00:00`;
-
         loadDone.value = true;
-        useJwt.getTransactions(`contract_id=${contractId.value}&startDate=${start.value}&endDate=${end.value}&card_number=${product.value}`).then((response) => {
-          if (response.data.status) {
-            transactions.value = response.data;
-            totalRows.value = transactions.value.data.length;
-          }
-          loadDone.value = false;
-
-          return transactions.value;
-        });
+        useJwt
+          .getTransactions(
+            `contract_id=${contractId.value}&startDate=${start.value}&endDate=${end.value}&card_number=${product.value}`,
+          )
+          .then((response) => {
+            if (response.data.status) {
+              transactions.value = response.data;
+              totalRows.value = transactions.value.data.length;
+            }
+            loadDone.value = false;
+            return transactions.value;
+          });
       }
     };
 
     const getAllPeriods = () => {
       useJwt.getAllPeriods().then((response) => {
         if (response.data.status) {
-          const allPeriods = response.data;
-          allPeriods.data.forEach((el) => period.value.push(el.label));
+          periods.value = response.data.data;
         }
       });
     };
-
     const getAllUnits = () => {
       useJwt.getAllUnits().then((response) => {
         if (response.data.status) {
-          const allPeriods = response.data;
-          allPeriods.data.forEach((el) => type.value.push(el.label));
+          units.value = response.data.data;
         }
       });
     };
-
     const cardDate = (params) => useJwt.getCardDate(params).then((response) => {
       if (response.data.status) {
         date.value = response.data;
-        value.value = date.value.data.holder;
+        console.log(date.value);
         const limitCommons = ref([]);
         date.value.data.limits.forEach((el) => limitCommons.value.push(el.limit_commons));
-        // selected.value = ['СУГ', 'Регуляр-92'];
-        // console.log(date.value.data.limits);
-        // limitCommons.value.forEach((el) => selected.value.push(el.service_id));
-        // console.log(limitCommons.value);
         // eslint-disable-next-line no-plusplus
         for (let i = 0; i < limitCommons.value.length; i++) {
           // eslint-disable-next-line no-plusplus
@@ -551,14 +569,18 @@ export default {
             selected.value.push(limitCommons.value[i][j].service_id);
           }
         }
-        // eslint-disable-next-line no-plusplus
-        for (let q = 0; q < selected.value.length; q++) {
-          someValue.value.push(labelService.value[selected.value[q]]);
-        }
-        // console.log(someValue.value);
       }
     });
 
+    const textSelected = () => {
+      const array = Array.from(selected.value);
+      const b = [];
+      // eslint-disable-next-line no-plusplus
+      for (let q = 0; q < array.length; q++) {
+        b.push(selected.value[q]);
+      }
+      console.log(b);
+    };
     // Remote Data
     const fetchProduct = () => {
       // Get product  id from URL
@@ -566,28 +588,17 @@ export default {
       const productSlug = route.value.params.card_number;
       product.value = productSlug;
       cardDate(productSlug);
-
-      // store
-      //   .dispatch('app-ecommerce/fetchProduct', { productId })
-      //   .then((response) => {
-      //     product.value = response.data.product;
-      //   })
-      //   .catch((error) => {
-      //     if (error.response.status === 404) {
-      //       product.value = undefined;
-      //     }
-      //   });
     };
-
-    // UI
-    // const selectedColor = ref(null);
 
     getAllTransactions();
     getAllService();
     getAllPeriods();
     getAllUnits();
     fetchProduct();
+    textSelected();
 
+    // cardDate();
+    // label();
     return {
       product,
       date,
@@ -595,6 +606,8 @@ export default {
       transactions,
       totalRows,
       columns,
+      textSelected,
+      labelService,
       fields,
       end,
       start,
@@ -608,16 +621,12 @@ export default {
       option,
       selected,
       quantity,
-      type,
-      period,
+      units,
+      periods,
+      services,
       periodLabel,
-      someValue,
-      typeUnits,
-      labelService,
-      // label,
     };
   },
-
 };
 </script>
 
@@ -635,58 +644,46 @@ export default {
   align-items: left;
   padding: 3px;
 }
-
 .border {
   border: 1px solid black;
   border-radius: 5px;
 }
-
 .mw-20 {
   max-width: 20%;
 }
-
 .icon {
   max-width: 30px;
   cursor: pointer;
   padding: 0 !important;
 }
-
 .card-header {
   padding: 1.5rem 0 !important;
 }
-
 .card-title {
   margin-bottom: 0.5rem !important;
 }
-
 .b-overlay-wrap:not(:last-child) {
   margin-bottom: 1rem !important;
 }
-
 .col {
   padding-right: 0 !important;
   padding-left: 0 !important;
 }
-
 .heigth {
   height: 200px;
 }
-
 .card-img-top {
   max-width: 390px;
   min-width: 350px;
 }
-
 // .card-body {
 //   border: 1px solid;
 //   border-radius: 4px;
 // }
-
 .holder {
   position: relative;
   bottom: 70px;
 }
-
 .item-wrapper {
   display: flex;
   flex-direction: column;
@@ -695,7 +692,6 @@ export default {
   bottom: 110px;
   left: 20px;
 }
-
 .item-options {
   display: flex;
   flex-direction: column;
@@ -703,23 +699,19 @@ export default {
   bottom: 35px !important;
   width: 100%;
 }
-
 .status {
   position: relative;
   top: 40px;
 }
-
 .ecommerce-card {
   background-color: inherit !important;
   cursor: pointer;
   margin: 3px;
-
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 25px 0 rgba(white, 0.25);
   }
 }
-
 .item-price {
   position: relative;
   left: 10px;
@@ -728,7 +720,6 @@ export default {
   text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.5),
     1px 1px 1px rgba(0, 0, 0, 0.5);
 }
-
 .item-img {
   display: flex;
   flex-direction: column;
