@@ -145,6 +145,7 @@
                 <b-card-actions
                   v-if="item.limit_commons.length < 2"
                   :key="index"
+
                   no-body
                   action-close
                   class="border p-1">
@@ -194,7 +195,7 @@
                 <hr>
                 <template v-for="(el,index) in date.data.limits">
                   <div
-                    v-if="date.data.limits.length>1 && el.limit_commons.length < 2"
+                    v-if="date.data.limits.length>1 && el.limit_commons.length>0"
                     :key="index">
                     <h4>
                       Вид топлива:
@@ -301,10 +302,10 @@
               :current-page="currentPage"
               :items="transactions.data"
               :fields="fields"
-              :sort-by.sync="sortBy"
-              :filter="filter"
-              :filter-included-fields="filterOn">
-              <template #cell(date)="row">
+
+              :filter="filter">
+              <template
+                #cell(date)="row">
                 {{ row.item.date | formatDate }}
               </template>
             </b-table>
@@ -435,6 +436,7 @@ export default {
     const units = ref([]);
     const periods = ref([]);
     const services = ref([]);
+
     const quantity = ref(null);
     const start = ref(null);
     const end = ref(null);
@@ -529,6 +531,7 @@ export default {
         start.value = `${getFirstDay()} 00:00:00`;
         end.value = `${isToday()} 00:00:00`;
         loadDone.value = true;
+
         useJwt
           .getTransactions(
             `contract_id=${contractId.value}&startDate=${start.value}&endDate=${end.value}&card_number=${product.value}`,
@@ -539,6 +542,7 @@ export default {
               totalRows.value = transactions.value.data.length;
             }
             loadDone.value = false;
+
             return transactions.value;
           });
       }
@@ -582,8 +586,6 @@ export default {
       product.value = productSlug;
       cardDate(productSlug);
     };
-
-    // const labelSelected = computed(() => selected.forEach((el) => labelService[el]));
 
     getAllTransactions();
     getAllService();
