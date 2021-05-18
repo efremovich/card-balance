@@ -1,17 +1,21 @@
 /* eslint-disable no-plusplus */ /* eslint-disable vue/no-use-v-if-with-v-for */
 <template>
   <div>
-    <b-card title="Настройка карты">
-      <b-card-header>
+    <b-card>
+      <b-card-header
+        class="d-flex justify-content-start">
         <b-link :to="{ name: 'cards' }">
           <b-img
             v-b-tooltip.hover.top="'Назад к списку карт'"
-            class="icon"
+            class="icon mr-2"
             src="../assets/images/icons/arrow.svg">
             <!-- getImage(product.emitent.code)"  -->
             <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
           </b-img>
         </b-link>
+        <h3>
+          Настройка карты № {{ cardData.data.number }}
+        </h3>
       </b-card-header>
       <div class="d-flex flex-wrap justify-content-between">
         <div class="image">
@@ -97,21 +101,23 @@
         <b-tab
           active
           title="Лимиты">
-          <div class="d-flex flex-nowrap">
+          <b-button
+            class="mt-1 mb-1"
+            variant="success"
+            @click="addLimit">
+            Добавить лимит
+          </b-button>
+          <div class="d-flex flex-nowrap column">
             <b-col
               md="6"
               class="p-0">
-              <b-button
-                variant="success"
-                @click="addLimit">
-                Добавить лимит
-              </b-button>
-              <template v-for="limit in cardData.data.limits">
+              <template v-for="(limit,index) in cardData.data.limits">
                 <b-card-actions
                   :key="limit.ID"
                   no-body
                   action-close
-                  class="border p-1">
+                  class="border pl-1 pr-1"
+                  @close="hide(index)">
                   <v-select
                     v-model="limit.limit_services"
                     multiple
@@ -124,17 +130,19 @@
                     </h6>
 
                     <div class="ml-1 mw-20">
-                      <b-form-input :value="limit.value" />
+                      <b-form-input
+                        v-model="limit.value"
+                        @change="getValue" />
                     </div>
                     <b-col class="mr-1">
                       <v-select
-                        :value="limit.limit_unit_code"
+                        v-model="limit.limit_unit_code"
                         :reduce="(unit) => unit.code"
                         :options="units" />
                     </b-col>
                     <b-col>
                       <v-select
-                        :value="limit.limit_period_code"
+                        v-model="limit.limit_period_code"
                         :reduce="(period) => period.code"
                         :options="periods" />
                     </b-col>
@@ -150,10 +158,12 @@
             </b-col>
             <b-col
               md="6"
-              class="border ml-1">
+              class="border">
               <b-card-actions
                 ref="cardAction"
-                @refresh="refreshStop('cardAction')">
+                action-refresh
+                class="pl-1 pl-1"
+                @refresh="refreshLimits('cardAction')">
                 <h4>Текущие лимиты по карте:</h4>
                 <hr>
                 <template v-for="limit in cardData.data.limits">
@@ -553,7 +563,11 @@ export default {
       llc,
     };
   },
-
+  data() {
+    return {
+      newLimit: {},
+    };
+  },
   computed: {},
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
@@ -567,25 +581,33 @@ export default {
       return empty;
     },
 
-    labelIndex() {
-      const empty = [];
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < this.selected; i++) {
-        empty.push(this.labelService[this.selected[i]]);
-      }
-
-      // return empty;
-      console.log(this.selectedLength);
-      return empty;
-    },
     addLimit() {
-      this.cardData.data.limits.push({ limit_commons: [] });
+      this.newLimit = {
+        limit_period_code: 'MONTH',
+        value: 0,
+        limit_unit_code: 'L',
+        limit_services: [],
+        limit_commons: [],
+        consumption: 0,
+      };
+      this.cardData.data.limits.unshift(this.newLimit);
     },
+
+    getValue() {
+
+    },
+
+    hide(index) {
+      this.cardData.data.limits.splice(index, 1);
+      // console.log(this.cardData.data.limits);
+      /* //this.$store.state.dataList.cards.limits.splice(index,1); */
+    },
+
     selectedService(arrService) {
-      console.log(this.services);
-      let hue = '';
-      arrService.forEach((el) => (hue += `${this.labelService[el]},`));
-      return hue;
+      let label = '';
+      // eslint-disable-next-line no-return-assign
+      arrService.forEach((el) => (label += `${this.labelService[el]}, `));
+      return label;
     },
   },
 };
@@ -604,6 +626,28 @@ export default {
   max-width: 95%;
   align-items: left;
   padding: 3px;
+}
+
+.b-overlay-wrap {
+  min-height: 265px;
+}
+@media screen and (max-width: 768px) {
+  .column {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .col-md-6 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 50%;
+    flex: 0 0 50%;
+    max-width: 100%;
+  }
+}
+
+.card-body {
+  padding: 0.5rem !important;
 }
 .border {
   border: 1px solid black;
