@@ -101,6 +101,11 @@
             <b-col
               md="6"
               class="p-0">
+              <b-button
+                variant="success"
+                @click="addLimit">
+                Добавить лимит
+              </b-button>
               <template v-for="limit in cardData.data.limits">
                 <b-card-actions
                   :key="limit.ID"
@@ -108,7 +113,7 @@
                   action-close
                   class="border p-1">
                   <v-select
-                    v-model="limit.limit_commons"
+                    v-model="limit.limit_services"
                     multiple
                     label="full_name"
                     :reduce="(services) => `${services.id}`"
@@ -151,46 +156,19 @@
                 @refresh="refreshStop('cardAction')">
                 <h4>Текущие лимиты по карте:</h4>
                 <hr>
-                <template v-for="(el, index) in cardData.data.limits">
-                  <div
-                    v-if="
-                      cardData.data.limits.length > 1 &&
-                        el.limit_commons.length > 0
-                    "
-                    :key="index">
+                <template v-for="limit in cardData.data.limits">
+                  <div :key="limit.ID">
                     <h4>
                       Вид топлива:
-                      {{ selected[index] }}
+                      {{ selectedService(limit.limit_services) }}
                     </h4>
-                    <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
-                    <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
-                    <hr>
-                  </div>
-
-                  <div
-                    v-if="
-                      el.limit_commons.length > 0 &&
-                        cardData.data.limits.length < 2
-                    "
-                    :key="el.number">
-                    <h4>Вид топлива: {{ labelSelected() }}.</h4>
-                    <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
-                    <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
+                    <h4>Лимит: {{ periodLabel[limit.limit_period_code] }}.</h4>
+                    <h4>
+                      Остаток: {{ limit.value - limit.consumption }} литров.
+                    </h4>
                     <hr>
                   </div>
                 </template>
-                <!-- <template v-for="(i,index) in item.limit_commons">
-                  <div
-                    v-if="i.limit_commons.length > 1"
-                    :key="index">
-                    <h4>
-                      Вид топлива:  {{ labelService[selected[index]] }}.
-                    </h4>
-                    <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
-                    <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
-                    <hr>
-                  </div>
-                </template> -->
               </b-card-actions>
             </b-col>
           </div>
@@ -529,21 +507,6 @@ export default {
     const cardDate = (params) => useJwt.getCardDate(params).then((response) => {
       if (response.data.status) {
         cardData.value = response.data;
-        const limitCommons = ref([]);
-        // cardData.value.data.limits.forEach((el) => limitCommons.value.push(el.limit_commons));
-        cardData.value.data.limits.forEach((limit) => {
-          limit.llc = [];
-          limit.limit_commons.forEach((lc) => {
-            limit.llc.push(lc.service_id);
-          });
-        });
-        // eslint-disable-next-line no-plusplus
-        for (let i = 0; i < limitCommons.value.length; i++) {
-          // eslint-disable-next-line no-plusplus
-          for (let j = 0; j < limitCommons.value[i].length; j++) {
-            selected.value.push(limitCommons.value[i][j].service_id);
-          }
-        }
       }
     });
 
@@ -591,11 +554,7 @@ export default {
     };
   },
 
-  // computed: {
-  //   selectedLength(index) {
-  //     return this.selected[index].length;
-  //   },
-  // },
+  computed: {},
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
     labelSelected() {
@@ -618,6 +577,15 @@ export default {
       // return empty;
       console.log(this.selectedLength);
       return empty;
+    },
+    addLimit() {
+      this.cardData.data.limits.push({ limit_commons: [] });
+    },
+    selectedService(arrService) {
+      console.log(this.services);
+      let hue = '';
+      arrService.forEach((el) => (hue += `${this.labelService[el]},`));
+      return hue;
     },
   },
 };
