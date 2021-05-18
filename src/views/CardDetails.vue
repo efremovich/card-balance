@@ -1,5 +1,3 @@
-/* eslint-disable no-plusplus */
-/* eslint-disable vue/no-use-v-if-with-v-for */
 <template>
   <div>
     <b-card title="Настройка карты">
@@ -111,10 +109,10 @@
                   <v-select
                     v-model="selected"
                     multiple
-                    :reduce="(service) => service.label"
-                    label="label"
+                    :reduce="(service) => service.id"
+                    label="full_name"
                     :options="services" />
-                  <div class="d-flex flex-wrap align-items-center mt-1">
+                  <div class="d-flex flex-wrap align-items-baseline mt-1">
                     <h6 class="mx-auto">
                       Лимит
                     </h6>
@@ -151,11 +149,12 @@
                   class="border p-1">
                   <v-select
                     v-model="selected[index]"
+
                     multiple
-                    :reduce="(service) => service.label"
-                    label="label"
-                    :options="services" />
-                  <div class="d-flex flex-wrap align-items-center mt-1">
+                    :reduce="(service) => service.id"
+                    label="full_name"
+                    :options="option" />
+                  <div class="d-flex flex-wrap align-items-baseline mt-1">
                     <h6 class="mx-auto">
                       Лимит
                     </h6>
@@ -199,7 +198,7 @@
                     :key="index">
                     <h4>
                       Вид топлива:
-                      {{ selected[index] }} ++
+                      {{ selected[index] }} INDEX
                     </h4>
                     <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
                     <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
@@ -207,10 +206,10 @@
                   </div>
 
                   <div
-                    v-if="el.limit_commons.length>0 && date.data.limits.length<2"
+                    v-if="el.limit_commons.length > 0 && date.data.limits.length <2"
                     :key="el.number">
                     <h4>
-                      Вид топлива: {{ selected }} --.
+                      Вид топлива: {{ selected }}.
                     </h4>
                     <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
                     <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
@@ -436,7 +435,6 @@ export default {
     const units = ref([]);
     const periods = ref([]);
     const services = ref([]);
-
     const quantity = ref(null);
     const start = ref(null);
     const end = ref(null);
@@ -458,7 +456,6 @@ export default {
         sortable: true,
       },
     ];
-
     const periodLabel = {
       DAY: 'Суточный',
       WEEK: 'Недельный',
@@ -520,7 +517,6 @@ export default {
         }
       });
     };
-
     const getAllTransactions = () => {
       firstDayOfMonth.value = getFirstDay();
       lastDay.value = isToday();
@@ -531,7 +527,6 @@ export default {
         start.value = `${getFirstDay()} 00:00:00`;
         end.value = `${isToday()} 00:00:00`;
         loadDone.value = true;
-
         useJwt
           .getTransactions(
             `contract_id=${contractId.value}&startDate=${start.value}&endDate=${end.value}&card_number=${product.value}`,
@@ -542,12 +537,10 @@ export default {
               totalRows.value = transactions.value.data.length;
             }
             loadDone.value = false;
-
             return transactions.value;
           });
       }
     };
-
     const getAllPeriods = () => {
       useJwt.getAllPeriods().then((response) => {
         if (response.data.status) {
@@ -577,7 +570,6 @@ export default {
         }
       }
     });
-
     // Remote Data
     const fetchProduct = () => {
       // Get product  id from URL
@@ -586,7 +578,6 @@ export default {
       product.value = productSlug;
       cardDate(productSlug);
     };
-
     getAllTransactions();
     getAllService();
     getAllPeriods();
@@ -622,46 +613,32 @@ export default {
       periodLabel,
     };
   },
-
-  computed: {
-    // selectedLength() {
-    //   const empty = [];
-    //   // eslint-disable-next-line no-plusplus
-    //   for (let i = 0; i < this.selected; i++) {
-    //     empty.push(this.labelService[this.selected[i]]);
-    //   }
-    //   return empty.length;
-    // },
-  },
+  // computed: {
+  //   selectedLength(index) {
+  //     return this.selected[index].length;
+  //   },
+  // },
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
-    // labelSelected() {
-    //   const empty = [];
-    //   // eslint-disable-next-line no-plusplus
-    //   for (let i = 0; i < this.selected.length; i++) {
-    //     empty.push(this.labelService[this.selected[i]]);
-    //   }
-
-    //   return empty;
-    // },
-    // selectedLength(index) {
-    //   return this.labelService[this.selected[index]];
-    // },
-
+    labelSelected(arr) {
+      const empty = [];
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < arr.length; i++) {
+        empty.push(this.labelService[arr[i]]);
+      }
+      return empty;
+    },
     labelIndex() {
       const empty = [];
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < this.selected; i++) {
         empty.push(this.labelService[this.selected[i]]);
       }
-
       // return empty;
       console.log(this.selectedLength);
       return empty;
     },
-
   },
-
 };
 </script>
 
