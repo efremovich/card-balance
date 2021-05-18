@@ -111,10 +111,10 @@
                   <v-select
                     v-model="selected"
                     multiple
-                    :reduce="(service) => service.id"
-                    label="full_name"
+                    :reduce="(service) => service.label"
+                    label="label"
                     :options="services" />
-                  <div class="d-flex flex-wrap align-items-baseline mt-1">
+                  <div class="d-flex flex-wrap align-items-center mt-1">
                     <h6 class="mx-auto">
                       Лимит
                     </h6>
@@ -152,10 +152,10 @@
                   <v-select
                     v-model="selected[index]"
                     multiple
-                    :reduce="(service) => service.id"
-                    label="full_name"
+                    :reduce="(service) => service.label"
+                    label="label"
                     :options="services" />
-                  <div class="d-flex flex-wrap align-items-baseline mt-1">
+                  <div class="d-flex flex-wrap align-items-center mt-1">
                     <h6 class="mx-auto">
                       Лимит
                     </h6>
@@ -199,7 +199,7 @@
                     :key="index">
                     <h4>
                       Вид топлива:
-                      {{ selected[index] }}
+                      {{ selected[index] }} ++
                     </h4>
                     <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
                     <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
@@ -207,10 +207,10 @@
                   </div>
 
                   <div
-                    v-if="el.limit_commons.length > 0 && date.data.limits.length <2"
+                    v-if="el.limit_commons.length>0 && date.data.limits.length<2"
                     :key="el.number">
                     <h4>
-                      Вид топлива: {{ labelSelected() }}.
+                      Вид топлива: {{ selected }} --.
                     </h4>
                     <h4>Лимит: {{ periodLabel[el.limit_period_code] }}.</h4>
                     <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
@@ -623,22 +623,30 @@ export default {
     };
   },
 
-  // computed: {
-  //   selectedLength(index) {
-  //     return this.selected[index].length;
-  //   },
-  // },
+  computed: {
+    // selectedLength() {
+    //   const empty = [];
+    //   // eslint-disable-next-line no-plusplus
+    //   for (let i = 0; i < this.selected; i++) {
+    //     empty.push(this.labelService[this.selected[i]]);
+    //   }
+    //   return empty.length;
+    // },
+  },
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
-    labelSelected() {
-      const empty = [];
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < this.selected.length; i++) {
-        empty.push(this.labelService[this.selected[i]]);
-      }
+    // labelSelected() {
+    //   const empty = [];
+    //   // eslint-disable-next-line no-plusplus
+    //   for (let i = 0; i < this.selected.length; i++) {
+    //     empty.push(this.labelService[this.selected[i]]);
+    //   }
 
-      return empty;
-    },
+    //   return empty;
+    // },
+    // selectedLength(index) {
+    //   return this.labelService[this.selected[index]];
+    // },
 
     labelIndex() {
       const empty = [];
