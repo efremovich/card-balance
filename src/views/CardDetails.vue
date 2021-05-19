@@ -101,60 +101,85 @@
         <b-tab
           active
           title="Лимиты">
-          <b-button
-            class="mt-1 mb-1"
-            variant="success"
-            @click="addLimit">
-            Добавить лимит
-          </b-button>
+          <div class="d-flex justify-content-between w-25">
+            <b-button
+              class="mt-1 mb-1"
+              variant="success"
+              @click="addLimit">
+              Добавить лимит
+            </b-button>
+            <b-button
+              class="mt-1 mb-1"
+              variant="primary"
+              :disabled="invalid"
+              type="submit">
+              Сохранить
+            </b-button>
+          </div>
           <div class="d-flex flex-nowrap column">
             <b-col
               md="6"
               class="p-0">
-              <template v-for="(limit,index) in cardData.data.limits">
-                <b-card-actions
-                  :key="limit.ID"
-                  no-body
-                  action-close
-                  class="border pl-1 pr-1"
-                  @close="hide(index)">
-                  <v-select
-                    v-model="limit.limit_services"
-                    multiple
-                    label="full_name"
-                    :reduce="(services) => `${services.id}`"
-                    :options="services" />
-                  <div class="d-flex flex-wrap align-items-baseline mt-1">
-                    <h6 class="mx-auto">
-                      Лимит
-                    </h6>
+              <validation-observer
+                ref="limitsForm"
+                v-slot="{ invalid }">
+                <b-form
+                  method="POST"
+                  class="auth-login-form mt-2"
+                  @submit.prevent="newLimitsData">
+                  <template v-for="(limit,index) in cardData.data.limits">
+                    <b-card-actions
+                      :key="limit.ID"
+                      no-body
+                      action-close
+                      class="border pl-1 pr-1"
+                      @close="hide(index)">
+                      <validation-provider
+                        v-slot="{ errors }"
+                        name="service"
+                        rules="required">
+                        <v-select
+                          v-model="limit.limit_services"
+                          multiple
+                          label="full_name"
+                          :reduce="(services) => `${services.id}`"
+                          :options="services"
+                          @input="length(index)" />
+                      </validation-provider>
+                      <div class="d-flex flex-wrap align-items-baseline mt-1">
+                        <h6 class="mx-auto">
+                          Лимит
+                        </h6>
 
-                    <div class="ml-1 mw-20">
-                      <b-form-input
-                        v-model="limit.value"
-                        @change="getValue" />
-                    </div>
-                    <b-col class="mr-1">
-                      <v-select
-                        v-model="limit.limit_unit_code"
-                        :reduce="(unit) => unit.code"
-                        :options="units" />
-                    </b-col>
-                    <b-col>
-                      <v-select
-                        v-model="limit.limit_period_code"
-                        :reduce="(period) => period.code"
-                        :options="periods" />
-                    </b-col>
-                  </div>
-                  <div class="mt-1">
-                    <label>Остаток: {{ limit.value - limit.consumption }} л.</label>
-                    <b-progress
-                      :value="limit.value - limit.consumption"
-                      :max="limit.value" />
-                  </div>
-                </b-card-actions>
-              </template>
+                        <div class="ml-1 mw-20">
+                          <b-form-input
+                            v-model="limit.value"
+                            type="number"
+                            @change="getValue" />
+                        </div>
+                        <b-col class="mr-1">
+                          <v-select
+                            v-model="limit.limit_unit_code"
+                            :reduce="(unit) => unit.code"
+                            :options="units" />
+                        </b-col>
+                        <b-col>
+                          <v-select
+                            v-model="limit.limit_period_code"
+                            :reduce="(period) => period.code"
+                            :options="periods" />
+                        </b-col>
+                      </div>
+                      <div class="mt-1">
+                        <label>Остаток: {{ limit.value - limit.consumption }} л.</label>
+                        <b-progress
+                          :value="limit.value - limit.consumption"
+                          :max="limit.value" />
+                      </div>
+                    </b-card-actions>
+                  </template>
+                </b-form>
+              </validation-observer>
             </b-col>
             <b-col
               md="6"
@@ -321,6 +346,7 @@ import {
   BTable,
   BPagination,
   BCardBody,
+  BForm,
   BFormGroup,
   BFormSelect,
   BInputGroup,
@@ -329,7 +355,9 @@ import {
   VBTooltip,
   BInputGroupAppend,
 } from 'bootstrap-vue';
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import vSelect from 'vue-select';
+import { required } from '@validations';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 import { ref } from '@vue/composition-api';
 import { useRouter } from '../@core/utils/utils';
@@ -341,8 +369,11 @@ export default {
     'b-tooltip': VBTooltip,
   },
   components: {
+    ValidationProvider,
+    ValidationObserver,
     BCard,
     BImg,
+    BForm,
     BTabs,
     BTab,
     BButton,
@@ -566,6 +597,7 @@ export default {
   data() {
     return {
       newLimit: {},
+      required,
     };
   },
   computed: {},
@@ -597,10 +629,16 @@ export default {
 
     },
 
+    submit() {
+
+    },
+
+    length(index) {
+      console.log(this.cardData.data.limits[index].limit_services.length);
+    },
+
     hide(index) {
       this.cardData.data.limits.splice(index, 1);
-      // console.log(this.cardData.data.limits);
-      /* //this.$store.state.dataList.cards.limits.splice(index,1); */
     },
 
     selectedService(arrService) {
