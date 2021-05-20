@@ -96,76 +96,74 @@
         <!-- </div> -->
       </div>
       <b-tabs
-        content-class="pt-1"
+        content-class="pt-1 position-relative"
         fill>
         <b-tab
           active
           title="Лимиты">
-          <div class="d-flex justify-content-between w-25">
-            <b-button
-              class="mt-1 mb-1"
-              variant="success"
-              @click="addLimit">
-              Добавить лимит
-            </b-button>
-            <b-button
-              class="mt-1 mb-1"
-              variant="primary"
-              :disabled="invalid"
-              type="submit">
-              Сохранить
-            </b-button>
-          </div>
-          <div class="d-flex flex-nowrap column">
+          <b-button
+            class="mr-1 mb-1"
+            variant="success"
+
+            @click="addLimit">
+            Добавить лимит
+          </b-button>
+
+          <div class="d-flex flex-nowrap column ">
             <b-col
-              md="6"
+              md="7"
               class="p-0">
               <validation-observer
-                ref="limitsForm"
-                v-slot="{ invalid }">
+                ref="limitsForm">
                 <b-form
-                  method="POST"
-                  class="auth-login-form mt-2"
                   @submit.prevent="newLimitsData">
                   <template v-for="(limit,index) in cardData.data.limits">
                     <b-card-actions
-                      :key="limit.ID"
+                      :key="limit.limit_id"
                       no-body
                       action-close
                       class="border pl-1 pr-1"
                       @close="hide(index)">
                       <validation-provider
                         v-slot="{ errors }"
-                        name="service"
+                        name="Виды топлива"
                         rules="required">
-                        <v-select
-                          v-model="limit.limit_services"
-                          multiple
-                          label="full_name"
-                          :reduce="(services) => `${services.id}`"
-                          :options="services"
-                          @input="length(index)" />
+                        <b-form-group
+                          label="Виды топлива:"
+                          label-for="labelServices">
+                          <v-select
+                            id="labelServices"
+                            v-model="limit.limit_services"
+                            multiple
+                            label="full_name"
+                            :reduce="(services) => `${services.id}`"
+                            :options="services" />
+
+                          <small
+
+                            class="text-danger">{{ errors[0] }}</small>
+                        </b-form-group>
                       </validation-provider>
-                      <div class="d-flex flex-wrap align-items-baseline mt-1">
+                      <div class="d-flex flex-wrap align-items-center mt-1">
                         <h6 class="mx-auto">
                           Лимит
                         </h6>
 
                         <div class="ml-1 mw-20">
                           <b-form-input
-                            v-model="limit.value"
-                            type="number"
-                            @change="getValue" />
+                            v-model="limit.value" />
                         </div>
                         <b-col class="mr-1">
                           <v-select
                             v-model="limit.limit_unit_code"
+                            :clearable="false"
                             :reduce="(unit) => unit.code"
                             :options="units" />
                         </b-col>
                         <b-col>
                           <v-select
                             v-model="limit.limit_period_code"
+                            :clearable="false"
                             :reduce="(period) => period.code"
                             :options="periods" />
                         </b-col>
@@ -182,12 +180,12 @@
               </validation-observer>
             </b-col>
             <b-col
-              md="6"
+              md="5"
               class="border">
               <b-card-actions
                 ref="cardAction"
                 action-refresh
-                class="pl-1 pl-1"
+                class="pl-1"
                 @refresh="refreshLimits('cardAction')">
                 <h4>Текущие лимиты по карте:</h4>
                 <hr>
@@ -206,6 +204,19 @@
                 </template>
               </b-card-actions>
             </b-col>
+          </div>
+          <div class="d-flex justify-content-around w-90 position-fixed bottom">
+            <b-button
+              variant="success"
+              type="submit"
+              @click="newLimitsData">
+              Сохранить
+            </b-button>
+            <b-button
+              class="mr-1"
+              variant="primary">
+              Отмена
+            </b-button>
           </div>
         </b-tab>
         <b-tab title="Транзакции">
@@ -355,6 +366,7 @@ import {
   VBTooltip,
   BInputGroupAppend,
 } from 'bootstrap-vue';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import vSelect from 'vue-select';
 import { required } from '@validations';
@@ -364,6 +376,7 @@ import { useRouter } from '../@core/utils/utils';
 import useJwt from '../auth/jwt/useJwt';
 // import { formatDate } from '../@core/utils/filter';
 // import VueApexCharts from 'vue-apexcharts';
+
 export default {
   directives: {
     'b-tooltip': VBTooltip,
@@ -598,9 +611,10 @@ export default {
     return {
       newLimit: {},
       required,
+
     };
   },
-  computed: {},
+
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
     labelSelected() {
@@ -613,6 +627,47 @@ export default {
       return empty;
     },
 
+    getRandom() {
+      return Math.floor(Math.random() * 10000);
+    },
+
+    // getValide() {
+    //   this.$refs.limitsForm.validate().then((success) => {
+    //     let validate;
+    //     if (success) {
+    //       validate = false;
+    //     } else validate = true;
+    //     console.log(validate);
+    //     return validate;
+    //   });
+    // },
+
+    newLimitsData() {
+      this.$refs.limitsForm.validate().then((success) => {
+        if (success) {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Данные сохранены',
+              icon: 'EditIcon',
+              variant: 'success',
+            },
+
+          });
+        } else {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Укажите виды топлива',
+              icon: 'AlertTriangleIcon',
+              variant: 'danger',
+            },
+
+          });
+        }
+      });
+    },
+
     addLimit() {
       this.newLimit = {
         limit_period_code: 'MONTH',
@@ -621,24 +676,14 @@ export default {
         limit_services: [],
         limit_commons: [],
         consumption: 0,
+        limit_id: this.getRandom(),
       };
       this.cardData.data.limits.unshift(this.newLimit);
     },
 
-    getValue() {
-
-    },
-
-    submit() {
-
-    },
-
-    length(index) {
-      console.log(this.cardData.data.limits[index].limit_services.length);
-    },
-
     hide(index) {
       this.cardData.data.limits.splice(index, 1);
+      // eslint-disable-next-line no-plusplus
     },
 
     selectedService(arrService) {
@@ -667,7 +712,7 @@ export default {
 }
 
 .b-overlay-wrap {
-  min-height: 265px;
+  min-height: 265px !important;
 }
 @media screen and (max-width: 768px) {
   .column {
@@ -704,6 +749,10 @@ export default {
 }
 .card-title {
   margin-bottom: 0.5rem !important;
+}
+
+.bottom {
+  bottom: 50px;
 }
 .b-overlay-wrap:not(:last-child) {
   margin-bottom: 1rem !important;
