@@ -1,4 +1,3 @@
-/* eslint-disable no-plusplus */ /* eslint-disable vue/no-use-v-if-with-v-for */
 <template>
   <div>
     <b-card>
@@ -99,25 +98,30 @@
         content-class="pt-1 position-relative"
         fill>
         <b-tab
+
           active
           title="Лимиты">
           <b-button
             class="mr-1 mb-1"
             variant="success"
-
+            :disabled="servicesLength"
             @click="addLimit">
             Добавить лимит
           </b-button>
 
-          <div class="d-flex flex-nowrap column ">
+          <div
+            :key="render"
+            class="d-flex flex-nowrap column ">
             <b-col
               md="7"
               class="p-0">
               <validation-observer
                 ref="limitsForm">
                 <b-form
+
                   @submit.prevent="newLimitsData">
-                  <template v-for="(limit,index) in cardData.data.limits">
+                  <template
+                    v-for="(limit,index) in cardData.data.limits">
                     <b-card-actions
                       :key="limit.limit_id"
                       no-body
@@ -189,23 +193,25 @@
                 @refresh="refreshLimits('cardAction')">
                 <h4>Текущие лимиты по карте:</h4>
                 <hr>
-                <template v-for="limit in cardData.data.limits">
-                  <div :key="limit.ID">
+                <template
+                  v-for="limit in cardData.data.limits">
+                  <div :key="limit.limit_id">
                     <h4>
                       Вид топлива:
                       {{ selectedService(limit.limit_services) }}
                     </h4>
-                    <h4>Лимит: {{ periodLabel[limit.limit_period_code] }}.</h4>
+                    <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
                     <h4>
                       Остаток: {{ limit.value - limit.consumption }} литров.
                     </h4>
+
                     <hr>
                   </div>
                 </template>
               </b-card-actions>
             </b-col>
           </div>
-          <div class="d-flex justify-content-around w-90 position-fixed bottom">
+          <div class="d-flex justify-content-around w-90 position-sticky bottom">
             <b-button
               variant="success"
               type="submit"
@@ -214,7 +220,8 @@
             </b-button>
             <b-button
               class="mr-1"
-              variant="primary">
+              variant="primary"
+              @click="undoChange">
               Отмена
             </b-button>
           </div>
@@ -374,8 +381,6 @@ import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 import { ref } from '@vue/composition-api';
 import { useRouter } from '../@core/utils/utils';
 import useJwt from '../auth/jwt/useJwt';
-// import { formatDate } from '../@core/utils/filter';
-// import VueApexCharts from 'vue-apexcharts';
 
 export default {
   directives: {
@@ -409,7 +414,6 @@ export default {
     BCardHeader,
   },
   setup() {
-    // const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
     const cardData = ref({});
     const product = ref(null);
     const value = ref(null);
@@ -602,7 +606,6 @@ export default {
       periods,
       services,
       periodLabel,
-
       limits,
       llc,
     };
@@ -611,8 +614,15 @@ export default {
     return {
       newLimit: {},
       required,
+      render: 0,
 
     };
+  },
+
+  computed: {
+    servicesLength() {
+      return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el.length === 0);
+    },
   },
 
   methods: {
@@ -631,17 +641,6 @@ export default {
       return Math.floor(Math.random() * 10000);
     },
 
-    // getValide() {
-    //   this.$refs.limitsForm.validate().then((success) => {
-    //     let validate;
-    //     if (success) {
-    //       validate = false;
-    //     } else validate = true;
-    //     console.log(validate);
-    //     return validate;
-    //   });
-    // },
-
     newLimitsData() {
       this.$refs.limitsForm.validate().then((success) => {
         if (success) {
@@ -658,13 +657,22 @@ export default {
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'Укажите виды топлива',
+              title: 'Укажите вид(ы) топлива',
               icon: 'AlertTriangleIcon',
               variant: 'danger',
             },
 
           });
         }
+      });
+    },
+
+    undoChange() {
+      useJwt.getCardDate(this.cardData.data.number).then((response) => {
+        if (response.data.status) {
+          this.cardData = response.data;
+        }
+        // this.render = this.getRandom();
       });
     },
 
@@ -683,7 +691,6 @@ export default {
 
     hide(index) {
       this.cardData.data.limits.splice(index, 1);
-      // eslint-disable-next-line no-plusplus
     },
 
     selectedService(arrService) {
@@ -692,6 +699,17 @@ export default {
       arrService.forEach((el) => (label += `${this.labelService[el]}, `));
       return label;
     },
+
+    // selectedService(arrService) {
+    //   const label = [];
+    //   // eslint-disable-next-line no-return-assign
+    //   // label.push(arrService);
+    //   // eslint-disable-next-line no-plusplus
+    //   for (let i = 0; i < arrService.length; i++) {
+    //     label.push(this.labelService[arrService[i]]);
+    //   }
+    //   return label;
+    // },
   },
 };
 </script>
