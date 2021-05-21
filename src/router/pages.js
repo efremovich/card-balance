@@ -9,15 +9,23 @@ export default [
   },
 
   {
-    path: '/Cards',
+    path: '/cards',
     name: 'cards',
     component: () => import('@/views/Cards.vue'),
   },
 
   {
-    path: '/CardDetails/:card_number',
+    path: '/card/:card_number',
     name: 'card',
     component: () => import('@/views/CardDetails.vue'),
+    meta: {
+      breadcrumb: [
+        { title: 'Главная', url: '/' },
+        { title: 'Карты' },
+        { title: ':card_number' },
+      ],
+      rule: 'editor',
+    },
   },
 
   {

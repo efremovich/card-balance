@@ -22,7 +22,7 @@
         <!-- form -->
         <validation-observer ref="simpleRules">
           <b-form
-            method="POST"
+            method="submit"
             class="auth-reset-password-form mt-2"
             @submit.prevent="validationForm">
             <!-- password -->

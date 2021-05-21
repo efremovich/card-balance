@@ -129,12 +129,8 @@ export default {
   },
   methods: {
     removeCard() {
-      this.$set(this.cardStyles, 'maxHeight', `${this.$refs.bCard.clientHeight}px`);
-      setTimeout(() => {
-        this.$set(this.cardStyles, 'maxHeight', '0px');
-        this.$set(this.cardStyles, 'overflow', 'hidden');
-        // this.$set(this.cardStyles, 'marginBottom', '0')
-      }, 10);
+      this.$el.remove();
+      // this.$refs.card.remove();
     },
     triggerCollapse() {
       this.content_visible = !this.content_visible;

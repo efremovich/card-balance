@@ -1,23 +1,27 @@
 <template>
   <div>
-    <b-card title="Настройка карты">
-      <b-card-header>
+    <b-card>
+      <b-card-header
+        class="d-flex justify-content-start">
         <b-link :to="{ name: 'cards' }">
           <b-img
             v-b-tooltip.hover.top="'Назад к списку карт'"
-            class="icon"
+            class="icon mr-2"
             src="../assets/images/icons/arrow.svg">
             <!-- getImage(product.emitent.code)"  -->
             <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
           </b-img>
         </b-link>
+        <h3>
+          Настройка карты № {{ cardData.data.number }}
+        </h3>
       </b-card-header>
       <div class="d-flex flex-wrap justify-content-between">
         <div class="image">
           <b-img
             class="card-img-top"
             :src="
-              require(`../assets/images/cards-icon/${date.data.emitent.code}.svg`)
+              require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
             ">
             <!-- getImage(product.emitent.code)"  -->
             <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
@@ -25,19 +29,17 @@
 
           <div class="item-wrapper">
             <h6 class="item-price">
-              PIN: {{ date.data.pin }}
+              PIN: {{ cardData.data.pin }}
             </h6>
             <h5 class="item-price">
-              {{ date.data.number }}
+              {{ cardData.data.number }}
             </h5>
           </div>
           <div class="holder">
             <h6 class="ml-1">
               Держатель:
             </h6>
-            <b-form-input
-              id="readOnlyInput"
-              :value="holder" />
+            <b-form-input :value="cardData.data.holder" />
           </div>
         </div>
         <div
@@ -52,17 +54,19 @@
               class="mr-50" />
           </b-button>
           <div class="mb-2">
-            <h6>Выдана: {{ date.data.limits[0].CreatedAt | formatDate }}</h6>
+            <h6>
+              Выдана: {{ cardData.data.limits[0].CreatedAt | formatDate }}
+            </h6>
           </div>
           <div class="mb-2">
             <h6>
-              Действует до: {{ date.data.limits[0].CreatedAt | formatDate }}
+              Действует до: {{ cardData.data.limits[0].CreatedAt | formatDate }}
             </h6>
           </div>
           <div class="mb-2">
             <h6>
               Последнее изменения:<br>
-              {{ date.data.emitent.last_updated | formatDate }}
+              {{ cardData.data.emitent.last_updated | formatDate }}
             </h6>
           </div>
         </div>
@@ -75,7 +79,7 @@
 
         <!-- chart info -->
         <!-- <div
-              v-for="(data,key,index) in date.data"
+              v-for="(data,key,index) in cardData.data"
               :key="key"
               class="d-flex justify-content-between"
               :class="index === Object.keys(chartInfo.chartInfo).length - 1 ? '':'mb-1'">
@@ -86,83 +90,140 @@
                   :class="key === 'finished' ? 'text-primary': key==='pending'?'text-warning':'text-danger'" />
                 <span class="font-weight-bold text-capitalize ml-75">{{ key }}</span>
               </div>
-
               <span>{{ data }}</span>
             </div> -->
         <!-- </div> -->
       </div>
       <b-tabs
-        content-class="pt-1"
+        content-class="pt-1 position-relative"
         fill>
         <b-tab
+
           active
           title="Лимиты">
-          <div class="d-flex flex-nowrap">
-            <b-col
-              md="6"
-              class="p-0">
-              <template v-for="(item, index) in date.data.limits">
-                <b-card-actions
-                  :key="index"
-                  no-body
-                  action-close
-                  class="border p-1">
-                  <v-select
-                    v-model="selected"
-                    multiple
-                    :reduce="(service) => service.id"
-                    label="full_name"
-                    :options="services" />
-                  <div class="d-flex flex-wrap align-items-baseline mt-1">
-                    <h6 class="mx-auto">
-                      Лимит
-                    </h6>
+          <b-button
+            class="mr-1 mb-1"
+            variant="success"
+            :disabled="servicesLength"
+            @click="addLimit">
+            Добавить лимит
+          </b-button>
 
-                    <div class="ml-1 mw-20">
-                      <b-form-input :value="item.value" />
-                    </div>
-                    <b-col class="mr-1">
-                      <v-select
-                        :value="item.limit_unit_code"
-                        :reduce="(zalupa) => zalupa.code"
-                        :options="units" />
-                    </b-col>
-                    <b-col>
-                      <v-select
-                        :value="item.limit_period_code"
-                        :reduce="(period) => period.code"
-                        :options="periods" />
-                    </b-col>
-                  </div>
-                  <div class="mt-1">
-                    <label>Остаток: {{ item.value - item.consumption }} л.</label>
-                    <b-progress
-                      :value="item.value - item.consumption"
-                      :max="item.value" />
-                  </div>
-                </b-card-actions>
-              </template>
+          <div
+            :key="render"
+            class="d-flex flex-nowrap column ">
+            <b-col
+              md="7"
+              class="p-0">
+              <validation-observer
+                ref="limitsForm">
+                <b-form
+
+                  @submit.prevent="newLimitsData">
+                  <template
+                    v-for="(limit,index) in cardData.data.limits">
+                    <b-card-actions
+                      :key="limit.limit_id"
+                      no-body
+                      action-close
+                      class="border pl-1 pr-1"
+                      @close="hide(index)">
+                      <validation-provider
+                        v-slot="{ errors }"
+                        name="Виды топлива"
+                        rules="required">
+                        <b-form-group
+                          label="Виды топлива:"
+                          label-for="labelServices">
+                          <v-select
+                            id="labelServices"
+                            v-model="limit.limit_services"
+                            multiple
+                            label="full_name"
+                            :reduce="(services) => `${services.id}`"
+                            :options="services" />
+
+                          <small
+
+                            class="text-danger">{{ errors[0] }}</small>
+                        </b-form-group>
+                      </validation-provider>
+                      <div class="d-flex flex-wrap align-items-center mt-1">
+                        <h6 class="mx-auto">
+                          Лимит
+                        </h6>
+
+                        <div class="ml-1 mw-20">
+                          <b-form-input
+                            v-model="limit.value" />
+                        </div>
+                        <b-col class="mr-1">
+                          <v-select
+                            v-model="limit.limit_unit_code"
+                            :clearable="false"
+                            :reduce="(unit) => unit.code"
+                            :options="units" />
+                        </b-col>
+                        <b-col>
+                          <v-select
+                            v-model="limit.limit_period_code"
+                            :clearable="false"
+                            :reduce="(period) => period.code"
+                            :options="periods" />
+                        </b-col>
+                      </div>
+                      <div class="mt-1">
+                        <label>Остаток: {{ limit.value - limit.consumption }} л.</label>
+                        <b-progress
+                          :value="limit.value - limit.consumption"
+                          :max="limit.value" />
+                      </div>
+                    </b-card-actions>
+                  </template>
+                </b-form>
+              </validation-observer>
             </b-col>
             <b-col
-              md="6"
-              class="border ml-1">
+              md="5"
+              class="border">
               <b-card-actions
                 ref="cardAction"
-                @refresh="refreshStop('cardAction')">
+                action-refresh
+                class="pl-1"
+                @refresh="refreshLimits('cardAction')">
                 <h4>Текущие лимиты по карте:</h4>
                 <hr>
-                <template v-for="el in date.data.limits">
-                  <div :key="el.service_id">
+                <template
+                  v-for="limit in cardData.data.limits">
+                  <div :key="limit.limit_id">
                     <h4>
-                      {{ services[el.service_id] }}: {{ el.value }} литров.
+                      Вид топлива:
+                      {{ selectedService(limit.limit_services) }}
                     </h4>
-                    <h4>Лимит: {{ periods[el.limit_period_code] }}.</h4>
-                    <h4>Остаток: {{ el.value - el.consumption }} литров.</h4>
+                    <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
+                    <h4>
+                      Остаток: {{ limit.value - limit.consumption }} литров.
+                    </h4>
+
                     <hr>
                   </div>
                 </template>
               </b-card-actions>
             </b-col>
+          </div>
+          <div class="d-flex justify-content-around w-90 position-sticky bottom">
+            <b-button
+              variant="success"
+              type="submit"
+              @click="newLimitsData">
+              Сохранить
+            </b-button>
+            <b-button
+              class="mr-1"
+              variant="primary"
+              @click="undoChange">
+              Отмена
+            </b-button>
           </div>
         </b-tab>
         <b-tab title="Транзакции">
@@ -234,11 +295,9 @@
               :current-page="currentPage"
               :items="transactions.data"
               :fields="fields"
-              :sort-by.sync="sortBy"
-              :filter="filter"
-              :filter-included-fields="filterOn">
-              <template #cell(date)="row">
-                {{ row.item.date | formatDate }}
+              :filter="filter">
+              <template #cell(cardData)="row">
+                {{ row.item.cardData | formatDate }}
               </template>
             </b-table>
 
@@ -305,6 +364,7 @@ import {
   BTable,
   BPagination,
   BCardBody,
+  BForm,
   BFormGroup,
   BFormSelect,
   BInputGroup,
@@ -313,22 +373,25 @@ import {
   VBTooltip,
   BInputGroupAppend,
 } from 'bootstrap-vue';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import vSelect from 'vue-select';
+import { required } from '@validations';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 import { ref } from '@vue/composition-api';
 import { useRouter } from '../@core/utils/utils';
-
 import useJwt from '../auth/jwt/useJwt';
-// import { formatDate } from '../@core/utils/filter';
-// import VueApexCharts from 'vue-apexcharts';
 
 export default {
   directives: {
     'b-tooltip': VBTooltip,
   },
   components: {
+    ValidationProvider,
+    ValidationObserver,
     BCard,
     BImg,
+    BForm,
     BTabs,
     BTab,
     BButton,
@@ -350,10 +413,8 @@ export default {
     BInputGroupAppend,
     BCardHeader,
   },
-
   setup() {
-    // const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
-    const date = ref(null);
+    const cardData = ref({});
     const product = ref(null);
     const value = ref(null);
     const totalRows = ref(null);
@@ -362,21 +423,24 @@ export default {
     const loadDone = ref(false);
     const lastDay = ref(null);
     const firstDayOfMonth = ref(null);
+    const labelService = ref({});
     const perPage = 5;
     const selected = ref([]);
     const pageOptions = [3, 5, 10];
     const currentPage = 1;
     const filter = ref(null);
-
     const units = ref([]);
     const periods = ref([]);
     const services = ref([]);
-    const holder = ref('');
 
     const quantity = ref(null);
     const start = ref(null);
     const end = ref(null);
     const contractId = ref(null);
+
+    const limits = ref([]);
+
+    const llc = ref([]);
     const fields = [
       {
         key: 'service.full_name',
@@ -384,7 +448,7 @@ export default {
         sortable: true,
       },
       {
-        key: 'date',
+        key: 'cardData',
         label: 'Дата',
         sortable: true,
       },
@@ -395,12 +459,20 @@ export default {
       },
     ];
 
+    const periodLabel = {
+      DAY: 'Суточный',
+      WEEK: 'Недельный',
+      MONTH: 'Месячный',
+      QUARTER: 'Квартальный',
+      HALFYEAR: 'Полугодовой',
+      YEAR: 'Годовой',
+    };
     const columns = {
       'Товар/услуга': {
         field: 'service.full_name',
       },
       'Дата': {
-        field: 'date',
+        field: 'cardData',
       },
       'Сумма': {
         field: 'summ',
@@ -425,7 +497,6 @@ export default {
       const today = new Date();
       return today.toLocaleDateString();
     };
-
     const getFirstDay = () => {
       const newDate = new Date();
       const firstDay = new Date(
@@ -435,11 +506,17 @@ export default {
       ).toLocaleDateString();
       return firstDay;
     };
-
     const getAllService = () => {
       useJwt.getService().then((response) => {
         if (response.data.status) {
           services.value = response.data.data;
+          services.value.forEach((el) => option.value.push(el.full_name));
+          const id = services.value.map((el) => el.id);
+          const label = services.value.map((el) => el.label);
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < id.length; i++) {
+            labelService.value[id[i]] = label[i];
+          }
         }
       });
     };
@@ -453,8 +530,8 @@ export default {
         contractId.value = contract.contract.id;
         start.value = `${getFirstDay()} 00:00:00`;
         end.value = `${isToday()} 00:00:00`;
-
         loadDone.value = true;
+
         useJwt
           .getTransactions(
             `contract_id=${contractId.value}&startDate=${start.value}&endDate=${end.value}&card_number=${product.value}`,
@@ -478,7 +555,6 @@ export default {
         }
       });
     };
-
     const getAllUnits = () => {
       useJwt.getAllUnits().then((response) => {
         if (response.data.status) {
@@ -486,48 +562,33 @@ export default {
         }
       });
     };
-
     const cardDate = (params) => useJwt.getCardDate(params).then((response) => {
       if (response.data.status) {
-        date.value = response.data;
-        holder.value = date.value.data.holder;
-        const limitCommons = ref([]);
-        date.value.data.limits.forEach((el) => limitCommons.value.push(el.limit_commons));
-
-        // eslint-disable-next-line no-plusplus
-        for (let i = 0; i < limitCommons.value.length; i++) {
-          // eslint-disable-next-line no-plusplus
-          for (let j = 0; j < limitCommons.value[i].length; j++) {
-            selected.value.push(limitCommons.value[i][j].service_id);
-          }
-        }
+        cardData.value = response.data;
       }
     });
 
-    // Remote Data
     const fetchProduct = () => {
-      // Get product  id from URL
       const { route } = useRouter();
-      const productSlug = route.value.params.card_number;
-      product.value = productSlug;
-      cardDate(productSlug);
+      cardDate(route.value.params.card_number);
     };
 
-    fetchProduct();
     getAllTransactions();
     getAllService();
     getAllPeriods();
     getAllUnits();
+    fetchProduct();
     // cardDate();
     // label();
-
     return {
       product,
-      date,
+      // labelSelected,
+      cardData,
       value,
       transactions,
       totalRows,
       columns,
+      labelService,
       fields,
       end,
       start,
@@ -541,11 +602,114 @@ export default {
       option,
       selected,
       quantity,
-
       units,
       periods,
       services,
+      periodLabel,
+      limits,
+      llc,
     };
+  },
+  data() {
+    return {
+      newLimit: {},
+      required,
+      render: 0,
+
+    };
+  },
+
+  computed: {
+    servicesLength() {
+      return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el.length === 0);
+    },
+  },
+
+  methods: {
+    // eslint-disable-next-line vue/return-in-computed-property
+    labelSelected() {
+      const empty = [];
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < this.selected.length; i++) {
+        empty.push(this.labelService[this.selected[i]]);
+      }
+
+      return empty;
+    },
+
+    getRandom() {
+      return Math.floor(Math.random() * 10000);
+    },
+
+    newLimitsData() {
+      this.$refs.limitsForm.validate().then((success) => {
+        if (success) {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Данные сохранены',
+              icon: 'EditIcon',
+              variant: 'success',
+            },
+
+          });
+        } else {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Укажите вид(ы) топлива',
+              icon: 'AlertTriangleIcon',
+              variant: 'danger',
+            },
+
+          });
+        }
+      });
+    },
+
+    undoChange() {
+      useJwt.getCardDate(this.cardData.data.number).then((response) => {
+        if (response.data.status) {
+          this.cardData = response.data;
+        }
+        // this.render = this.getRandom();
+      });
+    },
+
+    addLimit() {
+      this.newLimit = {
+        limit_period_code: 'MONTH',
+        value: 0,
+        limit_unit_code: 'L',
+        limit_services: [],
+        limit_commons: [],
+        consumption: 0,
+        limit_id: this.getRandom(),
+      };
+      this.cardData.data.limits.unshift(this.newLimit);
+    },
+
+    hide(index) {
+      this.cardData.data.limits.splice(index, 1);
+    },
+
+    selectedService(arrService) {
+      let label = '';
+      // eslint-disable-next-line no-return-assign
+      arrService.forEach((el) => (label += `${this.labelService[el]}, `));
+      return label;
+    },
+
+    // selectedService(arrService) {
+    //   const label = [];
+    //   // eslint-disable-next-line no-return-assign
+    //   // label.push(arrService);
+    //   // eslint-disable-next-line no-plusplus
+    //   for (let i = 0; i < arrService.length; i++) {
+    //     label.push(this.labelService[arrService[i]]);
+    //   }
+    //   return label;
+    // },
   },
 };
 </script>
@@ -565,57 +729,71 @@ export default {
   padding: 3px;
 }
 
+.b-overlay-wrap {
+  min-height: 265px !important;
+}
+@media screen and (max-width: 768px) {
+  .column {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .col-md-6 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 50%;
+    flex: 0 0 50%;
+    max-width: 100%;
+  }
+}
+
+.card-body {
+  padding: 0.5rem !important;
+}
 .border {
   border: 1px solid black;
   border-radius: 5px;
 }
-
 .mw-20 {
   max-width: 20%;
 }
-
 .icon {
   max-width: 30px;
   cursor: pointer;
   padding: 0 !important;
 }
-
 .card-header {
   padding: 1.5rem 0 !important;
 }
-
 .card-title {
   margin-bottom: 0.5rem !important;
 }
 
+.bottom {
+  bottom: 50px;
+}
 .b-overlay-wrap:not(:last-child) {
   margin-bottom: 1rem !important;
 }
-
 .col {
   padding-right: 0 !important;
   padding-left: 0 !important;
 }
-
 .heigth {
   height: 200px;
 }
-
 .card-img-top {
   max-width: 390px;
   min-width: 350px;
 }
-
 // .card-body {
 //   border: 1px solid;
 //   border-radius: 4px;
 // }
-
 .holder {
   position: relative;
   bottom: 70px;
 }
-
 .item-wrapper {
   display: flex;
   flex-direction: column;
@@ -624,7 +802,6 @@ export default {
   bottom: 110px;
   left: 20px;
 }
-
 .item-options {
   display: flex;
   flex-direction: column;
@@ -632,23 +809,19 @@ export default {
   bottom: 35px !important;
   width: 100%;
 }
-
 .status {
   position: relative;
   top: 40px;
 }
-
 .ecommerce-card {
   background-color: inherit !important;
   cursor: pointer;
   margin: 3px;
-
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 25px 0 rgba(white, 0.25);
   }
 }
-
 .item-price {
   position: relative;
   left: 10px;
@@ -657,7 +830,6 @@ export default {
   text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.5),
     1px 1px 1px rgba(0, 0, 0, 0.5);
 }
-
 .item-img {
   display: flex;
   flex-direction: column;
