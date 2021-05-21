@@ -6,13 +6,10 @@
         <b-card-header
           class="d-flex justify-content-start">
           <b-link :to="{ name: 'cards' }">
-            <b-img
-              v-b-tooltip.hover.top="'Назад к списку карт'"
-              class="icon mr-2"
-              src="../assets/images/icons/arrow.svg">
-            <!-- getImage(product.emitent.code)"  -->
-            <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
-            </b-img>
+            <feather-icon
+              class="mr-1"
+              icon="ArrowLeftCircleIcon"
+              size="30" />
           </b-link>
           <h3>
             Настройка карты № {{ cardData.data.number }}
@@ -352,7 +349,15 @@
       <div
         v-if="cardData.data.limits.length<1"
         :key="cardData.data.limits.length">
-        <h6>Для добавления лимита нажмите кнопку</h6>
+        <b-link :to="{ name: 'cards' }">
+          <feather-icon
+            class="mr-1"
+            icon="ArrowLeftCircleIcon"
+            size="30" />
+        </b-link>
+        <h6 class="mt-1 mb-1">
+          Для добавления лимита нажмите
+        </h6>
         <b-button
           class="mr-1 mb-1 position-absolute"
           variant="success"

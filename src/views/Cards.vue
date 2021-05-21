@@ -5,7 +5,6 @@
       variant="transparent"
       spinner-medium
       rounded="md">
-      <!-- Searchbar -->
       <div class="ecommerce-searchbar mt-1 mb-1">
         <b-row>
           <b-col cols="12">
@@ -23,7 +22,6 @@
           </b-col>
         </b-row>
       </div>
-      <!-- Prodcuts -->
       <section class="views">
         <b-card
           v-for="(product, index) in products.data.result"
@@ -34,10 +32,7 @@
             :to="{ name: 'card', params: { card_number: product.number } }">
             <b-img
               class="card-img-top"
-              :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)">
-              <!-- getImage(product.emitent.code)"  -->
-              <!-- require(`../assets/images/cards-icon/${product.emitent.code}.svg`) -->
-            </b-img>
+              :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
           </b-link>
           <div class="item-options">
             <div class="item-wrapper">
@@ -106,79 +101,8 @@
               :value="getValue(product.limits)"
               :max="getMaxValue(product.limits)" />
           </div>
-          <!-- <div
-            v-if="product.limits.length>0"
-            class="limits pb-1">
-            <label>Остаток по карте </label>
-            <template v-for="(i) in product.limits">
-              <b-progress
-                :key="i.ID"
-                variant="success"
-                show-value
-                class="mb-1"
-                :value="i.value - i.consumption"
-                :max="i.value" />
-            </template>
-          </div>
-          <div
-            v-else
-            class="limits pb-1">
-            <label>Остаток по карте </label>
-            <b-progress
-              variant="success"
-              show-value
-              class="mb-1"
-              value="0"
-              :max="zero" />
-          </div> -->
-          <!-- <div
-            v-for="item in product.limits"
-            :key="item.value"
-            class="limits ml-1 pb-2">
-            <div
-
-              v-for="(i) in item.limit_commons"
-              :key="i.limit_id">
-              <label>{{ i.service_id }}</label>
-              <b-progress
-                :variant="getPopularityColor(i.limit_id)"
-                show-value
-                class="mb-1 mt-1 "
-                :value="i.limit_id"
-                :max="max" />
-            </div>
-          </div> -->
-          <!-- Product Actions -->
         </b-card>
       </section>
-
-      <!-- Pagination -->
-      <!-- <section>
-        <b-row>
-          <b-col cols="12">
-            <b-pagination
-              v-model="filters.page"
-              :total-rows="totalProducts"
-              :per-page="filters.perPage"
-              first-number
-              align="center"
-              last-number
-              prev-class="prev-item"
-              next-class="next-item">
-              <template #prev-text>
-                <feather-icon
-                  icon="ChevronLeftIcon"
-                  size="18" />
-              </template>
-              <template #next-text>
-                <feather-icon
-                  icon="ChevronRightIcon"
-                  size="18" />
-              </template>
-            </b-pagination>
-          </b-col>
-        </b-row>
-      </section> -->
     </b-overlay>
   </div>
 </template>
@@ -227,23 +151,9 @@ export default {
     // BPagination,
   },
   setup() {
-    // const filters = ''; // = useShopFiltersSortingAndPagination();
     const filters = ref('');
     const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
 
-    const max = 10000;
-
-    // eslint-disable-next-line import/no-dynamic-require
-    // eslint-disable-next-line global-require
-    // eslint-disable-next-line import/no-dynamic-require
-    // const getImage = computed((value) => require(`../assets/images/cards-icon/${value}.svg`));
-
-    // const getImage = (value) => {
-    //   // eslint-disable-next-line import/no-dynamic-require
-    //   const image = require(`../assets/images/cards-icon/${value}.png`);
-    //   console.log(image);
-    //   return (image);
-    // };
     const { itemView, itemViewOptions, totalProducts } = useShopUi();
 
     const getPopularityColor = (num) => {
@@ -257,8 +167,6 @@ export default {
     const { products } = useShopRemoteData();
 
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
-
-    // Wrapper Function for `fetchProducts` which can be triggered initially and upon changes of filters
 
     const fetchShopProducts = () => {
       useJwt.getCardsDate().then((response) => {
@@ -283,7 +191,6 @@ export default {
       totalProducts,
       toggleProductInWishlist,
       handleCartActionClick,
-      max,
       products,
       mqShallShowLeftSidebar,
     };
