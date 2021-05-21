@@ -95,16 +95,42 @@
               </b-button-group>
             </div>
           </div>
-          <div class="limits pb-1">
+
+          <div
+            class="limits pb-1">
             <label>Остаток по карте </label>
             <b-progress
               variant="success"
               show-value
               class="mb-1"
-              :value="product.limits[0].value - product.limits[0].consumption"
-              :max="product.limits[0].value" />
+              :value="getValue(product.limits)"
+              :max="getMaxValue(product.limits)" />
           </div>
-
+          <!-- <div
+            v-if="product.limits.length>0"
+            class="limits pb-1">
+            <label>Остаток по карте </label>
+            <template v-for="(i) in product.limits">
+              <b-progress
+                :key="i.ID"
+                variant="success"
+                show-value
+                class="mb-1"
+                :value="i.value - i.consumption"
+                :max="i.value" />
+            </template>
+          </div>
+          <div
+            v-else
+            class="limits pb-1">
+            <label>Остаток по карте </label>
+            <b-progress
+              variant="success"
+              show-value
+              class="mb-1"
+              value="0"
+              :max="zero" />
+          </div> -->
           <!-- <div
             v-for="item in product.limits"
             :key="item.value"
@@ -245,7 +271,6 @@ export default {
     };
 
     fetchShopProducts();
-
     watch([filters], () => {
       fetchShopProducts();
     });
@@ -267,6 +292,7 @@ export default {
   data() {
     return {
       number: null,
+      zero: 0,
     };
   },
   // computed: {
@@ -277,39 +303,22 @@ export default {
 
   // },
   methods: {
-    // cardNumber(index) {
-    //   this.number = this.products.data.result[index].number;
-    //   return this.number;
-    // },
+    getMaxValue(item) {
+      if (item.length < 1) {
+        return 0;
+      }
+      const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
+      return totalSumm;
+    },
 
-    // getImage(pic) {
-    //   const images = require.context('../assets/images/cards-icon/', false, /\.png$/);
-    //   return images(`./${pic}.png`);
-    // },
-    // getSrc(item) {
-    //   // const images = require.context('../assets/images/cards-icon/', false, /\.png$/);
-    //   if (item === 'LUK') {
-    //     this.link = '../assets/images/cards-icon/LUK.svg';
-    //   }
-    //   if (item === 'GPM') {
-    //     this.link = '../assets/images/cards-icon/GPM.svg';
-    //   }
-    //   if (item === 'GPO') {
-    //     this.link = '../assets/images/cards-icon/GPO.svg';
-    //   }
-    //   if (item === 'LUK') {
-    //     this.link = '../assets/images/cards-icon/LUK.svg';
-    //   }
-    //   if (item === 'NNK') {
-    //     this.link = '../assets/images/cards-icon/NNK.svg';
-    //   }
-    //   if (item === 'PPR') {
-    //     this.link = '../assets/images/cards-icon/PPR.svg';
-    //   }
-
-    //   console.log(this.link);
-    //   return this.link;
-    // },
+    getValue(item) {
+      if (item.length < 1) {
+        return 0;
+      }
+      const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
+      const consumption = item.reduce((accumulator, el) => accumulator + el.consumption, 0);
+      return totalSumm - consumption;
+    },
 
   },
 };
