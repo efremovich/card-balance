@@ -286,7 +286,6 @@ export default {
       max,
       products,
       mqShallShowLeftSidebar,
-      // getImage,
     };
   },
   data() {
@@ -295,13 +294,7 @@ export default {
       zero: 0,
     };
   },
-  // computed: {
-  //   getImage(value) {
-  //     const address = `require(../assets/images/cards-icon/${value}.svg)`;
-  //     return address;
-  //   },
 
-  // },
   methods: {
     getMaxValue(item) {
       if (item.length < 1) {
@@ -329,9 +322,6 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-// .ecommerce-card {
-//   max-width: 80% !important;
-// }
 
 .card {
   display: flex;

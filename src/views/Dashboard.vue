@@ -37,7 +37,7 @@
                 </h3>
                 <v-select
                   v-model="selected"
-                  :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                  :clearable="false"
                   label="number"
                   :options="option"
                   class="w-100 mt-1 mb-1"

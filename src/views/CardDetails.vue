@@ -347,14 +347,20 @@
         </b-tabs>
       </b-card>
     </div>
-    <div v-esle>
-      <b-button
-        class="mr-1 mb-1"
-        variant="success"
-        :disabled="servicesLength"
-        @click="addLimit">
-        Добавить лимит
-      </b-button>
+    <div
+      v-else>
+      <div
+        v-if="cardData.data.limits.length<1"
+        :key="cardData.data.limits.length">
+        <h6>Для добавления лимита нажмите кнопку</h6>
+        <b-button
+          class="mr-1 mb-1 position-absolute"
+          variant="success"
+          :disabled="servicesLength"
+          @click="addLimit">
+          Добавить лимит
+        </b-button>
+      </div>
     </div>
   </div>
 </template>
