@@ -1,10 +1,11 @@
 <template>
-  <div style="height: inherit">
+  <div v-if="!loading">
     <b-overlay
-      spinner-variant="primary"
-      variant="transparent"
+      :show="loading"
+      spinner-variant="dark"
+      spinner-type="spiner"
       spinner-medium
-      rounded="md">
+      rounded="lg">
       <div class="ecommerce-searchbar mt-1 mb-1">
         <b-row>
           <b-col cols="12">
@@ -152,7 +153,7 @@ export default {
   setup() {
     const filters = ref('');
     const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
-
+    const loading = ref(false);
     const { itemView, itemViewOptions, totalProducts } = useShopUi();
 
     const getPopularityColor = (num) => {
@@ -168,9 +169,10 @@ export default {
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
 
     const fetchShopProducts = () => {
+      loading.value = true;
       useJwt.getCardsDate().then((response) => {
         products.value = response.data;
-
+        loading.value = false;
         if (filters.value !== '') {
           products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
         }
@@ -191,6 +193,7 @@ export default {
       toggleProductInWishlist,
       handleCartActionClick,
       products,
+      loading,
       mqShallShowLeftSidebar,
     };
   },

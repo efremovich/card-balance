@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div
+    v-if="download">
     <div class="column">
       <div class="row">
         <b-col md="6">
@@ -61,49 +62,48 @@
             </b-card-actions>
           </b-overlay>
         </b-col>
-
-        <b-col
-          v-if="currentConsumptionDynamic.consumptionData.this_month !== 0 || currentConsumptionDynamic.consumptionData.this_month !==null"
-          md="6">
-          <b-overlay
-            :show="showLoading"
-            variant="black"
-            spinner-variant="primary"
-            blur="0"
-            opacity=".75"
-            rounded="sm">
-            <b-card-actions
-              v-if="currentConsumptionDynamic.consumptionData.this_month !== 0"
-              ref="expenses"
-              title="Расход за текущий месяц:"
-              action-refresh
-              @refresh="refreshExpenses('expenses')">
-              <hr>
-              <div class="d-flex justify-content-between">
-                <h4>{{ getMonthName(-1) | title }}:</h4>
-                <h4 class="text-danger">
-                  {{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
-                    style: 'currency',
-                    currency: 'RUB'
-                  }) }}
-                </h4>
-              </div>
-              <div class="d-flex justify-content-between align-items-end">
-                <h4>Последние изменения <br> по договору:</h4>
-
-                <p>{{ currentConsumptionDynamic.consumptionData }}</p>
-                <h4 class="text-info">
-                  {{ userData.contract.updated | formatDate }}
-                </h4>
-              </div>
-              <b-table
-                hover
-                responsive
-                :items="currentConsumption.currentConsumption"
-                :fields="fields" />
-            </b-card-actions>
-          </b-overlay>
-        </b-col>
+        <div v-if="currentConsumptionDynamic !== null">
+          <b-col
+            v-if="currentConsumptionDynamic.consumptionData.this_month !== 0 || currentConsumptionDynamic.consumptionData.this_month !==null"
+            md="6">
+            <b-overlay
+              :show="showLoading"
+              variant="black"
+              spinner-variant="primary"
+              blur="0"
+              opacity=".75"
+              rounded="sm">
+              <b-card-actions
+                v-if="currentConsumptionDynamic.consumptionData.this_month !== 0"
+                ref="expenses"
+                title="Расход за текущий месяц:"
+                action-refresh
+                @refresh="refreshExpenses('expenses')">
+                <hr>
+                <div class="d-flex justify-content-between">
+                  <h4>{{ getMonthName(-1) | title }}:</h4>
+                  <h4 class="text-danger">
+                    {{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
+                      style: 'currency',
+                      currency: 'RUB'
+                    }) }}
+                  </h4>
+                </div>
+                <div class="d-flex justify-content-between align-items-end">
+                  <h4>Последние изменения <br> по договору:</h4>
+                  <h4 class="text-info">
+                    {{ userData.contract.updated | formatDate }}
+                  </h4>
+                </div>
+                <b-table
+                  hover
+                  responsive
+                  :items="currentConsumption.currentConsumption"
+                  :fields="fields" />
+              </b-card-actions>
+            </b-overlay>
+          </b-col>
+        </div>
 
         <!-- <b-col md="6">
           <b-overlay
@@ -315,7 +315,7 @@
 
       <!--Statistics -->
       <b-overlay
-        v-if="currentConsumptionDynamic.consumptionData.this_month !== 0 && currentConsumptionDynamic.consumptionData.last_month !== 0 && currentConsumptionDynamic.consumptionData.other_month !== 0"
+        v-if="currentConsumptionDynamic !== null && currentConsumptionDynamic.consumptionData.this_month !== 0 && currentConsumptionDynamic.consumptionData.last_month !== 0 && currentConsumptionDynamic.consumptionData.other_month !== 0"
         :show="showLoading"
         variant="black"
         spinner-variant="primary"
@@ -475,6 +475,7 @@ export default {
       consumptionDinamic: null,
       currentConsumptionDynamic: null,
       option: [],
+      download: false,
       showLoading: false,
       selected: null,
       fields: [
@@ -598,16 +599,6 @@ export default {
     },
   },
 
-  beforeCreate() {
-    useJwt.getBalance().then((response) => {
-      if (response.data.status) {
-        this.$store.dispatch('user/getBalance', response.data).then(() => {
-          this.cardBalance = response.data;
-        });
-      }
-    });
-  },
-
   created() {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
@@ -618,19 +609,13 @@ export default {
         });
       }
     });
-  },
 
-  mounted() {
-    useJwt.getConsumptionDinamic().then((response) => {
+    useJwt.getBalance().then((response) => {
       if (response.data.status) {
-        this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
-          this.currentConsumptionDynamic = response.data;
+        this.$store.dispatch('user/getBalance', response.data).then(() => {
+          this.cardBalance = response.data;
+          this.download = true;
         });
-      }
-    });
-    useJwt.getCardStatistic().then((response) => {
-      if (response.data.status) {
-        this.statisticsData = response.data;
       }
     });
 
@@ -639,6 +624,22 @@ export default {
         this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
           this.currentConsumption = response.data;
         });
+      }
+    });
+
+    useJwt.getConsumptionDinamic().then((response) => {
+      if (response.data.status) {
+        this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
+          this.currentConsumptionDynamic = response.data;
+        });
+      }
+    });
+  },
+
+  mounted() {
+    useJwt.getCardStatistic().then((response) => {
+      if (response.data.status) {
+        this.statisticsData = response.data;
       }
     });
 

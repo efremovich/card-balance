@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div
+    v-if="download">
     <div
       v-if="cardData.data.limits.length>0">
       <b-card>
@@ -461,7 +462,7 @@ export default {
     const units = ref([]);
     const periods = ref([]);
     const services = ref([]);
-
+    const download = ref(false);
     const quantity = ref(null);
     const start = ref(null);
     const end = ref(null);
@@ -599,8 +600,10 @@ export default {
     });
 
     const fetchProduct = () => {
+      // download.value = false;
       const { route } = useRouter();
       cardDate(route.value.params.card_number);
+      download.value = true;
     };
 
     fetchProduct();
@@ -614,6 +617,7 @@ export default {
     return {
       product,
       // labelSelected,
+      download,
       cardData,
       value,
       transactions,
