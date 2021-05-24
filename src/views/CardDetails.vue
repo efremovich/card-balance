@@ -105,7 +105,6 @@
             </b-button>
 
             <div
-              :key="render"
               class="d-flex flex-nowrap column ">
               <b-col
                 md="7"
@@ -181,29 +180,38 @@
               <b-col
                 md="5"
                 class="border">
-                <b-card-actions
-                  ref="cardAction"
-                  action-refresh
-                  class="pl-1"
-                  @refresh="refreshLimits('cardAction')">
-                  <h4>Текущие лимиты по карте:</h4>
-                  <hr>
-                  <template
-                    v-for="limit in cardData.data.limits">
-                    <div :key="limit.limit_id">
-                      <h4>
-                        Вид топлива:
-                        {{ selectedService(limit.limit_services) }}
-                      </h4>
-                      <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
-                      <h4>
-                        Остаток: {{ limit.value - limit.consumption }} литров.
-                      </h4>
+                <b-overlay
+                  :show="showLoading"
+                  variant="black"
+                  spinner-variant="primary"
+                  blur="0"
+                  opacity=".75"
+                  rounded="sm">
+                  <b-card-actions
+                    ref="limits"
+                    action-refresh
+                    show
+                    class="pl-1"
+                    @refresh="refreshLimits('limits')">
+                    <h4>Текущие лимиты по карте:</h4>
+                    <hr>
+                    <template
+                      v-for="limit in cardData.data.limits">
+                      <div :key="limit.limit_id">
+                        <h4>
+                          Вид топлива:
+                          {{ selectedService(limit.limit_services) }}
+                        </h4>
+                        <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
+                        <h4>
+                          Остаток: {{ limit.value - limit.consumption }} литров.
+                        </h4>
 
-                      <hr>
-                    </div>
-                  </template>
-                </b-card-actions>
+                        <hr>
+                      </div>
+                    </template>
+                  </b-card-actions>
+                </b-overlay>
               </b-col>
             </div>
             <div class="d-flex justify-content-around w-90 position-sticky bottom">
@@ -376,6 +384,7 @@ import {
   BImg,
   BTabs,
   BProgress,
+  BOverlay,
   BCol,
   BTab,
   BFormInput,
@@ -418,6 +427,7 @@ export default {
     BCol,
     BLink,
     vSelect,
+    BOverlay,
     // VueApexCharts,
     // formatDate,
     BCardActions,
@@ -585,6 +595,7 @@ export default {
       if (response.data.status) {
         cardData.value = response.data;
       }
+      return cardData.value;
     });
 
     const fetchProduct = () => {
@@ -592,11 +603,12 @@ export default {
       cardDate(route.value.params.card_number);
     };
 
+    fetchProduct();
     getAllTransactions();
     getAllService();
     getAllPeriods();
     getAllUnits();
-    fetchProduct();
+
     // cardDate();
     // label();
     return {
@@ -633,14 +645,14 @@ export default {
     return {
       newLimit: {},
       required,
-      render: 0,
+      showLoading: false,
 
     };
   },
 
   computed: {
     servicesLength() {
-      return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el.length === 0);
+      return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
     },
   },
 
@@ -658,6 +670,29 @@ export default {
 
     getRandom() {
       return Math.floor(Math.random() * 10000);
+    },
+
+    showToast() {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: 'Уведомление',
+          icon: 'BellIcon',
+          text: '🙄 Данные обновить не удалось. Попробуйте позже, а мы пока починим 👨‍🔧',
+        },
+      });
+    },
+
+    refreshLimits(card) {
+      useJwt.getCardDate(this.cardData.data.number).then((response) => {
+        if (response.data.status) {
+          this.cardData = response.data;
+          this.$refs[card].showLoading = false;
+        } else {
+          //  this.showLoading = false;
+          this.showToast();
+        }
+      });
     },
 
     newLimitsData() {
@@ -713,6 +748,9 @@ export default {
     },
 
     selectedService(arrService) {
+      if (arrService === null) {
+        return '';
+      }
       let label = '';
       // eslint-disable-next-line no-return-assign
       arrService.forEach((el) => (label += `${this.labelService[el]}, `));

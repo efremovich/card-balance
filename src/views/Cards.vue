@@ -43,7 +43,6 @@
                 {{ product.number }}
               </h5>
             </div>
-
             <div
               class="d-flex flex-row flex-nowrap justify-content-around mt-2">
               <b-button-group>
@@ -219,7 +218,6 @@ export default {
       const consumption = item.reduce((accumulator, el) => accumulator + el.consumption, 0);
       return totalSumm - consumption;
     },
-
   },
 };
 </script>
@@ -262,7 +260,7 @@ export default {
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 25px 0 rgba(white, 0.25);
+    box-shadow: 0 4px 25px 0 rgba(black, 0.25);
   }
 }
 

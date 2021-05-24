@@ -63,7 +63,7 @@
         </b-col>
 
         <b-col
-          v-if="currentConsumptionDynamic.consumptionData.this_month !== 0"
+          v-if="currentConsumptionDynamic.consumptionData.this_month !== 0 || currentConsumptionDynamic.consumptionData.this_month !==null"
           md="6">
           <b-overlay
             :show="showLoading"
@@ -90,6 +90,8 @@
               </div>
               <div class="d-flex justify-content-between align-items-end">
                 <h4>Последние изменения <br> по договору:</h4>
+
+                <p>{{ currentConsumptionDynamic.consumptionData }}</p>
                 <h4 class="text-info">
                   {{ userData.contract.updated | formatDate }}
                 </h4>
@@ -313,6 +315,7 @@
 
       <!--Statistics -->
       <b-overlay
+        v-if="currentConsumptionDynamic.consumptionData.this_month !== 0 && currentConsumptionDynamic.consumptionData.last_month !== 0 && currentConsumptionDynamic.consumptionData.other_month !== 0"
         :show="showLoading"
         variant="black"
         spinner-variant="primary"
@@ -472,6 +475,7 @@ export default {
       consumptionDinamic: null,
       currentConsumptionDynamic: null,
       option: [],
+      showLoading: false,
       selected: null,
       fields: [
         {
@@ -594,6 +598,16 @@ export default {
     },
   },
 
+  beforeCreate() {
+    useJwt.getBalance().then((response) => {
+      if (response.data.status) {
+        this.$store.dispatch('user/getBalance', response.data).then(() => {
+          this.cardBalance = response.data;
+        });
+      }
+    });
+  },
+
   created() {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
@@ -611,7 +625,6 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
           this.currentConsumptionDynamic = response.data;
-          // console.log(this.currentConsumptionDynamic);
         });
       }
     });
@@ -629,13 +642,13 @@ export default {
       }
     });
 
-    useJwt.getBalance().then((response) => {
-      if (response.data.status) {
-        this.$store.dispatch('user/getBalance', response.data).then(() => {
-          this.cardBalance = response.data;
-        });
-      }
-    });
+    // useJwt.getBalance().then((response) => {
+    //   if (response.data.status) {
+    //     this.$store.dispatch('user/getBalance', response.data).then(() => {
+    //       this.cardBalance = response.data;
+    //     });
+    //   }
+    // });
   },
 
   beforeMount() {
