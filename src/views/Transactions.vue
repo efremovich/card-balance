@@ -385,9 +385,9 @@ export default {
         .filter((f) => f.sortable)
         .map((f) => ({ text: f.label, value: f.key }));
     },
-    viewStatus() {
-      return this.cardStatus[this.items.card_status];
-    },
+    // viewStatus() {
+    //   return this.cardStatus[this.items.card_status];
+    // },
 
   },
 
@@ -420,6 +420,7 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
+          console.log(this.transactions);
           this.totalRows = this.transactions.data.length;
         }
         this.loadDone = false;

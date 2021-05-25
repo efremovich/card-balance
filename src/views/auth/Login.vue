@@ -201,7 +201,7 @@ export default {
                           || userData.account.name}`,
                         icon: 'CoffeeIcon',
                         variant: 'success',
-                        text: `Добро пожаловать, ${userData.account.role}!`,
+                        text: `Добро пожаловать, ${userData.data}!`,
                       },
                     });
                   })

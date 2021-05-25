@@ -30,7 +30,7 @@
           <b-form-input
             id="boomark-search-input"
             v-model="searchQuery"
-            placeholder="Explore Vuexy..."
+            placeholder="Найти"
             autofocus />
         </div>
         <vue-perfect-scrollbar
@@ -60,7 +60,7 @@
           <b-dropdown-item
             v-show="!(filteredData.pages && filteredData.pages.length) && searchQuery"
             disabled>
-            No Results Found.
+            Ничего не найдено.
           </b-dropdown-item>
         </vue-perfect-scrollbar>
       </li>
