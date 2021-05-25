@@ -78,7 +78,6 @@
       </b-card-body>
 
       <b-table
-        :no-border-collapse="noCollapse"
         hover
         :item="request"
         responsive
@@ -192,7 +191,7 @@
 <script>
 import {
   BCard, BTable, BFormGroup,
-  BFormInput, BCardBody, BButton, BInputGroup, BInputGroupAppend, BOverlay, BPagination, BFormSelect,
+  BFormInput, BCardBody, BButton, BInputGroup, BInputGroupAppend, BOverlay, BSpinner, BPagination, BFormSelect,
 } from 'bootstrap-vue';
 import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
@@ -213,6 +212,7 @@ export default {
     BInputGroupAppend,
     vSelect,
     BOverlay,
+    BSpinner,
     BPagination,
     BFormSelect,
 

@@ -57,9 +57,9 @@ export default [
     component: () => import('@/views/documents/Payments.vue'),
     meta: {
       breadcrumb: [
-        { title: 'Главная', url: '/' },
-        { title: 'Документы' },
-        { title: 'Платежи', active: true },
+        { text: 'Главная', url: '/' },
+        { text: 'Документы' },
+        { text: 'Платежи', active: true },
       ],
       rule: 'editor',
     },
@@ -83,9 +83,9 @@ export default [
     component: () => import('@/views/documents/Checks.vue'),
     meta: {
       breadcrumb: [
-        { title: 'Главная', url: '/' },
-        { title: 'Документы' },
-        { title: 'Электронные чеки' },
+        { text: 'Главная', url: '/' },
+        { text: 'Документы' },
+        { text: 'Электронные чеки', active: true },
       ],
       rule: 'editor',
     },
@@ -96,9 +96,9 @@ export default [
     component: () => import('@/views/documents/Requests.vue'),
     meta: {
       breadcrumb: [
-        { title: 'Главная', url: '/' },
-        { title: 'Документы' },
-        { title: 'Заявки', active: true },
+        { text: 'Главная', url: '/' },
+        { text: 'Документы' },
+        { text: 'Заявки', active: true },
       ],
       rule: 'editor',
     },
