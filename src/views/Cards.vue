@@ -1,11 +1,13 @@
 <template>
-  <div v-if="!loading">
-    <b-overlay
-      :show="loading"
-      spinner-variant="dark"
-      spinner-type="spiner"
-      spinner-medium
-      rounded="lg">
+  <b-overlay
+    :show="loading"
+    variant="black"
+    spinner-type="grow"
+    spinner-variant="primary"
+    blur="2px"
+    opacity=".75"
+    rounded="md">
+    <div v-if="!loading">
       <div class="ecommerce-searchbar mt-1 mb-1">
         <b-row>
           <b-col cols="12">
@@ -103,8 +105,8 @@
           </div>
         </b-card>
       </section>
-    </b-overlay>
-  </div>
+    </div>
+  </b-overlay>
 </template>
 
 <script>
