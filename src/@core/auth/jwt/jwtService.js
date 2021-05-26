@@ -144,7 +144,7 @@ export default class JwtService {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/user/${userData.account.uid}`,
+        `/api/user/${userData.account.id}`,
       );
       return response;
     }
@@ -244,11 +244,11 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
-  async getBalance() {
+  async getBalance(params) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/getBalance/${userData.account.contract_id}`,
+        `/api/getBalance/${params}`,
       );
       return response;
     }

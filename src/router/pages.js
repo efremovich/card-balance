@@ -20,9 +20,9 @@ export default [
     component: () => import('@/views/CardDetails.vue'),
     meta: {
       breadcrumb: [
-        { title: 'Главная', url: '/' },
-        { title: 'Карты' },
-        { title: ':card_number' },
+        { text: 'Главная', url: '/' },
+        { text: 'Карты' },
+        // { title:}
       ],
       rule: 'editor',
     },

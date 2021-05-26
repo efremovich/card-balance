@@ -801,7 +801,7 @@ export default {
     BCardHeader,
   },
   setup() {
-    const cardData = ref({});
+    const cardData = ref([]);
     const product = ref(null);
     const value = ref(null);
     const totalRows = ref(null);
@@ -824,9 +824,7 @@ export default {
     const start = ref(null);
     const end = ref(null);
     const contractId = ref(null);
-
     const limits = ref([]);
-
     const llc = ref([]);
     const fields = [
       {
