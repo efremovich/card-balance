@@ -598,7 +598,7 @@ export default {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
           this.ID = this.userData.contract.id;
-          // console.log(this.userData);
+          console.log('Get user', this.ID);
           this.makeOptions();
           // this.getSelected();
         });
@@ -613,11 +613,11 @@ export default {
     });
   },
   mounted() {
-    useJwt.getBalance(this.ID).then((response) => {
+    useJwt.getBalance().then((response) => {
       if (response.data.status) {
         // console.log(this.ID);
         this.cardBalance = response.data;
-        console.log(this.cardBalance);
+        console.log('get balance', this.cardBalance);
         // console.log(this.userData);
       }
     });
@@ -744,7 +744,7 @@ export default {
     },
     onChange() {
       this.showLoading = true;
-      useJwt.changeContract(this.selected)
+      useJwt.changeContract(this.selected.id)
         .then((response) => {
           if (response.status) {
             this.cardBalance = response.data;
