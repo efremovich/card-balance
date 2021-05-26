@@ -1,5 +1,5 @@
-import router from "@/router";
-import jwtDefaultConfig from "@/@core/auth/jwt/jwtDefaultConfig";
+import router from '@/router';
+import jwtDefaultConfig from '@/@core/auth/jwt/jwtDefaultConfig';
 
 export default class JwtService {
   // Will be used by this service for making API calls
@@ -31,7 +31,7 @@ export default class JwtService {
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Add request/response interceptor
@@ -67,21 +67,19 @@ export default class JwtService {
           return retryOriginalRequest;
         }
         if (response && response.status === 403) {
-          if (response.config.url.includes("/api/user/refreshtoken")) {
+          if (response.config.url.includes('/api/user/refreshtoken')) {
             this.deleteToken();
-            router.push({ name: "auth-login", params: { error } });
+            router.push({ name: 'auth-login', params: { error } });
             return Promise.reject(error);
           }
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
   onAccessTokenFetched(accessToken) {
-    this.subscribers = this.subscribers.filter((callback) =>
-      callback(accessToken)
-    );
+    this.subscribers = this.subscribers.filter((callback) => callback(accessToken));
   }
 
   addSubscriber(callback) {
@@ -106,9 +104,9 @@ export default class JwtService {
 
   deleteToken() {
     localStorage.removeItem(this.jwtConfig.storageTokenKeyName);
-    localStorage.removeItem("refreshToken");
-    if (localStorage.getItem("userData")) {
-      localStorage.removeItem("userData");
+    localStorage.removeItem('refreshToken');
+    if (localStorage.getItem('userData')) {
+      localStorage.removeItem('userData');
     }
   }
 
@@ -117,7 +115,7 @@ export default class JwtService {
   }
 
   logout() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       return this.axiosIns
         .post(this.jwtConfig.logoutEndpoint, {
@@ -143,10 +141,10 @@ export default class JwtService {
   }
 
   async getCurrenUser() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/user/${userData.account.uid}`
+        `/api/user/${userData.account.uid}`,
       );
       return response;
     }
@@ -154,32 +152,10 @@ export default class JwtService {
   }
 
   async getCardStatistic() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/card/getcardstatistic/${userData.account.contract_id}`
-      );
-      return response;
-    }
-    return { data: { status: false } };
-  }
-
-  async getCurrentConsumption() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (userData) {
-      const response = await this.axiosIns.get(
-        `/api/getCurrentConsumption/${userData.account.contract_id}`
-      );
-      return response;
-    }
-    return { data: { status: false } };
-  }
-
-  async getConsumptionDinamic() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
-    if (userData) {
-      const response = await this.axiosIns.get(
-        `/api/getConsumptionDinamic/${userData.account.contract_id}`
+        `/api/card/getcardstatistic/${userData.account.contract_id}`,
       );
       return response;
     }
@@ -188,7 +164,7 @@ export default class JwtService {
 
   // ТРАНЗАКЦИ
   async getTransactions(params) {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(`/api/transactions?${params}`);
       return response;
@@ -198,7 +174,7 @@ export default class JwtService {
 
   // ЗАЯВКИ
   async GetRequests(params) {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(`/api/requests?${params}`);
       return response;
@@ -208,9 +184,9 @@ export default class JwtService {
 
   // Все виды топлива
   async getService() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
-      const response = await this.axiosIns.get("/api/services");
+      const response = await this.axiosIns.get('/api/services');
       return response;
     }
     return { data: { status: false } };
@@ -218,9 +194,9 @@ export default class JwtService {
 
   // Все периоды
   async getAllPeriods() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
-      const response = await this.axiosIns.get("/api/limitPeriods");
+      const response = await this.axiosIns.get('/api/limitPeriods');
       return response;
     }
     return { data: { status: false } };
@@ -228,9 +204,9 @@ export default class JwtService {
 
   // Литры или рубли
   async getAllUnits() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
-      const response = await this.axiosIns.get("/api/limitUnits");
+      const response = await this.axiosIns.get('/api/limitUnits');
       return response;
     }
     return { data: { status: false } };
@@ -238,7 +214,7 @@ export default class JwtService {
 
   // Данные по карте
   async getCardDate(params) {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(`/api/card/${params}`);
       return response;
@@ -247,7 +223,7 @@ export default class JwtService {
   }
 
   async getBalance() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(`/api/getBalance/${userData.account.contract_id}`);
       return response;
@@ -255,12 +231,56 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
-  // Все карты
-  async getCards() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+  async getCurrentConsumption() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/cardsAndHolers/${userData.account.contract_id}`
+        `/api/getCurrentConsumption/${userData.account.contract_id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getConsumption(param) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getCurrentConsumption/${param}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getConsumptionDinamic() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getConsumptionDinamic/${userData.account.contract_id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getDynamic(param) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getConsumptionDinamic/${param}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Все карты
+  async getCards() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/cardsAndHolers/${userData.account.contract_id}`,
       );
       return response;
     }
@@ -269,10 +289,10 @@ export default class JwtService {
 
   // Инфо по картам (cards)
   async getCardsDate() {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/cards/${userData.account.contract_id}`
+        `/api/cards/${userData.account.contract_id}`,
       );
       return response;
     }
@@ -280,11 +300,11 @@ export default class JwtService {
   }
 
   async changeContract(id) {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
 
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/changeContract/${userData.account.uid}/${id}`
+        `/api/changeContract/${userData.account.uid}/${id}`,
       );
       return response;
     }

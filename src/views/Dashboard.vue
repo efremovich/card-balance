@@ -71,7 +71,8 @@
             </b-overlay>
           </b-col>
           <b-col
-            v-if="currentConsumptionDynamic !==null && currentConsumptionDynamic.consumptionData.this_month !== 0"
+            v-if="currentConsumption.currentConsumption.length>0"
+            :key="key"
             md="6">
             <b-overlay
               :show="showLoading"
@@ -85,7 +86,6 @@
                 title="Расход за текущий месяц:"
                 action-refresh
                 @refresh="refreshExpenses('expenses')">
-                <hr>
                 <div class="d-flex justify-content-between">
                   <h4>{{ getMonthName(-1) | title }}:</h4>
                   <h4 class="text-danger">
@@ -102,10 +102,41 @@
                   </h4>
                 </div>
                 <b-table
+                  v-if="currentConsumption.currentConsumption.length>0"
                   hover
                   responsive
                   :items="currentConsumption.currentConsumption"
                   :fields="fields" />
+              </b-card-actions>
+            </b-overlay>
+          </b-col>
+          <b-col
+            v-else
+            :key="key"
+            md="6">
+            <b-overlay
+              :show="showLoading"
+              variant="black"
+              spinner-variant="primary"
+              blur="0"
+              opacity=".75"
+              rounded="sm">
+              <b-card-actions
+                ref="expenses"
+                action-refresh
+                @refresh="refreshExpenses('expenses')">
+                <div class="d-flex justify-content-between">
+                  <h4> Расходы за {{ getMonthName(-1) }}:</h4>
+                  <h4>
+                    отсутствуют
+                  </h4>
+                </div>
+                <div class="d-flex justify-content-between align-items-end">
+                  <h4>Последние изменения <br> по договору:</h4>
+                  <h4 class="text-info">
+                    {{ userData.contract.updated | formatDate }}
+                  </h4>
+                </div>
               </b-card-actions>
             </b-overlay>
           </b-col>
@@ -313,7 +344,6 @@
 
         <!--Statistics -->
         <b-overlay
-          v-if="currentConsumptionDynamic !== null && currentConsumptionDynamic.consumptionData.this_month !== 0 && currentConsumptionDynamic.consumptionData.last_month !== 0 && currentConsumptionDynamic.consumptionData.other_month !== 0"
           :show="showLoading"
           variant="black"
           spinner-variant="primary"
@@ -321,6 +351,7 @@
           opacity=".75"
           rounded="sm">
           <b-card-actions
+            v-if="currentConsumptionDynamic !== null"
             ref="consumption"
             action-close
             action-refresh
@@ -373,7 +404,30 @@
                 :series="currentConsumptionDynamic.consumptionSeries" />
             </b-card-body>
           </b-card-actions>
+          <b-card-actions
+            v-else
+            ref="consumption"
+            action-close
+            action-refresh
+            action-collapse
+            title="Динамика потребления"
+            @refresh="refreshConsumption('consumption')">
+            <hr>
+            <b-card-body class="pb-0">
+              <div class="d-flex flex-column mb-3 mix">
+                <h3>Пустота</h3>
+              </div>
+
+              <!-- apex chart -->
+              <vue-apex-charts
+                type="line"
+                height="240"
+                :options="revenueComparisonLine.chartOptions"
+                :series="currentConsumptionDynamic.consumptionSeries" />
+            </b-card-body>
+          </b-card-actions>
         </b-overlay>
+
         <!--end statistic -->
       </div>
 
@@ -469,6 +523,7 @@ export default {
       currentConsumption: null,
       consumptionDinamic: null,
       currentConsumptionDynamic: null,
+      key: 0,
       option: [],
       ID: null,
       download: false,
@@ -597,10 +652,9 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
-          this.ID = this.userData.contract.id;
-          console.log('Get user', this.ID);
+          console.log(this.userData);
           this.makeOptions();
-          // this.getSelected();
+          this.getSelected();
         });
 
         // useJwt.getBalance(this.ID).then((value) => {
@@ -615,10 +669,7 @@ export default {
   mounted() {
     useJwt.getBalance().then((response) => {
       if (response.data.status) {
-        // console.log(this.ID);
         this.cardBalance = response.data;
-        console.log('get balance', this.cardBalance);
-        // console.log(this.userData);
       }
     });
     useJwt.getCurrentConsumption().then((response) => {
@@ -675,9 +726,9 @@ export default {
         month: 'long',
       });
     },
-    // getSelected() {
-    //   this.selected = this.userData.contract.number;
-    // },
+    getSelected() {
+      this.selected = this.userData.contract.number;
+    },
     makeOptions() {
       this.userData.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });
@@ -705,9 +756,10 @@ export default {
       });
     },
     refreshExpenses(card) {
-      useJwt.getCurrentConsumption().then((response) => {
+      useJwt.getConsumption(this.selected.id).then((response) => {
         if (response.data.status) {
           this.currentConsumption = response.data;
+          console.log(this.currentConsumption);
           this.$refs[card].showLoading = false;
         } else {
           this.showToast();
@@ -724,23 +776,38 @@ export default {
         }
       });
     },
-    refreshConsumption(card) {
-      useJwt.getConsumptionDinamic().then((response) => {
+
+    refreshConsumptions() {
+      useJwt.getConsumption(this.selected.id).then((response) => {
         if (response.data.status) {
-          this.currentConsumptionDynamic = response.data;
-          this.$refs[card].showLoading = false;
+          this.currentConsumption = response.data;
         } else {
           this.showToast();
         }
       });
     },
-    // COLOR
-    getPopularityColor(num) {
-      if (Number(num) > 90) return 'success';
-      if (Number(num) > 70) return 'warning';
-      if (Number(num) >= 50) return 'info';
-      if (Number(num) < 50) return 'danger';
-      return 'primary';
+
+    refreshData() {
+      useJwt.getDynamic(this.selected.id).then((response) => {
+        if (response.data.status) {
+          this.currentConsumptionDynamic = response.data;
+          console.log(this.currentConsumptionDynamic);
+        } else {
+          this.showToast();
+        }
+      });
+    },
+
+    refreshConsumption(card) {
+      useJwt.getDynamic(this.selected.id).then((response) => {
+        if (response.data.status) {
+          this.currentConsumptionDynamic = response.data;
+          this.$refs[card].showLoading = false;
+          console.log(this.currentConsumptionDynamic);
+        } else {
+          this.showToast();
+        }
+      });
     },
     onChange() {
       this.showLoading = true;
@@ -748,17 +815,12 @@ export default {
         .then((response) => {
           if (response.status) {
             this.cardBalance = response.data;
+            this.refreshConsumptions();
             this.showLoading = false;
+            this.refreshData();
           }
         });
     },
-    // getLimitResidual(limit) {
-    //   if (Number(limit.value) > 0 && Number(limit.consumption) > 0) {
-    //     const limitResidual = 100 - Number(limit.consumption) / (Number(limit.value) / 100);
-    //     return limitResidual;
-    //   }
-    //   return 5;
-    // },
   },
 };
 </script>
