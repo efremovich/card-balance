@@ -13,18 +13,19 @@ export default [
     name: 'cards',
     component: () => import('@/views/Cards.vue'),
   },
-
   {
     path: '/card/:card_number',
     name: 'card',
     component: () => import('@/views/CardDetails.vue'),
     meta: {
-      breadcrumb: [
-        { text: 'Главная', url: '/' },
-        { text: 'Топливные карты' },
-        // { title:}
-      ],
+      pageTitle: 'Карта',
+      breadcrumb: [{ text: 'Топливные карты', to: '/cards' }],
       rule: 'editor',
+    },
+    beforeEnter(to, _, next) {
+      to.meta.breadcrumb.push({ text: to.params.card_number, active: true });
+      // to.meta.pageTitle = `Карта: ${to.params.card_number}`;
+      next();
     },
   },
 
