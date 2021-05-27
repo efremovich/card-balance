@@ -49,14 +49,17 @@
               :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
           </b-link>
           <div class="item-options">
-            <div class="item-wrapper">
-              <h6 class="item-price">
-                PIN: {{ product.pin }}
-              </h6>
-              <h5 class="item-price">
-                {{ product.number }}
-              </h5>
-            </div>
+            <b-link
+              :to="{ name: 'card', params: { card_number: product.number } }">
+              <div class="item-wrapper">
+                <h6 class="item-price">
+                  PIN: {{ product.pin }}
+                </h6>
+                <h5 class="item-price">
+                  {{ product.number }}
+                </h5>
+              </div>
+            </b-link>
             <div
               class="d-flex flex-row flex-nowrap justify-content-around mt-2">
               <b-button-group>
@@ -131,14 +134,17 @@
               class="card-img-top"
               :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
           </b-link>
-          <div class="item-wrapper abs">
-            <h6 class="item-price">
-              PIN: {{ product.pin }}
-            </h6>
-            <h5 class="item-price">
-              {{ product.number }}
-            </h5>
-          </div>
+          <b-link
+            :to="{ name: 'card', params: { card_number: product.number } }">
+            <div class="item-wrapper abs">
+              <h6 class="item-price">
+                PIN: {{ product.pin }}
+              </h6>
+              <h5 class="item-price">
+                {{ product.number }}
+              </h5>
+            </div>
+          </b-link>
           <div class="d-flex flex-column w-60 mr-1 ml-1">
             <label> Остаток: {{ getValue(product.limits) }}</label>
             <div

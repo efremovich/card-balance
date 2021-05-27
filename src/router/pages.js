@@ -23,8 +23,10 @@ export default [
       rule: 'editor',
     },
     beforeEnter(to, _, next) {
+      to.meta.breadcrumb = [
+        { text: 'Топливные карты', to: '/cards' },
+      ];
       to.meta.breadcrumb.push({ text: to.params.card_number, active: true });
-      // to.meta.pageTitle = `Карта: ${to.params.card_number}`;
       next();
     },
   },
