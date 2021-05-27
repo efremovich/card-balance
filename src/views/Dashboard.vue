@@ -193,7 +193,6 @@
                 action-collapse
                 title="Данные организации:"
                 @refresh="refreshInformation('information')">
-                <hr>
                 <div class="d-flex flex-column">
                   <h3>Название: &#8195; {{ userData.company.full_name }}</h3>
                   <h3>ИНН: &#8195; {{ userData.company.inn }}</h3>
@@ -219,7 +218,6 @@
                 title="Статистика по картам"
                 action-refresh
                 @refresh="refreshCardStatistic('cardStatistic')">
-                <hr>
                 <div class="mt-1">
                   <div
 
@@ -358,7 +356,6 @@
             action-collapse
             title="Динамика потребления"
             @refresh="refreshConsumption('consumption')">
-            <hr>
             <b-card-body class="pb-0">
               <div class="d-flex flex-column mb-3 mix">
                 <div class="mr-2 mt-1">
@@ -412,7 +409,6 @@
             action-collapse
             title="Динамика потребления"
             @refresh="refreshConsumption('consumption')">
-            <hr>
             <b-card-body class="pb-0">
               <div class="d-flex flex-column mb-3 mix">
                 <h3>Пустота</h3>
@@ -652,7 +648,7 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
-          console.log(this.userData);
+          // console.log(this.userData);
           this.makeOptions();
           this.getSelected();
         });
@@ -670,6 +666,7 @@ export default {
     useJwt.getBalance().then((response) => {
       if (response.data.status) {
         this.cardBalance = response.data;
+        // console.log(this.cardBalance);
       }
     });
     useJwt.getCurrentConsumption().then((response) => {
@@ -759,7 +756,6 @@ export default {
       useJwt.getConsumption(this.selected.id).then((response) => {
         if (response.data.status) {
           this.currentConsumption = response.data;
-          console.log(this.currentConsumption);
           this.$refs[card].showLoading = false;
         } else {
           this.showToast();
@@ -777,21 +773,22 @@ export default {
       });
     },
 
-    refreshConsumptions() {
-      useJwt.getConsumption(this.selected.id).then((response) => {
+    refreshConsumptions(param) {
+      useJwt.getConsumption(param).then((response) => {
         if (response.data.status) {
           this.currentConsumption = response.data;
+          // console.log(this.currentConsumption);
         } else {
           this.showToast();
         }
       });
     },
 
-    refreshData() {
-      useJwt.getDynamic(this.selected.id).then((response) => {
+    refreshData(param) {
+      useJwt.getDynamic(param).then((response) => {
         if (response.data.status) {
           this.currentConsumptionDynamic = response.data;
-          console.log(this.currentConsumptionDynamic);
+          // console.log(this.currentConsumptionDynamic);
         } else {
           this.showToast();
         }
@@ -815,9 +812,10 @@ export default {
         .then((response) => {
           if (response.status) {
             this.cardBalance = response.data;
-            this.refreshConsumptions();
+            console.log(this.cardBalance);
+            this.refreshConsumptions(this.selected.id);
             this.showLoading = false;
-            this.refreshData();
+            this.refreshData(this.selected.id);
           }
         });
     },

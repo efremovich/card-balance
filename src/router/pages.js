@@ -21,7 +21,7 @@ export default [
     meta: {
       breadcrumb: [
         { text: 'Главная', url: '/' },
-        { text: 'Карты' },
+        { text: 'Топливные карты' },
         // { title:}
       ],
       rule: 'editor',
