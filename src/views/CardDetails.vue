@@ -759,6 +759,7 @@ import {
   VBTooltip,
   BInputGroupAppend,
 } from 'bootstrap-vue';
+// import { onBeforeRouteLeave } from 'vue-router';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import vSelect from 'vue-select';
@@ -801,6 +802,12 @@ export default {
     BCardHeader,
   },
   setup() {
+    // eslint-disable-next-line no-unused-vars
+    // onBeforeRouteLeave((to, from) => {
+    //   // this.getModal();
+    //   console.log('500');
+    //   // return to;
+    // });
     const cardData = ref([]);
     const product = ref(null);
     const value = ref(null);
@@ -905,7 +912,6 @@ export default {
         }
       });
     };
-
     const getAllTransactions = () => {
       firstDayOfMonth.value = getFirstDay();
       lastDay.value = isToday();
@@ -933,6 +939,10 @@ export default {
       }
     };
 
+    // onBeforeRouteLeave = () => {
+    //   this.getModal();
+    //   console.log('10000');
+    // };
     const getAllPeriods = () => {
       useJwt.getAllPeriods().then((response) => {
         if (response.data.status) {
@@ -966,7 +976,6 @@ export default {
     getAllService();
     getAllPeriods();
     getAllUnits();
-
     // cardDate();
     // label();
     return {
@@ -1005,6 +1014,7 @@ export default {
       newLimit: {},
       required,
       showLoading: false,
+      saveChahge: '',
 
     };
   },
@@ -1013,7 +1023,12 @@ export default {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
     },
+
   },
+
+  // beforeDestroy() {
+  //   this.getModal();
+  // },
 
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
@@ -1027,8 +1042,21 @@ export default {
       return empty;
     },
 
-    getRandom() {
-      return Math.floor(Math.random() * 10000);
+    getModal() {
+      this.$bvModal
+        .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
+          title: 'Уведомление',
+          size: 'sm',
+          okVariant: 'primary',
+          okTitle: 'Да',
+          cancelTitle: 'Нет',
+          cancelVariant: 'outline-secondary',
+          hideHeaderClose: false,
+          centered: true,
+        }).then((value) => {
+          this.saveChange = value;
+          return this.saveChahge;
+        });
     },
 
     showToast() {
@@ -1087,6 +1115,9 @@ export default {
         }
         // this.render = this.getRandom();
       });
+    },
+    getRandom() {
+      return Math.floor(Math.random() * 10000);
     },
 
     addLimit() {

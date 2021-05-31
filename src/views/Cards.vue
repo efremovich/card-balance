@@ -423,6 +423,10 @@ export default {
   max-width: 65% !important;
 }
 
+// .card-img-top {
+//   min-height:200px !important;
+// }
+
 .item-img {
   display: flex;
   flex-direction: column;
