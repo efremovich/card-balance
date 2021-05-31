@@ -44,6 +44,7 @@
                   Держатель:
                 </h6>
                 <b-form-input :value="cardData.data.holder" />
+                <p>{{ saveChange }}</p>
               </div>
             </div>
             <div
@@ -802,12 +803,6 @@ export default {
     BCardHeader,
   },
   setup() {
-    // eslint-disable-next-line no-unused-vars
-    // onBeforeRouteLeave((to, from) => {
-    //   // this.getModal();
-    //   console.log('500');
-    //   // return to;
-    // });
     const cardData = ref([]);
     const product = ref(null);
     const value = ref(null);
@@ -938,11 +933,6 @@ export default {
           });
       }
     };
-
-    // onBeforeRouteLeave = () => {
-    //   this.getModal();
-    //   console.log('10000');
-    // };
     const getAllPeriods = () => {
       useJwt.getAllPeriods().then((response) => {
         if (response.data.status) {
@@ -1014,7 +1004,7 @@ export default {
       newLimit: {},
       required,
       showLoading: false,
-      saveChahge: '',
+      saveChange: '',
 
     };
   },
@@ -1025,10 +1015,6 @@ export default {
     },
 
   },
-
-  // beforeDestroy() {
-  //   this.getModal();
-  // },
 
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
@@ -1055,8 +1041,8 @@ export default {
           centered: true,
         }).then((value) => {
           this.saveChange = value;
-          return this.saveChahge;
         });
+      return this.saveChange;
     },
 
     showToast() {

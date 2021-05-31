@@ -420,7 +420,6 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          
           this.totalRows = this.transactions.data.length;
           console.log(this.transactions);
         }

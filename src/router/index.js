@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 
 // Routes
 import { canNavigate } from '@/libs/acl/routeProtection';
+// import { CardDetails } from '@/views/CardDetails.vue';
 import {
   isUserLoggedIn,
   getUserData,
@@ -45,6 +46,19 @@ router.beforeEach((to, _, next) => {
   }
 
   return next();
+});
+Vue.mixin({
+  beforeRouteLeave(to, from, next) {
+    // eslint-disable-next-line eqeqeq
+    if (from !== 'cards') {
+      // this.getModal();
+      console.log(from);
+      next(true);
+    } else {
+      this.getModal();
+      next(false);
+    }
+  },
 });
 
 export default router;

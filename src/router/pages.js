@@ -30,10 +30,6 @@ export default [
       to.meta.breadcrumb.push({ text: to.params.card_number, active: true });
       next();
     },
-    beforeRouteLeave(to, from, next) {
-      this.getModal();
-      next(false);
-    },
 
   },
 
