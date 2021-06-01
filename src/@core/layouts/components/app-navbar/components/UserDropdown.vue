@@ -24,7 +24,7 @@
       </b-avatar>
     </template>
 
-    <b-dropdown-item :to="{ name: 'pages-profile' }">
+    <b-dropdown-item :to="{ name: 'profile' }">
       <link class="d-flex align-items-center">
       <feather-icon
         size="16"
@@ -63,7 +63,7 @@
     <b-dropdown-divider />
 
     <b-dropdown-item
-      :to="{ name: 'pages-account-setting' }"
+      :to="{ name: 'setting' }"
       link-class="d-flex align-items-center">
       <feather-icon
         size="16"

@@ -44,7 +44,6 @@
                   Держатель:
                 </h6>
                 <b-form-input :value="cardData.data.holder" />
-                <p>{{ saveChange }}</p>
               </div>
             </div>
             <div
@@ -60,12 +59,12 @@
               </b-button>
               <div class="mb-2">
                 <h6>
-                  Выдана: {{ cardData.data.limits[0].CreatedAt | formatDate }}
+                  Выдана: {{ cardData.data.limits[0].CreatedAt | formatOnlyDate }}
                 </h6>
               </div>
               <div class="mb-2">
                 <h6>
-                  Действует до: {{ cardData.data.expiry_date | formatDate }}
+                  Действует до: {{ cardData.data.expiry_date | formatOnlyDate }}
                 </h6>
               </div>
               <div class="mb-2">
@@ -112,7 +111,6 @@
                 @click="addLimit">
                 Добавить лимит
               </b-button>
-
               <div
                 class="d-flex flex-nowrap column ">
                 <b-col
@@ -121,7 +119,6 @@
                   <validation-observer
                     ref="limitsForm">
                     <b-form
-
                       @submit.prevent="newLimitsData">
                       <template
                         v-for="(limit,index) in cardData.data.limits">
@@ -145,9 +142,7 @@
                                 label="full_name"
                                 :reduce="(services) => `${services.id}`"
                                 :options="services" />
-
                               <small
-
                                 class="text-danger">{{ errors[0] }}</small>
                             </b-form-group>
                           </validation-provider>
@@ -155,7 +150,6 @@
                             <h6 class="mx-auto">
                               Лимит
                             </h6>
-
                             <div class="ml-1 mw-20">
                               <b-form-input
                                 v-model="limit.value" />
@@ -804,6 +798,7 @@ export default {
   },
   setup() {
     const cardData = ref([]);
+    const wasChanged = ref(false);
     const product = ref(null);
     const value = ref(null);
     const totalRows = ref(null);
@@ -827,7 +822,6 @@ export default {
     const end = ref(null);
     const contractId = ref(null);
     const limits = ref([]);
-    const llc = ref([]);
     const fields = [
       {
         key: 'service.full_name',
@@ -950,10 +944,28 @@ export default {
     const cardDate = (params) => useJwt.getCardDate(params).then((response) => {
       if (response.data.status) {
         cardData.value = response.data;
+        // console.log(JSON.stringify(otr.data));
+        // if (JSON.stringify(otr.data) === JSON.stringify(cardData.value.data)) {
+        //   originalSource.value = false;
+        // } else (originalSource.value = true);
       }
       return cardData.value;
     });
 
+    // watch: {
+    //   cardData: function (newValue, oldValue) {
+    //     if (oldValue !== newValue) {
+    //     wasChanged.value = true;
+    //   } else wasChanged.value = false;
+    //   }
+    // }
+
+    // watch(cardData, (newValue, oldValue) => {
+    //   console.log(cardData.value);
+    //   if (oldValue !== [] && oldValue !== newValue) {
+    //     wasChanged.value = true;
+    //   } else wasChanged.value = false;
+    // });
     const fetchProduct = () => {
       // download.value = false;
       const { route } = useRouter();
@@ -970,7 +982,7 @@ export default {
     // label();
     return {
       product,
-      // labelSelected,
+      // labelSelected
       download,
       cardData,
       value,
@@ -996,7 +1008,7 @@ export default {
       services,
       periodLabel,
       limits,
-      llc,
+      wasChanged,
     };
   },
   data() {
@@ -1004,8 +1016,8 @@ export default {
       newLimit: {},
       required,
       showLoading: false,
-      saveChange: '',
-
+      saveChange: null,
+      haveChange: this.cardData.value.data,
     };
   },
 
@@ -1013,9 +1025,7 @@ export default {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
     },
-
   },
-
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
     labelSelected() {
@@ -1028,22 +1038,31 @@ export default {
       return empty;
     },
 
-    getModal() {
-      this.$bvModal
-        .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
-          title: 'Уведомление',
-          size: 'sm',
-          okVariant: 'primary',
-          okTitle: 'Да',
-          cancelTitle: 'Нет',
-          cancelVariant: 'outline-secondary',
-          hideHeaderClose: false,
-          centered: true,
-        }).then((value) => {
-          this.saveChange = value;
-        });
-      return this.saveChange;
-    },
+    // watch: {
+    //   thaveChange: {
+    //     handler(val, oldVal) {
+    //       if (oldVal !== val) {
+    //         console.log('a thing changed');
+    //       }
+    //     },
+    //     deep: true,
+    //   },
+    // },
+    // getModal() {
+    //   this.$bvModal
+    //     .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
+    //       title: 'Уведомление',
+    //       size: 'sm',
+    //       okVariant: 'primary',
+    //       okTitle: 'Да',
+    //       cancelTitle: 'Нет',
+    //       cancelVariant: 'outline-secondary',
+    //       hideHeaderClose: false,
+    //       centered: true,
+    //     }).then((value) => {
+    //       this.saveChange = value;
+    //     });
+    // },
 
     showToast() {
       this.$toast({
@@ -1130,7 +1149,7 @@ export default {
       let label = '';
       // eslint-disable-next-line no-return-assign
       arrService.forEach((el) => (label += `${this.labelService[el]}, `));
-      return label;
+      return label.split('').slice(0, -2).join('');
     },
 
     // selectedService(arrService) {

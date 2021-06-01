@@ -1,9 +1,10 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 
 // Routes
 import { canNavigate } from '@/libs/acl/routeProtection';
-// import { CardDetails } from '@/views/CardDetails.vue';
+// import { getModal } from '@/views/CardDetails.vue';
 import {
   isUserLoggedIn,
   getUserData,
@@ -49,14 +50,35 @@ router.beforeEach((to, _, next) => {
 });
 Vue.mixin({
   beforeRouteLeave(to, from, next) {
-    // eslint-disable-next-line eqeqeq
-    if (from !== 'cards') {
-      // this.getModal();
-      console.log(from);
-      next(true);
+    if (from.name === 'card') {
+      this.$bvModal
+        .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
+          title: 'Уведомление',
+          size: 'sm',
+          okVariant: 'primary',
+          okTitle: 'Да',
+          cancelTitle: 'Нет',
+          cancelVariant: 'outline-secondary',
+          hideHeaderClose: false,
+          centered: true,
+        }).then((value) => {
+          this.saveChange = value;
+          if (this.saveChange === true) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Данные сохранены',
+                icon: 'EditIcon',
+                variant: 'success',
+              },
+            });
+          }
+          if (this.saveChange !== null) {
+            next(true);
+          } else next(false);
+        });
     } else {
-      this.getModal();
-      next(false);
+      next(true);
     }
   },
 });

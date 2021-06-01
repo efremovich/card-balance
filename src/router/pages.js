@@ -40,6 +40,18 @@ export default [
   },
 
   {
+    path: 'setting',
+    name: 'setting',
+    component: () => import('@/views/Settings.vue'),
+  },
+
+  {
+    path: 'profile',
+    name: 'profile',
+    component: () => import('@/views/Profile.vue'),
+  },
+
+  {
     path: '/report',
     name: 'report',
     component: () => import('@/views/Report.vue'),
