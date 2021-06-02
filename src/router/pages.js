@@ -13,6 +13,13 @@ export default [
     path: '/cards',
     name: 'cards',
     component: () => import('@/views/Cards.vue'),
+    meta: {
+      breadcrumb: [
+        { text: 'Главная', url: '/' },
+        { text: 'Топливные карты', active: true },
+      ],
+      rule: 'editor',
+    },
   },
   {
     path: '/card/:card_number',
@@ -37,12 +44,19 @@ export default [
     path: '/transactions',
     name: 'transactions',
     component: () => import('@/views/Transactions.vue'),
+    meta: {
+      breadcrumb: [
+        { text: 'Главная', url: '/' },
+        { text: 'Транзакции', active: true },
+      ],
+      rule: 'editor',
+    },
   },
 
   {
     path: 'setting',
     name: 'setting',
-    component: () => import('@/views/Settings.vue'),
+    component: () => import('@core/layouts/components/app-customizer/AppCustomizer.vue'),
   },
 
   {
@@ -55,11 +69,25 @@ export default [
     path: '/report',
     name: 'report',
     component: () => import('@/views/Report.vue'),
+    meta: {
+      breadcrumb: [
+        { text: 'Главная', url: '/' },
+        { text: 'Отчёты и графики', active: true },
+      ],
+      rule: 'editor',
+    },
   },
   {
     path: '/locator',
     name: 'locator',
     component: () => import('@/views/Locator.vue'),
+    meta: {
+      breadcrumb: [
+        { text: 'Главная', url: '/' },
+        { text: 'Локатор', active: true },
+      ],
+      rule: 'editor',
+    },
   },
 
   {

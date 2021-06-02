@@ -50,7 +50,7 @@ router.beforeEach((to, _, next) => {
 });
 Vue.mixin({
   beforeRouteLeave(to, from, next) {
-    if (from.name === 'card') {
+    if (from.name === 'card' && JSON.stringify(this.cardData) !== this.source) {
       this.$bvModal
         .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
           title: 'Уведомление',

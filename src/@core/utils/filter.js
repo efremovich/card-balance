@@ -21,6 +21,18 @@ Vue.filter('formatDate', (value, withtime = true) => {
   return value.toLocaleString('ru-RU', options);
 });
 
+Vue.filter('formatDateNoTime', (value) => {
+  value = new Date(value);
+  const options = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+
+  };
+
+  return value.toLocaleString('ru-RU', options);
+});
+
 Vue.filter('formatOnlyDate', (value) => {
   value = new Date(value);
   const options = {

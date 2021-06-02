@@ -1,16 +1,16 @@
 <template>
   <div
-    class="customizer d-none d-md-block"
-    :class="{'open': isCustomizerOpen}">
+    ref="open"
+    class="customizer d-none d-md-block open">
     <!-- Toggler -->
-    <b-link
+    <!-- <b-link
       class="customizer-toggle d-flex align-items-center justify-content-center"
       @click="isCustomizerOpen = !isCustomizerOpen">
       <feather-icon
         icon="SettingsIcon"
         size="15"
         class="spinner" />
-    </b-link>
+    </b-link> -->
     <!-- /Toggler -->
 
     <!-- Header -->
@@ -25,7 +25,7 @@
         icon="XIcon"
         size="18"
         class="cursor-pointer"
-        @click="isCustomizerOpen = !isCustomizerOpen" />
+        @click="$refs.open.classList.remove('open')" />
     </div>
     <!-- Header -->
 
@@ -154,7 +154,7 @@
 
 <script>
 import {
-  BLink, BFormRadioGroup, BFormGroup, BFormCheckbox,
+  BFormRadioGroup, BFormGroup, BFormCheckbox,
 } from 'bootstrap-vue';
 import vSelect from 'vue-select';
 import VuePerfectScrollbar from 'vue-perfect-scrollbar';
@@ -163,7 +163,7 @@ import useAppCustomizer from './useAppCustomizer';
 export default {
   components: {
     // BSV
-    BLink,
+    // BLink,
     BFormRadioGroup,
     BFormCheckbox,
     BFormGroup,

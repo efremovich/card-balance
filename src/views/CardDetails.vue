@@ -64,7 +64,7 @@
               </div>
               <div class="mb-2">
                 <h6>
-                  Действует до: {{ cardData.data.expiry_date | formatOnlyDate }}
+                  Действует до: {{ cardData.data.expiry_date | formatDateNoTime }}
                 </h6>
               </div>
               <div class="mb-2">
@@ -360,23 +360,6 @@
         <div
           v-if="cardData.data.limits.length<1"
           :key="cardData.data.limits.length">
-          <!-- <b-link :to="{ name: 'cards' }">
-          <feather-icon
-            class="mr-1"
-            icon="ArrowLeftCircleIcon"
-            size="30" />
-        </b-link>
-        <h6 class="mt-1 mb-1">
-          Для добавления лимита нажмите
-        </h6>
-        <b-button
-          class="mr-1 mb-1 position-absolute"
-          variant="success"
-          :disabled="servicesLength"
-          @click="addLimit">
-          Добавить лимит
-        </b-button> -->
-
           <b-card>
             <b-card-header
               class="d-flex justify-content-start">
@@ -440,29 +423,6 @@
                   </h6>
                 </div>
               </div>
-            <!-- <div class="appex">
-            <vue-apex-charts
-              type="radialBar"
-              height="325"
-              :options="productOrdersRadialBar.chartOptions"
-              :series="productOrdersRadialBar.series" /> -->
-
-            <!-- chart info -->
-            <!-- <div
-              v-for="(data,key,index) in cardData.data"
-              :key="key"
-              class="d-flex justify-content-between"
-              :class="index === Object.keys(chartInfo.chartInfo).length - 1 ? '':'mb-1'">
-              <div class="series-info d-flex align-items-center">
-                <feather-icon
-                  icon="CircleIcon"
-                  size="16"
-                  :class="key === 'finished' ? 'text-primary': key==='pending'?'text-warning':'text-danger'" />
-                <span class="font-weight-bold text-capitalize ml-75">{{ key }}</span>
-              </div>
-              <span>{{ data }}</span>
-            </div> -->
-            <!-- </div> -->
             </div>
             <b-tabs
               content-class="pt-1 position-relative"
@@ -477,117 +437,6 @@
                   @click="addLimit">
                   Добавить лимит
                 </b-button>
-
-                <!-- <div
-              class="d-flex flex-nowrap column ">
-              <b-col
-                md="7"
-                class="p-0">
-                <validation-observer
-                  ref="limitsForm">
-                  <b-form
-
-                    @submit.prevent="newLimitsData">
-                    <template
-                      v-for="(limit,index) in cardData.data.limits">
-                      <b-card-actions
-                        :key="limit.limit_id"
-                        no-body
-                        action-close
-                        class="border pl-1 pr-1"
-                        @close="hide(index)">
-                        <validation-provider
-                          v-slot="{ errors }"
-                          name="Виды топлива"
-                          rules="required">
-                          <b-form-group
-                            label="Виды топлива:"
-                            label-for="labelServices">
-                            <v-select
-                              id="labelServices"
-                              v-model="limit.limit_services"
-                              multiple
-                              label="full_name"
-                              :reduce="(services) => `${services.id}`"
-                              :options="services" />
-
-                            <small
-
-                              class="text-danger">{{ errors[0] }}</small>
-                          </b-form-group>
-                        </validation-provider>
-                        <div class="d-flex flex-wrap align-items-center mt-1">
-                          <h6 class="mx-auto">
-                            Лимит
-                          </h6>
-
-                          <div class="ml-1 mw-20">
-                            <b-form-input
-                              v-model="limit.value" />
-                          </div>
-                          <b-col class="mr-1">
-                            <v-select
-                              v-model="limit.limit_unit_code"
-                              :clearable="false"
-                              :reduce="(unit) => unit.code"
-                              :options="units" />
-                          </b-col>
-                          <b-col>
-                            <v-select
-                              v-model="limit.limit_period_code"
-                              :clearable="false"
-                              :reduce="(period) => period.code"
-                              :options="periods" />
-                          </b-col>
-                        </div>
-                        <div class="mt-1">
-                          <label>Остаток: {{ limit.value - limit.consumption }} л.</label>
-                          <b-progress
-                            :value="limit.value - limit.consumption"
-                            :max="limit.value" />
-                        </div>
-                      </b-card-actions>
-                    </template>
-                  </b-form>
-                </validation-observer>
-              </b-col>
-              <b-col
-                md="5"
-                class="border">
-                <b-overlay
-                  :show="showLoading"
-                  variant="black"
-                  spinner-variant="primary"
-                  blur="0"
-                  opacity=".75"
-                  rounded="sm">
-                  <b-card-actions
-                    ref="limits"
-                    action-refresh
-                    show
-                    class="pl-1"
-                    @refresh="refreshLimits('limits')">
-                    <h4>Текущие лимиты по карте:</h4>
-                    <hr>
-                    <template
-                      v-for="limit in cardData.data.limits">
-                      <div :key="limit.limit_id">
-                        <h4>
-                          Вид топлива:
-                          {{ selectedService(limit.limit_services) }}
-                        </h4>
-                        <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
-                        <h4>
-                          Остаток: {{ limit.value - limit.consumption }} литров.
-                        </h4>
-
-                        <hr>
-                      </div>
-                    </template>
-                  </b-card-actions>
-                </b-overlay>
-              </b-col>
-            </div> -->
                 <div class="d-flex justify-content-around w-90 position-sticky bottom">
                   <b-button
                     variant="success"
@@ -754,7 +603,6 @@ import {
   VBTooltip,
   BInputGroupAppend,
 } from 'bootstrap-vue';
-// import { onBeforeRouteLeave } from 'vue-router';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import vSelect from 'vue-select';
@@ -783,13 +631,11 @@ export default {
     vSelect,
     BOverlay,
     // VueApexCharts,
-    // formatDate,
     BCardActions,
     BFormGroup,
     BFormInput,
     BTable,
     BFormSelect,
-    // flatPickr,
     BPagination,
     BInputGroup,
     BProgress,
@@ -798,7 +644,6 @@ export default {
   },
   setup() {
     const cardData = ref([]);
-    const wasChanged = ref(false);
     const product = ref(null);
     const value = ref(null);
     const totalRows = ref(null);
@@ -822,6 +667,7 @@ export default {
     const end = ref(null);
     const contractId = ref(null);
     const limits = ref([]);
+    const source = ref({});
     const fields = [
       {
         key: 'service.full_name',
@@ -941,31 +787,14 @@ export default {
         }
       });
     };
-    const cardDate = (params) => useJwt.getCardDate(params).then((response) => {
+    const cardDate = (params) => useJwt.getCardData(params).then((response) => {
       if (response.data.status) {
         cardData.value = response.data;
-        // console.log(JSON.stringify(otr.data));
-        // if (JSON.stringify(otr.data) === JSON.stringify(cardData.value.data)) {
-        //   originalSource.value = false;
-        // } else (originalSource.value = true);
+        source.value = JSON.stringify(response.data);
       }
       return cardData.value;
     });
 
-    // watch: {
-    //   cardData: function (newValue, oldValue) {
-    //     if (oldValue !== newValue) {
-    //     wasChanged.value = true;
-    //   } else wasChanged.value = false;
-    //   }
-    // }
-
-    // watch(cardData, (newValue, oldValue) => {
-    //   console.log(cardData.value);
-    //   if (oldValue !== [] && oldValue !== newValue) {
-    //     wasChanged.value = true;
-    //   } else wasChanged.value = false;
-    // });
     const fetchProduct = () => {
       // download.value = false;
       const { route } = useRouter();
@@ -978,11 +807,10 @@ export default {
     getAllService();
     getAllPeriods();
     getAllUnits();
-    // cardDate();
-    // label();
     return {
       product,
       // labelSelected
+      source,
       download,
       cardData,
       value,
@@ -1008,7 +836,6 @@ export default {
       services,
       periodLabel,
       limits,
-      wasChanged,
     };
   },
   data() {
@@ -1016,8 +843,7 @@ export default {
       newLimit: {},
       required,
       showLoading: false,
-      saveChange: null,
-      haveChange: this.cardData.value.data,
+
     };
   },
 
@@ -1025,6 +851,7 @@ export default {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
     },
+
   },
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
