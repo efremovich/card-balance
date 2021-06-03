@@ -63,8 +63,8 @@
     <b-dropdown-divider />
 
     <b-dropdown-item
-      :to="{ name: 'setting' }"
-      link-class="d-flex align-items-center">
+      link-class="d-flex align-items-center"
+      @click="change">
       <feather-icon
         size="16"
         icon="SettingsIcon"
@@ -126,6 +126,7 @@ export default {
     return {
       userData: JSON.parse(localStorage.getItem('userData')),
       avatarText,
+      visible: false,
     };
   },
   beforeCreate() {
@@ -138,6 +139,10 @@ export default {
     });
   },
   methods: {
+    change() {
+      this.$store.dispatch('getVisible');
+    },
+
     logout() {
       // Remove userData from localStorage
       // ? You just removed token from localStorage. If you like, you can also make API call to backend to blacklist used token

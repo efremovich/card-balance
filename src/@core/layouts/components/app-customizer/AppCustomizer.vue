@@ -1,7 +1,7 @@
 <template>
   <div
-    ref="open"
-    class="customizer d-none d-md-block open">
+    class="customizer d-none d-md-block"
+    :class="{'open': $store.state.visible}">
     <!-- Toggler -->
     <!-- <b-link
       class="customizer-toggle d-flex align-items-center justify-content-center"
@@ -17,15 +17,15 @@
     <div class="customizer-section d-flex justify-content-between align-items-center">
       <div>
         <h4 class="text-uppercase mb-0">
-          Theme Customizer
+          Настройки
         </h4>
-        <small>Customize &amp; Preview in Real Time</small>
+        <small>Настрой приложение для себя</small>
       </div>
       <feather-icon
         icon="XIcon"
         size="18"
         class="cursor-pointer"
-        @click="$refs.open.classList.remove('open')" />
+        @click="change" />
     </div>
     <!-- Header -->
 
@@ -35,7 +35,7 @@
       <!-- Skin, RTL, Router Animation -->
       <div class="customizer-section">
         <!-- Skin -->
-        <b-form-group label="Skin">
+        <b-form-group label="Цвет">
           <b-form-radio-group
             id="skin-radio-group"
             v-model="skin"
@@ -44,7 +44,7 @@
         </b-form-group>
 
         <!-- Skin -->
-        <b-form-group label="Content Width">
+        <b-form-group label="Ширина содержимого">
           <b-form-radio-group
             id="content-width-radio-group"
             v-model="contentWidth"
@@ -54,7 +54,7 @@
 
         <!-- RTL -->
         <b-form-group
-          label="RTL"
+          label="Меню справа"
           label-cols="10">
           <b-form-checkbox
             v-model="isRTL"
@@ -66,7 +66,7 @@
 
         <!-- Router Transition -->
         <b-form-group
-          label="Router Transition"
+          label="Анимация при переходе"
           label-cols="6">
           <v-select
             v-model="routerTransition"
@@ -83,7 +83,7 @@
       <div class="customizer-section">
         <!-- Layout Type -->
         <b-form-group
-          label="Menu Layout">
+          label="Расположение меню">
           <b-form-radio-group
             v-model="layoutType"
             name="layout-type"
@@ -94,7 +94,7 @@
         <div
           v-if="layoutType === 'vertical'"
           class="d-flex justify-content-between align-items-center mt-2">
-          <span class="font-weight-bold">Menu Collapsed</span>
+          <span class="font-weight-bold">Меню свернуто</span>
           <b-form-checkbox
             v-model="isVerticalMenuCollapsed"
             name="is-vertical-menu-collapsed"
@@ -105,7 +105,7 @@
 
         <!-- Menu Visiblity -->
         <div class="d-flex justify-content-between align-items-center mt-2">
-          <span class="font-weight-bold">Menu Hidden</span>
+          <span class="font-weight-bold">Скрыть меню</span>
           <b-form-checkbox
             v-model="isNavMenuHidden"
             name="is-menu-visible"
@@ -120,7 +120,7 @@
         <!-- Navbar Color -->
         <b-form-group
           v-show="layoutType === 'vertical'"
-          label="Navbar Color">
+          label="Цвет навигационной панели">
           <div
             v-for="(color, index) in navbarColors"
             :key="color"
@@ -130,10 +130,10 @@
         </b-form-group>
 
         <!-- Navbar Type -->
-        <b-form-group :label="layoutType === 'vertical' ? 'Navbar Type' : 'Menu Type'">
+        <b-form-group :label="layoutType === 'vertical' ? 'Тип навигационной панели' : 'Menu Type'">
           <b-form-radio-group
             v-model="navbarType"
-            name="navbar-type"
+            name="Navbar Type"
             :options="navbarTypes" />
         </b-form-group>
       </div>
@@ -141,7 +141,7 @@
       <!-- SECTION: Footer -->
       <div class="customizer-section">
         <!-- Footer Type -->
-        <b-form-group label="Footer Type">
+        <b-form-group label="Тип нижнего колонтитула">
           <b-form-radio-group
             v-model="footerType"
             name="footer-type"
@@ -173,6 +173,27 @@ export default {
     VuePerfectScrollbar,
 
   },
+  // props: {
+  //   visible: {
+  //     type: Boolean,
+  //     required: true,
+  //   },
+  // },
+  data() {
+    return {
+      isVisible: false,
+    };
+  },
+  methods: {
+    change() {
+      this.$store.dispatch('getNotVisible');
+    },
+  },
+  // created() {
+  //   // eslint-disable-next-line vue/no-mutating-props
+  //   this.isVisible = this.visible;
+  //   console.log(this.visible);
+  // },
   setup() {
     const {
       // Vertical Menu

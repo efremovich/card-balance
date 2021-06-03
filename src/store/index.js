@@ -10,6 +10,25 @@ import user from './app-user';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  state: {
+    visible: false,
+  },
+  actions: {
+    getVisible({ commit }) {
+      commit('getVisible');
+    },
+    getNotVisible({ commit }) {
+      commit('getNotVisible');
+    },
+  },
+  mutations: {
+    getVisible(state) {
+      state.visible = true;
+    },
+    getNotVisible(state) {
+      state.visible = false;
+    },
+  },
   modules: {
     app,
     appConfig,
