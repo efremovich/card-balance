@@ -790,15 +790,17 @@ export default {
     const cardDate = (params) => useJwt.getCardData(params).then((response) => {
       if (response.data.status) {
         cardData.value = response.data;
+        // console.log(cardData.value.data);
         source.value = JSON.stringify(response.data);
       }
       return cardData.value;
     });
+    const number = ref(null);
 
     const fetchProduct = () => {
-      // download.value = false;
       const { route } = useRouter();
       cardDate(route.value.params.card_number);
+      number.value = route.value.params.card_number;
       download.value = true;
     };
 
@@ -836,6 +838,7 @@ export default {
       services,
       periodLabel,
       limits,
+      number,
     };
   },
   data() {
@@ -843,7 +846,6 @@ export default {
       newLimit: {},
       required,
       showLoading: false,
-
     };
   },
 
@@ -853,6 +855,13 @@ export default {
     },
 
   },
+  beforeMount() {
+    this.getCardNumber();
+  },
+  mounted() {
+    // console.log(this.number);
+  },
+
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
     labelSelected() {
@@ -863,6 +872,11 @@ export default {
       }
 
       return empty;
+    },
+
+    getCardNumber() {
+      this.$store.dispatch('getCardNumber', this.number);
+      console.log(this.$store.state.cardNumber);
     },
 
     // watch: {
@@ -903,7 +917,7 @@ export default {
     },
 
     refreshLimits(card) {
-      useJwt.getCardDate(this.cardData.data.number).then((response) => {
+      useJwt.getCardData(this.cardData.data.number).then((response) => {
         if (response.data.status) {
           this.cardData = response.data;
           this.$refs[card].showLoading = false;

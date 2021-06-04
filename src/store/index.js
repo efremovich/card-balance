@@ -12,6 +12,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     visible: false,
+    cardNumber: null,
   },
   actions: {
     getVisible({ commit }) {
@@ -20,6 +21,9 @@ export default new Vuex.Store({
     getNotVisible({ commit }) {
       commit('getNotVisible');
     },
+    getCardNumber({ commit }, payload) {
+      commit('gotNumber', payload);
+    },
   },
   mutations: {
     getVisible(state) {
@@ -27,6 +31,9 @@ export default new Vuex.Store({
     },
     getNotVisible(state) {
       state.visible = false;
+    },
+    gotNumber(state, payload) {
+      state.cardNumber = payload;
     },
   },
   modules: {

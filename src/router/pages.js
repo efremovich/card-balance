@@ -63,6 +63,13 @@ export default [
     path: 'profile',
     name: 'profile',
     component: () => import('@/views/Profile.vue'),
+    meta: {
+      breadcrumb: [
+        { text: 'Главная', url: '/' },
+        { text: 'Профиль', active: true },
+      ],
+      rule: 'editor',
+    },
   },
 
   {

@@ -17,7 +17,7 @@ export default function useAppCustomizer() {
   // Content Width Options
   const contentWidthOptions = [
     { text: 'Full  Width', value: 'full' },
-    { text: '999999', value: 'boxed' },
+    { text: 'Boxed', value: 'boxed' },
   ];
 
   // Router Transition
