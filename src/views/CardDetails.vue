@@ -846,6 +846,7 @@ export default {
       newLimit: {},
       required,
       showLoading: false,
+      saveChange: false,
     };
   },
 
@@ -931,6 +932,7 @@ export default {
     newLimitsData() {
       this.$refs.limitsForm.validate().then((success) => {
         if (success) {
+          this.saveChange = true;
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -955,7 +957,7 @@ export default {
     },
 
     undoChange() {
-      useJwt.getCardDate(this.cardData.data.number).then((response) => {
+      useJwt.getCardData(this.cardData.data.number).then((response) => {
         if (response.data.status) {
           this.cardData = response.data;
         }

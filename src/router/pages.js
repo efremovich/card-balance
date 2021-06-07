@@ -18,7 +18,7 @@ export default [
         { text: 'Главная', url: '/' },
         { text: 'Топливные карты', active: true },
       ],
-      rule: 'editor',
+      // rule: 'editor',
     },
   },
   {
@@ -46,7 +46,7 @@ export default [
     component: () => import('@/views/Transactions.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
+        // { text: 'Главная', url: '/' },
         { text: 'Транзакции', active: true },
       ],
       rule: 'editor',
@@ -65,7 +65,7 @@ export default [
     component: () => import('@/views/Profile.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
+        // { text: 'Главная', url: '/' },
         { text: 'Профиль', active: true },
       ],
       rule: 'editor',

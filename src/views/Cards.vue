@@ -23,6 +23,7 @@
             <b-input-group class="input-group-merge">
               <b-form-input
                 v-model="filters"
+                autofocus
                 placeholder="Найти по номеру карты"
                 class="search-product" />
               <b-input-group-append is-text>

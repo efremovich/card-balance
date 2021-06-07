@@ -50,7 +50,7 @@ router.beforeEach((to, _, next) => {
 });
 Vue.mixin({
   beforeRouteLeave(to, from, next) {
-    if (from.name === 'card' && JSON.stringify(this.cardData) !== this.source) {
+    if ((from.name === 'card' && JSON.stringify(this.cardData) !== this.source && this.saveChange === false) || (from.name === 'profile' && this.comparison === true && this.saveChange !== true)) {
       this.$bvModal
         .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
           title: 'Уведомление',
@@ -80,6 +80,35 @@ Vue.mixin({
     } else {
       next(true);
     }
+
+    // if (from.name === 'profile' && this.comparison === true && this.saveChanges !== true) {
+    //   this.$bvModal
+    //     .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
+    //       title: 'Уведомление',
+    //       size: 'sm',
+    //       okVariant: 'primary',
+    //       okTitle: 'Да',
+    //       cancelTitle: 'Нет',
+    //       cancelVariant: 'outline-secondary',
+    //       hideHeaderClose: false,
+    //       centered: true,
+    //     }).then((value) => {
+    //       this.saveChanges = value;
+    //       if (this.saveChanges === true) {
+    //         this.$toast({
+    //           component: ToastificationContent,
+    //           props: {
+    //             title: 'Данные сохранены',
+    //             icon: 'EditIcon',
+    //             variant: 'success',
+    //           },
+    //         });
+    //       }
+    //       if (this.saveChanges !== null) {
+    //         next(true);
+    //       } else next(false);
+    //     });
+    // }
   },
 });
 

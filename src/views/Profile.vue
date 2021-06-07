@@ -8,7 +8,7 @@
             ref="previewEl"
             rounded
             src="../assets/images/cards-icon/GPO.svg"
-            height="80" />
+            height="104" />
         </b-link>
         <!--/ avatar -->
       </b-media-aside>
@@ -46,45 +46,48 @@
     <!--/ media -->
 
     <!-- form -->
-    <b-form class="mt-2">
+    <b-form
+      class="mt-2"
+      @submit.prevent="onSubmit">
       <b-row>
         <b-col sm="6">
           <b-form-group
-            label="Имя пользователя"
-            label-for="account-username">
+            label="Имя пользователя:"
+            label-for="userName">
             <b-form-input
+              id="userName"
               v-model="getInfo.company.name"
-              placeholder="Имя"
-              name="username" />
+              placeholder="Имя" />
           </b-form-group>
         </b-col>
         <b-col sm="6">
           <b-form-group
-            label="Телефон"
-            label-for="account-name">
+            label="Телефон:"
+            label-for="name">
             <b-form-input
+              id="name"
               v-model="getInfo.company.name"
-              name="name"
               placeholder="Телефон" />
           </b-form-group>
         </b-col>
         <b-col sm="6">
           <b-form-group
-            label="Электронная почта"
-            label-for="account-e-mail">
+            label="Электронная почта:"
+            label-for="email">
             <b-form-input
+              id="email"
               v-model="getInfo.account.email"
-              name="email"
               placeholder="Электронная почта" />
           </b-form-group>
         </b-col>
         <b-col sm="6">
           <b-form-group
-            label="Организация"
-            label-for="account-company">
+            label="Организация:"
+            label-for="company">
             <b-form-input
+              id="company"
               v-model="getInfo.company.name"
-              name="company"
+              readonly
               placeholder="Организация" />
           </b-form-group>
         </b-col>
@@ -111,15 +114,18 @@
 
         <b-col cols="12">
           <b-button
+            :disabled="!comparison"
+            type="submit"
             variant="primary"
             class="mt-2 mr-1">
             Сохранить
           </b-button>
           <b-button
+            :disabled="!comparison"
             variant="outline-secondary"
             type="reset"
             class="mt-2"
-            @click.prevent="resetForm">
+            @click.prevent="undoChange">
             Отмена
           </b-button>
         </b-col>
@@ -132,6 +138,7 @@
 import {
   BFormFile, BButton, BForm, VBTooltip, BFormGroup, BFormInput, BRow, BCol, BCard, BMedia, BMediaAside, BMediaBody, BLink, BImg,
 } from 'bootstrap-vue';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import useJwt from '@/auth/jwt/useJwt';
 import { useInputImageRenderer } from '@core/comp-functions/forms/form-utils';
 import { ref } from '@vue/composition-api';
@@ -181,22 +188,54 @@ export default {
   data() {
     return {
       getInfo: null,
+      source: null,
+      twin: null,
+      saveChange: null,
     };
+  },
+
+  computed: {
+    comparison() {
+      return JSON.stringify(this.getInfo) !== this.source;
+    },
   },
   created() {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.getInfo = response.data;
-          console.log(this.getInfo);
+          this.twin = this.getInfo.account;
+          this.source = JSON.stringify(response.data);
         });
       }
     });
   },
   methods: {
-    resetForm() {
-      this.optionsLocal = JSON.parse(JSON.stringify(this.getInfo));
+    onSubmit() {
+      this.saveChange = true;
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: 'Данные сохранены',
+          icon: 'EditIcon',
+          variant: 'success',
+        },
+
+      });
+      // console.log(this.twin.account.email); // Отправить через POST
+      console.log(this.comparison);
     },
+    undoChange() {
+      useJwt.getCurrenUser().then((response) => {
+        if (response.data.status) {
+          this.$store.dispatch('user/getUserData', response.data).then(() => {
+            this.getInfo = response.data;
+          });
+        }
+      });
+    },
+
   },
+
 };
 </script>
