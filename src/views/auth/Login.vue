@@ -197,11 +197,11 @@ export default {
                       component: ToastificationContent,
                       position: 'top-right',
                       props: {
-                        title: `Добро пожаловать ${userData.account.fullName
+                        title: `Добро пожаловать, ${userData.account.email
                           || userData.account.name}`,
                         icon: 'CoffeeIcon',
                         variant: 'success',
-                        text: `Добро пожаловать, ${userData.data}!`,
+                        text: `Добро пожаловать, ${userData.account.email}!`,
                       },
                     });
                   })

@@ -859,10 +859,6 @@ export default {
   beforeMount() {
     this.getCardNumber();
   },
-  mounted() {
-    // console.log(this.number);
-  },
-
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
     labelSelected() {
@@ -879,32 +875,6 @@ export default {
       this.$store.dispatch('getCardNumber', this.number);
       console.log(this.$store.state.cardNumber);
     },
-
-    // watch: {
-    //   thaveChange: {
-    //     handler(val, oldVal) {
-    //       if (oldVal !== val) {
-    //         console.log('a thing changed');
-    //       }
-    //     },
-    //     deep: true,
-    //   },
-    // },
-    // getModal() {
-    //   this.$bvModal
-    //     .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
-    //       title: 'Уведомление',
-    //       size: 'sm',
-    //       okVariant: 'primary',
-    //       okTitle: 'Да',
-    //       cancelTitle: 'Нет',
-    //       cancelVariant: 'outline-secondary',
-    //       hideHeaderClose: false,
-    //       centered: true,
-    //     }).then((value) => {
-    //       this.saveChange = value;
-    //     });
-    // },
 
     showToast() {
       this.$toast({
