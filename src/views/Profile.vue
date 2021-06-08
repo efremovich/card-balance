@@ -306,19 +306,21 @@ export default {
       this.$refs.simpleRules.validate().then((success) => {
         if (success === true) {
           this.saveChange = true;
-          useJwt.refreshGetCurrentUser(this.twin);
-          console.log(this.twin);
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Данные сохранены',
-              icon: 'EditIcon',
-              variant: 'success',
-            },
+          useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
+            console.log(response);
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Данные сохранены',
+                icon: 'EditIcon',
+                variant: 'success',
+              },
+            });
           });
         }
       });
     },
+
     validateForm() {
       this.$refs.simpleRules.validate().then((success) => {
         if (success) {

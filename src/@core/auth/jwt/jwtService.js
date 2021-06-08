@@ -140,6 +140,18 @@ export default class JwtService {
     });
   }
 
+  async refreshGetCurrentUser(payload) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.post(
+        `/api/user/${userData.account.uid}`, payload,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+    //  userData.account
+  }
+
   async getCurrenUser() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
