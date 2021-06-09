@@ -9,14 +9,32 @@
     rounded="md">
     <div
       v-if="!loading">
-      <b-button
+      <!-- <b-button
         variant="success"
         class="w-75 btn btn-primary"
         style="min-width:100px"
         @click="getChangeTheView">
         <span class="align-baseline" />
         {{ view ? "Строка": "Таблица" }}
-      </b-button>
+      </b-button> -->
+
+      <!-- Item View Radio Button Group  -->
+      <b-form-radio-group
+        v-model="itemView"
+        class="ml-1 list item-view-radio-group"
+        buttons
+        size="sm"
+        button-variant="outline-primary">
+        <b-form-radio
+          v-for="option in itemViewOptions"
+          :key="option.value"
+          :value="option.value">
+          <feather-icon
+            :icon="option.icon"
+            size="18" />
+        </b-form-radio>
+      </b-form-radio-group>
+
       <div class="ecommerce-searchbar mt-1 mb-1">
         <b-row>
           <b-col cols="12">
@@ -36,7 +54,7 @@
         </b-row>
       </div>
       <section
-        v-if="view"
+        v-if="itemView === 'grid-view'"
         class="views">
         <b-card
           v-for="(product, index) in products.data.result"
@@ -247,6 +265,8 @@ import {
   BCol,
   BInputGroup,
   BFormInput,
+  BFormRadioGroup,
+  BFormRadio,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
@@ -273,6 +293,8 @@ export default {
     BInputGroup,
     BFormInput,
     BInputGroupAppend,
+    BFormRadioGroup,
+    BFormRadio,
     // BPagination,
   },
   setup() {
@@ -288,7 +310,7 @@ export default {
       if (Number(num) < 1000) return 'danger';
       return 'success';
     };
-
+    console.log(itemView);
     const { products } = useShopRemoteData();
 
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
@@ -339,9 +361,9 @@ export default {
       return totalSumm;
     },
 
-    getChangeTheView() {
-      this.view = !this.view;
-    },
+    // getChangeTheView() {
+    //   this.itemView = !this.itemView;
+    // },
 
     getValue(item) {
       if (item.length < 1) {

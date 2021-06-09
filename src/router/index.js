@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-// import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import 'animate.css';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 
 // Routes
 import { canNavigate } from '@/libs/acl/routeProtection';
@@ -64,25 +65,28 @@ Vue.mixin({
         }).then((value) => {
           this.saveChange = value;
           if (this.saveChange === true) {
-            // this.$toast({
-            //   component: ToastificationContent,
-            //   props: {
-            //     title: 'Данные сохранены',
-            //     icon: 'EditIcon',
-            //     variant: 'success',
-            //   },
-            // });
-            this.$swal({
-              position: 'center',
-              icon: 'success',
-              title: 'Данные сохранены',
-              showConfirmButton: false,
-              timer: 1000,
-              customClass: {
-                confirmButton: 'btn btn-primary',
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Данные сохранены',
+                icon: 'EditIcon',
+                variant: 'success',
               },
-              buttonsStyling: false,
             });
+            // this.$swal({
+            //   position: 'center',
+            //   icon: 'success',
+            //   title: 'Данные сохранены',
+            //   showConfirmButton: false,
+            //   timer: 1500,
+            //   customClass: {
+            //     confirmButton: 'btn btn-primary',
+            //   },
+            //   showClass: {
+            //     popup: 'animate__animated animate__flipInX',
+            //   },
+            //   buttonsStyling: false,
+            // });
           }
           if (this.saveChange !== null) {
             next(true);
