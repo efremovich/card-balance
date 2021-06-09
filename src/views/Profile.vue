@@ -96,6 +96,7 @@
           <!-- old password -->
           <b-col md="6">
             <b-form-group
+              v-b-tooltip.hover.bottom="'Ваш действующий пароль'"
               label="Старый пароль:"
               label-for="account-old-password">
               <b-input-group class="input-group-merge">
@@ -118,6 +119,7 @@
           <!-- new password -->
           <b-col md="6">
             <b-form-group
+              v-b-tooltip.hover.bottom="'Здесь вы можете заменить старый пароль на новый'"
               label-for="account-new-password"
               label="Новый пароль:">
               <validation-provider
@@ -205,7 +207,7 @@ import { ValidationObserver, ValidationProvider } from 'vee-validate';
 import {
   required, confirmed, password, length,
 } from '@validations';
-import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+// import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import useJwt from '@/auth/jwt/useJwt';
 import { useInputImageRenderer } from '@core/comp-functions/forms/form-utils';
 import { ref } from '@vue/composition-api';
@@ -308,13 +310,24 @@ export default {
           this.saveChange = true;
           useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
             console.log(response);
-            this.$toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Данные сохранены',
-                icon: 'EditIcon',
-                variant: 'success',
+            // this.$toast({
+            //   component: ToastificationContent,
+            //   props: {
+            //     title: 'Данные сохранены',
+            //     icon: 'EditIcon',
+            //     variant: 'success',
+            //   },
+            // });
+            this.$swal({
+              position: 'top-start',
+              icon: 'success',
+              title: 'Данные сохранены',
+              showConfirmButton: false,
+              timer: 1500,
+              customClass: {
+                confirmButton: 'btn btn-primary',
               },
+              buttonsStyling: false,
             });
           });
         }

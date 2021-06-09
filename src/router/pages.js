@@ -15,7 +15,7 @@ export default [
     component: () => import('@/views/Cards.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
+        // { text: 'Главная', to: '/' },
         { text: 'Топливные карты', active: true },
       ],
       // rule: 'editor',
@@ -27,11 +27,14 @@ export default [
     component: () => import('@/views/CardDetails.vue'),
     meta: {
       pageTitle: 'Карта',
-      breadcrumb: [{ text: 'Топливные карты', to: '/cards' }],
+      breadcrumb: [
+        { text: 'Топливные карты', to: '/cards' },
+      ],
       rule: 'editor',
     },
     beforeEnter(to, _, next) {
       to.meta.breadcrumb = [
+        // { text: 'Главная', to: '/' },
         { text: 'Топливные карты', to: '/cards' },
       ];
       to.meta.breadcrumb.push({ text: to.params.card_number, active: true });
@@ -46,7 +49,7 @@ export default [
     component: () => import('@/views/Transactions.vue'),
     meta: {
       breadcrumb: [
-        // { text: 'Главная', url: '/' },
+        // { text: 'Главная', to: '/' },
         { text: 'Транзакции', active: true },
       ],
       rule: 'editor',
@@ -65,7 +68,7 @@ export default [
     component: () => import('@/views/Profile.vue'),
     meta: {
       breadcrumb: [
-        // { text: 'Главная', url: '/' },
+        // { text: 'Главная', to: '/' },
         { text: 'Профиль', active: true },
       ],
       rule: 'editor',
@@ -78,7 +81,7 @@ export default [
     component: () => import('@/views/Report.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
+        // { text: 'Главная', to: '/' },
         { text: 'Отчёты и графики', active: true },
       ],
       rule: 'editor',
@@ -90,7 +93,7 @@ export default [
     component: () => import('@/views/Locator.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
+        // { text: 'Главная', to: '/' },
         { text: 'Локатор', active: true },
       ],
       rule: 'editor',
@@ -101,6 +104,13 @@ export default [
     path: '/documents',
     name: 'documents',
     component: () => import('@/views/documents/Documents.vue'),
+    meta: {
+      breadcrumb: [
+        // { text: 'Главная', to: '/' },
+        { text: 'Документы', active: true },
+      ],
+      rule: 'editor',
+    },
   },
 
   {
@@ -109,8 +119,8 @@ export default [
     component: () => import('@/views/documents/Payments.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
-        { text: 'Документы' },
+        // { text: 'Главная', to: '/' },
+        // { text: 'Документы', to: '/documents' },
         { text: 'Платежи', active: true },
       ],
       rule: 'editor',
@@ -122,8 +132,8 @@ export default [
     component: () => import('@/views/documents/Bill.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
-        { text: 'Документы' },
+        // { text: 'Главная', to: '/' },
+        // { text: 'Документы', to: '/documents' },
         { text: 'Заказать счет', active: true },
       ],
       rule: 'editor',
@@ -135,8 +145,8 @@ export default [
     component: () => import('@/views/documents/Checks.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
-        { text: 'Документы' },
+        // { text: 'Главная', to: '/' },
+        // { text: 'Документы', to: '/documents' },
         { text: 'Электронные чеки', active: true },
       ],
       rule: 'editor',
@@ -148,8 +158,8 @@ export default [
     component: () => import('@/views/documents/Requests.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
-        { text: 'Документы' },
+        // { text: 'Главная', to: '/' },
+        // { text: 'Документы', to: '/documents' },
         { text: 'Заявки', active: true },
       ],
       rule: 'editor',

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+// import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 
 // Routes
 import { canNavigate } from '@/libs/acl/routeProtection';
@@ -64,13 +64,24 @@ Vue.mixin({
         }).then((value) => {
           this.saveChange = value;
           if (this.saveChange === true) {
-            this.$toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Данные сохранены',
-                icon: 'EditIcon',
-                variant: 'success',
+            // this.$toast({
+            //   component: ToastificationContent,
+            //   props: {
+            //     title: 'Данные сохранены',
+            //     icon: 'EditIcon',
+            //     variant: 'success',
+            //   },
+            // });
+            this.$swal({
+              position: 'center',
+              icon: 'success',
+              title: 'Данные сохранены',
+              showConfirmButton: false,
+              timer: 1000,
+              customClass: {
+                confirmButton: 'btn btn-primary',
               },
+              buttonsStyling: false,
             });
           }
           if (this.saveChange !== null) {
@@ -80,35 +91,6 @@ Vue.mixin({
     } else {
       next(true);
     }
-
-    // if (from.name === 'profile' && this.comparison === true && this.saveChanges !== true) {
-    //   this.$bvModal
-    //     .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
-    //       title: 'Уведомление',
-    //       size: 'sm',
-    //       okVariant: 'primary',
-    //       okTitle: 'Да',
-    //       cancelTitle: 'Нет',
-    //       cancelVariant: 'outline-secondary',
-    //       hideHeaderClose: false,
-    //       centered: true,
-    //     }).then((value) => {
-    //       this.saveChanges = value;
-    //       if (this.saveChanges === true) {
-    //         this.$toast({
-    //           component: ToastificationContent,
-    //           props: {
-    //             title: 'Данные сохранены',
-    //             icon: 'EditIcon',
-    //             variant: 'success',
-    //           },
-    //         });
-    //       }
-    //       if (this.saveChanges !== null) {
-    //         next(true);
-    //       } else next(false);
-    //     });
-    // }
   },
 });
 

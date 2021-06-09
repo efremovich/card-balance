@@ -653,6 +653,13 @@ export default {
           this.getSelected();
         });
 
+        // useJwt.getBalance().then((data) => {
+        //   if (data.data.status) {
+        //     this.cardBalance = data.data;
+        //     // console.log(this.cardBalance);
+        //   }
+        // });
+
         // useJwt.getBalance(this.ID).then((value) => {
         //   if (value.data.status) {
         //     this.cardBalance = response.data;
@@ -669,6 +676,7 @@ export default {
         // console.log(this.cardBalance);
       }
     });
+
     useJwt.getCurrentConsumption().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
@@ -812,7 +820,7 @@ export default {
         .then((response) => {
           if (response.status) {
             this.cardBalance = response.data;
-            console.log(this.cardBalance);
+            // console.log(this.cardBalance);
             this.refreshConsumptions(this.selected.id);
             this.showLoading = false;
             this.refreshData(this.selected.id);

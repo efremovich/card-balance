@@ -149,7 +149,6 @@ export default class JwtService {
       return response;
     }
     return { data: { status: false } };
-    //  userData.account
   }
 
   async getCurrenUser() {
