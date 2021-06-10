@@ -681,6 +681,7 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
           this.currentConsumption = response.data;
+          console.log(this.currentConsumption);
         });
       }
     });
@@ -808,7 +809,7 @@ export default {
         if (response.data.status) {
           this.currentConsumptionDynamic = response.data;
           this.$refs[card].showLoading = false;
-          console.log(this.currentConsumptionDynamic);
+          // console.log(this.currentConsumptionDynamic);
         } else {
           this.showToast();
         }
