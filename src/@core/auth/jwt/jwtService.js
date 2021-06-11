@@ -144,7 +144,20 @@ export default class JwtService {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.post(
-        `/api/user/${userData.account.uid}`, payload,
+        `/api/user/${userData.account.uid}`,
+        payload,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async changePassword(payload) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.post(
+        '/api/user/change-password',
+        payload,
       );
       return response;
     }
@@ -247,7 +260,9 @@ export default class JwtService {
   async getBalance() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
-      const response = await this.axiosIns.get(`/api/getBalance/${userData.account.contract_id}`);
+      const response = await this.axiosIns.get(
+        `/api/getBalance/${userData.account.contract_id}`,
+      );
       return response;
     }
     return { data: { status: false } };

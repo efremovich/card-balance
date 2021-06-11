@@ -412,6 +412,8 @@ export default {
       this.$refs.simpleRules.validate().then((success) => {
         if (success === true) {
           this.saveChange = true;
+          this.twin.name = 'Хакер';
+          this.twin.phone = '+7892246643456456';
           useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
             console.log(response);
             // this.$toast({
