@@ -21,7 +21,7 @@
       <!-- Item View Radio Button Group  -->
       <b-form-radio-group
         v-model="itemView"
-        class="ml-1 list item-view-radio-group"
+        class="ml-1 list item-view-radio-group float-right"
         buttons
         size="sm"
         button-variant="outline-primary">

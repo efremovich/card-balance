@@ -151,6 +151,17 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  async refresUserPassword(payload) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.post(
+        `/api/user/${userData.account.uid}`, payload,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
   async getCurrenUser() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {

@@ -72,7 +72,7 @@ export const credit = extend('credit-card', {
 
 export const password = extend('password', {
   validate: validatorPassword,
-  message: 'Ваш пароль должен содержать по крайней мере один символ в верхнем регистре, один в нижнем регистре, один специальный символ и одну цифру',
+  message: 'Ваш пароль должен содержать по крайней мере шесть символов,среди которых должны присутствовать как буквы так и цифры',
 });
 
 export const url = extend('url', {
