@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="download">
     <!-- <b-overlay
       :show="!download"
       variant="black"
@@ -511,6 +511,7 @@ export default {
   data() {
     return {
       getInfo: null,
+      userData: null,
       userInfo: null,
       selectContract: null,
       axiosIns: null,
@@ -652,7 +653,6 @@ export default {
           this.makeOptions();
           this.getSelected();
         });
-
         // useJwt.getBalance().then((data) => {
         //   if (data.data.status) {
         //     this.cardBalance = data.data;
@@ -668,11 +668,19 @@ export default {
         // });
       }
     });
+
+    this.userData = JSON.parse(localStorage.getItem('userData'));
+    if (this.userData) {
+      this.getInfo = this.userData;
+      return this.getInfo;
+    }
+    return { data: { status: false } };
   },
   mounted() {
     useJwt.getBalance().then((response) => {
       if (response.data.status) {
         this.cardBalance = response.data;
+        this.download = true;
         // console.log(this.cardBalance);
       }
     });
@@ -681,7 +689,7 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
           this.currentConsumption = response.data;
-          console.log(this.currentConsumption);
+          // console.log(this.currentConsumption);
         });
       }
     });
@@ -705,14 +713,14 @@ export default {
     //   }
     // });
   },
-  beforeMount() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      this.getInfo = userData;
-      return this.getInfo;
-    }
-    return { data: { status: false } };
-  },
+  // beforeMount() {
+  //   const userData = JSON.parse(localStorage.getItem('userData'));
+  //   if (userData) {
+  //     this.getInfo = userData;
+  //     return this.getInfo;
+  //   }
+  //   return { data: { status: false } };
+  // },
   methods: {
     showToast() {
       this.$toast({

@@ -1,15 +1,6 @@
 <template>
-  <b-overlay
-    :show="loading"
-    variant="black"
-    spinner-type="grow"
-    spinner-variant="primary"
-    blur="2px"
-    opacity=".75"
-    rounded="md">
-    <div
-      v-if="!loading">
-      <!-- <b-button
+  <div>
+    <!-- <b-button
         variant="success"
         class="w-75 btn btn-primary"
         style="min-width:100px"
@@ -18,41 +9,49 @@
         {{ view ? "Строка": "Таблица" }}
       </b-button> -->
 
-      <!-- Item View Radio Button Group  -->
-      <b-form-radio-group
-        v-model="itemView"
-        class="ml-1 list item-view-radio-group float-right"
-        buttons
-        size="sm"
-        button-variant="outline-primary">
-        <b-form-radio
-          v-for="option in itemViewOptions"
-          :key="option.value"
-          :value="option.value">
-          <feather-icon
-            :icon="option.icon"
-            size="18" />
-        </b-form-radio>
-      </b-form-radio-group>
+    <!-- Item View Radio Button Group  -->
+    <b-form-radio-group
+      v-model="itemView"
+      class="ml-1 list item-view-radio-group float-right"
+      buttons
+      size="sm"
+      button-variant="outline-primary">
+      <b-form-radio
+        v-for="option in itemViewOptions"
+        :key="option.value"
+        :value="option.value">
+        <feather-icon
+          :icon="option.icon"
+          size="18" />
+      </b-form-radio>
+    </b-form-radio-group>
 
-      <div class="ecommerce-searchbar mt-1 mb-1">
-        <b-row>
-          <b-col cols="12">
-            <b-input-group class="input-group-merge">
-              <b-form-input
-                v-model="filters"
-                autofocus
-                placeholder="Найти по номеру карты"
-                class="search-product" />
-              <b-input-group-append is-text>
-                <feather-icon
-                  icon="SearchIcon"
-                  class="text-muted" />
-              </b-input-group-append>
-            </b-input-group>
-          </b-col>
-        </b-row>
-      </div>
+    <div class="ecommerce-searchbar mt-1 mb-1">
+      <b-row>
+        <b-col cols="12">
+          <b-input-group class="input-group-merge">
+            <b-form-input
+              v-model="filters"
+              autofocus
+              placeholder="Найти по номеру карты"
+              class="search-product" />
+            <b-input-group-append is-text>
+              <feather-icon
+                icon="SearchIcon"
+                class="text-muted" />
+            </b-input-group-append>
+          </b-input-group>
+        </b-col>
+      </b-row>
+    </div>
+    <b-overlay
+      :show="loading"
+      variant="transparent"
+      spinner-type="grow"
+      spinner-variant="primary"
+      blur="5px"
+      opacity=".75"
+      rounded="md">
       <section
         v-if="itemView === 'grid-view'"
         class="views">
@@ -246,8 +245,8 @@
         </div>
       </section>
       <!----Конец таблицы--->
-    </div>
-  </b-overlay>
+    </b-overlay>
+  </div>
 </template>
 
 <script>
@@ -310,7 +309,6 @@ export default {
       if (Number(num) < 1000) return 'danger';
       return 'success';
     };
-    console.log(itemView);
     const { products } = useShopRemoteData();
 
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
@@ -347,7 +345,6 @@ export default {
   data() {
     return {
       number: null,
-      zero: 0,
       view: true,
     };
   },

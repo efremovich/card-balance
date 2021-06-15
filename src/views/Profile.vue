@@ -400,7 +400,6 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.getInfo = response.data;
-          console.log(this.getInfo);
           this.twin = this.getInfo.account;
           this.source = JSON.stringify(response.data);
         });

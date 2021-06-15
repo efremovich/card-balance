@@ -227,6 +227,16 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // Виды топлива по эмитенту
+  async getServiceFromEmitent(params) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(`/api/services?${params}`);
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
   // Все периоды
   async getAllPeriods() {
     const userData = JSON.parse(localStorage.getItem('userData'));
