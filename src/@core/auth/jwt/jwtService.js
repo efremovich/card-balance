@@ -164,7 +164,7 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
-  async refresUserPassword(payload) {
+  async refreshUserPassword(payload) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.post(

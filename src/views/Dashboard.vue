@@ -72,7 +72,6 @@
           </b-col>
           <b-col
             v-if="currentConsumption.currentConsumption.length>0"
-            :key="key"
             md="6">
             <b-overlay
               :show="showLoading"
@@ -112,7 +111,6 @@
           </b-col>
           <b-col
             v-else
-            :key="key"
             md="6">
             <b-overlay
               :show="showLoading"
@@ -520,7 +518,6 @@ export default {
       currentConsumption: null,
       consumptionDinamic: null,
       currentConsumptionDynamic: null,
-      key: 0,
       option: [],
       ID: null,
       download: false,

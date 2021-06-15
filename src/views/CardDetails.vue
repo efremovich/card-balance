@@ -10,7 +10,7 @@
     <div
       v-if="download">
       <div
-        v-if="cardData.data.limits.length>0">
+        v-if="limitsLength>0">
         <b-card>
           <b-card-header
             class="d-flex justify-content-start">
@@ -358,7 +358,7 @@
       <div
         v-else>
         <div
-          v-if="cardData.data.limits.length<1"
+          v-if="limitsLength<1"
           :key="cardData.data.limits.length">
           <b-card>
             <b-card-header
@@ -668,7 +668,8 @@ export default {
     const contractId = ref(null);
     const limits = ref([]);
     const source = ref({});
-    const cardEmitentCode = ref(null);
+    const limitsLength = ref(null);
+    const cardEmitentCode = ref('0');
     const fields = [
       {
         key: 'service.full_name',
@@ -734,21 +735,21 @@ export default {
       ).toLocaleDateString();
       return firstDay;
     };
-    // const getAllService = () => {
-    //   useJwt.getService().then((response) => {
-    //     if (response.data.status) {
-    //       services.value = response.data.data;
-    //       services.value.forEach((el) => option.value.push(el.full_name));
-    //       const id = services.value.map((el) => el.id);
-    //       const label = services.value.map((el) => el.label);
-    //       // eslint-disable-next-line no-plusplus
-    //       for (let i = 0; i < id.length; i++) {
-    //         labelService.value[id[i]] = label[i];
-    //       }
-    //     }
-    //   });
-    // };
-    const getServiceFromEmitent = (params) => {
+    const getAllService = () => {
+      useJwt.getService().then((response) => {
+        if (response.data.status) {
+          services.value = response.data.data;
+          services.value.forEach((el) => option.value.push(el.full_name));
+          const id = services.value.map((el) => el.id);
+          const label = services.value.map((el) => el.label);
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < id.length; i++) {
+            labelService.value[id[i]] = label[i];
+          }
+        }
+      });
+    };
+    const getService = (params) => {
       useJwt.getServiceFromEmitent(`emitent_code=${params}`).then((response) => {
         if (response.data.status) {
           services.value = response.data.data;
@@ -807,9 +808,12 @@ export default {
       if (response.data.status) {
         cardData.value = response.data;
         cardEmitentCode.value = cardData.value.data.emitent.code;
+        limitsLength.value = cardData.value.data.limits.length;
+        console.log(cardEmitentCode.value);
         source.value = JSON.stringify(response.data);
+        getService(cardEmitentCode.value);
       }
-      // return cardData.value;
+      return cardData.value;
     });
     const number = ref(null);
 
@@ -822,13 +826,14 @@ export default {
 
     fetchProduct();
     getAllTransactions();
-    getServiceFromEmitent(cardEmitentCode);
-    // getAllService();
+    // getService(cardEmitentCode.value);
+    getAllService();
     getAllPeriods();
     getAllUnits();
     return {
       product,
       cardEmitentCode,
+      limitsLength,
       // labelSelected
       source,
       download,

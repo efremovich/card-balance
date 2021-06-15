@@ -13,6 +13,7 @@ export default new Vuex.Store({
   state: {
     visible: false,
     cardNumber: null,
+    password: [null, null],
   },
   actions: {
     getVisible({ commit }) {
@@ -24,6 +25,9 @@ export default new Vuex.Store({
     getCardNumber({ commit }, payload) {
       commit('gotNumber', payload);
     },
+    getPassword({ commit }, payload) {
+      commit('passwordValue', payload);
+    },
   },
   mutations: {
     getVisible(state) {
@@ -34,6 +38,10 @@ export default new Vuex.Store({
     },
     gotNumber(state, payload) {
       state.cardNumber = payload;
+    },
+    passwordValue(state, payload) {
+      // eslint-disable-next-line no-sequences
+      state.password[1] = payload;
     },
   },
   modules: {
