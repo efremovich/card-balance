@@ -156,8 +156,8 @@ export default {
   data() {
     return {
       userEmail: 'admin@fc.ru',
-      password: 'Haiastan1987',
-      // password: this.$store.state.password[1],
+      // password: 'Haiastan1987',
+      password: this.$store.state.password[1],
       status: '',
       // validation rules
       required,

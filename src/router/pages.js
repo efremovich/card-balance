@@ -57,13 +57,13 @@ export default [
   },
 
   {
-    path: 'setting',
+    path: '/setting',
     name: 'setting',
     component: () => import('@core/layouts/components/app-customizer/AppCustomizer.vue'),
   },
 
   {
-    path: 'profile',
+    path: '/profile',
     name: 'profile',
     component: () => import('@/views/Profile.vue'),
     meta: {

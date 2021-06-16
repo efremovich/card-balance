@@ -2,16 +2,19 @@
   <b-card>
     <!-- media -->
     <b-media no-body>
-      <b-media-aside>
-        <b-link>
+      <!-- <b-link>
           <b-img
             ref="previewEl"
             rounded
-            src="../assets/images/cards-icon/GPO.svg"
+            :src="getInfo.account.name"
             height="104" />
-        </b-link>
-        <!--/ avatar -->
-      </b-media-aside>
+        </b-link> -->
+      <b-avatar
+        ref="preview"
+        :src="image"
+        size="104px"
+        rounded />
+      <!--/ avatar -->
 
       <b-media-body class="mt-75 ml-75">
         <!-- upload button -->
@@ -20,11 +23,11 @@
           variant="primary"
           size="sm"
           class="mb-75 mr-75"
-          @click="$refs.refInputEl.$el.click()">
+          @click="$refs.refInput.$el.click()">
           Загрузить
         </b-button>
         <b-form-file
-          ref="refInputEl"
+          ref="refInput"
           v-model="profileFile"
           accept=".jpg, .png, .gif"
           :hidden="true"
@@ -80,12 +83,17 @@
               label-for="name">
               <validation-provider
                 v-slot="{ errors }"
-                rules="integer|min:11"
+                rules="integer|min:10"
                 name="Телефон">
-                <b-form-input
-                  id="name"
-                  v-model="getInfo.account.phone"
-                  placeholder="Телефон" />
+                <b-input-group>
+                  <b-input-group-prepend is-text>
+                    (+7)
+                  </b-input-group-prepend>
+                  <b-form-input
+                    id="name"
+                    v-model="getInfo.account.phone"
+                    placeholder="Телефон" />
+                </b-input-group>
                 <small class="text-danger">{{ errors[0] }}</small>
               </validation-provider>
             </b-form-group>
@@ -126,7 +134,7 @@
               @click="toogleSeen">
               <div
                 v-b-tooltip.hover.bottom="'Нажав здесь вы сможете сменить пароль.'"
-                class="d-flex">
+                class="d-flex align-items-baseline">
                 <h3>Сменить пароль</h3>
                 <feather-icon
                   v-if="!seen"
@@ -200,11 +208,10 @@
                       <b-form-input
                         id="account-old-password"
                         key="oldPassword"
-                        :value="$store.state.password[1]"
+                        v-model="oldPassword"
                         :type="passwordFieldTypeOld"
                         name="old-password"
-                        placeholder="Введите текущий пароль"
-                        readonly />
+                        placeholder="Введите текущий пароль" />
                       <b-input-group-append
                         key="1"
                         is-text>
@@ -481,7 +488,7 @@
 
 <script>
 import {
-  BFormFile, BButton, BForm, VBTooltip, BPopover, BInputGroupAppend, BInputGroup, BFormGroup, BFormInput, BRow, BCol, BCard, BMedia, BMediaAside, BMediaBody, BLink, BImg,
+  BFormFile, BButton, BAvatar, BForm, VBTooltip, BPopover, BInputGroupAppend, BInputGroupPrepend, BInputGroup, BFormGroup, BFormInput, BRow, BCol, BCard, BMedia, BMediaBody, BLink,
 } from 'bootstrap-vue';
 import { ValidationObserver, ValidationProvider } from 'vee-validate';
 import {
@@ -499,11 +506,12 @@ export default {
   },
   components: {
     ValidationProvider,
+    BInputGroupPrepend,
     ValidationObserver,
     BButton,
     BForm,
     BPopover,
-    BImg,
+    // BImg,
     BFormFile,
     BFormGroup,
     BFormInput,
@@ -511,28 +519,47 @@ export default {
     BCol,
     BCard,
     BMedia,
-    BMediaAside,
+    // BMediaAside,
     BMediaBody,
     BLink,
     BInputGroup,
     BInputGroupAppend,
+    BAvatar,
   },
+  // props: {
+  //   image: {
+  //     type: Object,
+  //     required: true,
+  //   },
+  // },
 
   setup() {
     const { resolveUserRoleVariant } = useUsersList();
     // ? Demo Purpose => Update image on click of update
-    const refInputEl = ref(null);
-    const previewEl = ref(null);
-    const { inputImageRenderer } = useInputImageRenderer(refInputEl, previewEl);
+    // const refInputEl = ref(null);
+    // const previewEl = ref(null);
+    // const { inputImageRenderer } = useInputImageRenderer(refInputEl, previewEl);
     // const { inputImageRenderer } = useInputImageRenderer(refInputEl, (base64) => {
-    //   // eslint-disable-next-line no-param-reassign
-    //   this.getInfo.avatar = base64;
+    //   // eslint-disable-next-line vue/no-mutating-props
+    //   props.getInfo.value.image = base64;
     // });
+    const refInput = ref(null);
+    const previewEl = ref(null);
+    const image = ref('');
+    console.log(image.value);
+
+    const { inputImageRenderer } = useInputImageRenderer(refInput, (base64) => {
+      // eslint-disable-next-line vue/no-mutating-props
+      image.value = base64;
+      // console.log(image.value);
+      // this.$store.dispatch('getPassword', image.value);
+    });
 
     return {
       resolveUserRoleVariant,
+      image,
       //  ? Demo - Update Image on click of update button
-      refInputEl,
+      refInput,
       previewEl,
       inputImageRenderer,
     };
@@ -540,14 +567,14 @@ export default {
 
   data() {
     return {
-      getInfo: null,
       source: null,
       twin: null,
       saveChange: null,
+      profileFile: null,
       passwordFieldTypeOld: 'password',
       passwordFieldTypeNew: 'password',
       passwordFieldTypeRetype: 'password',
-      passwordValueOld: '',
+      oldPassword: '',
       newPasswordValue: '',
       RetypePassword: '',
       required,
@@ -558,6 +585,8 @@ export default {
       validPassword: false,
       seen: false,
       popoverShow: false,
+      // refInputEl: null,
+      getInfo: null,
     };
   },
 
@@ -579,6 +608,7 @@ export default {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
+          // eslint-disable-next-line vue/no-mutating-props
           this.getInfo = response.data;
           this.twin = this.getInfo.account;
           this.source = JSON.stringify(response.data);
@@ -621,6 +651,7 @@ export default {
     onClose() {
       this.popoverShow = false;
     },
+
     onOk() {
       this.onClose();
     },
@@ -649,6 +680,7 @@ export default {
       useJwt.getCurrenUser().then((response) => {
         if (response.data.status) {
           this.$store.dispatch('user/getUserData', response.data).then(() => {
+            // eslint-disable-next-line vue/no-mutating-props
             this.getInfo = response.data;
             this.newPasswordValue = '';
             this.RetypePassword = '';
