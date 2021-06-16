@@ -309,180 +309,6 @@
         </b-row>
       </b-form>
     </validation-observer>
-    <!-- <b-col sm="6">
-      <b-link
-        class=" w-100 d-flex"
-        @click="toogleSeen">
-        <div
-          v-b-tooltip.hover.bottom="'Нажав здесь вы сможете сменить пароль.'"
-          class="d-flex">
-          <h3>Сменить пароль</h3>
-          <feather-icon
-            v-if="!seen"
-            icon="LockIcon"
-            size="16"
-            class="align-text-top ml-1" />
-          <feather-icon
-            v-if="seen"
-            icon="UnlockIcon"
-            size="16"
-            class="align-text-top ml-1" />
-        </div>
-      </b-link> -->
-    <!-- <validation-observer
-        ref="simpleRules">
-        <b-form
-          v-if="seen"
-          @input="validatePassword">
-          <b-link
-            id="popover-reactive-1"
-            ref="link"
-            class="d-flex justify-content-end pr-1">
-            <h6
-              v-b-tooltip.hover.bottom="'Нажав здесь вы сможете восстановить пароль.'">
-              Забыли пароль?
-            </h6>
-
-            <b-popover
-              ref="popover"
-              target="popover-reactive-1"
-              triggers="click"
-              :show.sync="popoverShow"
-              placement="auto"
-              container="my-container">
-              <template #title>
-                <div class="d-flex justify-content-between align-items-center">
-                  <span>Уведомление</span>
-                  <b-button
-                    class="close"
-                    variant="transparent"
-                    aria-label="Close"
-                    @click="onClose">
-                    <span
-                      class="d-inline-block text-white"
-                      aria-hidden="true">&times;</span>
-                  </b-button>
-                </div>
-              </template>
-
-              <div class="pd-1">
-                <h5>На электронный адрес {{ getInfo.account.email }} будет отправлена ссылка для восстановления пароля.</h5>
-                <b-button
-                  class="mt-1"
-                  size="sm"
-                  variant="primary"
-                  @click="onOk">
-                  Отправить
-                </b-button>
-              </div>
-            </b-popover>
-          </b-link>
-          <b-col
-            md="12">
-            <b-form-group
-              key="passwordOld"
-              v-b-tooltip.hover.bottom="'Ваш действующий пароль'"
-              label="Текущий пароль:"
-              label-for="account-old-password">
-              <b-input-group class="input-group-merge">
-                <b-form-input
-                  id="account-old-password"
-                  key="oldPassword"
-                  :value="getInfo.account.role"
-                  :type="passwordFieldTypeOld"
-                  name="old-password"
-                  placeholder="Введите текущий пароль" />
-                <b-input-group-append
-                  key="1"
-                  is-text>
-                  <feather-icon
-                    :icon="passwordToggleIconOld"
-                    class="cursor-pointer"
-                    @click="togglePasswordOld" />
-                </b-input-group-append>
-              </b-input-group>
-            </b-form-group>
-          </b-col>
-
-          <b-col md="12">
-            <b-form-group
-              key="pass"
-              label-for="account-new-password"
-              label="Новый пароль:">
-              <validation-provider
-                v-slot="{ errors }"
-                rules="password|min:6"
-                name="`новым паролем`"
-                vid="password">
-                <b-input-group
-                  key="passwordNew"
-                  class="input-group-merge">
-                  <b-form-input
-                    id="account-new-password"
-                    key="NewPassword"
-                    v-model="newPasswordValue"
-                    :type="passwordFieldTypeNew"
-                    name="new-password"
-                    placeholder="Введите новый пароль" />
-                  <b-input-group-append
-                    key="2"
-                    is-text>
-                    <feather-icon
-                      :icon="passwordToggleIconNew"
-                      class="cursor-pointer"
-                      @click="togglePasswordNew" />
-                  </b-input-group-append>
-                </b-input-group>
-                <small class="text-danger">{{ errors[0] }}</small>
-              </validation-provider>
-            </b-form-group>
-          </b-col>
-
-          <b-col
-            v-if="newPasswordValue !== ''"
-            md="12">
-            <b-form-group
-              key="retype"
-              label-for="account-retype-new-password"
-              label="Повторите новый пароль:">
-              <validation-provider
-                v-slot="{ errors }"
-                rules="required|confirmed:password"
-                name=" ">
-                <b-input-group
-                  key="passwordRetype"
-                  class="input-group-merge">
-                  <b-form-input
-                    id="account-retype-new-password"
-                    key="retypePassword"
-                    v-model="RetypePassword"
-                    :type="passwordFieldTypeRetype"
-                    name="retype-password"
-                    placeholder="Введите новый пароль ещё раз" />
-                  <b-input-group-append
-                    key="3"
-                    is-text>
-                    <feather-icon
-                      :icon="passwordToggleIconRetype"
-                      class="cursor-pointer"
-                      @click="togglePasswordRetype" />
-                  </b-input-group-append>
-                </b-input-group>
-                <small class="text-danger">{{ errors[0] }}</small>
-              </validation-provider>
-            </b-form-group>
-          </b-col>
-
-          <b-button
-            :disabled="!validPassword"
-            variant="primary"
-            class="mt-2 mr-1"
-            @click="changePassword">
-            Сменить пароль
-          </b-button>
-        </b-form>
-      </validation-observer>
-    </b-col> -->
   </b-card>
 </template>
 
@@ -535,24 +361,13 @@ export default {
 
   setup() {
     const { resolveUserRoleVariant } = useUsersList();
-    // ? Demo Purpose => Update image on click of update
-    // const refInputEl = ref(null);
-    // const previewEl = ref(null);
-    // const { inputImageRenderer } = useInputImageRenderer(refInputEl, previewEl);
-    // const { inputImageRenderer } = useInputImageRenderer(refInputEl, (base64) => {
-    //   // eslint-disable-next-line vue/no-mutating-props
-    //   props.getInfo.value.image = base64;
-    // });
     const refInput = ref(null);
     const previewEl = ref(null);
     const image = ref('');
-    console.log(image.value);
 
     const { inputImageRenderer } = useInputImageRenderer(refInput, (base64) => {
       // eslint-disable-next-line vue/no-mutating-props
       image.value = base64;
-      // console.log(image.value);
-      // this.$store.dispatch('getPassword', image.value);
     });
 
     return {
@@ -602,6 +417,14 @@ export default {
     },
     passwordToggleIconRetype() {
       return this.passwordFieldTypeRetype === 'password' ? 'EyeIcon' : 'EyeOffIcon';
+    },
+  },
+
+  watch: {
+    image() {
+      this.$store.dispatch('getAvatar', this.image);
+      this.image = this.$store.state.avatar;
+      console.log(this.image);
     },
   },
   created() {
