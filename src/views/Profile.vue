@@ -328,7 +328,7 @@ import { useInputImageRenderer } from '@core/comp-functions/forms/form-utils';
 import { ref } from '@vue/composition-api';
 // import { mapGetters } from 'vuex';
 // import store from '@/store';
-import useUsersList from './useUsersList';
+// import useUsersList from './useUsersList';
 
 export default {
   directives: {
@@ -356,18 +356,28 @@ export default {
     BInputGroupAppend,
     BAvatar,
   },
-  setup() {
-    const { resolveUserRoleVariant } = useUsersList();
+  setup(__, ctx) {
+    // const { resolveUserRoleVariant } = useUsersList();
+    const store = ctx.root.$store;
     const refInput = ref(null);
     const previewEl = ref(null);
     // const store = useStore();
-    const image = ref('');
+    // const image = ref('');
+    const image = ref(store.state.avatar);
     const { inputImageRenderer } = useInputImageRenderer(refInput, (base64) => {
       // eslint-disable-next-line vue/no-mutating-props
       image.value = base64;
+      console.log(image.value);
     });
+
+    // watch(image, () => {
+    //   store.dispatch('getAvatar', image);
+    //   image = store.state.avatar;
+    //   console.log(image);
+    // });
     return {
-      resolveUserRoleVariant,
+      // resolveUserRoleVariant,
+      // image,
       image,
       //  ? Demo - Update Image on click of update button
       refInput,
