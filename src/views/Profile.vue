@@ -431,6 +431,12 @@ export default {
     image() {
       this.$store.dispatch('getAvatar', this.image);
       this.image = this.$store.state.avatar;
+      this.twin.avatar = this.image;
+      this.twin.name = 'Mark';
+      console.log('Перед запись аватара', this.twin);
+      useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
+        console.log('Запись аватара', response);
+      });
       // console.log(this.image);
     },
   },
@@ -539,9 +545,11 @@ export default {
           this.saveChange = true;
           const newPassword = {
             new_password: this.newPasswordValue,
-            old_password: this.passwordValueOld,
+            old_password: this.oldPassword,
             email: this.twin.email,
           };
+          console.log(newPassword);
+          console.log('Старый пароль', this.oldPassword);
           useJwt.changePassword(JSON.stringify(newPassword)).then((response) => {
             console.log(response);
             console.log(this.newPasswordValue);

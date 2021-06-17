@@ -12,6 +12,7 @@ export const useInputImageRenderer = (inputEl, callback) => {
     );
 
     if (file) {
+      console.log(file);
       reader.readAsDataURL(file);
     }
   };
