@@ -39,7 +39,8 @@
         <b-button
           variant="outline-secondary"
           size="sm"
-          class="mb-75 mr-75">
+          class="mb-75 mr-75"
+          @click="resetPhoto">
           Сброс
         </b-button>
         <!--/ reset -->
@@ -320,10 +321,13 @@ import { ValidationObserver, ValidationProvider } from 'vee-validate';
 import {
   required, confirmed, password, length,
 } from '@validations';
+// import { useStore } from 'vuex';
 // import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import useJwt from '@/auth/jwt/useJwt';
 import { useInputImageRenderer } from '@core/comp-functions/forms/form-utils';
 import { ref } from '@vue/composition-api';
+// import { mapGetters } from 'vuex';
+// import store from '@/store';
 import useUsersList from './useUsersList';
 
 export default {
@@ -352,29 +356,22 @@ export default {
     BInputGroupAppend,
     BAvatar,
   },
-  // props: {
-  //   image: {
-  //     type: Object,
-  //     required: true,
-  //   },
-  // },
-
   setup() {
     const { resolveUserRoleVariant } = useUsersList();
     const refInput = ref(null);
     const previewEl = ref(null);
+    // const store = useStore();
     const image = ref('');
-
     const { inputImageRenderer } = useInputImageRenderer(refInput, (base64) => {
       // eslint-disable-next-line vue/no-mutating-props
       image.value = base64;
     });
-
     return {
       resolveUserRoleVariant,
       image,
       //  ? Demo - Update Image on click of update button
       refInput,
+      // store,
       previewEl,
       inputImageRenderer,
     };
@@ -424,7 +421,7 @@ export default {
     image() {
       this.$store.dispatch('getAvatar', this.image);
       this.image = this.$store.state.avatar;
-      console.log(this.image);
+      // console.log(this.image);
     },
   },
   created() {
@@ -475,6 +472,12 @@ export default {
       this.popoverShow = false;
     },
 
+    resetPhoto() {
+      console.log(this.$store.state.avatar);
+      this.$store.state.avatar = '';
+      this.image = '';
+      console.log(this.$store.state.avatar);
+    },
     onOk() {
       this.onClose();
     },

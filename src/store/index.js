@@ -8,7 +8,8 @@ import verticalMenu from './vertical-menu';
 import user from './app-user';
 
 Vue.use(Vuex);
-
+// import {mapState, mapMutations, mapActions, mapGetters} from 'vuex'
+// eslint-disable-next-line import/prefer-default-export
 export default new Vuex.Store({
   state: {
     visible: false,
@@ -51,6 +52,9 @@ export default new Vuex.Store({
       state.avatar = payload;
     },
   },
+  // getters: {
+  //   avatarState: (state) => state.avatar,
+  // },
   modules: {
     app,
     appConfig,
