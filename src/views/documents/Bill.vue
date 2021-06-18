@@ -389,7 +389,6 @@ export default {
       visible: false,
       download: false,
       text: 'Оплата согласно договора ',
-
     };
   },
 

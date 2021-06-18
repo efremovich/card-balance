@@ -14,7 +14,6 @@
         size="50"
         :src="userData.account.avatar"
         variant="light-primary"
-        badge
         class="badge-minimal"
         badge-variant="success">
         <!-- <feather-icon
