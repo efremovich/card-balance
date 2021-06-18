@@ -170,9 +170,6 @@ export default {
       return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon';
     },
   },
-  created() {
-    console.log(this.$store.state.password[1]);
-  },
   methods: {
     login() {
       this.$refs.loginForm.validate().then((success) => {

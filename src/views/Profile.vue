@@ -329,7 +329,6 @@ import { ref } from '@vue/composition-api';
 // import { mapGetters } from 'vuex';
 // import store from '@/store';
 // import useUsersList from './useUsersList';
-
 export default {
   directives: {
     'b-tooltip': VBTooltip,
@@ -369,7 +368,6 @@ export default {
       image.value = base64;
       console.log(image.value);
     });
-
     // watch(image, () => {
     //   store.dispatch('getAvatar', image);
     //   image = store.state.avatar;
@@ -386,7 +384,6 @@ export default {
       inputImageRenderer,
     };
   },
-
   data() {
     return {
       source: null,
@@ -411,7 +408,6 @@ export default {
       getInfo: null,
     };
   },
-
   computed: {
     comparison() {
       return ((JSON.stringify(this.getInfo) !== this.source) && (this.valid === true));
@@ -426,7 +422,6 @@ export default {
       return this.passwordFieldTypeRetype === 'password' ? 'EyeIcon' : 'EyeOffIcon';
     },
   },
-
   watch: {
     image() {
       this.$store.dispatch('getAvatar', this.image);
@@ -487,7 +482,6 @@ export default {
     onClose() {
       this.popoverShow = false;
     },
-
     resetPhoto() {
       console.log(this.$store.state.avatar);
       this.$store.state.avatar = '';
@@ -578,6 +572,5 @@ export default {
       });
     },
   },
-
 };
 </script>
