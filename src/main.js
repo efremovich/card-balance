@@ -6,6 +6,7 @@ import VueHtmlToPaper from 'vue-html-to-paper';
 import router from './router';
 import store from './store';
 import App from './App.vue';
+
 // Global Components
 import './global-components';
 

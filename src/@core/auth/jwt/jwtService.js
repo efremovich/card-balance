@@ -140,6 +140,41 @@ export default class JwtService {
     });
   }
 
+  async refreshGetCurrentUser(payload) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.post(
+        `/api/user/${userData.account.uid}`,
+        payload,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async changePassword(payload) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.post(
+        '/api/user/change-password',
+        payload,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async refreshUserPassword(payload) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.post(
+        `/api/user/${userData.account.uid}`, payload,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
   async getCurrenUser() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
@@ -156,28 +191,6 @@ export default class JwtService {
     if (userData) {
       const response = await this.axiosIns.get(
         `/api/card/getcardstatistic/${userData.account.contract_id}`,
-      );
-      return response;
-    }
-    return { data: { status: false } };
-  }
-
-  async getCurrentConsumption() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      const response = await this.axiosIns.get(
-        `/api/getCurrentConsumption/${userData.account.contract_id}`,
-      );
-      return response;
-    }
-    return { data: { status: false } };
-  }
-
-  async getConsumptionDinamic() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      const response = await this.axiosIns.get(
-        `/api/getConsumptionDinamic/${userData.account.contract_id}`,
       );
       return response;
     }
@@ -214,6 +227,16 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // Виды топлива по эмитенту
+  async getServiceFromEmitent(params) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(`/api/services?${params}`);
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
   // Все периоды
   async getAllPeriods() {
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -235,7 +258,7 @@ export default class JwtService {
   }
 
   // Данные по карте
-  async getCardDate(params) {
+  async getCardData(params) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(`/api/card/${params}`);
@@ -249,6 +272,50 @@ export default class JwtService {
     if (userData) {
       const response = await this.axiosIns.get(
         `/api/getBalance/${userData.account.contract_id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getCurrentConsumption() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getCurrentConsumption/${userData.account.contract_id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getConsumption(param) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getCurrentConsumption/${param}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getConsumptionDinamic() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getConsumptionDinamic/${userData.account.contract_id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getDynamic(param) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getConsumptionDinamic/${param}`,
       );
       return response;
     }

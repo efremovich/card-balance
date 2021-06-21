@@ -5,7 +5,7 @@
     right>
     <template #button-content>
       <feather-icon
-        badge="6"
+        badge="1"
         badge-classes="bg-danger"
         class="text-body"
         icon="BellIcon"
@@ -16,7 +16,7 @@
     <li class="dropdown-menu-header">
       <div class="dropdown-header d-flex">
         <h4 class="notification-title mb-0 mr-auto">
-          Notifications
+          Уведомления
         </h4>
         <b-badge
           pill

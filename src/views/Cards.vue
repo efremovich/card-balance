@@ -1,31 +1,60 @@
 <template>
-  <b-overlay
-    :show="loading"
-    variant="black"
-    spinner-type="grow"
-    spinner-variant="primary"
-    blur="2px"
-    opacity=".75"
-    rounded="md">
-    <div v-if="!loading">
-      <div class="ecommerce-searchbar mt-1 mb-1">
-        <b-row>
-          <b-col cols="12">
-            <b-input-group class="input-group-merge">
-              <b-form-input
-                v-model="filters"
-                placeholder="Найти по номеру карты"
-                class="search-product" />
-              <b-input-group-append is-text>
-                <feather-icon
-                  icon="SearchIcon"
-                  class="text-muted" />
-              </b-input-group-append>
-            </b-input-group>
-          </b-col>
-        </b-row>
-      </div>
-      <section class="views">
+  <div>
+    <!-- <b-button
+        variant="success"
+        class="w-75 btn btn-primary"
+        style="min-width:100px"
+        @click="getChangeTheView">
+        <span class="align-baseline" />
+        {{ view ? "Строка": "Таблица" }}
+      </b-button> -->
+
+    <!-- Item View Radio Button Group  -->
+    <b-form-radio-group
+      v-model="itemView"
+      class="ml-1 list item-view-radio-group float-right"
+      buttons
+      size="sm"
+      button-variant="outline-primary">
+      <b-form-radio
+        v-for="option in itemViewOptions"
+        :key="option.value"
+        :value="option.value">
+        <feather-icon
+          :icon="option.icon"
+          size="18" />
+      </b-form-radio>
+    </b-form-radio-group>
+
+    <div class="ecommerce-searchbar mt-1 mb-1">
+      <b-row>
+        <b-col cols="12">
+          <b-input-group class="input-group-merge">
+            <b-form-input
+              v-model="filters"
+              autofocus
+              placeholder="Найти по номеру карты"
+              class="search-product" />
+            <b-input-group-append is-text>
+              <feather-icon
+                icon="SearchIcon"
+                class="text-muted" />
+            </b-input-group-append>
+          </b-input-group>
+        </b-col>
+      </b-row>
+    </div>
+    <b-overlay
+      :show="loading"
+      variant="transparent"
+      spinner-type="grow"
+      spinner-variant="primary"
+      blur="5px"
+      opacity=".75"
+      rounded="md">
+      <section
+        v-if="itemView === 'grid-view'"
+        class="views">
         <b-card
           v-for="(product, index) in products.data.result"
           :key="index"
@@ -38,14 +67,17 @@
               :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
           </b-link>
           <div class="item-options">
-            <div class="item-wrapper">
-              <h6 class="item-price">
-                PIN: {{ product.pin }}
-              </h6>
-              <h5 class="item-price">
-                {{ product.number }}
-              </h5>
-            </div>
+            <b-link
+              :to="{ name: 'card', params: { card_number: product.number } }">
+              <div class="item-wrapper">
+                <h6 class="item-price">
+                  PIN: {{ product.pin }}
+                </h6>
+                <h5 class="item-price">
+                  {{ product.number }}
+                </h5>
+              </div>
+            </b-link>
             <div
               class="d-flex flex-row flex-nowrap justify-content-around mt-2">
               <b-button-group>
@@ -105,8 +137,116 @@
           </div>
         </b-card>
       </section>
-    </div>
-  </b-overlay>
+      <!----ТАБЛИЦА---->
+      <section
+        v-else
+        class="views">
+        <div
+          v-for="(product, index) in products.data.result"
+          :key="index"
+          class="d-flex justify-content-between w-100 mb-1 rlt"
+          no-body>
+          <b-link
+            :to="{ name: 'card', params: { card_number: product.number } }">
+            <b-img
+              class="card-img-top"
+              :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+          </b-link>
+          <b-link
+            :to="{ name: 'card', params: { card_number: product.number } }">
+            <div class="item-wrapper abs">
+              <h6 class="item-price">
+                PIN: {{ product.pin }}
+              </h6>
+              <h5 class="item-price">
+                {{ product.number }}
+              </h5>
+            </div>
+          </b-link>
+          <div class="d-flex flex-column w-60 mr-1 ml-1">
+            <label> Остаток: {{ getValue(product.limits) }}</label>
+            <div
+              v-for="(i) in product.limits"
+              :key="i.ID">
+              <b-progress
+
+                variant="success"
+                show-value
+                class="mt-1"
+                :value="i.value - i.consumption"
+                :max="i.value" />
+            </div>
+          </div>
+
+          <!-- <div v-else
+            class="w-60 pb-1">
+            <label>Остаток по карте </label>
+            <b-progress
+              variant="success"
+              show-value
+              class="mb-1"
+              :value="getValue(product.limits)"
+              :max="getMaxValue(product.limits)" />
+          </div> -->
+
+          <!-- <div
+            class="w-60 pb-1">
+            <label>{{ product.limits }} </label>
+            <b-progress
+              variant="success"
+              show-value
+              class="mb-1"
+              :value="getValue(product.limits)"
+              :max="getMaxValue(product.limits)" />
+          </div> -->
+          <div
+            class="d-flex w-20 flex-column align-items-center">
+            <b-button
+
+              class="btn btn-light p-1 mt-1"
+              style="min-width:200px"
+              @click="toggleProductInWishlist(product)">
+              <feather-icon
+                icon="SettingsIcon"
+                class="mr-50" />
+              Внести изменения
+            </b-button>
+            <b-button
+
+              class="btn btn-light p-1 mt-1"
+              style="min-width:200px"
+              @click="toggleProductInWishlist(product)">
+              <feather-icon
+                icon="Edit3Icon"
+                class="mr-50" />
+              Внести изменения
+            </b-button>
+            <b-button
+
+              class="btn btn-light p-1 mt-1"
+              style="min-width:200px"
+              @click="handleCartActionClick(product)">
+              <feather-icon
+                icon="Trash2Icon"
+                class="mr-50" />
+              Внести изменения
+            </b-button>
+            <b-button
+
+              class="btn btn-light p-1 mt-1"
+              style="min-width:200px"
+              @click="handleCartActionClick(product)">
+              <feather-icon
+                icon="LockIcon"
+                class="mr-50" />
+              Заблокировать карту
+            </b-button>
+          </div>
+        </div>
+      </section>
+      <!----Конец таблицы--->
+    </b-overlay>
+  </div>
 </template>
 
 <script>
@@ -124,6 +264,8 @@ import {
   BCol,
   BInputGroup,
   BFormInput,
+  BFormRadioGroup,
+  BFormRadio,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
@@ -150,6 +292,8 @@ export default {
     BInputGroup,
     BFormInput,
     BInputGroupAppend,
+    BFormRadioGroup,
+    BFormRadio,
     // BPagination,
   },
   setup() {
@@ -165,7 +309,6 @@ export default {
       if (Number(num) < 1000) return 'danger';
       return 'success';
     };
-
     const { products } = useShopRemoteData();
 
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
@@ -202,7 +345,7 @@ export default {
   data() {
     return {
       number: null,
-      zero: 0,
+      view: true,
     };
   },
 
@@ -214,6 +357,10 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
     },
+
+    // getChangeTheView() {
+    //   this.itemView = !this.itemView;
+    // },
 
     getValue(item) {
       if (item.length < 1) {
@@ -277,6 +424,28 @@ export default {
   text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.5),
     1px 1px 1px rgba(0, 0, 0, 0.5);
 }
+.rlt {
+  position: relative;
+}
+
+.abs {
+  position: absolute;
+  bottom: 95px;
+  left:10px;
+}
+
+.w-20 {
+  width: 20%;
+}
+
+.w-60 {
+  width: 60%;
+  max-width: 65% !important;
+}
+
+// .card-img-top {
+//   min-height:200px !important;
+// }
 
 .item-img {
   display: flex;

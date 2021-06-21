@@ -8,16 +8,16 @@ export default function useAppCustomizer() {
 
   // Skin
   const skinOptions = [
-    { text: 'Светлый', value: 'light' },
-    { text: 'Без границ', value: 'bordered' },
-    { text: 'Темный', value: 'dark' },
-    { text: 'Полутёмный', value: 'semi-dark' },
+    { text: 'Light', value: 'light' },
+    { text: 'Bordered', value: 'bordered' },
+    { text: 'Dark', value: 'dark' },
+    { text: 'Semi Dark', value: 'semi-dark' },
   ];
 
   // Content Width Options
   const contentWidthOptions = [
-    { text: 'На всю ширину', value: 'full' },
-    { text: 'С отступом', value: 'boxed' },
+    { text: 'Full  Width', value: 'full' },
+    { text: 'Boxed', value: 'boxed' },
   ];
 
   // Router Transition
@@ -32,8 +32,8 @@ export default function useAppCustomizer() {
 
   // Router Transition
   const layoutTypeOptions = [
-    { text: 'Вертикальное', value: 'vertical' },
-    { text: 'Горизонтальное', value: 'horizontal' },
+    { text: 'Vertical', value: 'vertical' },
+    { text: 'Horizontal', value: 'horizontal' },
   ];
 
   // Navbar
@@ -41,17 +41,17 @@ export default function useAppCustomizer() {
 
   // Navbar Types
   const navbarTypes = [
-    { text: 'Плавающий', value: 'floating' },
-    { text: 'Липкий', value: 'sticky' },
-    { text: 'Статический', value: 'static' },
-    { text: 'Скрытый', value: 'hidden' },
+    { text: 'Floating', value: 'floating' },
+    { text: 'Sticky', value: 'sticky' },
+    { text: 'Static', value: 'static' },
+    { text: 'Hidden', value: 'hidden' },
   ];
 
   // Footer Types
   const footerTypes = [
-    { text: 'Липкий', value: 'sticky' },
-    { text: 'Статический', value: 'static' },
-    { text: 'Скрытый', value: 'hidden' },
+    { text: 'Sticky', value: 'sticky' },
+    { text: 'Static', value: 'static' },
+    { text: 'Hidden', value: 'hidden' },
   ];
 
   // eslint-disable-next-line object-curly-newline

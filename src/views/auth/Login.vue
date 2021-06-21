@@ -156,12 +156,13 @@ export default {
   data() {
     return {
       userEmail: 'admin@fc.ru',
-      password: 'Haiastan1987',
+      password: 'PrivetSite55',
+      // password: this.$store.state.password[1],
       status: '',
       // validation rules
       required,
       email,
-      userData: '',
+      userData: null,
     };
   },
   computed: {
@@ -169,10 +170,14 @@ export default {
       return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon';
     },
   },
+  created() {
+    console.log(this.$store.state.password[1]);
+  },
   methods: {
     login() {
       this.$refs.loginForm.validate().then((success) => {
         if (success) {
+          // console.log(this.$store.state.password);
           useJwt
             .login({
               email: this.userEmail,
@@ -180,6 +185,8 @@ export default {
             })
             .then((response) => {
               if (response.data.status) {
+                // eslint-disable-next-line prefer-destructuring
+                // this.password = this.$store.state.password[1];
                 const userData = response.data;
                 userData.ability = initialAbility;
                 useJwt.setToken(userData.account.accessToken);
@@ -197,11 +204,9 @@ export default {
                       component: ToastificationContent,
                       position: 'top-right',
                       props: {
-                        title: `Добро пожаловать ${userData.account.fullName
-                          || userData.account.name}`,
+                        title: `Добро пожаловать, ${userData.account.name}`,
                         icon: 'CoffeeIcon',
                         variant: 'success',
-                        text: `Добро пожаловать, ${userData.data}!`,
                       },
                     });
                   })

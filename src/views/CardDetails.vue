@@ -10,7 +10,7 @@
     <div
       v-if="download">
       <div
-        v-if="cardData.data.limits.length>0">
+        v-if="limitsLength>0">
         <b-card>
           <b-card-header
             class="d-flex justify-content-start">
@@ -59,12 +59,12 @@
               </b-button>
               <div class="mb-2">
                 <h6>
-                  Выдана: {{ cardData.data.limits[0].CreatedAt | formatDate }}
+                  Выдана: {{ cardData.data.limits[0].CreatedAt | formatOnlyDate }}
                 </h6>
               </div>
               <div class="mb-2">
                 <h6>
-                  Действует до: {{ cardData.data.expiry_date | formatDate }}
+                  Действует до: {{ cardData.data.expiry_date | formatDateNoTime }}
                 </h6>
               </div>
               <div class="mb-2">
@@ -111,7 +111,6 @@
                 @click="addLimit">
                 Добавить лимит
               </b-button>
-
               <div
                 class="d-flex flex-nowrap column ">
                 <b-col
@@ -120,7 +119,6 @@
                   <validation-observer
                     ref="limitsForm">
                     <b-form
-
                       @submit.prevent="newLimitsData">
                       <template
                         v-for="(limit,index) in cardData.data.limits">
@@ -144,9 +142,7 @@
                                 label="full_name"
                                 :reduce="(services) => `${services.id}`"
                                 :options="services" />
-
                               <small
-
                                 class="text-danger">{{ errors[0] }}</small>
                             </b-form-group>
                           </validation-provider>
@@ -154,7 +150,6 @@
                             <h6 class="mx-auto">
                               Лимит
                             </h6>
-
                             <div class="ml-1 mw-20">
                               <b-form-input
                                 v-model="limit.value" />
@@ -363,25 +358,8 @@
       <div
         v-else>
         <div
-          v-if="cardData.data.limits.length<1"
+          v-if="limitsLength<1"
           :key="cardData.data.limits.length">
-          <!-- <b-link :to="{ name: 'cards' }">
-          <feather-icon
-            class="mr-1"
-            icon="ArrowLeftCircleIcon"
-            size="30" />
-        </b-link>
-        <h6 class="mt-1 mb-1">
-          Для добавления лимита нажмите
-        </h6>
-        <b-button
-          class="mr-1 mb-1 position-absolute"
-          variant="success"
-          :disabled="servicesLength"
-          @click="addLimit">
-          Добавить лимит
-        </b-button> -->
-
           <b-card>
             <b-card-header
               class="d-flex justify-content-start">
@@ -445,29 +423,6 @@
                   </h6>
                 </div>
               </div>
-            <!-- <div class="appex">
-            <vue-apex-charts
-              type="radialBar"
-              height="325"
-              :options="productOrdersRadialBar.chartOptions"
-              :series="productOrdersRadialBar.series" /> -->
-
-            <!-- chart info -->
-            <!-- <div
-              v-for="(data,key,index) in cardData.data"
-              :key="key"
-              class="d-flex justify-content-between"
-              :class="index === Object.keys(chartInfo.chartInfo).length - 1 ? '':'mb-1'">
-              <div class="series-info d-flex align-items-center">
-                <feather-icon
-                  icon="CircleIcon"
-                  size="16"
-                  :class="key === 'finished' ? 'text-primary': key==='pending'?'text-warning':'text-danger'" />
-                <span class="font-weight-bold text-capitalize ml-75">{{ key }}</span>
-              </div>
-              <span>{{ data }}</span>
-            </div> -->
-            <!-- </div> -->
             </div>
             <b-tabs
               content-class="pt-1 position-relative"
@@ -482,117 +437,6 @@
                   @click="addLimit">
                   Добавить лимит
                 </b-button>
-
-                <!-- <div
-              class="d-flex flex-nowrap column ">
-              <b-col
-                md="7"
-                class="p-0">
-                <validation-observer
-                  ref="limitsForm">
-                  <b-form
-
-                    @submit.prevent="newLimitsData">
-                    <template
-                      v-for="(limit,index) in cardData.data.limits">
-                      <b-card-actions
-                        :key="limit.limit_id"
-                        no-body
-                        action-close
-                        class="border pl-1 pr-1"
-                        @close="hide(index)">
-                        <validation-provider
-                          v-slot="{ errors }"
-                          name="Виды топлива"
-                          rules="required">
-                          <b-form-group
-                            label="Виды топлива:"
-                            label-for="labelServices">
-                            <v-select
-                              id="labelServices"
-                              v-model="limit.limit_services"
-                              multiple
-                              label="full_name"
-                              :reduce="(services) => `${services.id}`"
-                              :options="services" />
-
-                            <small
-
-                              class="text-danger">{{ errors[0] }}</small>
-                          </b-form-group>
-                        </validation-provider>
-                        <div class="d-flex flex-wrap align-items-center mt-1">
-                          <h6 class="mx-auto">
-                            Лимит
-                          </h6>
-
-                          <div class="ml-1 mw-20">
-                            <b-form-input
-                              v-model="limit.value" />
-                          </div>
-                          <b-col class="mr-1">
-                            <v-select
-                              v-model="limit.limit_unit_code"
-                              :clearable="false"
-                              :reduce="(unit) => unit.code"
-                              :options="units" />
-                          </b-col>
-                          <b-col>
-                            <v-select
-                              v-model="limit.limit_period_code"
-                              :clearable="false"
-                              :reduce="(period) => period.code"
-                              :options="periods" />
-                          </b-col>
-                        </div>
-                        <div class="mt-1">
-                          <label>Остаток: {{ limit.value - limit.consumption }} л.</label>
-                          <b-progress
-                            :value="limit.value - limit.consumption"
-                            :max="limit.value" />
-                        </div>
-                      </b-card-actions>
-                    </template>
-                  </b-form>
-                </validation-observer>
-              </b-col>
-              <b-col
-                md="5"
-                class="border">
-                <b-overlay
-                  :show="showLoading"
-                  variant="black"
-                  spinner-variant="primary"
-                  blur="0"
-                  opacity=".75"
-                  rounded="sm">
-                  <b-card-actions
-                    ref="limits"
-                    action-refresh
-                    show
-                    class="pl-1"
-                    @refresh="refreshLimits('limits')">
-                    <h4>Текущие лимиты по карте:</h4>
-                    <hr>
-                    <template
-                      v-for="limit in cardData.data.limits">
-                      <div :key="limit.limit_id">
-                        <h4>
-                          Вид топлива:
-                          {{ selectedService(limit.limit_services) }}
-                        </h4>
-                        <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
-                        <h4>
-                          Остаток: {{ limit.value - limit.consumption }} литров.
-                        </h4>
-
-                        <hr>
-                      </div>
-                    </template>
-                  </b-card-actions>
-                </b-overlay>
-              </b-col>
-            </div> -->
                 <div class="d-flex justify-content-around w-90 position-sticky bottom">
                   <b-button
                     variant="success"
@@ -787,13 +631,11 @@ export default {
     vSelect,
     BOverlay,
     // VueApexCharts,
-    // formatDate,
     BCardActions,
     BFormGroup,
     BFormInput,
     BTable,
     BFormSelect,
-    // flatPickr,
     BPagination,
     BInputGroup,
     BProgress,
@@ -801,7 +643,7 @@ export default {
     BCardHeader,
   },
   setup() {
-    const cardData = ref({});
+    const cardData = ref([]);
     const product = ref(null);
     const value = ref(null);
     const totalRows = ref(null);
@@ -824,10 +666,10 @@ export default {
     const start = ref(null);
     const end = ref(null);
     const contractId = ref(null);
-
     const limits = ref([]);
-
-    const llc = ref([]);
+    const source = ref({});
+    const limitsLength = ref(null);
+    const cardEmitentCode = ref('0');
     const fields = [
       {
         key: 'service.full_name',
@@ -907,7 +749,21 @@ export default {
         }
       });
     };
-
+    const getService = (params) => {
+      useJwt.getServiceFromEmitent(`emitent_code=${params}`).then((response) => {
+        if (response.data.status) {
+          services.value = response.data.data;
+          services.value.forEach((el) => option.value.push(el.full_name));
+          const id = services.value.map((el) => el.id);
+          const label = services.value.map((el) => el.label);
+          console.log(label.length);
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < id.length; i++) {
+            labelService.value[id[i]] = label[i];
+          }
+        }
+      });
+    };
     const getAllTransactions = () => {
       firstDayOfMonth.value = getFirstDay();
       lastDay.value = isToday();
@@ -934,7 +790,6 @@ export default {
           });
       }
     };
-
     const getAllPeriods = () => {
       useJwt.getAllPeriods().then((response) => {
         if (response.data.status) {
@@ -949,31 +804,38 @@ export default {
         }
       });
     };
-    const cardDate = (params) => useJwt.getCardDate(params).then((response) => {
+    const cardDate = (params) => useJwt.getCardData(params).then((response) => {
       if (response.data.status) {
         cardData.value = response.data;
+        cardEmitentCode.value = cardData.value.data.emitent.code;
+        limitsLength.value = cardData.value.data.limits.length;
+        console.log(cardEmitentCode.value);
+        source.value = JSON.stringify(response.data);
+        getService(cardEmitentCode.value);
       }
       return cardData.value;
     });
+    const number = ref(null);
 
     const fetchProduct = () => {
-      // download.value = false;
       const { route } = useRouter();
       cardDate(route.value.params.card_number);
+      number.value = route.value.params.card_number;
       download.value = true;
     };
 
     fetchProduct();
     getAllTransactions();
+    // getService(cardEmitentCode.value);
     getAllService();
     getAllPeriods();
     getAllUnits();
-
-    // cardDate();
-    // label();
     return {
       product,
-      // labelSelected,
+      cardEmitentCode,
+      limitsLength,
+      // labelSelected
+      source,
       download,
       cardData,
       value,
@@ -999,7 +861,7 @@ export default {
       services,
       periodLabel,
       limits,
-      llc,
+      number,
     };
   },
   data() {
@@ -1007,7 +869,7 @@ export default {
       newLimit: {},
       required,
       showLoading: false,
-
+      saveChange: false,
     };
   },
 
@@ -1015,8 +877,11 @@ export default {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
     },
-  },
 
+  },
+  beforeMount() {
+    this.getCardNumber();
+  },
   methods: {
     // eslint-disable-next-line vue/return-in-computed-property
     labelSelected() {
@@ -1029,8 +894,9 @@ export default {
       return empty;
     },
 
-    getRandom() {
-      return Math.floor(Math.random() * 10000);
+    getCardNumber() {
+      this.$store.dispatch('getCardNumber', this.number);
+      // console.log(this.$store.state.cardNumber);
     },
 
     showToast() {
@@ -1045,7 +911,7 @@ export default {
     },
 
     refreshLimits(card) {
-      useJwt.getCardDate(this.cardData.data.number).then((response) => {
+      useJwt.getCardData(this.cardData.data.number).then((response) => {
         if (response.data.status) {
           this.cardData = response.data;
           this.$refs[card].showLoading = false;
@@ -1059,6 +925,7 @@ export default {
     newLimitsData() {
       this.$refs.limitsForm.validate().then((success) => {
         if (success) {
+          this.saveChange = true;
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -1083,12 +950,15 @@ export default {
     },
 
     undoChange() {
-      useJwt.getCardDate(this.cardData.data.number).then((response) => {
+      useJwt.getCardData(this.cardData.data.number).then((response) => {
         if (response.data.status) {
           this.cardData = response.data;
         }
         // this.render = this.getRandom();
       });
+    },
+    getRandom() {
+      return Math.floor(Math.random() * 10000);
     },
 
     addLimit() {
@@ -1115,7 +985,7 @@ export default {
       let label = '';
       // eslint-disable-next-line no-return-assign
       arrService.forEach((el) => (label += `${this.labelService[el]}, `));
-      return label;
+      return label.split('').slice(0, -2).join('');
     },
 
     // selectedService(arrService) {

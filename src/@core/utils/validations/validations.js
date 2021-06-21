@@ -72,7 +72,7 @@ export const credit = extend('credit-card', {
 
 export const password = extend('password', {
   validate: validatorPassword,
-  message: 'Your {_field_} must contain at least one uppercase, one lowercase, one special character and one digit',
+  message: 'Ваш пароль должен содержать по крайней мере шесть символов,среди которых должны присутствовать как буквы так и цифры',
 });
 
 export const url = extend('url', {

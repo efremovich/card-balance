@@ -1,8 +1,11 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import 'animate.css';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 
 // Routes
 import { canNavigate } from '@/libs/acl/routeProtection';
+// import { getModal } from '@/views/CardDetails.vue';
 import {
   isUserLoggedIn,
   getUserData,
@@ -45,6 +48,54 @@ router.beforeEach((to, _, next) => {
   }
 
   return next();
+});
+Vue.mixin({
+  beforeRouteLeave(to, from, next) {
+    if ((from.name === 'card' && JSON.stringify(this.cardData) !== this.source && this.saveChange === false) || (from.name === 'profile' && this.comparison === true && this.saveChange !== true)) {
+      this.$bvModal
+        .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
+          title: 'Уведомление',
+          size: 'sm',
+          okVariant: 'primary',
+          okTitle: 'Да',
+          cancelTitle: 'Нет',
+          cancelVariant: 'outline-secondary',
+          hideHeaderClose: false,
+          centered: true,
+        }).then((value) => {
+          this.saveChange = value;
+          if (this.saveChange === true) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Данные сохранены',
+                icon: 'EditIcon',
+                variant: 'success',
+              },
+            });
+            // this.$swal({
+            //   position: 'center',
+            //   icon: 'success',
+            //   title: 'Данные сохранены',
+            //   showConfirmButton: false,
+            //   timer: 1500,
+            //   customClass: {
+            //     confirmButton: 'btn btn-primary',
+            //   },
+            //   showClass: {
+            //     popup: 'animate__animated animate__flipInX',
+            //   },
+            //   buttonsStyling: false,
+            // });
+          }
+          if (this.saveChange !== null) {
+            next(true);
+          } else next(false);
+        });
+    } else {
+      next(true);
+    }
+  },
 });
 
 export default router;

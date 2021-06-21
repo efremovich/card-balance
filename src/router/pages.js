@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export default [
   {
     path: '/',
@@ -12,43 +13,104 @@ export default [
     path: '/cards',
     name: 'cards',
     component: () => import('@/views/Cards.vue'),
+    meta: {
+      breadcrumb: [
+        // { text: 'Главная', to: '/' },
+        { text: 'Топливные карты', active: true },
+      ],
+      // rule: 'editor',
+    },
   },
-
   {
     path: '/card/:card_number',
     name: 'card',
     component: () => import('@/views/CardDetails.vue'),
     meta: {
+      pageTitle: 'Карта',
       breadcrumb: [
-        { title: 'Главная', url: '/' },
-        { title: 'Карты' },
-        { title: ':card_number' },
+        { text: 'Топливные карты', to: '/cards' },
       ],
       rule: 'editor',
     },
+    beforeEnter(to, _, next) {
+      to.meta.breadcrumb = [
+        // { text: 'Главная', to: '/' },
+        { text: 'Топливные карты', to: '/cards' },
+      ];
+      to.meta.breadcrumb.push({ text: to.params.card_number, active: true });
+      next();
+    },
+
   },
 
   {
     path: '/transactions',
     name: 'transactions',
     component: () => import('@/views/Transactions.vue'),
+    meta: {
+      breadcrumb: [
+        // { text: 'Главная', to: '/' },
+        { text: 'Транзакции', active: true },
+      ],
+      rule: 'editor',
+    },
+  },
+
+  {
+    path: '/setting',
+    name: 'setting',
+    component: () => import('@core/layouts/components/app-customizer/AppCustomizer.vue'),
+  },
+
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/Profile.vue'),
+    meta: {
+      breadcrumb: [
+        // { text: 'Главная', to: '/' },
+        { text: 'Профиль', active: true },
+      ],
+      rule: 'editor',
+    },
   },
 
   {
     path: '/report',
     name: 'report',
     component: () => import('@/views/Report.vue'),
+    meta: {
+      breadcrumb: [
+        // { text: 'Главная', to: '/' },
+        { text: 'Отчёты и графики', active: true },
+      ],
+      rule: 'editor',
+    },
   },
   {
     path: '/locator',
     name: 'locator',
     component: () => import('@/views/Locator.vue'),
+    meta: {
+      breadcrumb: [
+        // { text: 'Главная', to: '/' },
+        { text: 'Локатор', active: true },
+      ],
+      rule: 'editor',
+    },
   },
 
   {
     path: '/documents',
     name: 'documents',
     component: () => import('@/views/documents/Documents.vue'),
+    meta: {
+      breadcrumb: [
+        // { text: 'Главная', to: '/' },
+        { text: 'Документы', active: true },
+      ],
+      rule: 'editor',
+    },
   },
 
   {
@@ -57,8 +119,8 @@ export default [
     component: () => import('@/views/documents/Payments.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
-        { text: 'Документы' },
+        // { text: 'Главная', to: '/' },
+        // { text: 'Документы', to: '/documents' },
         { text: 'Платежи', active: true },
       ],
       rule: 'editor',
@@ -70,8 +132,8 @@ export default [
     component: () => import('@/views/documents/Bill.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
-        { text: 'Документы' },
+        // { text: 'Главная', to: '/' },
+        // { text: 'Документы', to: '/documents' },
         { text: 'Заказать счет', active: true },
       ],
       rule: 'editor',
@@ -83,8 +145,8 @@ export default [
     component: () => import('@/views/documents/Checks.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
-        { text: 'Документы' },
+        // { text: 'Главная', to: '/' },
+        // { text: 'Документы', to: '/documents' },
         { text: 'Электронные чеки', active: true },
       ],
       rule: 'editor',
@@ -96,8 +158,8 @@ export default [
     component: () => import('@/views/documents/Requests.vue'),
     meta: {
       breadcrumb: [
-        { text: 'Главная', url: '/' },
-        { text: 'Документы' },
+        // { text: 'Главная', to: '/' },
+        // { text: 'Документы', to: '/documents' },
         { text: 'Заявки', active: true },
       ],
       rule: 'editor',
