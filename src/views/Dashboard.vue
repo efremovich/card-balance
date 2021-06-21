@@ -56,16 +56,17 @@
                   <h4>
                     От: {{ cardBalance.contract.date | formatDate }}
                   </h4>
-                  <b-button
-
-                    variant="warning"
-                    class="d-flex align-items-center margin">
-                    <feather-icon
-                      size="2x"
-                      icon="PlusIcon"
-                      class="mr-50" />
-                    <span class="align-baseline">Пополнить баланс</span>
-                  </b-button>
+                  <b-link :to="{ name: 'bill' }">
+                    <b-button
+                      variant="warning"
+                      class="d-flex align-items-center margin">
+                      <feather-icon
+                        size="2x"
+                        icon="PlusIcon"
+                        class="mr-50" />
+                      <span class="align-baseline">Пополнить баланс</span>
+                    </b-button>
+                  </b-link>
                 </b-card-text>
               </b-card-actions>
             </b-overlay>
@@ -475,7 +476,7 @@ import { ru } from 'apexcharts/dist/locales/ru.json';
 import { $themeColors } from '@themeConfig';
 import { Icon } from 'leaflet';
 import {
-  BCardText, BCol, BButton, BTable, BCardBody, BOverlay,
+  BCardText, BCol, BButton, BTable, BCardBody, BOverlay, BLink,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line no-underscore-dangle
@@ -494,6 +495,7 @@ export default {
     BCol,
     BCardBody,
     BOverlay,
+    BLink,
     // BRow,
     BCardText,
     vSelect,

@@ -12,8 +12,12 @@ export const useInputImageRenderer = (inputEl, callback) => {
     );
 
     if (file) {
-      console.log(file);
-      reader.readAsDataURL(file);
+      if (file.size < 5242880) {
+        reader.readAsDataURL(file);
+      } else {
+        // eslint-disable-next-line no-alert
+        alert('Размер файла слишком большой');
+      }
     }
   };
   return {
