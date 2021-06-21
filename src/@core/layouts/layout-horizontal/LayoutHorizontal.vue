@@ -19,6 +19,15 @@
         <app-navbar-horizontal-layout-brand />
         <app-navbar-horizontal-layout :toggle-vertical-menu-active="toggleVerticalMenuActive" />
       </slot>
+      <h3 class="mr-1">
+        Договор № :
+      </h3>
+      <v-select
+        v-model="selected"
+        :clearable="false"
+        label="number"
+        class="w-100 mt-1 mb-1"
+        @input="onChange()" />
     </b-navbar>
     <!--/ NAVBAR -->
 
@@ -198,6 +207,7 @@ export default {
       overlayClasses,
     };
   },
+
 };
 </script>
 

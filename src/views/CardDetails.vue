@@ -896,7 +896,7 @@ export default {
 
     getCardNumber() {
       this.$store.dispatch('getCardNumber', this.number);
-      // console.log(this.$store.state.cardNumber);
+      console.log(this.$store.state.cardNumber);
     },
 
     showToast() {

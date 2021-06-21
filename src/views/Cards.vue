@@ -124,7 +124,6 @@
               </b-button-group>
             </div>
           </div>
-
           <div
             class="limits pb-1">
             <label>Остаток по карте </label>
@@ -140,111 +139,96 @@
       <!----ТАБЛИЦА---->
       <section
         v-else
-        class="views">
-        <div
+        class="d-flex flex-column">
+        <b-card
           v-for="(product, index) in products.data.result"
           :key="index"
-          class="d-flex justify-content-between w-100 mb-1 rlt"
+          class="width d-flex justify-content-between  mb-1 rlt w-100 "
           no-body>
-          <b-link
-            :to="{ name: 'card', params: { card_number: product.number } }">
-            <b-img
-              class="card-img-top"
-              :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
-          </b-link>
-          <b-link
-            :to="{ name: 'card', params: { card_number: product.number } }">
-            <div class="item-wrapper abs">
-              <h6 class="item-price">
-                PIN: {{ product.pin }}
-              </h6>
-              <h5 class="item-price">
-                {{ product.number }}
-              </h5>
+          <div class="d-flex position-relative p-1 w-100">
+            <b-link
+              :to="{ name: 'card', params: { card_number: product.number } }">
+              <b-img
+                class="card card-img-top w-100 "
+                :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+            </b-link>
+            <b-link
+              :to="{ name: 'card', params: { card_number: product.number } }">
+              <div class="item-wrapper abs pad">
+                <h6 class="item-price">
+                  PIN: {{ product.pin }}
+                </h6>
+                <h5 class="item-price">
+                  {{ product.number }}
+                </h5>
+              </div>
+            </b-link>
+
+            <div class="d-flex flex-column w-60 mr-1 ml-1">
+              <label> Остаток: {{ getValue(product.limits) }}</label>
+              <div
+                v-for="(i) in product.limits"
+                :key="i.ID"
+                class="mw-50">
+                <b-progress
+                  variant="success"
+                  show-value
+                  class="mt-1"
+                  :value="i.value - i.consumption"
+                  :max="i.value" />
+              </div>
             </div>
-          </b-link>
-          <div class="d-flex flex-column w-60 mr-1 ml-1">
-            <label> Остаток: {{ getValue(product.limits) }}</label>
+            <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1">
+              <h5> Держатель: {{ product.holder }} </h5>
+              <h5> Последняя активность </h5>
+              <h5> Индекс активности </h5>
+            </div>
             <div
-              v-for="(i) in product.limits"
-              :key="i.ID">
-              <b-progress
-
-                variant="success"
-                show-value
-                class="mt-1"
-                :value="i.value - i.consumption"
-                :max="i.value" />
+              class="d-flex flex-column align-items-start mt-2">
+              <b-button
+                variant="light"
+                tag="a"
+                class="btn-wishlist mb-1 mw-100 p-1"
+                @click="toggleProductInWishlist(product)">
+                <feather-icon
+                  icon="EditIcon"
+                  class="mr-50" />
+                Настроить карту
+              </b-button>
+              <b-button
+                variant="light"
+                tag="a"
+                class="btn-wishlist mb-1 mw-100 p-1"
+                @click="toggleProductInWishlist(product)">
+                <feather-icon
+                  icon="LockIcon"
+                  class="mr-25" />
+                Заблокировать карту
+              </b-button>
+              <b-button
+                variant="light"
+                tag="a"
+                class="btn-wishlist mb-1 mw-100 p-1"
+                @click="toggleProductInWishlist(product)">
+                <feather-icon
+                  icon="NavigationIcon"
+                  class="mr-50" />
+                Карта заправок
+              </b-button>
+              <b-button
+                variant="light"
+                tag="a"
+                class="btn-wishlist mw-100 mb-1 w-100 p-1"
+                @click="toggleProductInWishlist(product)">
+                <feather-icon
+                  icon="ListIcon"
+                  class="mr-50" />
+                Транзакции по карте
+              </b-button>
             </div>
           </div>
-
-          <!-- <div v-else
-            class="w-60 pb-1">
-            <label>Остаток по карте </label>
-            <b-progress
-              variant="success"
-              show-value
-              class="mb-1"
-              :value="getValue(product.limits)"
-              :max="getMaxValue(product.limits)" />
-          </div> -->
-
-          <!-- <div
-            class="w-60 pb-1">
-            <label>{{ product.limits }} </label>
-            <b-progress
-              variant="success"
-              show-value
-              class="mb-1"
-              :value="getValue(product.limits)"
-              :max="getMaxValue(product.limits)" />
-          </div> -->
-          <div
-            class="d-flex w-20 flex-column align-items-center">
-            <b-button
-
-              class="btn btn-light p-1 mt-1"
-              style="min-width:200px"
-              @click="toggleProductInWishlist(product)">
-              <feather-icon
-                icon="SettingsIcon"
-                class="mr-50" />
-              Внести изменения
-            </b-button>
-            <b-button
-
-              class="btn btn-light p-1 mt-1"
-              style="min-width:200px"
-              @click="toggleProductInWishlist(product)">
-              <feather-icon
-                icon="Edit3Icon"
-                class="mr-50" />
-              Внести изменения
-            </b-button>
-            <b-button
-
-              class="btn btn-light p-1 mt-1"
-              style="min-width:200px"
-              @click="handleCartActionClick(product)">
-              <feather-icon
-                icon="Trash2Icon"
-                class="mr-50" />
-              Внести изменения
-            </b-button>
-            <b-button
-
-              class="btn btn-light p-1 mt-1"
-              style="min-width:200px"
-              @click="handleCartActionClick(product)">
-              <feather-icon
-                icon="LockIcon"
-                class="mr-50" />
-              Заблокировать карту
-            </b-button>
-          </div>
-        </div>
+        </b-card>
       </section>
-      <!----Конец таблицы--->
     </b-overlay>
   </div>
 </template>
@@ -317,6 +301,7 @@ export default {
       loading.value = true;
       useJwt.getCardsDate().then((response) => {
         products.value = response.data;
+        console.log(products.value);
         loading.value = false;
         if (filters.value !== '') {
           products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
@@ -389,6 +374,11 @@ export default {
   padding: 3px;
 }
 
+.pad {
+  bottom:120px !important;
+  left: 20px !important;
+}
+
 .item-wrapper {
   display: flex;
   flex-direction: column;
@@ -403,6 +393,10 @@ export default {
   position: absolute !important;
   bottom: 35px !important;
   width: 100%;
+}
+
+.width {
+  max-width:100% !important;
 }
 
 .ecommerce-card {
@@ -439,8 +433,8 @@ export default {
 }
 
 .w-60 {
-  width: 60%;
-  max-width: 65% !important;
+  width: 35%;
+  max-width: 37% !important;
 }
 
 // .card-img-top {
