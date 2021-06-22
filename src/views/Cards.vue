@@ -143,7 +143,7 @@
         <b-card
           v-for="(product, index) in products.data.result"
           :key="index"
-          class="width d-flex justify-content-between  mb-1 rlt w-100 "
+          class="table width d-flex justify-content-between  mb-1 rlt w-100 "
           no-body>
           <div class="d-flex position-relative p-1 w-100">
             <b-link
@@ -397,6 +397,14 @@ export default {
 
 .width {
   max-width:100% !important;
+}
+
+.table {
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 25px 0 rgba(black, 0.25);
+  }
 }
 
 .ecommerce-card {

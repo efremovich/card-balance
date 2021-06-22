@@ -14,7 +14,8 @@ export default new Vuex.Store({
   state: {
     visible: false,
     cardNumber: null,
-    password: [null, null],
+    contractNumber: null,
+    contractId: null,
     avatar: '',
   },
   actions: {
@@ -27,11 +28,14 @@ export default new Vuex.Store({
     getCardNumber({ commit }, payload) {
       commit('gotNumber', payload);
     },
-    getPassword({ commit }, payload) {
-      commit('passwordValue', payload);
-    },
     getAvatar({ commit }, payload) {
       commit('getSrc', payload);
+    },
+    getContractNumber({ commit }, payload) {
+      commit('changeContractNumber', payload);
+    },
+    getContractId({ commit }, payload) {
+      commit('changeContractId', payload);
     },
   },
   mutations: {
@@ -44,12 +48,14 @@ export default new Vuex.Store({
     gotNumber(state, payload) {
       state.cardNumber = payload;
     },
-    passwordValue(state, payload) {
-      // eslint-disable-next-line no-sequences
-      state.password[1] = payload;
-    },
     getSrc(state, payload) {
       state.avatar = payload;
+    },
+    changeContractNumber(state, payload) {
+      state.contractNumber = payload;
+    },
+    changeContractId(state, payload) {
+      state.contractId = payload;
     },
   },
   // getters: {
