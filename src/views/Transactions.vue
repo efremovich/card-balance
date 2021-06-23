@@ -385,10 +385,6 @@ export default {
         .filter((f) => f.sortable)
         .map((f) => ({ text: f.label, value: f.key }));
     },
-    // viewStatus() {
-    //   return this.cardStatus[this.items.card_status];
-    // },
-
   },
 
   created() {
@@ -421,7 +417,6 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.length;
-          console.log(this.transactions);
         }
         this.loadDone = false;
         return this.transactions;

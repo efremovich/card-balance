@@ -1,13 +1,5 @@
 <template>
   <div v-if="download">
-    <!-- <b-overlay
-      :show="!download"
-      variant="black"
-      spinner-type="grow"
-      spinner-variant="primary"
-      blur="2px"
-      opacity=".75"
-      rounded="md"> -->
     <div>
       <div class="column">
         <div class="row">
@@ -20,6 +12,7 @@
               opacity=".75"
               rounded="sm">
               <b-card-actions
+                v-if="getWidth<769"
                 ref="userDate"
                 title="Информация по договору"
                 action-refresh
@@ -40,20 +33,59 @@
                       currency: 'RUB'
                     }) }}</span>
                   </h5>
-                  <!-- <div class="d-flex align-items-baseline"> -->
                   <h3 class="mr-1">
                     Договор № :
                   </h3>
                   <v-select
-                    :value="$store.state.contractNumber"
+                    v-model="selected"
                     :clearable="false"
                     label="number"
                     :options="option"
                     class="w-100 mt-1 mb-1"
-                    @input="onChange" />
-                  <h4>{{ selected }}</h4>
-                  <!-- </div> -->
+                    @input="Change" />
                   <h4>Статус: {{ cardBalance.contract.status }} </h4>
+                  <h4>
+                    От: {{ cardBalance.contract.date | formatDate }}
+                  </h4>
+                  <b-link :to="{ name: 'bill' }">
+                    <b-button
+                      variant="warning"
+                      class="d-flex align-items-center margin">
+                      <feather-icon
+                        size="2x"
+                        icon="PlusIcon"
+                        class="mr-50" />
+                      <span class="align-baseline">Пополнить баланс</span>
+                    </b-button>
+                  </b-link>
+                </b-card-text>
+              </b-card-actions>
+              <b-card-actions
+                v-else
+                ref="userDate"
+                title="Информация по договору"
+                action-refresh
+                @refresh="refreshMainCard('userDate')">
+                <b-card-text fluid>
+                  <h3 class="mr-1">
+                    Договор №: {{ gotSelected }}
+                  </h3>
+                  <h4>Статус: {{ cardBalance.contract.status }} </h4>
+                  <h3>
+                    Баланс: <span> {{
+                      cardBalance.contract.balance.toLocaleString('ru-RU', {
+                        style: 'currency',
+                        currency: 'RUB'
+                      })
+                    }} </span>
+                  </h3>
+                  <h5 v-if="cardBalance.contract.deposit !== 0">
+                    Допустимая задолженность:
+                    <span class="text-danger h5">  {{ cardBalance.contract.deposit.toLocaleString('ru-RU', {
+                      style: 'currency',
+                      currency: 'RUB'
+                    }) }}</span>
+                  </h5>
                   <h4>
                     От: {{ cardBalance.contract.date | formatDate }}
                   </h4>
@@ -407,8 +439,7 @@ export default {
       ID: null,
       download: false,
       showLoading: false,
-      // selected: null,
-      selected: this.$store.state.contractNumber,
+      selected: null,
       fields: [
         {
           key: 'service.full_name',
@@ -526,18 +557,24 @@ export default {
     getNotActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
     },
-  },
-  watch: {
-    download(val, oldVal) {
-      console.log('новое значение: %s, старое значение: %s', val, oldVal);
+    gotSelected() {
+      return this.$store.state.contractNumber;
+    },
+    getWidth() {
+      return this.$store.state.app.windowWidth;
     },
   },
+  watch: {
+    gotSelected() {
+      this.onChange();
+    },
+  },
+
   created() {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
-          console.log('UserData:', this.userData);
           this.makeOptions();
           this.getSelected();
         });
@@ -684,6 +721,19 @@ export default {
             this.refreshConsumptions(this.$store.state.contractId);
             this.showLoading = false;
             this.refreshData(this.$store.state.contractId);
+          }
+        });
+    },
+    Change() {
+      this.showLoading = true;
+      useJwt.changeContract(this.selected.id)
+        .then((response) => {
+          if (response.status) {
+            this.cardBalance = response.data;
+            this.cardBalance = response.data;
+            this.refreshConsumptions(this.selected.id);
+            this.showLoading = false;
+            this.refreshData(this.selected.id);
           }
         });
     },

@@ -335,11 +335,11 @@ export default class JwtService {
   }
 
   // Инфо по картам (cards)
-  async getCardsDate() {
+  async getCardsDate(params) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/cards/${userData.account.contract_id}`,
+        `/api/cards/${userData.account.contract_id}?${params}`,
       );
       return response;
     }

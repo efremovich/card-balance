@@ -17,6 +17,7 @@ export default new Vuex.Store({
     contractNumber: null,
     contractId: null,
     avatar: '',
+    cardsView: '',
   },
   actions: {
     getVisible({ commit }) {
@@ -36,6 +37,9 @@ export default new Vuex.Store({
     },
     getContractId({ commit }, payload) {
       commit('changeContractId', payload);
+    },
+    getCardsView({ commit }, payload) {
+      commit('cardsView', payload);
     },
   },
   mutations: {
@@ -57,10 +61,10 @@ export default new Vuex.Store({
     changeContractId(state, payload) {
       state.contractId = payload;
     },
+    cardsView(state, payload) {
+      state.cardsView = payload;
+    },
   },
-  // getters: {
-  //   avatarState: (state) => state.avatar,
-  // },
   modules: {
     app,
     appConfig,

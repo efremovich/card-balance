@@ -19,8 +19,11 @@
       <!-- Bookmarks Container -->
       <bookmarks />
     </div>
-    <div class="d-flex w-100">
-      <div class="d-flex w-100 justify-content-center align-items-center">
+    <div
+      class="d-flex w-100">
+      <div
+        v-if="getWidth>768"
+        class="d-flex w-100 justify-content-center align-items-center">
         <h6 class="p-1">
           Договор №:
         </h6>
@@ -79,12 +82,21 @@ export default {
       showLoading: false,
     };
   },
+  computed: {
+    getWidth() {
+      return this.$store.state.app.windowWidth;
+    },
+  },
+  // watch: {
+  //   getWidth() {
+  //     console.log(this.$store.state.app.windowWidth);
+  //   },
+  // },
   created() {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
-          console.log('NAVBAR', this.userData);
           this.makeOptions();
           this.getSelected();
         });

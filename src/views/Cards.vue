@@ -124,6 +124,7 @@
               </b-button-group>
             </div>
           </div>
+
           <div
             class="limits pb-1">
             <label>Остаток по карте </label>
@@ -135,7 +136,46 @@
               :max="getMaxValue(product.limits)" />
           </div>
         </b-card>
+        <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
+          <b-form-group
+            label="На странице"
+            label-cols="6"
+            label-align="left"
+            label-size="sm"
+            label-for="sortBySelect"
+            class="text-nowrap mb-md-0 mr-1">
+            <b-form-select
+              id="perPageSelect"
+              v-model="perPage"
+              size="sm"
+              inline
+              :options="pageOptions" />
+          </b-form-group>
+          <div>
+            <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              first-number
+              last-number
+              prev-class="prev-item"
+              next-class="next-item"
+              class="mb-0">
+              <template #prev-text>
+                <feather-icon
+                  icon="ChevronLeftIcon"
+                  size="18" />
+              </template>
+              <template #next-text>
+                <feather-icon
+                  icon="ChevronRightIcon"
+                  size="18" />
+              </template>
+            </b-pagination>
+          </div>
+        </b-card-body>
       </section>
+
       <!----ТАБЛИЦА---->
       <section
         v-else
@@ -229,14 +269,17 @@
           </div>
         </b-card>
       </section>
+      <!----Конец таблицы--->
     </b-overlay>
   </div>
 </template>
-
 <script>
 import {
   BCard,
   BImg,
+  BPagination,
+  BFormSelect,
+  BFormGroup,
   BButton,
   BOverlay,
   VBTooltip,
@@ -250,11 +293,13 @@ import {
   BFormInput,
   BFormRadioGroup,
   BFormRadio,
+  BCardBody,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
 import { watch, ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
+// import store from '@/store';
 import { useShopUi, useShopRemoteData } from './useECommerceShop';
 import { useEcommerceUi } from './useEcommerce';
 
@@ -265,7 +310,11 @@ export default {
   },
   components: {
     BLink,
+    BCardBody,
+    BFormSelect,
     BCard,
+    BFormGroup,
+    BPagination,
     BProgress,
     BButtonGroup,
     BImg,
@@ -278,62 +327,66 @@ export default {
     BInputGroupAppend,
     BFormRadioGroup,
     BFormRadio,
-    // BPagination,
   },
   setup() {
     const filters = ref('');
     const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
     const loading = ref(false);
-    const { itemView, itemViewOptions, totalProducts } = useShopUi();
-
-    const getPopularityColor = (num) => {
-      if (Number(num) > 7000) return 'success';
-      if (Number(num) > 4000) return 'primary';
-      if (Number(num) >= 2000) return 'warning';
-      if (Number(num) < 1000) return 'danger';
-      return 'success';
-    };
+    const { itemViewOptions, totalProducts } = useShopUi();
+    const totalRows = ref(null);
+    const pageOptions = [6, 12, 18];
+    const currentPage = 1;
+    const perPage = 6;
     const { products } = useShopRemoteData();
-
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
-
     const fetchShopProducts = () => {
       loading.value = true;
-      useJwt.getCardsDate().then((response) => {
-        products.value = response.data;
-        console.log(products.value);
-        loading.value = false;
-        if (filters.value !== '') {
-          products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
+      useJwt.getCardsDate('&offset=6&limit=6').then((response) => {
+        if (response.data.status) {
+          products.value = response.data;
+          totalRows.value = products.value.data.result.length;
+          loading.value = false;
+          if (filters.value !== '') {
+            products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
+          }
         }
       });
     };
-
     fetchShopProducts();
     watch([filters], () => {
       fetchShopProducts();
     });
-
+    // watch([itemView], () => {
+    //   store.dispatch('getCardsView', itemView);
+    //   console.log(itemView);
+    // });
     return {
       filters,
-      getPopularityColor,
-      itemView,
       itemViewOptions,
       totalProducts,
       toggleProductInWishlist,
       handleCartActionClick,
       products,
       loading,
+      totalRows,
+      pageOptions,
+      currentPage,
       mqShallShowLeftSidebar,
+      perPage,
     };
   },
   data() {
     return {
       number: null,
       view: true,
+      itemView: this.$store.state.cardsView,
     };
   },
-
+  watch: {
+    itemView() {
+      this.$store.dispatch('getCardsView', this.itemView);
+    },
+  },
   methods: {
     getMaxValue(item) {
       if (item.length < 1) {
@@ -342,11 +395,9 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
     },
-
     // getChangeTheView() {
     //   this.itemView = !this.itemView;
     // },
-
     getValue(item) {
       if (item.length < 1) {
         return 0;
@@ -362,9 +413,7 @@ export default {
 <style lang="scss">
 // @import "../@core/scss/base/ecommerce";
 </style>
-
 <style lang="scss" scoped>
-
 .card {
   display: flex;
   flex-wrap: wrap;
@@ -373,12 +422,10 @@ export default {
   align-items: center;
   padding: 3px;
 }
-
 .pad {
   bottom:120px !important;
   left: 20px !important;
 }
-
 .item-wrapper {
   display: flex;
   flex-direction: column;
@@ -386,7 +433,6 @@ export default {
   position: relative;
   left: 20px;
 }
-
 .item-options {
   display: flex;
   flex-direction: column;
@@ -394,30 +440,24 @@ export default {
   bottom: 35px !important;
   width: 100%;
 }
-
 .width {
   max-width:100% !important;
 }
-
 .table {
-
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 25px 0 rgba(black, 0.25);
   }
 }
-
 .ecommerce-card {
   background-color: inherit !important;
   cursor: pointer;
   margin: 3px;
-
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 25px 0 rgba(black, 0.25);
   }
 }
-
 .item-price {
   position: relative;
   left: 10px;
@@ -429,26 +469,21 @@ export default {
 .rlt {
   position: relative;
 }
-
 .abs {
   position: absolute;
   bottom: 95px;
   left:10px;
 }
-
 .w-20 {
   width: 20%;
 }
-
 .w-60 {
   width: 35%;
   max-width: 37% !important;
 }
-
 // .card-img-top {
 //   min-height:200px !important;
 // }
-
 .item-img {
   display: flex;
   flex-direction: column;
@@ -475,10 +510,8 @@ export default {
   width: 100%;
   height: 12px;
 }
-
 .btn {
   max-width: 50px;
-
   // &:hover {
   //   background-color: "primary";
   // }
