@@ -1,14 +1,5 @@
 <template>
   <div>
-    <!-- <b-button
-        variant="success"
-        class="w-75 btn btn-primary"
-        style="min-width:100px"
-        @click="getChangeTheView">
-        <span class="align-baseline" />
-        {{ view ? "Строка": "Таблица" }}
-      </b-button> -->
-
     <!-- Item View Radio Button Group  -->
     <b-form-radio-group
       v-model="itemView"
@@ -160,7 +151,9 @@
               last-number
               prev-class="prev-item"
               next-class="next-item"
-              class="mb-0">
+              class="mb-0"
+              align="center"
+              @change="selectPage">
               <template #prev-text>
                 <feather-icon
                   icon="ChevronLeftIcon"
@@ -341,7 +334,7 @@ export default {
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
     const fetchShopProducts = () => {
       loading.value = true;
-      useJwt.getCardsDate('&offset=6&limit=6').then((response) => {
+      useJwt.getCardsDate().then((response) => {
         if (response.data.status) {
           products.value = response.data;
           totalRows.value = products.value.data.result.length;
@@ -353,13 +346,11 @@ export default {
       });
     };
     fetchShopProducts();
+
     watch([filters], () => {
       fetchShopProducts();
     });
-    // watch([itemView], () => {
-    //   store.dispatch('getCardsView', itemView);
-    //   console.log(itemView);
-    // });
+
     return {
       filters,
       itemViewOptions,
@@ -386,7 +377,30 @@ export default {
     itemView() {
       this.$store.dispatch('getCardsView', this.itemView);
     },
+    perPage() {
+      useJwt.getCardsDate(`offset=${this.currentPage}&limit=${this.perPage}`).then((response) => {
+        if (response.data.status) {
+          this.products = response.data;
+          // this.totalRows = this.products.data.result.length;
+        }
+      });
+    },
+
   },
+  mounted() {
+    this.loading = true;
+    useJwt.getCardsDate(`offset=${this.currentPage}&limit=${this.perPage}`).then((response) => {
+      if (response.data.status) {
+        this.products = response.data;
+        // this.totalRows = this.products.data.result.length;
+        this.loading = false;
+        if (this.filters !== '') {
+          this.products.data.result = response.data.data.result.filter((product) => product.number.includes(this.filters));
+        }
+      }
+    });
+  },
+
   methods: {
     getMaxValue(item) {
       if (item.length < 1) {
@@ -395,9 +409,14 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
     },
-    // getChangeTheView() {
-    //   this.itemView = !this.itemView;
-    // },
+    selectPage(page) {
+      useJwt.getCardsDate(`&offset=${page * 6}&limit=${this.perPage}`).then((response) => {
+        if (response.data.status) {
+          this.products = response.data;
+          // this.totalRows = this.products.data.result.length;
+        }
+      });
+    },
     getValue(item) {
       if (item.length < 1) {
         return 0;
