@@ -200,8 +200,8 @@
 export default {
   props: {
     transactions: {
-      type: Array,
-      default: () => [],
+      type: Object,
+      default: () => {},
     },
     today: {
       type: [String],
