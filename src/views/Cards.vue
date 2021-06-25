@@ -127,46 +127,6 @@
               :max="getMaxValue(product.limits)" />
           </div>
         </b-card>
-        <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
-          <b-form-group
-            label="На странице"
-            label-cols="6"
-            label-align="left"
-            label-size="sm"
-            label-for="sortBySelect"
-            class="text-nowrap mb-md-0 mr-1">
-            <b-form-select
-              id="perPageSelect"
-              v-model="perPage"
-              size="sm"
-              inline
-              :options="pageOptions" />
-          </b-form-group>
-          <div>
-            <b-pagination
-              v-model="currentPage"
-              :total-rows="totalRows"
-              :per-page="perPage"
-              first-number
-              last-number
-              prev-class="prev-item"
-              next-class="next-item"
-              class="mb-0"
-              align="center"
-              @change="selectPage">
-              <template #prev-text>
-                <feather-icon
-                  icon="ChevronLeftIcon"
-                  size="18" />
-              </template>
-              <template #next-text>
-                <feather-icon
-                  icon="ChevronRightIcon"
-                  size="18" />
-              </template>
-            </b-pagination>
-          </div>
-        </b-card-body>
       </section>
 
       <!----ТАБЛИЦА---->
@@ -262,6 +222,46 @@
           </div>
         </b-card>
       </section>
+      <b-card-body class="d-flex justify-content-center flex-wrap align-items-center">
+        <b-form-group
+          label="На странице"
+          label-cols="6"
+          label-align="left"
+          label-size="sm"
+          label-for="sortBySelect"
+          class="text-nowrap mb-md-0 ml-1 pl-0 align-middle">
+          <b-form-select
+            id="perPageSelect"
+            v-model="perPage"
+            size="sm"
+            inline
+            :options="pageOptions" />
+        </b-form-group>
+        <div>
+          <b-pagination
+            v-model="currentPage"
+            :total-rows="totalRows"
+            :per-page="perPage"
+            first-number
+            last-number
+            prev-class="prev-item"
+            next-class="next-item"
+            class="mb-0"
+            align="center"
+            @change="selectPage">
+            <template #prev-text>
+              <feather-icon
+                icon="ChevronLeftIcon"
+                size="18" />
+            </template>
+            <template #next-text>
+              <feather-icon
+                icon="ChevronRightIcon"
+                size="18" />
+            </template>
+          </b-pagination>
+        </div>
+      </b-card-body>
       <!----Конец таблицы--->
     </b-overlay>
   </div>
@@ -334,10 +334,10 @@ export default {
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
     const fetchShopProducts = () => {
       loading.value = true;
-      useJwt.getCardsDate().then((response) => {
+      useJwt.getCardsDate(`offset=${currentPage}&limit=${perPage}`).then((response) => {
         if (response.data.status) {
           products.value = response.data;
-          totalRows.value = products.value.data.result.length;
+          totalRows.value = products.value.data.total;
           loading.value = false;
           if (filters.value !== '') {
             products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
@@ -387,19 +387,6 @@ export default {
     },
 
   },
-  mounted() {
-    this.loading = true;
-    useJwt.getCardsDate(`offset=${this.currentPage}&limit=${this.perPage}`).then((response) => {
-      if (response.data.status) {
-        this.products = response.data;
-        // this.totalRows = this.products.data.result.length;
-        this.loading = false;
-        if (this.filters !== '') {
-          this.products.data.result = response.data.data.result.filter((product) => product.number.includes(this.filters));
-        }
-      }
-    });
-  },
 
   methods: {
     getMaxValue(item) {
@@ -442,8 +429,8 @@ export default {
   padding: 3px;
 }
 .pad {
-  bottom:120px !important;
-  left: 20px !important;
+  bottom:110px !important;
+  left: 30px !important;
 }
 .item-wrapper {
   display: flex;
@@ -452,6 +439,7 @@ export default {
   position: relative;
   left: 20px;
 }
+
 .item-options {
   display: flex;
   flex-direction: column;
@@ -470,7 +458,7 @@ export default {
 }
 .ecommerce-card {
   background-color: inherit !important;
-  cursor: pointer;
+  // cursor: pointer;
   margin: 3px;
   &:hover {
     transform: translateY(-5px);
