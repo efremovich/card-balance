@@ -375,7 +375,7 @@ export default {
   },
   computed: {
     gotSelected() {
-      return this.$store.getters.contractID;
+      return this.$store.getters.CONTRACT_ID;
     },
   },
   watch: {
@@ -392,7 +392,7 @@ export default {
     },
     gotSelected() {
       this.loading = true;
-      useJwt.getChangeCardsDate(this.$store.getters.contractID, `offset=${this.currentPage}&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.$store.getters.CONTRACT_ID, `offset=${this.currentPage}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
           this.totalRows = this.products.data.total;

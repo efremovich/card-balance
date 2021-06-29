@@ -6,7 +6,6 @@
       spinner-medium
       variant="transparent"
       rounded="md">
-      <!-- <div v-if="items.transactions.length>0"> -->
       <b-container
         fluid
         class="d-flex justify-content-center">
@@ -108,8 +107,8 @@
                 </div>
               </div>
             </b-card-body>
-
             <b-table
+              v-if="getWidth !== 'xs'"
               hover
               responsive
               class="position-relative table-hover text-center"
@@ -190,6 +189,86 @@
                 </b-col>
               </template>
             </b-table>
+            <b-table
+              v-else
+              hover
+              responsive
+              class="position-relative table-hover text-center"
+              :per-page="perPage"
+              :current-page="currentPage"
+              :items="transactions.data"
+              :fields="fieldsSM"
+              :sort-by.sync="sortBy"
+              :sort-desc.sync="sortDesc"
+              :sort-direction="sortDirection"
+              :filter="filter"
+              :filter-included-fields="filterOn"
+              @filtered="onFiltered">
+              <template #cell(summ)="row">
+                <b-col @click="row.toggleDetails">
+                  <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseInt(row.item.summ).toLocaleString('ru-RU', {
+                    style: 'currency',
+                    currency: 'RUB'
+                  }) }}</span><br>
+
+                  <b-button
+                    class="mt-1"
+                    pill
+                    size="sm"
+                    @click="row.detailsShowing">
+                    Детали
+                  </b-button>
+                </b-col>
+              </template>
+              <!--
+              <template
+                #cell(date)="row">
+                <b-col @click="row.toggleDetails">
+                  {{ row.item.date | formatDate }}
+                </b-col>
+              </template> -->
+
+              <template #row-details="row">
+                <b-card
+                  @click="row.toggleDetails">
+                  <b-row class="mb-2">
+                    <b-col
+                      md="4"
+                      class="mb-1">
+                      <strong>Дата/время : </strong>{{ row.item.date | formatDate }}
+                    </b-col>
+                    <b-col
+                      md="4"
+                      class="mb-1">
+                      <strong>Количество : </strong>{{ row.item.quantity }}
+                    </b-col>
+                    <b-col
+                      md="4"
+                      class="mb-1">
+                      <strong>Услуга : </strong>{{ row.item.service.full_name }}
+                    </b-col>
+                    <b-col
+                      md="4"
+                      class="mb-1">
+                      <strong>Адрес операции: </strong>{{ row.item.pos.address }}
+                    </b-col>
+                  </b-row>
+
+                  <b-button
+                    size="sm"
+                    variant="outline-secondary"
+                    @click="row.toggleDetails">
+                    Скрыть детали
+                  </b-button>
+                </b-card>
+              </template>
+
+              <template #cell(period)="row">
+                <b-col @click="row.toggleDetails">
+                  {{ row.item.date | formatDate }}
+                </b-col>
+              </template>
+            </b-table>
             <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
               <!-- page length -->
               <b-form-group
@@ -245,6 +324,7 @@ import { required, credit } from '@validations';
 
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import { Russian } from 'flatpickr/dist/l10n/ru';
+import store from '@/store';
 
 import {
   BRow,
@@ -343,6 +423,18 @@ export default {
           sortable: true,
         },
       ],
+      fieldsSM: [
+        {
+          key: 'date',
+          label: 'Дата',
+          sortable: true,
+        },
+        {
+          key: 'summ',
+          label: 'Сумма',
+          sortable: true,
+        },
+      ],
       columns: {
         'Товар/услуга': {
           field: 'service.full_name',
@@ -385,10 +477,14 @@ export default {
         .filter((f) => f.sortable)
         .map((f) => ({ text: f.label, value: f.key }));
     },
-    // viewStatus() {
-    //   return this.cardStatus[this.items.card_status];
-    // },
-
+    getWidth() {
+      return store.getters['app/currentBreakPoint'];
+    },
+  },
+  watch: {
+    getWidth() {
+      return this.getWidth;
+    },
   },
 
   created() {

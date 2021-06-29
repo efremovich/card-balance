@@ -90,7 +90,6 @@ export default {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
-          // eslint-disable-next-line vue/no-mutating-props
           this.userData = response.data;
         });
       }

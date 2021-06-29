@@ -66,8 +66,8 @@ export default new Vuex.Store({
     },
   },
   getters: {
-    contractID: (state) => state.contractId,
-    contractNUMBER: (state) => state.contractNumber,
+    CONTRACT_ID: (state) => state.contractId,
+    CONTRACT_NUMBER: (state) => state.contractNumber,
     CARDS_VIEW: (state) => state.cardsView,
   },
   modules: {

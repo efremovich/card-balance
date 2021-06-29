@@ -12,7 +12,7 @@
               opacity=".75"
               rounded="sm">
               <b-card-actions
-                v-if="getWidth<769"
+                v-if="getWidth === 'sm'"
                 ref="userDate"
                 title="Информация по договору"
                 action-refresh
@@ -390,6 +390,7 @@ import VueApexCharts from 'vue-apexcharts';
 import { ru } from 'apexcharts/dist/locales/ru.json';
 import { $themeColors } from '@themeConfig';
 import { Icon } from 'leaflet';
+import store from '@/store';
 import {
   BCardText, BCol, BButton, BTable, BCardBody, BOverlay, BLink,
 } from 'bootstrap-vue';
@@ -558,15 +559,18 @@ export default {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
     },
     gotSelected() {
-      return this.$store.getters.contractNUMBER;
+      return this.$store.getters.CONTRACT_NUMBER;
     },
     getWidth() {
-      return this.$store.state.app.windowWidth;
+      return store.getters['app/currentBreakPoint'];
     },
   },
   watch: {
     gotSelected() {
       this.onChange();
+    },
+    getWidth() {
+      return this.getWidth;
     },
   },
 
@@ -635,8 +639,7 @@ export default {
       });
     },
     getSelected() {
-      this.selected = this.$store.getters.contractNUMBER;
-      // console.log(this.selected);
+      this.selected = this.$store.getters.CONTRACT_NUMBER;
     },
     makeOptions() {
       this.userData.contracts.forEach((el) => {
@@ -665,7 +668,7 @@ export default {
       });
     },
     refreshExpenses(card) {
-      useJwt.getConsumption(this.$store.getters.contractID).then((response) => {
+      useJwt.getConsumption(this.$store.getters.CONTRACT_ID).then((response) => {
         if (response.data.status) {
           this.currentConsumption = response.data;
           this.$refs[card].showLoading = false;
@@ -703,7 +706,7 @@ export default {
       });
     },
     refreshConsumption(card) {
-      useJwt.getDynamic(this.$store.getters.contractID).then((response) => {
+      useJwt.getDynamic(this.$store.getters.CONTRACT_ID).then((response) => {
         if (response.data.status) {
           this.currentConsumptionDynamic = response.data;
           this.$refs[card].showLoading = false;
@@ -714,13 +717,13 @@ export default {
     },
     onChange() {
       this.showLoading = true;
-      useJwt.changeContract(this.$store.getters.contractID)
+      useJwt.changeContract(this.$store.getters.CONTRACT_ID)
         .then((response) => {
           if (response.status) {
             this.cardBalance = response.data;
-            this.refreshConsumptions(this.$store.getters.contractID);
+            this.refreshConsumptions(this.$store.getters.CONTRACT_ID);
             this.showLoading = false;
-            this.refreshData(this.$store.getters.contractID);
+            this.refreshData(this.$store.getters.CONTRACT_ID);
           }
         });
     },
