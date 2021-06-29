@@ -8,19 +8,13 @@
         <p class="user-name font-weight-bolder mb-0">
           {{ userData.account.name }}
         </p>
-        <!-- <span class="user-status">{{ userData.role }}</span> -->
       </div>
       <b-avatar
         size="50"
         :src="userData.account.avatar"
         variant="light-primary"
         class="badge-minimal"
-        badge-variant="success">
-        <!-- <feather-icon
-          v-if="!userData.fullName"
-          icon="UserIcon"
-          size="22" /> -->
-      </b-avatar>
+        badge-variant="success" />
     </template>
 
     <b-dropdown-item :to="{ name: 'profile' }">
@@ -31,34 +25,6 @@
         class="mr-50" />
       <span>Профиль</span>
     </b-dropdown-item>
-    <!-- <b-dropdown-item
-      :to="{ name: 'apps-email' }"
-      link-class="d-flex align-items-center">
-      <feather-icon
-        size="16"
-        icon="MailIcon"
-        class="mr-50" />
-      <span>Inbox</span>
-    </b-dropdown-item> -->
-    <!-- <b-dropdown-item
-      :to="{ name: 'apps-todo' }"
-      link-class="d-flex align-items-center">
-      <feather-icon
-        size="16"
-        icon="CheckSquareIcon"
-        class="mr-50" />
-      <span>Task</span>
-    </b-dropdown-item> -->
-    <!-- <b-dropdown-item
-      :to="{ name: 'apps-chat' }"
-      link-class="d-flex align-items-center">
-      <feather-icon
-        size="16"
-        icon="MessageSquareIcon"
-        class="mr-50" />
-      <span>Chat</span>
-    </b-dropdown-item> -->
-
     <b-dropdown-divider />
 
     <b-dropdown-item
@@ -70,24 +36,6 @@
         class="mr-50" />
       <span>Настройки</span>
     </b-dropdown-item>
-    <!-- <b-dropdown-item
-      :to="{ name: 'pages-pricing' }"
-      link-class="d-flex align-items-center">
-      <feather-icon
-        size="16"
-        icon="CreditCardIcon"
-        class="mr-50" />
-      <span>Pricing</span>
-    </b-dropdown-item> -->
-    <!-- <b-dropdown-item
-      :to="{ name: 'pages-faq' }"
-      link-class="d-flex align-items-center">
-      <feather-icon
-        size="16"
-        icon="HelpCircleIcon"
-        class="mr-50" />
-      <span>FAQ</span>
-    </b-dropdown-item> -->
     <b-dropdown-item
       link-class="d-flex align-items-center"
       @click="logout">
@@ -144,14 +92,15 @@ export default {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           // eslint-disable-next-line vue/no-mutating-props
           this.userData = response.data;
-          // console.log(this.userData.account.avatar);
         });
       }
     });
   },
+
   methods: {
     change() {
       this.$store.dispatch('getVisible');
+      this.visible = true;
     },
 
     logout() {

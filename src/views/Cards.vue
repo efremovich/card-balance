@@ -1,14 +1,5 @@
 <template>
   <div>
-    <!-- <b-button
-        variant="success"
-        class="w-75 btn btn-primary"
-        style="min-width:100px"
-        @click="getChangeTheView">
-        <span class="align-baseline" />
-        {{ view ? "Строка": "Таблица" }}
-      </b-button> -->
-
     <!-- Item View Radio Button Group  -->
     <b-form-radio-group
       v-model="itemView"
@@ -137,122 +128,151 @@
           </div>
         </b-card>
       </section>
+
       <!----ТАБЛИЦА---->
       <section
         v-else
-        class="views">
-        <div
+        class="d-flex flex-column">
+        <b-card
           v-for="(product, index) in products.data.result"
           :key="index"
-          class="d-flex justify-content-between w-100 mb-1 rlt"
+          class="table width d-flex justify-content-between  mb-1 rlt w-100 "
           no-body>
-          <b-link
-            :to="{ name: 'card', params: { card_number: product.number } }">
-            <b-img
-              class="card-img-top"
-              :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
-          </b-link>
-          <b-link
-            :to="{ name: 'card', params: { card_number: product.number } }">
-            <div class="item-wrapper abs">
-              <h6 class="item-price">
-                PIN: {{ product.pin }}
-              </h6>
-              <h5 class="item-price">
-                {{ product.number }}
-              </h5>
+          <div class="d-flex position-relative p-1 w-100">
+            <b-link
+              :to="{ name: 'card', params: { card_number: product.number } }">
+              <b-img
+                class="card card-img-top w-100 "
+                :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+            </b-link>
+            <b-link
+              :to="{ name: 'card', params: { card_number: product.number } }">
+              <div class="item-wrapper abs pad">
+                <h6 class="item-price">
+                  PIN: {{ product.pin }}
+                </h6>
+                <h5 class="item-price">
+                  {{ product.number }}
+                </h5>
+              </div>
+            </b-link>
+
+            <div class="d-flex flex-column w-60 mr-1 ml-1">
+              <label> Остаток: {{ getValue(product.limits) }}</label>
+              <div
+                v-for="(i) in product.limits"
+                :key="i.ID"
+                class="mw-50">
+                <b-progress
+                  variant="success"
+                  show-value
+                  class="mt-1"
+                  :value="i.value - i.consumption"
+                  :max="i.value" />
+              </div>
             </div>
-          </b-link>
-          <div class="d-flex flex-column w-60 mr-1 ml-1">
-            <label> Остаток: {{ getValue(product.limits) }}</label>
+            <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1">
+              <h5> Держатель: {{ product.holder }} </h5>
+              <h5> Последняя активность </h5>
+              <h5> Индекс активности </h5>
+            </div>
             <div
-              v-for="(i) in product.limits"
-              :key="i.ID">
-              <b-progress
-
-                variant="success"
-                show-value
-                class="mt-1"
-                :value="i.value - i.consumption"
-                :max="i.value" />
+              class="d-flex flex-column align-items-start mt-2">
+              <b-button
+                variant="light"
+                tag="a"
+                class="btn-wishlist mb-1 mw-100 p-1"
+                @click="toggleProductInWishlist(product)">
+                <feather-icon
+                  icon="EditIcon"
+                  class="mr-50" />
+                Настроить карту
+              </b-button>
+              <b-button
+                variant="light"
+                tag="a"
+                class="btn-wishlist mb-1 mw-100 p-1"
+                @click="toggleProductInWishlist(product)">
+                <feather-icon
+                  icon="LockIcon"
+                  class="mr-25" />
+                Заблокировать карту
+              </b-button>
+              <b-button
+                variant="light"
+                tag="a"
+                class="btn-wishlist mb-1 mw-100 p-1"
+                @click="toggleProductInWishlist(product)">
+                <feather-icon
+                  icon="NavigationIcon"
+                  class="mr-50" />
+                Карта заправок
+              </b-button>
+              <b-button
+                variant="light"
+                tag="a"
+                class="btn-wishlist mw-100 mb-1 w-100 p-1"
+                @click="toggleProductInWishlist(product)">
+                <feather-icon
+                  icon="ListIcon"
+                  class="mr-50" />
+                Транзакции по карте
+              </b-button>
             </div>
           </div>
-
-          <!-- <div v-else
-            class="w-60 pb-1">
-            <label>Остаток по карте </label>
-            <b-progress
-              variant="success"
-              show-value
-              class="mb-1"
-              :value="getValue(product.limits)"
-              :max="getMaxValue(product.limits)" />
-          </div> -->
-
-          <!-- <div
-            class="w-60 pb-1">
-            <label>{{ product.limits }} </label>
-            <b-progress
-              variant="success"
-              show-value
-              class="mb-1"
-              :value="getValue(product.limits)"
-              :max="getMaxValue(product.limits)" />
-          </div> -->
-          <div
-            class="d-flex w-20 flex-column align-items-center">
-            <b-button
-
-              class="btn btn-light p-1 mt-1"
-              style="min-width:200px"
-              @click="toggleProductInWishlist(product)">
-              <feather-icon
-                icon="SettingsIcon"
-                class="mr-50" />
-              Внести изменения
-            </b-button>
-            <b-button
-
-              class="btn btn-light p-1 mt-1"
-              style="min-width:200px"
-              @click="toggleProductInWishlist(product)">
-              <feather-icon
-                icon="Edit3Icon"
-                class="mr-50" />
-              Внести изменения
-            </b-button>
-            <b-button
-
-              class="btn btn-light p-1 mt-1"
-              style="min-width:200px"
-              @click="handleCartActionClick(product)">
-              <feather-icon
-                icon="Trash2Icon"
-                class="mr-50" />
-              Внести изменения
-            </b-button>
-            <b-button
-
-              class="btn btn-light p-1 mt-1"
-              style="min-width:200px"
-              @click="handleCartActionClick(product)">
-              <feather-icon
-                icon="LockIcon"
-                class="mr-50" />
-              Заблокировать карту
-            </b-button>
-          </div>
-        </div>
+        </b-card>
       </section>
+      <b-card-body class="d-flex justify-content-center flex-wrap align-items-center">
+        <b-form-group
+          label="На странице"
+          label-cols="6"
+          label-align="left"
+          label-size="sm"
+          label-for="sortBySelect"
+          class="text-nowrap mb-md-0 pl-0 align-middle">
+          <b-form-select
+            id="perPageSelect"
+            v-model="perPage"
+            size="sm"
+            inline
+            :options="pageOptions" />
+        </b-form-group>
+        <div>
+          <b-pagination
+            v-model="currentPage"
+            :total-rows="totalRows"
+            :per-page="perPage"
+            first-number
+            last-number
+            prev-class="prev-item"
+            next-class="next-item"
+            class="mb-0"
+            align="center"
+            @change="selectPage">
+            <template #prev-text>
+              <feather-icon
+                icon="ChevronLeftIcon"
+                size="18" />
+            </template>
+            <template #next-text>
+              <feather-icon
+                icon="ChevronRightIcon"
+                size="18" />
+            </template>
+          </b-pagination>
+        </div>
+      </b-card-body>
       <!----Конец таблицы--->
     </b-overlay>
   </div>
 </template>
-
 <script>
 import {
   BCard,
   BImg,
+  BPagination,
+  BFormSelect,
+  BFormGroup,
   BButton,
   BOverlay,
   VBTooltip,
@@ -266,11 +286,13 @@ import {
   BFormInput,
   BFormRadioGroup,
   BFormRadio,
+  BCardBody,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
 import { watch, ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
+// import store from '@/store';
 import { useShopUi, useShopRemoteData } from './useECommerceShop';
 import { useEcommerceUi } from './useEcommerce';
 
@@ -281,7 +303,11 @@ export default {
   },
   components: {
     BLink,
+    BCardBody,
+    BFormSelect,
     BCard,
+    BFormGroup,
+    BPagination,
     BProgress,
     BButtonGroup,
     BImg,
@@ -294,59 +320,90 @@ export default {
     BInputGroupAppend,
     BFormRadioGroup,
     BFormRadio,
-    // BPagination,
   },
   setup() {
     const filters = ref('');
     const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
     const loading = ref(false);
-    const { itemView, itemViewOptions, totalProducts } = useShopUi();
-
-    const getPopularityColor = (num) => {
-      if (Number(num) > 7000) return 'success';
-      if (Number(num) > 4000) return 'primary';
-      if (Number(num) >= 2000) return 'warning';
-      if (Number(num) < 1000) return 'danger';
-      return 'success';
-    };
+    const { itemViewOptions, totalProducts } = useShopUi();
+    const totalRows = ref(null);
+    const pageOptions = [6, 12, 18];
+    const currentPage = 1;
+    const perPage = 6;
     const { products } = useShopRemoteData();
-
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
-
     const fetchShopProducts = () => {
       loading.value = true;
-      useJwt.getCardsDate().then((response) => {
-        products.value = response.data;
-        loading.value = false;
-        if (filters.value !== '') {
-          products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
+      useJwt.getCardsDate(`offset=${currentPage}&limit=${perPage}`).then((response) => {
+        if (response.data.status) {
+          products.value = response.data;
+          totalRows.value = products.value.data.total;
+          loading.value = false;
+          if (filters.value !== '') {
+            products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
+          }
         }
       });
     };
-
     fetchShopProducts();
+
     watch([filters], () => {
       fetchShopProducts();
     });
 
     return {
       filters,
-      getPopularityColor,
-      itemView,
       itemViewOptions,
       totalProducts,
       toggleProductInWishlist,
       handleCartActionClick,
       products,
       loading,
+      totalRows,
+      pageOptions,
+      currentPage,
       mqShallShowLeftSidebar,
+      perPage,
     };
   },
   data() {
     return {
       number: null,
       view: true,
+      itemView: this.$store.getters.CARDS_VIEW,
     };
+  },
+  computed: {
+    gotSelected() {
+      return this.$store.getters.contractID;
+    },
+  },
+  watch: {
+    itemView() {
+      this.$store.dispatch('getCardsView', this.itemView);
+    },
+    perPage() {
+      useJwt.getCardsDate(`offset=${this.currentPage}&limit=${this.perPage}`).then((response) => {
+        if (response.data.status) {
+          this.products = response.data;
+          // this.totalRows = this.products.data.result.length;
+        }
+      });
+    },
+    gotSelected() {
+      this.loading = true;
+      useJwt.getChangeCardsDate(this.$store.getters.contractID, `offset=${this.currentPage}&limit=${this.perPage}`).then((response) => {
+        if (response.data.status) {
+          this.products = response.data;
+          this.totalRows = this.products.data.total;
+          this.loading = false;
+          // if (filters.value !== '') {
+          //   products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
+          // }
+        }
+      });
+    },
+
   },
 
   methods: {
@@ -357,11 +414,14 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
     },
-
-    // getChangeTheView() {
-    //   this.itemView = !this.itemView;
-    // },
-
+    selectPage(page) {
+      useJwt.getCardsDate(`&offset=${page * 6}&limit=${this.perPage}`).then((response) => {
+        if (response.data.status) {
+          this.products = response.data;
+          // this.totalRows = this.products.data.result.length;
+        }
+      });
+    },
     getValue(item) {
       if (item.length < 1) {
         return 0;
@@ -377,9 +437,7 @@ export default {
 <style lang="scss">
 // @import "../@core/scss/base/ecommerce";
 </style>
-
 <style lang="scss" scoped>
-
 .card {
   display: flex;
   flex-wrap: wrap;
@@ -388,7 +446,10 @@ export default {
   align-items: center;
   padding: 3px;
 }
-
+.pad {
+  bottom:110px !important;
+  left: 30px !important;
+}
 .item-wrapper {
   display: flex;
   flex-direction: column;
@@ -404,18 +465,24 @@ export default {
   bottom: 35px !important;
   width: 100%;
 }
-
-.ecommerce-card {
-  background-color: inherit !important;
-  cursor: pointer;
-  margin: 3px;
-
+.width {
+  max-width:100% !important;
+}
+.table {
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 25px 0 rgba(black, 0.25);
   }
 }
-
+.ecommerce-card {
+  background-color: inherit !important;
+  // cursor: pointer;
+  margin: 3px;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 25px 0 rgba(black, 0.25);
+  }
+}
 .item-price {
   position: relative;
   left: 10px;
@@ -427,26 +494,21 @@ export default {
 .rlt {
   position: relative;
 }
-
 .abs {
   position: absolute;
   bottom: 95px;
   left:10px;
 }
-
 .w-20 {
   width: 20%;
 }
-
 .w-60 {
-  width: 60%;
-  max-width: 65% !important;
+  width: 35%;
+  max-width: 37% !important;
 }
-
 // .card-img-top {
 //   min-height:200px !important;
 // }
-
 .item-img {
   display: flex;
   flex-direction: column;
@@ -473,10 +535,8 @@ export default {
   width: 100%;
   height: 12px;
 }
-
 .btn {
   max-width: 50px;
-
   // &:hover {
   //   background-color: "primary";
   // }
