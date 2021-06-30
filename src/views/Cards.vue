@@ -247,8 +247,7 @@
             prev-class="prev-item"
             next-class="next-item"
             class="mb-0"
-            align="center"
-            @change="selectPage">
+            align="center">
             <template #prev-text>
               <feather-icon
                 icon="ChevronLeftIcon"
@@ -334,7 +333,7 @@ export default {
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
     const fetchShopProducts = () => {
       loading.value = true;
-      useJwt.getCardsDate(`offset=${currentPage}&limit=${perPage}`).then((response) => {
+      useJwt.getCardsDate(`offset=${perPage * currentPage}&limit=${perPage}`).then((response) => {
         if (response.data.status) {
           products.value = response.data;
           totalRows.value = products.value.data.total;
@@ -371,11 +370,16 @@ export default {
       number: null,
       view: true,
       itemView: this.$store.getters.CARDS_VIEW,
+      page: 1,
     };
   },
   computed: {
     gotSelected() {
       return this.$store.getters.CONTRACT_ID;
+    },
+
+    PagPage() {
+      return this.$store.getters.SELECTED_PAGES;
     },
   },
   watch: {
@@ -383,7 +387,7 @@ export default {
       this.$store.dispatch('getCardsView', this.itemView);
     },
     perPage() {
-      useJwt.getCardsDate(`offset=${this.currentPage}&limit=${this.perPage}`).then((response) => {
+      useJwt.getCardsDate(`offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
           // this.totalRows = this.products.data.result.length;
@@ -392,7 +396,7 @@ export default {
     },
     gotSelected() {
       this.loading = true;
-      useJwt.getChangeCardsDate(this.$store.getters.CONTRACT_ID, `offset=${this.currentPage}&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.$store.getters.CONTRACT_ID, `offset=${this.currentPage * this.page}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
           this.totalRows = this.products.data.total;
@@ -403,7 +407,16 @@ export default {
         }
       });
     },
-
+    currentPage() {
+      this.page = this.currentPage;
+      console.log('page:', this.page);
+      // this.$store.dispatch('getSelectedPages', this.page);
+      useJwt.getCardsDate(`&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
+        if (response.data.status) {
+          this.products = response.data;
+        }
+      });
+    },
   },
 
   methods: {
@@ -414,14 +427,20 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
     },
-    selectPage(page) {
-      useJwt.getCardsDate(`&offset=${page * 6}&limit=${this.perPage}`).then((response) => {
-        if (response.data.status) {
-          this.products = response.data;
-          // this.totalRows = this.products.data.result.length;
-        }
-      });
-    },
+    // selectPage() {
+    //   const a = this.$store.getters.SELECTED_PAGES;
+    //   console.log('store:', this.$store.getters.SELECTED_PAGES);
+    //   useJwt.getCardsDate(`&offset=${this.perPage * (a)}&limit=${this.perPage}`).then((response) => {
+    //     if (response.data.status) {
+    //       this.products = response.data;
+    //       if (this.getOffset > this.products.data.total) {
+    //         console.log('break');
+    //       }
+
+    //       // this.totalRows = this.products.data.result.length;
+    //     }
+    //   });
+    // },
     getValue(item) {
       if (item.length < 1) {
         return 0;

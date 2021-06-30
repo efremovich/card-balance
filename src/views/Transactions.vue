@@ -87,7 +87,7 @@
                   <div>
                     <export-excel
                       class="btn btn-primary"
-                      :data="transactions.data"
+                      :data="transactions.data.result"
                       :fields="columns"
                       type="xlsx"
                       name="Транзакции.xlsx">
@@ -114,7 +114,7 @@
               class="position-relative table-hover text-center"
               :per-page="perPage"
               :current-page="currentPage"
-              :items="transactions.data"
+              :items="transactions.data.result"
               :fields="fields"
               :sort-by.sync="sortBy"
               :sort-desc.sync="sortDesc"
@@ -321,7 +321,6 @@
 <script>
 
 import { required, credit } from '@validations';
-
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import store from '@/store';
@@ -343,7 +342,7 @@ import {
   BCardBody,
   BSpinner,
 } from 'bootstrap-vue';
-import 'swiper/css/swiper.css';
+import 'swiper/swiper-bundle.css';
 import vSelect from 'vue-select';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import useJwt from '../auth/jwt/useJwt';
@@ -516,8 +515,8 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          this.totalRows = this.transactions.data.length;
-          console.log(this.transactions);
+          this.totalRows = this.transactions.data.result.length;
+          console.log(this.totalRows);
         }
         this.loadDone = false;
         return this.transactions;
@@ -531,7 +530,6 @@ export default {
       useJwt.getCards(`contract_id=${ID}`).then((response) => {
         if (response.data.status) {
           this.response = response.data;
-
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
           });
@@ -552,8 +550,8 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.loadDone = false;
-          this.totalRows = this.transactions.tol.Total;
-          if (this.transactions.data.length < 1 && selected !== null) {
+          this.totalRows = this.transactions.data.result.length;
+          if (this.transactions.data.result.length < 1 && selected !== null) {
             this.$toast({
               component: ToastificationContent,
               props: {
@@ -576,7 +574,7 @@ export default {
         const End = arr[1] + ' 00:00:00';
         useJwt.getTransactions(`contract_id=${ID}&startDate=${Start}&endDate=${End}`).then((response) => {
           this.transactions = response.data;
-          this.totalRows = this.transactions.data.length;
+          this.totalRows = this.transactions.data.result.length;
         });
       } return this.transactions;
     },
@@ -606,9 +604,9 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          this.totalRows = this.transactions.data.length;
+          this.totalRows = this.transactions.data.result.length;
           this.loadDone = false;
-          if (this.rangeDate.length > 10 && this.transactions.data.length < 1) {
+          if (this.rangeDate.length > 10 && this.transactions.data.result.length < 1) {
             this.$toast({
               component: ToastificationContent,
               props: {
@@ -624,7 +622,7 @@ export default {
       if (selected === null) {
         useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}`).then((response) => {
           this.transactions = response.data;
-          this.totalRows = this.transactions.data.length;
+          this.totalRows = this.transactions.data.result.length;
         });
       }
     },

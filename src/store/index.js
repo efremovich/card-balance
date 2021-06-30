@@ -18,6 +18,7 @@ export default new Vuex.Store({
     contractId: null,
     avatar: '',
     cardsView: '',
+    selectedPage: 1,
   },
   actions: {
     getVisible({ commit }) {
@@ -40,6 +41,9 @@ export default new Vuex.Store({
     },
     getCardsView({ commit }, payload) {
       commit('cardsView', payload);
+    },
+    getSelectedPages({ commit }, payload) {
+      commit('getSelectedPages', payload);
     },
   },
   mutations: {
@@ -64,11 +68,15 @@ export default new Vuex.Store({
     cardsView(state, payload) {
       state.cardsView = payload;
     },
+    getSelectedPages(state, payload) {
+      state.selectedPage = payload;
+    },
   },
   getters: {
     CONTRACT_ID: (state) => state.contractId,
     CONTRACT_NUMBER: (state) => state.contractNumber,
     CARDS_VIEW: (state) => state.cardsView,
+    SELECTED_PAGES: (state) => state.selectedPage,
   },
   modules: {
     app,

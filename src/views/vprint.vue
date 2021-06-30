@@ -12,7 +12,7 @@
         {{ rangeStart }}
       </p>
       <template
-        v-for="(item,index) in transactions.data">
+        v-for="(item,index) in transactions.data.result">
         <!-- <p
           v-if="print"
           :key="item.card_number">

@@ -32,7 +32,7 @@
             :disabled="busy"
             :options="names"
             class="w-100 mt-1 mb-1"
-            @input="onChange()" />
+            @input="onChange" />
         </b-overlay>
 
         <p>Выберете карту:</p>
@@ -64,7 +64,7 @@
             multiple
             :options="option"
             class="w-100 mt-1 mb-1"
-            @input="onChange()" />
+            @input="onChange" />
         </b-overlay>
         <p class="mt-1">
           Выберете период:
@@ -105,7 +105,7 @@
 
         class="d-flex flex-row flex-wrap justify-content-around">
         <vprint
-          ref="print"
+          id="print"
           :transactions="transactions" />
       </div>
       <b-pagination
@@ -118,7 +118,7 @@
         next-class="next-item"
         class="mb-0 "
         align="center"
-        @change="selectPage">
+        @change="selectPage(currentPage)">
         <template #prev-text>
           <feather-icon
             icon="ChevronLeftIcon"
@@ -139,15 +139,12 @@ import {
   BCard, BButton, BPagination, BOverlay, BSpinner,
 } from 'bootstrap-vue';
 import html2pdf from 'html2pdf.js';
-
-import print from 'vue-print-nb';
+// import print from 'vue-print-nb';
 import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import vprint from '../vprint.vue';
-
-// import JSPDF from 'jspdf';
 import useJwt from '../../auth/jwt/useJwt';
 
 export default {
@@ -160,13 +157,10 @@ export default {
     BOverlay,
     BSpinner,
     vprint,
-
   },
-
-  directives: {
-    print,
-  },
-
+  // directives: {
+  //   print,
+  // },
   data() {
     return {
       getInfo: null,
@@ -175,7 +169,7 @@ export default {
       currentConsumption: null,
       currentConsumptionDynamic: null,
       contractId: null,
-      transactions: null,
+      transactions: {},
       option: [],
       onlyForPrintandDownload: false,
       selectedHolder: null,
@@ -200,7 +194,6 @@ export default {
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
-
     };
   },
   computed: {
@@ -208,7 +201,12 @@ export default {
       return this.visible ? 'success' : '';
     },
   },
-
+  // watch: {
+  //   selectedHolder() {
+  //     console.log(this.selectedHolder);
+  //     this.onChange();
+  //   },
+  // },
   created() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
@@ -220,38 +218,51 @@ export default {
     }
     this.firstDay = this.getFirstDay();
     this.today = this.isToday();
-
-    return this.contract;
+    useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&limit=10&offset=10`)
+      .then((response) => {
+        if (response.data.status) {
+          this.transactions = response.data;
+          // console.log(this.transactions.data.result);
+          this.totalRows = this.transactions.data.total;
+          this.transactions.data.result = this.order(this.transactions.data.result);
+        }
+        if (this.transactions.data.result.length < 1) {
+          this.haveTransactions = false;
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Отсутвуют транзакции за выбранный период',
+              icon: 'AlertTriangleIcon',
+              variant: 'danger',
+            },
+          });
+        } else this.haveTransactions = true;
+      });
+    // return this.contract;
   },
-
   beforeMount() {
     this.getAllCards();
   },
-
   methods: {
     isToday() {
       const today = new Date();
       return today.toLocaleDateString();
     },
-
     getFirstDay() {
       const date = new Date();
       const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
       return firstDay;
     },
-
     unique(arr) {
       this.arr = Array.from(new Set(arr));
       return this.arr;
     },
-
     getAllCards() {
       const ID = this.contractId;
       this.busy = true;
       useJwt.getCards(`contract_id=${ID}`).then((response) => {
         if (response.data.status) {
           this.response = response.data;
-
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
           });
@@ -265,7 +276,6 @@ export default {
         this.option = this.unique(this.option);
       });
     },
-
     getAllTransactions() {
       const holder = this.selectedHolder;
       const ID = this.contractId;
@@ -275,27 +285,21 @@ export default {
         .then((response) => {
           if (response.data.status) {
             this.transactions = response.data;
-            this.totalRows = this.transactions.tol.Total;
-            this.transactions.data = this.order(this.transactions.data);
-            // this.onlyForPrintandDownload = true;
+            this.totalRows = this.transactions.data.total;
+            this.transactions.data.result = this.order(this.transactions.data.result);
           }
         });
-
       setTimeout(this.clickPrint, 3000);
     },
-
     print() {
       this.getAllTransactions();
     },
-
     order(arr) {
       return arr.slice().sort((a, b) => a.card_number - b.card_number);
     },
-
     clickPrint() {
-      this.$htmlToPaper('vprint');
+      this.$htmlToPaper('print');
     },
-
     download() {
       const holder = this.selectedHolder;
       const ID = this.contractId;
@@ -304,11 +308,10 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
         }
-        return this.order(this.transactions.data);
+        return this.order(this.transactions.data.result);
       });
       setTimeout(this.getAllChecks, 3000);
     },
-
     getAllChecks() {
       html2pdf(this.$refs.print, {
         filename: 'Чеки.pdf',
@@ -320,14 +323,12 @@ export default {
         pagebreak: { mode: 'avoid-all' },
       });
     },
-
     selectDate() {
       const holder = this.selectedHolder;
       const date = this.rangeDate;
       const { selected } = this;
       const newDate = Array.from(date).filter((n) => n !== '—');
       const arr = (newDate.join('').split('  '));
-
       // eslint-disable-next-line prefer-template
       this.start = arr[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
@@ -336,12 +337,12 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}&holder=${holder}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          this.totalRows = this.transactions.tol.Total;
-          if (this.transactions.data.length > 1) {
+          this.totalRows = this.transactions.data.total;
+          console.log('SelectDate totalRow', this.totalRows);
+          if (this.transactions.data.result.length > 1) {
             this.haveTransactions = true;
           }
-
-          if (this.rangeDate.length > 10 && this.transactions.data.length < 1) {
+          if (this.rangeDate.length > 10 && this.transactions.data.result.length < 1) {
             this.haveTransactions = false;
             this.$toast({
               component: ToastificationContent,
@@ -357,10 +358,9 @@ export default {
         this.today = arr[0]; // для компонента vprint  = rangeDate [абзац с указанием периода операции по карте]
         // eslint-disable-next-line prefer-destructuring
         this.firstDay = arr[1]; // для компонента vprint  = rangeDate [абзац с указанием периода операции по карте]
-        return this.order(this.transactions.data);
+        return this.order(this.transactions.data.result);
       });
     },
-
     selectPage(page) {
       const holder = this.selectedHolder;
       const { selected } = this;
@@ -370,9 +370,9 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&holder=${holder}&offset=${10 * page}&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
+          console.log('page transactions.data.result:', this.transactions.data.result);
         }
-
-        if (this.transactions.data.length < 1) {
+        if (this.transactions.data.result.length < 1) {
           // this.visible = false;
           this.$toast({
             component: ToastificationContent,
@@ -383,10 +383,9 @@ export default {
             },
           });
         }
-        return this.transactions;
+        // return this.transactions.data.result;
       });
     },
-
     onChange() {
       const { selected } = this;
       const holder = this.selectedHolder;
@@ -397,13 +396,14 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&card_holder=${holder}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          this.totalRows = this.transactions.tol.Total;
-          if (this.transactions.data.length > 1) {
+          console.log('Change/transactions:', this.transactions);
+          this.totalRows = this.transactions.data.total;
+          if (this.transactions.data.total > 1) {
             this.haveTransactions = true;
           } else {
             this.haveTransactions = false;
             this.visible = false;
-            this.transactions = [];
+            this.transactions.data.result = [];
             // this.visible = false;
             this.$toast({
               component: ToastificationContent,
@@ -415,134 +415,23 @@ export default {
             });
           }
         }
-
-        return this.order(this.transactions.data);
+        // return this.order(this.transactions.data.result);
       });
       // if (this.selected.length < 1) {
       //   this.getAllTransactions();
       //   // this.hidden = true;
       // }
     },
-
     toogle() {
       this.visible = !this.visible;
       this.hidden = !this.hidden;
     },
   },
-
 };
 </script>
 
 <style lang="scss" scoped>
 @import "@core/scss/vue/libs/vue-select.scss";
 @import "@core/scss/vue/libs/vue-flatpicker.scss";
-
-.flex {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: space-evenly !important;
-}
-
-.container,
-.container-fluid {
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  width: 100%;
-  margin-left: auto;
-}
-.row,
-html {
-  display: -webkit-box;
-}
-.flex-column,
-.flex-row {
-  -webkit-box-direction: normal !important;
-}
-.heading-1,
-.heading-2,
-.heading-3,
-body,
-h1,
-h2,
-h3 {
-  font-style: normal;
-  font-stretch: normal;
-  letter-spacing: normal;
-}
-
-@media only screen and (min-device-width: 480px) {
-  .container {
-    max-width: 290px;
-  }
-}
-@media only screen and (min-device-width: 768px) {
-  .container {
-    max-width: 708px;
-  }
-}
-@media only screen and (min-device-width: 1025px) {
-  .container {
-    max-width: 964px;
-  }
-}
-@media only screen and (min-device-width: 1230px) {
-  .container {
-    max-width: 1170px;
-  }
-}
-
-.check__value {
-  text-align: end;
-}
-
-@media only screen and (min-device-width: 1024px) {
-  .col-5 {
-    // -ms-flex: 0 0 33.33333%;
-    display: flex;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 35.33333%;
-    max-width: 330px;
-  }
-}
-
-@media only screen and(min-device-width: 768px) and (max-device-width: 1023px) {
-  .col-5 {
-    display: flex;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 33.33333%;
-    max-width: 50.33333%;
-  }
-}
-
-@media only screen and(min-device-width: 620px) and (max-device-width: 767px) {
-  .col-5 {
-    display: flex;
-    display: -moz-flex;
-    display: -webkit-flex;
-    display: -ms-flex;
-    display: flex;
-    // -ms-flex: 0 0 33.33333%;
-    // flex: 0 0 33.33333%;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 33.33333%;
-    max-width: 60.33333%;
-  }
-}
-
-@media only screen and (min-device-width: 380px) and (max-device-width: 619px) {
-  .col-5 {
-    display: flex;
-    display: -moz-flex;
-    display: -webkit-flex;
-    display: -ms-flex;
-    display: flex;
-    // -ms-flex: 0 0 33.33333%;
-    flex: 0 0 33.33333%;
-    max-width: 100%;
-  }
-}
+@import "../../@core/assets/checks";
 </style>
