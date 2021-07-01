@@ -333,7 +333,7 @@ export default {
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
     const fetchShopProducts = () => {
       loading.value = true;
-      useJwt.getCardsDate(`offset=${perPage * currentPage}&limit=${perPage}`).then((response) => {
+      useJwt.getCardsDate(`offset=0&limit=${perPage}`).then((response) => {
         if (response.data.status) {
           products.value = response.data;
           totalRows.value = products.value.data.total;
