@@ -12,7 +12,7 @@
               opacity=".75"
               rounded="sm">
               <b-card-actions
-                v-if="getWidth === 'sm'"
+                v-if="getWidth === 'xs'"
                 ref="userDate"
                 title="Информация по договору"
                 action-refresh
@@ -390,6 +390,7 @@ import VueApexCharts from 'vue-apexcharts';
 import { ru } from 'apexcharts/dist/locales/ru.json';
 import { $themeColors } from '@themeConfig';
 import { Icon } from 'leaflet';
+import { mapGetters } from 'vuex';
 import store from '@/store';
 import {
   BCardText, BCol, BButton, BTable, BCardBody, BOverlay, BLink,
@@ -549,18 +550,18 @@ export default {
     };
   },
   computed: {
-    activeUserInfo() {
-      return this.$store.state.CurrentUser;
-    },
+    ...mapGetters({
+      gotSelected: 'CONTRACT_NUMBER',
+    }),
     getActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code === 'ACTIVE').length;
     },
     getNotActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
     },
-    gotSelected() {
-      return this.$store.getters.CONTRACT_NUMBER;
-    },
+    // gotSelected() {
+    //   return this.$store.getters.CONTRACT_NUMBER;
+    // },
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
@@ -745,49 +746,5 @@ export default {
 </script>
 
 <style lang="scss">
-.padding {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-h4 {
-  font-size: 1.2rem !important;
-}
-h3 {
-  font-size: 1.2rem !important;
-}
-.mix {
-  @media (min-width: 550px) {
-    flex-direction: row !important;
-    justify-content: space-evenly !important;
-  }
-}
-.avg-sessions {
-  display: flex !important;
-  flex-direction: column !important;
-}
-.mr-2 mt-1 {
-  display: flex;
-  width: 90%;
-  justify-content: space-around;
-}
-.margin {
-  margin: 3% auto 0 !important;
-}
-.card-body {
-  padding: 1rem !important;
-}
-.card .card-header {
-  padding: 1.5rem !important;
-}
-.table th {
-  padding: 0.72rem 1rem !important;
-}
-.table td {
-  padding: 0.72rem 1rem !important;
-}
-.vue2leaflet-map {
-  &.leaflet-container {
-    height: 350px;
-  }
-}
+@import "../assets/scss/components/dashboard";
 </style>

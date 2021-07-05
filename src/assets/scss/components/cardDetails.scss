@@ -1,0 +1,132 @@
+.card {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    max-width: 95%;
+    align-items: left;
+    padding: 3px;
+  }
+  
+  .b-overlay-wrap {
+    min-height: 265px !important;
+  }
+  @media screen and (max-width: 768px) {
+    .column {
+      flex-direction: column;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .col-md-6 {
+      -webkit-box-flex: 0;
+      -ms-flex: 0 0 50%;
+      flex: 0 0 50%;
+      max-width: 100%;
+    }
+  }
+  
+  .card-body {
+    padding: 0.5rem !important;
+  }
+  .border {
+    border: 1px solid black;
+    border-radius: 5px;
+  }
+  .mw-20 {
+    max-width: 20%;
+  }
+  .icon {
+    max-width: 30px;
+    cursor: pointer;
+    padding: 0 !important;
+  }
+  .card-header {
+    padding: 1.5rem 0 !important;
+  }
+  .card-title {
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .bottom {
+    bottom: 50px;
+  }
+  .b-overlay-wrap:not(:last-child) {
+    margin-bottom: 1rem !important;
+  }
+  .col {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+  .heigth {
+    height: 200px;
+  }
+  .card-img-top {
+    max-width: 390px;
+    min-width: 350px;
+  }
+  // .card-body {
+  //   border: 1px solid;
+  //   border-radius: 4px;
+  // }
+  .holder {
+    position: relative;
+    bottom: 70px;
+  }
+  .item-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    bottom: 110px;
+    left: 20px;
+  }
+  .item-options {
+    display: flex;
+    flex-direction: column;
+    position: absolute !important;
+    bottom: 35px !important;
+    width: 100%;
+  }
+  .status {
+    position: relative;
+    top: 40px;
+  }
+  .ecommerce-card {
+    background-color: inherit !important;
+    cursor: pointer;
+    margin: 3px;
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 25px 0 rgba(white, 0.25);
+    }
+  }
+  .item-price {
+    position: relative;
+    left: 10px;
+    color: #000;
+    text-align: center;
+    text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.5),
+      1px 1px 1px rgba(0, 0, 0, 0.5);
+  }
+  .item-img {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    width: 95%;
+  }
+  .limits {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 200px;
+    position: relative;
+    top: 25px;
+  }
+  .views {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }

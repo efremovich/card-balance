@@ -118,7 +118,7 @@
         next-class="next-item"
         class="mb-0 "
         align="center"
-        @change="selectPage(currentPage)">
+        @change="selectPage">
         <template #prev-text>
           <feather-icon
             icon="ChevronLeftIcon"
@@ -361,16 +361,17 @@ export default {
         return this.order(this.transactions.data.result);
       });
     },
-    selectPage(page) {
+    selectPage() {
       const holder = this.selectedHolder;
+      console.log(this.currentPage);
       const { selected } = this;
       const { start } = this;
       const { end } = this;
       const ID = this.contractId;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&holder=${holder}&offset=${10 * page}&limit=10`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&holder=${holder}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          console.log('page transactions.data.result:', this.transactions.data.result);
+          console.log('page transactions.data:', this.transactions.data);
         }
         if (this.transactions.data.result.length < 1) {
           // this.visible = false;

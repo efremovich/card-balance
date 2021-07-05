@@ -471,7 +471,6 @@ export default {
   },
   computed: {
     sortOptions() {
-      // Create an options list from our fields
       return this.fields
         .filter((f) => f.sortable)
         .map((f) => ({ text: f.label, value: f.key }));

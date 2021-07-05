@@ -292,6 +292,7 @@ import Ripple from 'vue-ripple-directive';
 import { watch, ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
 // import store from '@/store';
+import { mapGetters } from 'vuex';
 import { useShopUi, useShopRemoteData } from './useECommerceShop';
 import { useEcommerceUi } from './useEcommerce';
 
@@ -374,13 +375,9 @@ export default {
     };
   },
   computed: {
-    gotSelected() {
-      return this.$store.getters.CONTRACT_ID;
-    },
-
-    PagPage() {
-      return this.$store.getters.SELECTED_PAGES;
-    },
+    ...mapGetters({
+      gotSelected: 'CONTRACT_ID',
+    }),
   },
   watch: {
     itemView() {
@@ -453,117 +450,6 @@ export default {
 };
 </script>
 
-<style lang="scss">
-// @import "../@core/scss/base/ecommerce";
-</style>
 <style lang="scss" scoped>
-.card {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: end;
-  max-width: 390px;
-  align-items: center;
-  padding: 3px;
-}
-.pad {
-  bottom:110px !important;
-  left: 30px !important;
-}
-.item-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  position: relative;
-  left: 20px;
-}
-
-.item-options {
-  display: flex;
-  flex-direction: column;
-  position: absolute !important;
-  bottom: 35px !important;
-  width: 100%;
-}
-.width {
-  max-width:100% !important;
-}
-.table {
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 25px 0 rgba(black, 0.25);
-  }
-}
-.ecommerce-card {
-  background-color: inherit !important;
-  // cursor: pointer;
-  margin: 3px;
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 25px 0 rgba(black, 0.25);
-  }
-}
-.item-price {
-  position: relative;
-  left: 10px;
-  color: #000;
-  text-align: center;
-  text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.5),
-    1px 1px 1px rgba(0, 0, 0, 0.5);
-}
-.rlt {
-  position: relative;
-}
-.abs {
-  position: absolute;
-  bottom: 95px;
-  left:10px;
-}
-.w-20 {
-  width: 20%;
-}
-.w-60 {
-  width: 35%;
-  max-width: 37% !important;
-}
-// .card-img-top {
-//   min-height:200px !important;
-// }
-.item-img {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: auto;
-  width: 95%;
-}
-.limits {
-  width: 90%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 200px;
-  position: relative;
-  top: 25px;
-}
-.views {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-}
-.progress {
-  width: 100%;
-  height: 12px;
-}
-.btn {
-  max-width: 50px;
-  // &:hover {
-  //   background-color: "primary";
-  // }
-}
-.item-view-radio-group ::v-deep {
-  .btn {
-    display: flex;
-    align-items: center;
-  }
-}
+@import "../assets/scss/components/cards";
 </style>

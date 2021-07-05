@@ -22,7 +22,7 @@
     <div
       class="d-flex w-100">
       <div
-        v-if="getWidth !== 'sm'"
+        v-if="getWidth !== 'xs'"
         class="d-flex w-100 justify-content-center align-items-center">
         <h6 class="p-1">
           Договор №:

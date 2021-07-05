@@ -8,17 +8,8 @@
       :rangeEnd="firstDay"
       :transactions="transactions"
       :toogle="onlyForPrintandDownload">
-      <p>
-        {{ rangeStart }}
-      </p>
       <template
         v-for="(item,index) in transactions.data.result">
-        <!-- <p
-          v-if="print"
-          :key="item.card_number">
-          Электронные чеки за период {{ rangeDate }}
-        </p> -->
-
         <div
           :key="index"
           class="col-5"
@@ -210,8 +201,8 @@
 export default {
   props: {
     transactions: {
-      type: Array,
-      default: () => [],
+      type: Object,
+      default: () => {},
     },
     today: {
       type: [String],
@@ -242,159 +233,8 @@ export default {
   },
 
 };
-
 </script>
 
 <style lang="scss" scoped>
-.flex {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: space-evenly !important;
-}
-
-.container,
-.container-fluid {
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  width: 100%;
-  margin-left: auto;
-}
-.row,
-html {
-  display: -webkit-box;
-}
-.flex-column,
-.flex-row {
-  -webkit-box-direction: normal !important;
-}
-.heading-1,
-.heading-2,
-.heading-3,
-body,
-h1,
-h2,
-h3 {
-  font-style: normal;
-  font-stretch: normal;
-  letter-spacing: normal;
-}
-
-@media only screen and (min-device-width: 480px) {
-  .container {
-    max-width: 290px;
-  }
-}
-@media only screen and (min-device-width: 768px) {
-  .container {
-    max-width: 708px;
-  }
-}
-@media only screen and (min-device-width: 1025px) {
-  .container {
-    max-width: 964px;
-  }
-}
-@media only screen and (min-device-width: 1230px) {
-  .container {
-    max-width: 1170px;
-  }
-}
-
-.check__value {
-  text-align: end;
-}
-
-@media only screen and (min-device-width: 1024px) {
-  .col-5 {
-    display: flex;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 10%;
-    max-width: 330px;
-  }
-}
-
-@media only screen and(min-device-width: 768px) and (max-device-width: 1023px) {
-  .col-5 {
-    display: flex;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 10%;
-    max-width: 50.33333%;
-  }
-}
-
-@media only screen and(min-device-width: 620px) and (max-device-width: 767px) {
-  .col-5 {
-    display: flex;
-    display: -moz-flex;
-    display: -webkit-flex;
-    display: -ms-flex;
-    display: flex;
-    // -ms-flex: 0 0 33.33333%;
-    // flex: 0 0 33.33333%;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 10%;
-    max-width: 60.33333%;
-  }
-}
-
-@media only screen and (min-device-width: 380px) and (max-device-width: 619px) {
-  .col-5 {
-    display: flex;
-    display: -moz-flex;
-    display: -webkit-flex;
-    display: -ms-flex;
-    display: flex;
-    // -ms-flex: 0 0 33.33333%;
-    flex: 0 0 10%;
-    max-width: 100%;
-  }
-}
-
-.check {
-  padding: 20px 0;
-  min-width: 320px;
-}
-.check__content,
-.check__header {
-  margin-bottom: 20px;
-}
-.check__organization {
-  text-align: center;
-}
-.check__row {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: centerl;
-  -ms-flex-align: centerl;
-  align-items: centerl;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-  line-height: 1.4;
-}
-.check__row--black {
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  text-transform: uppercase;
-  text-align: center;
-  color: #fff;
-  background-color: #000;
-  -webkit-transition: all 0.25s ease;
-  transition: all 0.25s ease;
-}
-.check__row--black:hover {
-  color: #000;
-  background: #fff;
-}
-.check__rq {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
+@import "../assets/scss/components/v-print";
 </style>
