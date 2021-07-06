@@ -13,7 +13,6 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     visible: false,
-    cardNumber: null,
     contractNumber: null,
     contractId: null,
     avatar: '',
@@ -26,9 +25,6 @@ export default new Vuex.Store({
     },
     getNotVisible({ commit }) {
       commit('getNotVisible');
-    },
-    getCardNumber({ commit }, payload) {
-      commit('gotNumber', payload);
     },
     getAvatar({ commit }, payload) {
       commit('getSrc', payload);
@@ -52,9 +48,6 @@ export default new Vuex.Store({
     },
     getNotVisible(state) {
       state.visible = false;
-    },
-    gotNumber(state, payload) {
-      state.cardNumber = payload;
     },
     getSrc(state, payload) {
       state.avatar = payload;

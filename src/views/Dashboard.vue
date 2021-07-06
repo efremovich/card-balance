@@ -105,7 +105,7 @@
             </b-overlay>
           </b-col>
           <b-col
-            v-if="currentConsumption.currentConsumption.length>0"
+            v-if="getCurrentConsumptionLength>0"
             md="6">
             <b-overlay
               :show="showLoading"
@@ -565,6 +565,9 @@ export default {
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
+    getCurrentConsumptionLength() {
+      return this.currentConsumption.currentConsumption.length;
+    },
   },
   watch: {
     gotSelected() {
@@ -585,6 +588,13 @@ export default {
         });
       }
     });
+    useJwt.getCurrentConsumption().then((response) => {
+      if (response.data.status) {
+        this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
+          this.currentConsumption = response.data;
+        });
+      }
+    });
     this.userData = JSON.parse(localStorage.getItem('userData'));
     if (this.userData) {
       this.getInfo = this.userData;
@@ -600,13 +610,14 @@ export default {
         this.download = true;
       }
     });
-    useJwt.getCurrentConsumption().then((response) => {
-      if (response.data.status) {
-        this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
-          this.currentConsumption = response.data;
-        });
-      }
-    });
+    // useJwt.getCurrentConsumption().then((response) => {
+    //   if (response.data.status) {
+    //     this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
+    //       this.currentConsumption = response.data;
+    //       console.log(this.currentConsumption.currentConsumption);
+    //     });
+    //   }
+    // });
     useJwt.getConsumptionDinamic().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {

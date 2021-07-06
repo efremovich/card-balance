@@ -756,7 +756,6 @@ export default {
           services.value.forEach((el) => option.value.push(el.full_name));
           const id = services.value.map((el) => el.id);
           const label = services.value.map((el) => el.label);
-          console.log(label.length);
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < id.length; i++) {
             labelService.value[id[i]] = label[i];
@@ -809,7 +808,6 @@ export default {
         cardData.value = response.data;
         cardEmitentCode.value = cardData.value.data.emitent.code;
         limitsLength.value = cardData.value.data.limits.length;
-        console.log(cardEmitentCode.value);
         source.value = JSON.stringify(response.data);
         getService(cardEmitentCode.value);
       }
@@ -882,20 +880,13 @@ export default {
     this.getCardNumber();
   },
   methods: {
-    // eslint-disable-next-line vue/return-in-computed-property
     labelSelected() {
       const empty = [];
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < this.selected.length; i++) {
         empty.push(this.labelService[this.selected[i]]);
       }
-
       return empty;
-    },
-
-    getCardNumber() {
-      this.$store.dispatch('getCardNumber', this.number);
-      // console.log(this.$store.state.cardNumber);
     },
 
     showToast() {
@@ -953,7 +944,6 @@ export default {
         if (response.data.status) {
           this.cardData = response.data;
         }
-        // this.render = this.getRandom();
       });
     },
     getRandom() {

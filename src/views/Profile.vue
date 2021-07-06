@@ -441,7 +441,6 @@ export default {
       // this.image = this.$store.state.avatar;
       this.twin.avatar = this.image;
       this.twin.name = 'Mark';
-      // console.log('Перед запись аватара', this.twin);
       useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
         console.log('Запись аватара', response);
         // this.image = this.twin.avatar;

@@ -10,7 +10,7 @@
         </p>
       </div>
       <b-avatar
-        size="50"
+        size="48"
         :src="userData.account.avatar"
         variant="light-primary"
         class="badge-minimal"

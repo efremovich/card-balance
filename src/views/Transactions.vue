@@ -184,7 +184,7 @@
               </template>
 
               <template #cell(period)="row">
-                <b-col @click="row.toggleDetails">
+                <b-col>
                   {{ row.item.date | formatDate }}
                 </b-col>
               </template>
