@@ -36,7 +36,7 @@ export default new Vuex.Store({
       commit('changeContractId', payload);
     },
     getCardsView({ commit }, payload) {
-      commit('cardsView', payload);
+      commit('setCardsView', payload);
     },
     getSelectedPages({ commit }, payload) {
       commit('getSelectedPages', payload);
@@ -58,8 +58,8 @@ export default new Vuex.Store({
     changeContractId(state, payload) {
       state.contractId = payload;
     },
-    cardsView(state, payload) {
-      state.cardsView = payload;
+    setCardsView(state, cardsView) {
+      state.cardsView = cardsView;
     },
     getSelectedPages(state, payload) {
       state.selectedPage = payload;

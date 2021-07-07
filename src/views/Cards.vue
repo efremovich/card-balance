@@ -45,7 +45,7 @@
       opacity=".75"
       rounded="md">
       <section
-        v-if="checkItemView === 'grid-view'"
+        v-if="itemView === 'grid-view'"
         class="views">
         <b-card
           v-for="(product, index) in products.data.result"
@@ -331,7 +331,7 @@ export default {
     const totalRows = ref(null);
     const pageOptions = [6, 12, 18];
     const currentPage = 1;
-    const itemView = store.getters.CARDS_VIEW;
+    // const itemView = ref('');
     const perPage = 6;
     const { products } = useShopRemoteData();
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
@@ -349,27 +349,28 @@ export default {
       });
     };
     const getWidth = computed(() => store.getters['app/currentBreakPoint']);
-    const checkItemView = () => {
-      if (getWidth !== 'xl') {
-        itemView.value = 'list-view';
-        store.dispatch('getCardsView', itemView.value);
-        console.log(store.getters.CARDS_VIEW);
-      } else itemView.value = store.getters.CARDS_VIEW;
-      // console.log(store.getters.CARDS_VIEW);
-      return itemView;
-    };
+    // const checkItemView = () => {
+    //   if (getWidth !== 'xl') {
+    //     itemView.value = 'list-view';
+    //     // store.dispatch('getCardsView', itemView.value);
+    //     console.log(store.getters.CARDS_VIEW);
+    //   } else itemView.value = store.getters.CARDS_VIEW;
+    //   // console.log(store.getters.CARDS_VIEW);
+    //   return itemView;
+    // };
+    //  checkItemView();
     fetchShopProducts();
-    checkItemView();
+    // checkItemView();
     watch([filters], () => {
       fetchShopProducts();
     });
 
     return {
       filters,
-      checkItemView,
+      // checkItemView,
       getWidth,
       itemViewOptions,
-      itemView,
+      // itemView,
       totalProducts,
       toggleProductInWishlist,
       handleCartActionClick,
@@ -384,9 +385,10 @@ export default {
   },
   data() {
     return {
-      number: null,
+      // number: null,
       view: true,
       page: 1,
+      itemView: this.$store.state.cardsView,
     };
   },
   computed: {
@@ -397,6 +399,7 @@ export default {
   watch: {
     itemView(newVal) {
       this.$store.dispatch('getCardsView', newVal);
+      // console.log(newVal);
     },
     perPage() {
       useJwt.getCardsDate(`offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {

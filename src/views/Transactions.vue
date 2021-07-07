@@ -65,7 +65,7 @@
                   </div>
                 </div>
                 <!-- filter -->
-                <div :class="['d-flex', 'flex-column-reverse', 'justify-content-around', getWidth === 'xs'?align-items-end:align-items-end, {'w-100': getWidth === 'xs'}]">
+                <div :class="['d-flex', 'flex-column-reverse', 'justify-content-around', getWidth === 'xs'?'align-items-end':'align-items-end', {'w-100': getWidth === 'xs'}]">
                   <b-form-group
                     class="mb-0 mt-2">
                     <b-input-group

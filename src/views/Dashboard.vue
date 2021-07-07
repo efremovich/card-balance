@@ -135,7 +135,7 @@
                   </h4>
                 </div>
                 <b-table
-                  v-if="currentConsumption.currentConsumption.length>0"
+                  v-if="currentConsumption !== null || currentConsumption.currentConsumption.length>0"
                   hover
                   responsive
                   :items="currentConsumption.currentConsumption"
@@ -572,9 +572,6 @@ export default {
   watch: {
     gotSelected() {
       this.onChange();
-    },
-    getWidth() {
-      return this.getWidth;
     },
   },
 
