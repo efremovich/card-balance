@@ -2,6 +2,7 @@
   <div>
     <!-- Item View Radio Button Group  -->
     <b-form-radio-group
+      v-if="getWidth==='xl'"
       v-model="itemView"
       class="ml-1 list item-view-radio-group float-right"
       buttons
@@ -44,7 +45,7 @@
       opacity=".75"
       rounded="md">
       <section
-        v-if="itemView === 'grid-view'"
+        v-if="checkItemView === 'grid-view'"
         class="views">
         <b-card
           v-for="(product, index) in products.data.result"
@@ -225,11 +226,11 @@
       <b-card-body class="d-flex justify-content-center flex-wrap align-items-center">
         <b-form-group
           label="На странице"
-          label-cols="6"
+          label-cols="7"
           label-align="left"
           label-size="sm"
           label-for="sortBySelect"
-          class="text-nowrap mb-md-0 pl-0 align-middle">
+          class="text-nowrap mb-md-0 pl-0">
           <b-form-select
             id="perPageSelect"
             v-model="perPage"
@@ -289,10 +290,11 @@ import {
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
-import { watch, ref } from '@vue/composition-api';
+import { watch, ref, computed } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
-// import store from '@/store';
+import store from '@/store';
 import { mapGetters } from 'vuex';
+// import { $themeBreakpoints } from '@themeConfig';
 import { useShopUi, useShopRemoteData } from './useECommerceShop';
 import { useEcommerceUi } from './useEcommerce';
 
@@ -329,6 +331,7 @@ export default {
     const totalRows = ref(null);
     const pageOptions = [6, 12, 18];
     const currentPage = 1;
+    const itemView = store.getters.CARDS_VIEW;
     const perPage = 6;
     const { products } = useShopRemoteData();
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
@@ -345,15 +348,28 @@ export default {
         }
       });
     };
+    const getWidth = computed(() => store.getters['app/currentBreakPoint']);
+    const checkItemView = () => {
+      if (getWidth !== 'xl') {
+        itemView.value = 'list-view';
+        store.dispatch('getCardsView', itemView.value);
+        console.log(store.getters.CARDS_VIEW);
+      } else itemView.value = store.getters.CARDS_VIEW;
+      // console.log(store.getters.CARDS_VIEW);
+      return itemView;
+    };
     fetchShopProducts();
-
+    checkItemView();
     watch([filters], () => {
       fetchShopProducts();
     });
 
     return {
       filters,
+      checkItemView,
+      getWidth,
       itemViewOptions,
+      itemView,
       totalProducts,
       toggleProductInWishlist,
       handleCartActionClick,
@@ -370,7 +386,6 @@ export default {
     return {
       number: null,
       view: true,
-      itemView: this.$store.getters.CARDS_VIEW,
       page: 1,
     };
   },
@@ -380,8 +395,8 @@ export default {
     }),
   },
   watch: {
-    itemView() {
-      this.$store.dispatch('getCardsView', this.itemView);
+    itemView(newVal) {
+      this.$store.dispatch('getCardsView', newVal);
     },
     perPage() {
       useJwt.getCardsDate(`offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
@@ -406,7 +421,6 @@ export default {
     },
     currentPage() {
       this.page = this.currentPage;
-      console.log('page:', this.page);
       // this.$store.dispatch('getSelectedPages', this.page);
       useJwt.getCardsDate(`&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
@@ -424,20 +438,6 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
     },
-    // selectPage() {
-    //   const a = this.$store.getters.SELECTED_PAGES;
-    //   console.log('store:', this.$store.getters.SELECTED_PAGES);
-    //   useJwt.getCardsDate(`&offset=${this.perPage * (a)}&limit=${this.perPage}`).then((response) => {
-    //     if (response.data.status) {
-    //       this.products = response.data;
-    //       if (this.getOffset > this.products.data.total) {
-    //         console.log('break');
-    //       }
-
-    //       // this.totalRows = this.products.data.result.length;
-    //     }
-    //   });
-    // },
     getValue(item) {
       if (item.length < 1) {
         return 0;

@@ -14,7 +14,7 @@
             <!-- ТАБЛИЦА -->
             <b-card-body>
               <div class="d-flex justify-content-between  flex-wrap">
-                <div class="d-flex flex-column">
+                <div :class="['d-flex', 'flex-column', {'w-100': getWidth === 'xs'}]">
                   <b-form-group>
                     <p class="mt-1">
                       Выберете период:
@@ -65,10 +65,11 @@
                   </div>
                 </div>
                 <!-- filter -->
-                <div class="d-flex flex-column-reverse justify-content-around align-items-end">
+                <div :class="['d-flex', 'flex-column-reverse', 'justify-content-around', getWidth === 'xs'?align-items-end:align-items-end, {'w-100': getWidth === 'xs'}]">
                   <b-form-group
                     class="mb-0 mt-2">
-                    <b-input-group size="sm">
+                    <b-input-group
+                    size="sm">
                       <b-form-input
                         id="filterInput"
                         v-model="filter"
@@ -391,7 +392,7 @@ export default {
       required,
       option: [],
       selected: [],
-      transactions: [],
+      transactions: {},
       rangeDate: null, // датапикер
       config: {
         mode: 'range',
@@ -479,12 +480,6 @@ export default {
       return store.getters['app/currentBreakPoint'];
     },
   },
-  watch: {
-    getWidth() {
-      return this.getWidth;
-    },
-  },
-
   created() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {

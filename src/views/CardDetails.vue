@@ -147,10 +147,10 @@
                             </b-form-group>
                           </validation-provider>
                           <div class="d-flex flex-wrap align-items-center mt-1">
-                            <h6 class="mx-auto">
+                            <h6 class="mr-1">
                               Лимит
                             </h6>
-                            <div class="ml-1 mw-20">
+                            <div class="mr-1 mw-20">
                               <b-form-input
                                 v-model="limit.value" />
                             </div>
@@ -358,8 +358,7 @@
       <div
         v-else>
         <div
-          v-if="limitsLength<1"
-          :key="cardData.data.limits.length">
+          v-if="limitsLength<1">
           <b-card>
             <b-card-header
               class="d-flex justify-content-start">
@@ -643,11 +642,11 @@ export default {
     BCardHeader,
   },
   setup() {
-    const cardData = ref([]);
+    const cardData = ref({});
     const product = ref(null);
     const value = ref(null);
     const totalRows = ref(null);
-    const transactions = ref([]);
+    const transactions = ref({});
     const option = ref([]);
     const loadDone = ref(false);
     const lastDay = ref(null);
@@ -666,7 +665,7 @@ export default {
     const start = ref(null);
     const end = ref(null);
     const contractId = ref(null);
-    const limits = ref([]);
+    // const limits = ref([]);
     const source = ref({});
     const limitsLength = ref(null);
     const cardEmitentCode = ref('0');
@@ -811,7 +810,7 @@ export default {
         source.value = JSON.stringify(response.data);
         getService(cardEmitentCode.value);
       }
-      return cardData.value;
+      // return cardData.value;
     });
     const number = ref(null);
 
@@ -858,7 +857,7 @@ export default {
       periods,
       services,
       periodLabel,
-      limits,
+      // limits,
       number,
     };
   },
@@ -875,9 +874,6 @@ export default {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
     },
-  },
-  beforeMount() {
-    this.getCardNumber();
   },
   methods: {
     labelSelected() {
