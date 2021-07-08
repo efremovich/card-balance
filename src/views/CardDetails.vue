@@ -810,7 +810,7 @@ export default {
         source.value = JSON.stringify(response.data);
         getService(cardEmitentCode.value);
       }
-      // return cardData.value;
+      return cardData;
     });
     const number = ref(null);
 

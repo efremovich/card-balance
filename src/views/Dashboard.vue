@@ -105,7 +105,7 @@
             </b-overlay>
           </b-col>
           <b-col
-            v-if="getCurrentConsumptionLength>0"
+            v-if="getCurrentConsumptionLength !== null && getCurrentConsumptionLength>0"
             md="6">
             <b-overlay
               :show="showLoading"

@@ -3,11 +3,12 @@
     <!-- Item View Radio Button Group  -->
     <b-form-radio-group
       v-if="getWidth==='xl'"
-      v-model="itemView"
+      :model-value="itemView"
       class="ml-1 list item-view-radio-group float-right"
       buttons
       size="sm"
-      button-variant="outline-primary">
+      button-variant="outline-primary"
+      @change="setCardsView">
       <b-form-radio
         v-for="option in itemViewOptions"
         :key="option.value"
@@ -46,7 +47,7 @@
       rounded="md">
       <div v-if="getWidth === 'xl'">
         <section
-          v-if="itemView === 'grid-view'"
+          v-if="gotItemView === 'grid-view'"
           class="views">
           <b-card
             v-for="(product, index) in products.data.result"
@@ -266,7 +267,7 @@
       <!----Конец таблицы--->
       </div>
       <div v-else>
-          <section
+        <section
           class="views">
           <b-card
             v-for="(product, index) in products.data.result"
@@ -350,7 +351,7 @@
             </div>
           </b-card>
         </section>
-         <b-card-body class="d-flex justify-content-center flex-wrap align-items-center">
+        <b-card-body class="d-flex justify-content-center flex-wrap align-items-center">
           <b-form-group
             label="На странице"
             label-cols="7"
@@ -389,7 +390,7 @@
             </b-pagination>
           </div>
         </b-card-body>
-        </div>
+      </div>
     </b-overlay>
   </div>
 </template>
@@ -420,7 +421,7 @@ import Ripple from 'vue-ripple-directive';
 import { watch, ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
 import store from '@/store';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 // import { $themeBreakpoints } from '@themeConfig';
 import { useShopUi, useShopRemoteData } from './useECommerceShop';
 import { useEcommerceUi } from './useEcommerce';
@@ -521,16 +522,17 @@ export default {
   computed: {
     ...mapGetters({
       gotSelected: 'CONTRACT_ID',
+      gotItemView: 'CARDS_VIEW',
     }),
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
   },
   watch: {
-    itemView(newVal) {
-      this.$store.dispatch('getCardsView', newVal);
-      // console.log(newVal);
-    },
+    // itemView(newVal) {
+    //   this.$store.dispatch('getCardsView', newVal);
+    //   // console.log(newVal);
+    // },
     perPage() {
       useJwt.getCardsDate(`offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
@@ -564,6 +566,9 @@ export default {
   },
 
   methods: {
+    ...mapMutations({
+      setCardsView: 'setCardsView',
+    }),
     getMaxValue(item) {
       if (item.length < 1) {
         return 0;
