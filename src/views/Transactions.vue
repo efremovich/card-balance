@@ -26,7 +26,6 @@
                       :config="config"
                       @on-change="selectDate" />
                   </b-form-group>
-
                   <div
                     class="d-flex flex-column justify-content-around
                   ">
@@ -69,7 +68,7 @@
                   <b-form-group
                     class="mb-0 mt-2">
                     <b-input-group
-                    size="sm">
+                      size="sm">
                       <b-form-input
                         id="filterInput"
                         v-model="filter"
@@ -325,7 +324,7 @@ import { required, credit } from '@validations';
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import store from '@/store';
-
+import { mapGetters } from 'vuex';
 import {
   BRow,
   BCol,
@@ -346,6 +345,7 @@ import {
 import 'swiper/swiper-bundle.css';
 import vSelect from 'vue-select';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+// import store from '@/store';
 import useJwt from '../auth/jwt/useJwt';
 import { formatDate } from '../@core/utils/filter';
 import { codeRowDetailsSupport } from './code';
@@ -465,12 +465,20 @@ export default {
         transactions: [],
         status_card: '',
       },
+      // gotSelectedContract: store.getters.CONTRACT_ID,
       credit,
       formatDate,
       codeRowDetailsSupport,
     };
   },
   computed: {
+    ...mapGetters({
+      // gotSelected: 'CONTRACT_NUMBER',
+      gotSelectedContract: 'CONTRACT_ID',
+    }),
+    // gotSelectedContract() {
+    //   return store.getters.CONTRACT_ID;
+    //  },
     sortOptions() {
       return this.fields
         .filter((f) => f.sortable)
@@ -480,16 +488,48 @@ export default {
       return store.getters['app/currentBreakPoint'];
     },
   },
+  watch: {
+    gotSelectedContract(newVal) {
+      // console.log(this.rangeDate);
+      const { selected } = this;
+      // const date = this.rangeDate;
+      // const newDate = Array.from(date).filter((n) => n !== '—');
+      // const arr = (newDate.join('').split('00:00:00'));
+      // eslint-disable-next-line prefer-template
+      // const start = date[0];
+      // eslint-disable-next-line prefer-template
+      // const end = date[1];
+      console.log(this.rangeDate);
+      useJwt.getTransactions(`contract_id=${newVal}&startDate=${this.rangeDate[0]}&endDate=${this.rangeDate[1]}&card_number=${selected}`).then((response) => {
+        if (response.data.status) {
+          this.transactions = response.data;
+          this.loadDone = false;
+          this.totalRows = this.transactions.data.result.length;
+          if (this.transactions.data.result.length < 1 && selected !== null) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют транзакции по карте за период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
+        }
+        // return this.transactions;
+      });
+    },
+  },
   created() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      this.contract = userData;
-      this.contractId = this.contract.contract.id;
-      this.start = `${this.getFirstDay()} 00:00:00`;
-      this.end = `${this.isToday()} 00:00:00`;
-      this.rangeDate = [this.start, this.end];
-    }
-    return this.contract;
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+    //   if (userData) {
+    //  this.contract = userData;
+    // this.contractId = this.gotSelectedContract;
+    this.start = `${this.getFirstDay()} 00:00:00`;
+    this.end = `${this.isToday()} 00:00:00`;
+    this.rangeDate = [this.start, this.end];
+    //  }
+    // return this.contract;
   },
 
   beforeMount() {
@@ -504,24 +544,24 @@ export default {
     },
 
     getAllTransactions() {
-      const ID = this.contractId;
+      // const ID = this.gotSelectedContract;
       this.loadDone = true;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+      useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.result.length;
-          console.log(this.totalRows);
+          // console.log(ID);
         }
         this.loadDone = false;
-        return this.transactions;
+        // return this.transactions;
       });
     },
 
     getAllCards() {
       this.busy = true;
-      const ID = this.contractId;
+      // const ID = this.gotSelectedContract;
       this.busy = true;
-      useJwt.getCards(`contract_id=${ID}`).then((response) => {
+      useJwt.getCards(`contract_id=${this.gotSelectedContract}`).then((response) => {
         if (response.data.status) {
           this.response = response.data;
           this.response.cards.forEach((el) => {
@@ -539,8 +579,8 @@ export default {
       const { selected } = this;
       const { start } = this;
       const { end } = this;
-      const ID = this.contractId;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
+      // const ID = this.gotSelectedContract;
+      useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           this.loadDone = false;
@@ -566,11 +606,12 @@ export default {
         const Start = arr[0] + ' 00:00:00';
         // eslint-disable-next-line prefer-template
         const End = arr[1] + ' 00:00:00';
-        useJwt.getTransactions(`contract_id=${ID}&startDate=${Start}&endDate=${End}`).then((response) => {
+        useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${Start}&endDate=${End}`).then((response) => {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.result.length;
+          console.log(this.transactions);
         });
-      } return this.transactions;
+      } // return this.transactions;
     },
 
     isToday() {
@@ -593,9 +634,9 @@ export default {
       const start = arr[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
       const end = arr[1] + ' 00:00:00';
-      const ID = this.contractId;
+      // const ID = this.gotSelectedContract;
       const { selected } = this;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
+      useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.result.length;
@@ -611,10 +652,10 @@ export default {
             });
           }
         }
-        return this.transactions;
+        // return this.transactions;
       });
       if (selected === null) {
-        useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}`).then((response) => {
+        useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}`).then((response) => {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.result.length;
         });

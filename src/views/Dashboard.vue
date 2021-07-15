@@ -222,7 +222,7 @@
                       Всего карт:
                     </h4>
                     <h4>
-                      {{ cardBalance.card_statistic.length }}
+                      {{ getCardsSumm }}
                     </h4>
                   </div>
                 </div>
@@ -559,6 +559,9 @@ export default {
     },
     getNotActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
+    },
+    getCardsSumm() {
+      return this.cardBalance.card_statistic.length;
     },
     // gotSelected() {
     //   return this.$store.getters.CONTRACT_NUMBER;
