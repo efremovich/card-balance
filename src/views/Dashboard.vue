@@ -131,11 +131,11 @@
                 <div class="d-flex justify-content-between align-items-end">
                   <h4>Последние изменения <br> по договору:</h4>
                   <h4 class="text-info">
-                    {{ userData.contract.updated | formatDate }}
+                    {{ userData.contract['updated'] | formatDate }}
                   </h4>
                 </div>
                 <b-table
-                  v-if="currentConsumption !== null || currentConsumption.currentConsumption.length>0"
+                  v-if="getCurrentConsumptionLength !== null && getCurrentConsumptionLength>0"
                   hover
                   responsive
                   :items="currentConsumption.currentConsumption"
@@ -166,7 +166,7 @@
                 <div class="d-flex justify-content-between align-items-end">
                   <h4>Последние изменения <br> по договору:</h4>
                   <h4 class="text-info">
-                    {{ userData.contract.updated | formatDate }}
+                    {{ userData.contract['updated'] | formatDate }}
                   </h4>
                 </div>
               </b-card-actions>
@@ -552,6 +552,7 @@ export default {
   computed: {
     ...mapGetters({
       gotSelected: 'CONTRACT_NUMBER',
+      gotSelectedContract: 'CONTRACT_ID',
     }),
     getActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code === 'ACTIVE').length;
@@ -576,8 +577,10 @@ export default {
   },
 
   created() {
+    this.download = false;
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
+        this.download = true;
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
           this.makeOptions();
