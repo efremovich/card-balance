@@ -323,11 +323,11 @@ export default class JwtService {
   }
 
   // Все карты
-  async getCards() {
+  async getCards(contractId) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/cardsAndHolers/${userData.account.contract_id}`,
+        `/api/cardsAndHolers/${contractId}`,
       );
       return response;
     }

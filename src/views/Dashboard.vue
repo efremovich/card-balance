@@ -37,7 +37,7 @@
                     Договор № :
                   </h3>
                   <v-select
-                    v-model="selected"
+                    :model-value="selected"
                     :clearable="false"
                     label="number"
                     :options="option"
@@ -105,7 +105,7 @@
             </b-overlay>
           </b-col>
           <b-col
-            v-if="getCurrentConsumptionLength !== null && getCurrentConsumptionLength>0"
+            v-if="currentConsumption.currentConsumption.length !== null"
             md="6">
             <b-overlay
               :show="showLoading"
@@ -135,7 +135,7 @@
                   </h4>
                 </div>
                 <b-table
-                  v-if="getCurrentConsumptionLength !== null && getCurrentConsumptionLength>0"
+                  v-if="currentConsumption.currentConsumption.length !== null && currentConsumption.currentConsumption.length>0"
                   hover
                   responsive
                   :items="currentConsumption.currentConsumption"
@@ -441,7 +441,7 @@ export default {
       ID: null,
       download: false,
       showLoading: false,
-      selected: null,
+      selected: this.$store.getters.CONTRACT_NUMBER,
       fields: [
         {
           key: 'service.full_name',
@@ -569,9 +569,9 @@ export default {
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
-    getCurrentConsumptionLength() {
-      return this.currentConsumption.currentConsumption.length;
-    },
+    // getCurrentConsumptionLength() {
+    //   return this.currentConsumption.currentConsumption.length;
+    // },
   },
   watch: {
     gotSelected() {
@@ -580,14 +580,13 @@ export default {
   },
 
   created() {
-    this.download = false;
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.download = true;
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
           this.makeOptions();
-          this.getSelected();
+          // this.getSelected();
         });
       }
     });

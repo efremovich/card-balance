@@ -78,7 +78,7 @@ export default {
     return {
       userData: null,
       option: [],
-      selected: null,
+      selected: this.$store.getters.CONTRACT_NUMBER,
       getInfo: null,
       showLoading: false,
     };
