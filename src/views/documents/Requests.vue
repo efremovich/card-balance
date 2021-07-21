@@ -205,6 +205,7 @@ export default {
     },
 
     getAllCards(val) {
+      this.option = [];
       this.busy = true;
       useJwt.getCards(val).then((response) => {
         if (response.data.status) {

@@ -477,9 +477,6 @@ export default {
       // gotSelected: 'CONTRACT_NUMBER',
       gotSelectedContract: 'CONTRACT_ID',
     }),
-    // gotSelectedContract() {
-    //   return store.getters.CONTRACT_ID;
-    //  },
     sortOptions() {
       return this.fields
         .filter((f) => f.sortable)
@@ -493,6 +490,7 @@ export default {
     gotSelectedContract(val) {
       this.getAllCards(val);
       this.selectDate();
+      this.onChange();
     },
     // rangeDate() {
     //   this.selectDate();
@@ -503,16 +501,23 @@ export default {
   // },
 
   beforeMount() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      this.contract = userData;
+      this.contractId = this.contract.contract.id;
+    }
+    this.getAllCards(this.contractId);
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
     this.rangeDate = [this.start, this.end];
-    useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+    // console.log(this.gotSelectedContract);
+    useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
       if (response.data.status) {
         this.transactions = response.data;
         // console.log(this.transactions.data);
         this.totalRows = this.transactions.data.result.length;
         this.loadDone = false;
-        if (this.transactions.data.result.length < 1) {
+        if (this.totalRows < 1) {
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -527,7 +532,6 @@ export default {
     });
   },
   mounted() {
-    this.getAllCards(this.gotSelectedContract);
     this.getAllTransactions();
   },
   methods: {
@@ -551,6 +555,7 @@ export default {
 
     getAllCards(val) {
       console.log('val: ', val);
+      this.option = [];
       this.busy = true;
       useJwt.getCards(val).then((response) => {
         if (response.data.status) {
@@ -561,50 +566,54 @@ export default {
         }
         this.busy = false;
         // console.log('ID Договора: ', this.gotSelectedContract);
-        // console.log('Номера карт: ', this.option);
+        console.log('Номера карт: ', this.option);
         this.option = this.unique(this.option);
         // console.log('Уникальных карт: ', this.option);
       });
     },
     onChange() {
       this.loadDone = true;
+      const date = this.rangeDate;
+      const newDate = Array.from(date).filter((n) => n !== '—');
+      const arr = (newDate.join('').split('  '));
+      // // eslint-disable-next-line prefer-template
+      const start = `${arr[0]} 00:00:00`;
+      // // eslint-disable-next-line prefer-template
+      const end = `${arr[1]} 00:00:00`;
       const { selected } = this;
-      const { start } = this;
-      const { end } = this;
+      // const { start } = this;
+      // const { end } = this;
+      // console.log(selected);
       // const ID = this.gotSelectedContract;
-      useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
-        if (response.data.status) {
-          this.transactions = response.data;
-          this.loadDone = false;
-          this.totalRows = this.transactions.data.result.length;
-          if (this.transactions.data.result.length < 1) {
-            this.$toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Отсутвуют транзакции по карте за период',
-                icon: 'AlertTriangleIcon',
-                variant: 'danger',
-              },
-            });
+
+      if (selected === null) {
+        useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}`).then((response) => {
+          if (response.data.status) {
+            this.transactions = response.data;
+            this.loadDone = false;
+            this.totalRows = this.transactions.data.result.length;
           }
-        }
+        });
+      } else {
+        useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
+          if (response.data.status) {
+            this.transactions = response.data;
+            this.loadDone = false;
+            this.totalRows = this.transactions.data.result.length;
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции по карте за период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
         // return this.transactions;
-      });
-      // if (selected === null) {
-      //   // const date = this.rangeDate;
-      //   // const newDate = Array.from(date).filter((n) => n !== '—');
-      //   // const arr = (newDate.join('').split('  '));
-      //   // // eslint-disable-next-line prefer-template
-      //   // const Start = arr[0] + ' 00:00:00';
-      //   // // eslint-disable-next-line prefer-template
-      //   // const End = arr[1] + ' 00:00:00';
-      //   console.log('Selected = null');
-      //   useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}`).then((response) => {
-      //     this.transactions = response.data;
-      //     this.totalRows = this.transactions.data.result.length;
-      //     // console.log('onChange');
-      //   });
-      // } // return this.transactions;
+        });
+      }
     },
 
     isToday() {
