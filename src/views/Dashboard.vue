@@ -1,4 +1,13 @@
 <template>
+ <b-overlay
+      :show="showLoading"
+      spinner-type="grow"
+              spinner-variant="primary"
+              spinner-medium
+              variant="transparent"
+              blur="5px"
+              opacity=".75"
+              rounded="md">
   <div v-if="download">
     <div>
       <div class="column">
@@ -6,11 +15,13 @@
           <b-col md="6">
             <b-overlay
               :show="showLoading"
-              variant="black"
+              spinner-type="grow"
               spinner-variant="primary"
-              blur="0"
+              spinner-medium
+              variant="transparent"
+              blur="5px"
               opacity=".75"
-              rounded="sm">
+              rounded="md">
               <b-card-actions
                 v-if="getWidth === 'xs'"
                 ref="userDate"
@@ -109,11 +120,13 @@
             md="6">
             <b-overlay
               :show="showLoading"
-              variant="black"
               spinner-variant="primary"
-              blur="0"
+              spinner-type="grow"
+      spinner-medium
+      variant="transparent"
+              blur="5px"
               opacity=".75"
-              rounded="sm">
+              rounded="md">
               <b-card-actions
                 ref="expenses"
                 title="Расход за текущий месяц:"
@@ -135,7 +148,7 @@
                   </h4>
                 </div>
                 <b-table
-                  v-if="currentConsumption.currentConsumption.length !== null && currentConsumption.currentConsumption.length>0"
+                  v-if="currentConsumption !==null && (currentConsumption.currentConsumption.length !== null && currentConsumption.currentConsumption.length>0)"
                   hover
                   responsive
                   :items="currentConsumption.currentConsumption"
@@ -148,11 +161,13 @@
             md="6">
             <b-overlay
               :show="showLoading"
-              variant="black"
+              spinner-type="grow"
               spinner-variant="primary"
-              blur="0"
+      spinner-medium
+      variant="transparent"
+              blur="5px"
               opacity=".75"
-              rounded="sm">
+              rounded="md">
               <b-card-actions
                 ref="expenses"
                 action-refresh
@@ -177,11 +192,13 @@
           <b-col md="6">
             <b-overlay
               :show="showLoading"
-              variant="black"
               spinner-variant="primary"
-              blur="0"
+              spinner-type="grow"
+      spinner-medium
+      variant="transparent"
+              blur="5px"
               opacity=".75"
-              rounded="sm">
+              rounded="md">
               <b-card-actions
                 ref="information"
                 action-close
@@ -204,11 +221,13 @@
           <b-col md="6">
             <b-overlay
               :show="showLoading"
-              variant="black"
               spinner-variant="primary"
-              blur="0"
+              spinner-type="grow"
+      spinner-medium
+      variant="transparent"
+              blur="5px"
               opacity=".75"
-              rounded="sm">
+              rounded="md">
               <b-card-actions
                 ref="cardStatistic"
                 title="Статистика по картам"
@@ -257,11 +276,13 @@
         <!--Statistics -->
         <b-overlay
           :show="showLoading"
-          variant="black"
           spinner-variant="primary"
-          blur="0"
-          opacity=".75"
-          rounded="sm">
+          spinner-type="grow"
+          spinner-medium
+          variant="transparent"
+              blur="5px"
+              opacity=".75"
+              rounded="md">
           <b-card-actions
             v-if="currentConsumptionDynamic !== null"
             ref="consumption"
@@ -344,11 +365,13 @@
       <!-- GEO-->
       <b-overlay
         :show="showLoading"
-        variant="black"
-        spinner-variant="primary"
-        blur="0"
-        opacity=".75"
-        rounded="sm">
+       spinner-variant="primary"
+       spinner-type="grow"
+      spinner-medium
+      variant="transparent"
+              blur="5px"
+              opacity=".75"
+              rounded="md">
         <b-card-actions
           ref="map"
           action-close
@@ -374,6 +397,7 @@
     </div>
     <!-- </b-overlay> -->
   </div>
+  </b-overlay>
 </template>
 
 <script>
@@ -580,9 +604,12 @@ export default {
   },
 
   created() {
+    this.showLoading = true;
+    this.download = false;
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.download = true;
+        this.showLoading = false;
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
           this.makeOptions();

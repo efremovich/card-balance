@@ -1,11 +1,14 @@
 <template>
-  <div>
-    <b-overlay
-      :show="loadDone"
-      spinner-variant="primary"
-      spinner-medium
-      variant="transparent"
-      rounded="md">
+  <b-overlay
+    :show="loadDone"
+    spinner-type="grow"
+    spinner-variant="primary"
+    spinner-medium
+    variant="transparent"
+    blur="5px"
+    opacity=".75"
+    rounded="md">
+    <div v-if="!loadDone">
       <b-container
         fluid
         class="d-flex justify-content-center">
@@ -314,9 +317,9 @@
           </b-card>
         </b-col>
       </b-container>
-    <!-- </div> -->
-    </b-overlay>
-  </div>
+    </div>
+  </b-overlay>
+  <!-- </div> -->
 </template>
 <script>
 
@@ -496,27 +499,28 @@ export default {
     //   this.selectDate();
     // },
   },
-  // created() {
-  //   console.log('Created Договора: ', this.gotSelectedContract);
-  // },
+  created() {
+    this.loadDone = true;
+  },
 
   beforeMount() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      this.contract = userData;
-      this.contractId = this.contract.contract.id;
-    }
-    this.getAllCards(this.contractId);
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+    // if (userData) {
+    //   this.contract = userData;
+    //   this.contractId = this.contract.contract.id;
+    // }
+    // this.loadDone = true;
+    this.getAllCards(this.gotSelectedContract);
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
     this.rangeDate = [this.start, this.end];
     // console.log(this.gotSelectedContract);
-    useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+    useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
       if (response.data.status) {
         this.transactions = response.data;
         // console.log(this.transactions.data);
         this.totalRows = this.transactions.data.result.length;
-        this.loadDone = false;
+        // this.loadDone = false;
         if (this.totalRows < 1) {
           this.$toast({
             component: ToastificationContent,
@@ -532,6 +536,7 @@ export default {
     });
   },
   mounted() {
+    this.loadDone = false;
     this.getAllTransactions();
   },
   methods: {
@@ -665,15 +670,18 @@ export default {
       if (selected === null) {
         useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${Start}&endDate=${End}`).then((response) => {
           this.transactions = response.data;
+          this.loadDone = false;
           this.totalRows = this.transactions.data.result.length;
         });
       }
     },
 
     onFiltered(filteredItems) {
+      this.loadDone = true;
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
+      this.loadDone = false;
     },
     back() {
       this.items.status_card = '';
