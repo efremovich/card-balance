@@ -75,6 +75,7 @@
           class="form-control mb-0"
           :config="config"
           @on-change="selectDate" />
+        <!-- <div class="d-flex wrap justify-content-center align-items-sm-center"> -->
         <b-button
           :disabled="!visible"
           :variant="color"
@@ -96,40 +97,40 @@
           @click="download">
           Скачать чеки
         </b-button>
-      </div>
+        <!-- </div> -->
 
-      <div
-        v-if="visible"
-        id="check"
-        ref="print"
-
-        class="d-flex flex-row flex-wrap justify-content-around">
-        <vprint
-          id="print"
-          :transactions="transactions" />
+        <div
+          v-if="visible"
+          id="check"
+          ref="print"
+          class="d-flex flex-row flex-wrap justify-content-around">
+          <vprint
+            id="print"
+            :transactions="transactions" />
+        </div>
+        <b-pagination
+          v-if="hidden"
+          v-model="currentPage"
+          :total-rows="totalRows"
+          first-number
+          last-number
+          prev-class="prev-item"
+          next-class="next-item"
+          class="mb-0 "
+          align="center"
+          @change="selectPage">
+          <template #prev-text>
+            <feather-icon
+              icon="ChevronLeftIcon"
+              size="18" />
+          </template>
+          <template #next-text>
+            <feather-icon
+              icon="ChevronRightIcon"
+              size="18" />
+          </template>
+        </b-pagination>
       </div>
-      <b-pagination
-        v-if="hidden"
-        v-model="currentPage"
-        :total-rows="totalRows"
-        first-number
-        last-number
-        prev-class="prev-item"
-        next-class="next-item"
-        class="mb-0 "
-        align="center"
-        @change="selectPage">
-        <template #prev-text>
-          <feather-icon
-            icon="ChevronLeftIcon"
-            size="18" />
-        </template>
-        <template #next-text>
-          <feather-icon
-            icon="ChevronRightIcon"
-            size="18" />
-        </template>
-      </b-pagination>
     </b-card>
   </div>
 </template>

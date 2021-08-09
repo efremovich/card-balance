@@ -455,6 +455,7 @@ export default {
       useJwt.getCardsDate(`offset=0&limit=${perPage}`).then((response) => {
         if (response.data.status) {
           products.value = response.data;
+          console.log(products.value);
           totalRows.value = products.value.data.total;
 
           if (filters.value !== '') {
@@ -555,14 +556,14 @@ export default {
       setCardsView: 'setCardsView',
     }),
     getMaxValue(item) {
-      if (item.length < 1) {
+      if (item === undefined || null || item.length < 1) {
         return 0;
       }
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
     },
     getValue(item) {
-      if (item.length < 1) {
+      if (item === undefined || null || item.length < 1) {
         return 0;
       }
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);

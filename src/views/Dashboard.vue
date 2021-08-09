@@ -48,7 +48,7 @@
                       Договор № :
                     </h3>
                     <v-select
-                      :model-value="selected"
+                      v-model="selected"
                       :clearable="false"
                       label="number"
                       :options="option"
@@ -603,9 +603,9 @@ export default {
     },
   },
 
-  created() {
-    this.showLoading = true;
-    this.download = false;
+  beforeMount() {
+    // this.showLoading = true;
+    // this.download = false;
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.download = true;
@@ -763,12 +763,15 @@ export default {
           if (response.status) {
             this.cardBalance = response.data;
             this.refreshConsumptions(this.$store.getters.CONTRACT_ID);
-            this.showLoading = false;
             this.refreshData(this.$store.getters.CONTRACT_ID);
+            this.showLoading = false;
           }
         });
     },
     Change() {
+      this.$store.dispatch('getContractNumber', this.selected.number);
+      this.$store.dispatch('getContractId', this.selected.id);
+      // console.log(this.selected.number, this.selected.id);
       this.showLoading = true;
       useJwt.changeContract(this.selected.id)
         .then((response) => {
@@ -776,8 +779,8 @@ export default {
             this.cardBalance = response.data;
             this.cardBalance = response.data;
             this.refreshConsumptions(this.selected.id);
-            this.showLoading = false;
             this.refreshData(this.selected.id);
+            this.showLoading = false;
           }
         });
     },
