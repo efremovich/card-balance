@@ -144,6 +144,7 @@ import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import { mapGetters } from 'vuex';
 import vprint from '../vprint.vue';
 import useJwt from '../../auth/jwt/useJwt';
 
@@ -200,6 +201,9 @@ export default {
     color() {
       return this.visible ? 'success' : '';
     },
+    ...mapGetters({
+      gotSelectedContract: 'CONTRACT_ID',
+    }),
   },
   // watch: {
   //   selectedHolder() {
@@ -207,7 +211,19 @@ export default {
   //     this.onChange();
   //   },
   // },
+  watch: {
+    gotSelectedContract(val) {
+      this.getAllCards(val);
+    },
+    // rangeDate() {
+    //   this.selectDate();
+    // },
+  },
+
   created() {
+    this.busy = true;
+  },
+  beforeMount() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       this.contract = userData;
@@ -238,10 +254,7 @@ export default {
           });
         } else this.haveTransactions = true;
       });
-    // return this.contract;
-  },
-  beforeMount() {
-    this.getAllCards();
+    this.getAllCards(this.contractId);
   },
   methods: {
     isToday() {
@@ -257,12 +270,15 @@ export default {
       this.arr = Array.from(new Set(arr));
       return this.arr;
     },
-    getAllCards() {
-      const ID = this.contractId;
+    getAllCards(val) {
+      // console.log(val);
+      this.option = [];
+      this.names = [];
       this.busy = true;
-      useJwt.getCards(`contract_id=${ID}`).then((response) => {
+      useJwt.getCards(val).then((response) => {
         if (response.data.status) {
           this.response = response.data;
+          // console.log(this.response.cards);
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
           });
@@ -270,12 +286,13 @@ export default {
             this.names.push(el.holder);
           });
         }
-        this.busy = false;
         this.names = this.unique(this.names);
         this.names = this.names.filter((el) => el !== '');
         this.option = this.unique(this.option);
+        this.busy = false;
       });
     },
+
     getAllTransactions() {
       const holder = this.selectedHolder;
       const ID = this.contractId;

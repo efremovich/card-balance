@@ -421,7 +421,6 @@ export default {
         .then((response) => {
           if (response.status) {
             this.getInfo = response.data;
-            console.log(this.getInfo);
             const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
             this.contract = `${this.getInfo.contract.number} от ${dateContract}`;
           }
@@ -448,7 +447,6 @@ export default {
         if (response.status) {
           this.getInfo = response.data;
           this.download = true;
-          console.log(this.getInfo);
           const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
           this.contract = `${this.getInfo.contract.number} от ${dateContract}`;
         }

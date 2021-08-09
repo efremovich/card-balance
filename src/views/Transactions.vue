@@ -514,11 +514,9 @@ export default {
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
     this.rangeDate = [this.start, this.end];
-    // console.log(this.gotSelectedContract);
     useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
       if (response.data.status) {
         this.transactions = response.data;
-        // console.log(this.transactions.data);
         this.totalRows = this.transactions.data.result.length;
         // this.loadDone = false;
         if (this.totalRows < 1) {
@@ -552,14 +550,12 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.result.length;
-          // console.log(ID);
         }
         this.loadDone = false;
       });
     },
 
     getAllCards(val) {
-      console.log('val: ', val);
       this.option = [];
       this.busy = true;
       useJwt.getCards(val).then((response) => {
@@ -570,10 +566,7 @@ export default {
           });
         }
         this.busy = false;
-        // console.log('ID Договора: ', this.gotSelectedContract);
-        console.log('Номера карт: ', this.option);
         this.option = this.unique(this.option);
-        // console.log('Уникальных карт: ', this.option);
       });
     },
     onChange() {
@@ -588,7 +581,6 @@ export default {
       const { selected } = this;
       // const { start } = this;
       // const { end } = this;
-      // console.log(selected);
       // const ID = this.gotSelectedContract;
 
       if (selected === null) {
@@ -637,19 +629,16 @@ export default {
       // const { start } = this;
       // const { end } = this;
       const date = this.rangeDate;
-      // console.log(date);
       const newDate = Array.from(date).filter((n) => n !== '—');
       const arr = (newDate.join('').split('  '));
       // eslint-disable-next-line prefer-template
       const Start = arr[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
       const End = arr[1] + ' 00:00:00';
-      // console.log(Start, End);
       const { selected } = this;
       useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${Start}&endDate=${End}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          // console.log('TotalRows:', this.rangeDate.length);
           this.totalRows = this.transactions.data.result.length;
           this.loadDone = false;
           if (this.rangeDate.length > 22) {
