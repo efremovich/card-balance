@@ -345,7 +345,7 @@ import {
   BCardBody,
   BSpinner,
 } from 'bootstrap-vue';
-import 'swiper/swiper-bundle.css';
+// import 'swiper/swiper-bundle.css';
 import vSelect from 'vue-select';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 // import store from '@/store';

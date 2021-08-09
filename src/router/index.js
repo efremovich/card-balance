@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import 'animate.css';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
-import 'swiper/swiper-bundle.css';
+// import 'swiper/swiper-bundle.css';
 // Routes
 import { canNavigate } from '@/libs/acl/routeProtection';
 // import { getModal } from '@/views/CardDetails.vue';

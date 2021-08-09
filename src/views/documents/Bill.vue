@@ -69,7 +69,7 @@
                 <p
                   style="text-align: left;
                   padding-left: 10px;padding-top: 10px;">
-                  КПП {{ getInfo.company.kpp }}
+                  КПП {{ getInfo.contract.company.kpp }}
                 </p>
               </div>
               <div
@@ -78,7 +78,7 @@
                 <p
                   style="text-align: left;
     padding-left: 10px;padding-top: 10px;">
-                  ИНН {{ getInfo.company.inn }}
+                  ИНН {{ getInfo.contract.company.inn }}
                 </p>
               </div>
             </div>
@@ -190,7 +190,7 @@
             </div>
             <div class="rekv2">
               <p class="l">
-                ИНН {{ getInfo.company.inn }}, КПП {{ getInfo.company.kpp }}, {{ getInfo.company.full_name }} , {{ getInfo.company.legal_address }}
+                ИНН {{ getInfo.contract.company.inn }}, КПП {{ getInfo.contract.company.kpp }}, {{ getInfo.contract.company.full_name }} , {{ getInfo.contract.company.legal_address }}
               </p>
             </div>
           </div>
@@ -366,6 +366,7 @@ import {
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import print from 'vue-print-nb';
+import { mapGetters } from 'vuex';
 
 export default {
   components: {
@@ -399,6 +400,10 @@ export default {
         currency: 'RUB',
       });
     },
+    ...mapGetters({
+      gotSelected: 'CONTRACT_NUMBER',
+      gotSelectedContract: 'CONTRACT_ID',
+    }),
     getSumm() {
       return Number(this.summ).toLocaleString('ru-RU', {
         style: 'currency',
@@ -410,18 +415,44 @@ export default {
       return Math.floor(Math.random() * 10000);
     },
   },
+  watch: {
+    gotSelectedContract(val) {
+      useJwt.changeContract(val)
+        .then((response) => {
+          if (response.status) {
+            this.getInfo = response.data;
+            console.log(this.getInfo);
+            const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
+            this.contract = `${this.getInfo.contract.number} от ${dateContract}`;
+          }
+        });
+    },
+    // rangeDate() {
+    //   this.selectDate();
+    // },
+  },
 
   created() {
-    useJwt.getCurrenUser().then((response) => {
-      if (response.data.status) {
-        this.$store.dispatch('user/getUserData', response.data).then(() => {
+    // useJwt.getCurrenUser().then((response) => {
+    //   if (response.data.status) {
+    //     this.$store.dispatch('user/getUserData', response.data).then(() => {
+    //       this.getInfo = response.data;
+    //       this.download = true;
+    //       const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
+    //       this.contract = `${this.getInfo.contract.number} от ${dateContract}`;
+    //     });
+    //   }
+    // });
+    useJwt.changeContract(this.$store.getters.CONTRACT_ID)
+      .then((response) => {
+        if (response.status) {
           this.getInfo = response.data;
           this.download = true;
+          console.log(this.getInfo);
           const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
           this.contract = `${this.getInfo.contract.number} от ${dateContract}`;
-        });
-      }
-    });
+        }
+      });
   },
 
   methods: {

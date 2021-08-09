@@ -186,6 +186,18 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // Данные при смене договора
+  async getCurrenUserFromID(params) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/user/${params}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
   async getCardStatistic() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
