@@ -313,6 +313,7 @@ export default {
       this.getAllTransactions();
     },
     order(arr) {
+      console.log(arr);
       return arr.slice().sort((a, b) => a.card_number - b.card_number);
     },
     clickPrint() {
@@ -356,7 +357,7 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.total;
-          console.log('SelectDate totalRow', this.totalRows);
+          // console.log('SelectDate totalRow', this.totalRows);
           if (this.transactions.data.result.length > 1) {
             this.haveTransactions = true;
           }
@@ -389,7 +390,7 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&holder=${holder}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          console.log('page transactions.data:', this.transactions.data);
+          // console.log('page transactions.data:', this.transactions.data);
         }
         if (this.transactions.data.result.length < 1) {
           // this.visible = false;
@@ -415,10 +416,23 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&card_holder=${holder}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          console.log('Change/transactions:', this.transactions);
+          // console.log('Change/transactions:', this.transactions);
           this.totalRows = this.transactions.data.total;
           if (this.transactions.data.total > 1) {
             this.haveTransactions = true;
+          }
+          if (this.transactions.data.total < 1 && this.selected < 1) {
+            this.haveTransactions = false;
+            this.visible = false;
+            this.transactions.data.result = [];
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют операции за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
           } else {
             this.haveTransactions = false;
             this.visible = false;

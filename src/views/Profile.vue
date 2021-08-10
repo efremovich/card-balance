@@ -499,7 +499,7 @@ export default {
     },
     resetPhoto() {
       this.twin.account = '';
-      console.log(this.twin.account);
+      // console.log(this.twin.account);
       useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
         console.log('Сброс фото', response);
         // this.image = this.twin.avatar;
@@ -559,11 +559,11 @@ export default {
             old_password: this.oldPassword,
             email: this.twin.email,
           };
-          console.log(newPassword);
-          console.log('Старый пароль', this.oldPassword);
+          // console.log(newPassword);
+          // console.log('Старый пароль', this.oldPassword);
           useJwt.changePassword(JSON.stringify(newPassword)).then((response) => {
             console.log(response);
-            console.log(this.newPasswordValue);
+            // console.log(this.newPasswordValue);
             (this.$store.dispatch('getPassword', this.newPasswordValue));
             // this.$toast({
             //   component: ToastificationContent,

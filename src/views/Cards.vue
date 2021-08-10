@@ -441,6 +441,13 @@ export default {
     BFormRadio,
   },
   setup() {
+    const contract = ref('');
+    const contractID = ref('');
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      contract.value = userData;
+      contractID.value = contract.value.contract.id;
+    }
     const filters = ref('');
     const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
     const { itemViewOptions, totalProducts } = useShopUi();
@@ -452,10 +459,9 @@ export default {
     const { products } = useShopRemoteData();
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
     const fetchShopProducts = () => {
-      useJwt.getChangeCardsDate(store.getters.CONTRACT_ID, `offset=0&limit=${perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(contractID.value, `offset=0&limit=${perPage}`).then((response) => {
         if (response.data.status) {
           products.value = response.data;
-          console.log(store.getters.CONTRACT_ID);
           totalRows.value = products.value.data.total;
 
           if (filters.value !== '') {
@@ -516,9 +522,10 @@ export default {
   },
   watch: {
     perPage() {
-      useJwt.getCardsDate(`offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.$store.getters.CONTRACT_ID, `offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
+          // console.log(this.products.data.result);
           // this.totalRows = this.products.data.result.length;
         }
       });
@@ -539,9 +546,11 @@ export default {
     currentPage() {
       this.page = this.currentPage;
       // this.$store.dispatch('getSelectedPages', this.page);
-      useJwt.getCardsDate(`&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.$store.getters.CONTRACT_ID, `&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
+          // console.log(this.products.data);
+          // this.totalRows = this.products.data.total;
         }
       });
     },

@@ -84,8 +84,7 @@
         :per-page="perPage"
         :current-page="currentPage"
         class="position-relative table-hover text-center"
-        :fields="fields">
-      </b-table>
+        :fields="fields" />
     </b-card>
   </div>
 </template>
@@ -215,7 +214,7 @@ export default {
           });
         }
         this.busy = false;
-        console.log('Карт: ', this.option);
+        // console.log('Карт: ', this.option);
         this.option = this.unique(this.option);
       });
     },
@@ -232,7 +231,7 @@ export default {
       useJwt.GetRequests(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=7824861010051464017`).then((response) => {
         if (response.data.status) {
           this.request = response.data;
-          console.log(this.request);
+          // console.log(this.request);
           if (this.rangeDate.length > 10 && this.request.data.length < 1) {
             this.$toast({
               component: ToastificationContent,

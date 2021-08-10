@@ -27,7 +27,7 @@
                       size="sm"
                       class="form-control mb-0"
                       :config="config"
-                      @on-change="selectDate" />
+                      @on-close="selectDate" />
                   </b-form-group>
                   <div
                     class="d-flex flex-column justify-content-around
@@ -404,6 +404,7 @@ export default {
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
+
       fields: [
         {
           key: 'service.full_name',
@@ -504,17 +505,17 @@ export default {
   },
 
   beforeMount() {
-    // const userData = JSON.parse(localStorage.getItem('userData'));
-    // if (userData) {
-    //   this.contract = userData;
-    //   this.contractId = this.contract.contract.id;
-    // }
-    // this.loadDone = true;
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      this.contract = userData;
+      this.contractId = this.contract.contract.id;
+    }
+    this.loadDone = true;
     this.getAllCards(this.gotSelectedContract);
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
     this.rangeDate = [this.start, this.end];
-    useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+    useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
       if (response.data.status) {
         this.transactions = response.data;
         this.totalRows = this.transactions.data.result.length;
@@ -589,6 +590,16 @@ export default {
             this.transactions = response.data;
             this.loadDone = false;
             this.totalRows = this.transactions.data.result.length;
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
           }
         });
       } else {
@@ -597,7 +608,18 @@ export default {
             this.transactions = response.data;
             this.loadDone = false;
             this.totalRows = this.transactions.data.result.length;
-            if (this.totalRows < 1) {
+            if (selected === null && this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+
+            if (selected !== null && this.totalRows < 1) {
               this.$toast({
                 component: ToastificationContent,
                 props: {
@@ -625,6 +647,7 @@ export default {
     },
 
     selectDate() {
+      console.log('picker');
       this.loadDone = true;
       // const { start } = this;
       // const { end } = this;

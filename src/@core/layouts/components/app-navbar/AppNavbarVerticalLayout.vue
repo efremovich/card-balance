@@ -78,9 +78,10 @@ export default {
     return {
       userData: null,
       option: [],
-      selected: this.$store.getters.CONTRACT_NUMBER,
+      selected: '',
       getInfo: null,
       showLoading: false,
+      contract: null,
     };
   },
   computed: {
@@ -93,7 +94,15 @@ export default {
       return this.getWidth;
     },
   },
-  created() {
+  // created() {
+  //   const storage = JSON.parse(localStorage.getItem('userData'));
+  //   if (storage) {
+  //     this.contract = storage;
+  //     // this.selected = this.contract.contract.number;
+  //     console.log(this.contract);
+  //   }
+  // },
+  beforeMount() {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
@@ -106,7 +115,6 @@ export default {
     this.userData = JSON.parse(localStorage.getItem('userData'));
     if (this.userData) {
       this.getInfo = this.userData;
-      return this.getInfo;
     }
     return { data: { status: false } };
   },

@@ -2,7 +2,6 @@
   <div
     id="vprint">
     <div
-
       class="d-flex flex-row flex-wrap justify-content-around"
       :rangeStart="today"
       :rangeEnd="firstDay"
