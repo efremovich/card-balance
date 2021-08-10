@@ -452,10 +452,10 @@ export default {
     const { products } = useShopRemoteData();
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
     const fetchShopProducts = () => {
-      useJwt.getCardsDate(`offset=0&limit=${perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(store.getters.CONTRACT_ID, `offset=0&limit=${perPage}`).then((response) => {
         if (response.data.status) {
           products.value = response.data;
-          console.log(products.value);
+          console.log(store.getters.CONTRACT_ID);
           totalRows.value = products.value.data.total;
 
           if (filters.value !== '') {
@@ -515,10 +515,6 @@ export default {
     },
   },
   watch: {
-    // itemView(newVal) {
-    //   this.$store.dispatch('getCardsView', newVal);
-    //   // console.log(newVal);
-    // },
     perPage() {
       useJwt.getCardsDate(`offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
@@ -534,8 +530,8 @@ export default {
           this.products = response.data;
           this.totalRows = this.products.data.total;
           this.loading = false;
-          // if (filters.value !== '') {
-          //   products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
+          // if (this.filters !== '') {
+          //   this.products.data.result = response.data.data.result.filter((product) => product.number.includes(this.filters));
           // }
         }
       });
