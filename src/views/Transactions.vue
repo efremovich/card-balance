@@ -27,7 +27,7 @@
                       size="sm"
                       class="form-control mb-0"
                       :config="config"
-                      @on-close="selectDate" />
+                      @on-change="selectDate" />
                   </b-form-group>
                   <div
                     class="d-flex flex-column justify-content-around
@@ -647,9 +647,6 @@ export default {
     },
 
     selectDate() {
-      // this.loadDone = true;
-      // const { start } = this;
-      // const { end } = this;
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
       const arr = (newDate.join('').split('  '));
@@ -661,6 +658,7 @@ export default {
       useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${Start}&endDate=${End}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
+          console.log(this.transactions);
           this.totalRows = this.transactions.data.result.length;
           // this.loadDone = false;
           if (this.rangeDate.length > 22) {
