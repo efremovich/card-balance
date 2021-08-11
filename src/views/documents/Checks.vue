@@ -75,25 +75,25 @@
           class="form-control mb-0"
           :config="config"
           @on-change="selectDate" />
-        <!-- <div class="d-flex wrap justify-content-center align-items-sm-center"> -->
+        <!-- <div class="d-flex flex-column justify-content-center"> -->
         <b-button
           :disabled="!visible"
           :variant="color"
-          class="btn btn-primary mt-1"
+          :class="['btn', 'btn-primary', 'mt-1', getWidth !== 'xs'? '': 'btn-block']"
           @click="print">
           Печать
         </b-button>
 
         <b-button
           :disabled="!haveTransactions"
-          class="btn btn-primary mt-1 ml-3"
+          :class="['btn', 'btn-primary', 'mt-1', getWidth !== 'xs'? 'ml-3': 'btn-block']"
           @click="toogle">
           {{ visible ? "Скрыть чеки" : "Показать чеки" }}
         </b-button>
 
         <b-button
           :disabled="!haveTransactions"
-          class="btn btn-primary mt-1 ml-3"
+          :class="['btn', 'btn-primary', 'mt-1', getWidth !== 'xs'? 'ml-3': 'btn-block']"
           @click="download">
           Скачать чеки
         </b-button>
@@ -146,6 +146,7 @@ import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { mapGetters } from 'vuex';
+import store from '@/store';
 import vprint from '../vprint.vue';
 import useJwt from '../../auth/jwt/useJwt';
 
@@ -205,6 +206,9 @@ export default {
     ...mapGetters({
       gotSelectedContract: 'CONTRACT_ID',
     }),
+    getWidth() {
+      return store.getters['app/currentBreakPoint'];
+    },
   },
   // watch: {
   //   selectedHolder() {
@@ -313,7 +317,6 @@ export default {
       this.getAllTransactions();
     },
     order(arr) {
-      console.log(arr);
       return arr.slice().sort((a, b) => a.card_number - b.card_number);
     },
     clickPrint() {
