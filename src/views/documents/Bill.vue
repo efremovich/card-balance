@@ -32,7 +32,6 @@
         @click="getVisible()">
         {{ visible ? "Убрать счёт" : "Показать счёт" }}
       </b-button> -->
-
         <div
           v-show="visible"
           id="check"
@@ -367,6 +366,7 @@ import {
 import useJwt from '@/auth/jwt/useJwt';
 import print from 'vue-print-nb';
 import { mapGetters } from 'vuex';
+import store from '@/store';
 
 export default {
   components: {
@@ -392,7 +392,16 @@ export default {
       text: 'Оплата согласно договора ',
     };
   },
-
+  beforeRouteEnter(to, from, next) {
+    if (to.name === 'bill') {
+      next((vm) => {
+        if (vm.getWidth === 'xs') {
+          console.log(vm.getWidth);
+          next(false);
+        } else next(true);
+      });
+    }
+  },
   computed: {
     getNDS() {
       return ((this.summ * 20) / 100).toLocaleString('ru-RU', {
@@ -410,6 +419,9 @@ export default {
         currency: 'RUB',
       });
     },
+    getWidth() {
+      return store.getters['app/currentBreakPoint'];
+    },
 
     getRandom() {
       return Math.floor(Math.random() * 10000);
@@ -417,7 +429,6 @@ export default {
   },
   watch: {
     gotSelectedContract(val) {
-      console.log(val);
       useJwt.changeContract(val)
         .then((response) => {
           if (response.status) {
@@ -444,12 +455,12 @@ export default {
     //   }
     // });
 
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      this.contract = userData;
-      this.contractId = this.contract.contract.id;
-    }
-    useJwt.changeContract(this.contractId)
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+    // if (userData) {
+    //   this.contract = userData;
+    //   this.contractId = this.contract.contract.id;
+    // }
+    useJwt.changeContract(this.gotSelectedContract)
       .then((response) => {
         if (response.status) {
           this.getInfo = response.data;

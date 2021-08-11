@@ -96,6 +96,16 @@ Vue.mixin({
       next(true);
     }
   },
+  // beforeRouteEnter(to, from, next) {
+  //   if (to.name === 'bill') {
+  //     next((vm) => {
+  //       if (vm.getWidth === 'xs') {
+  //         console.log('xs');
+  //         next(false);
+  //       } else next(true);
+  //     });
+  //   }
+  // },
 });
 
 export default router;

@@ -465,7 +465,7 @@ export default {
       ID: null,
       download: false,
       showLoading: false,
-      selected: this.$store.getters.CONTRACT_NUMBER,
+      // selected: this.$store.getters.CONTRACT_NUMBER,
       fields: [
         {
           key: 'service.full_name',
@@ -578,6 +578,16 @@ export default {
       gotSelected: 'CONTRACT_NUMBER',
       gotSelectedContract: 'CONTRACT_ID',
     }),
+    selected: {
+      get() {
+        return this.$store.getters.CONTRACT_NUMBER;
+      },
+      set(value) {
+        console.log(value);
+        this.$store.dispatch('getContractNumber', value.number);
+        this.$store.dispatch('getContractId', value.id);
+      },
+    },
     getActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code === 'ACTIVE').length;
     },
@@ -679,9 +689,9 @@ export default {
         month: 'long',
       });
     },
-    getSelected() {
-      this.selected = this.$store.getters.CONTRACT_NUMBER;
-    },
+    // getSelected() {
+    //   this.selected = this.$store.getters.CONTRACT_NUMBER;
+    // },
     makeOptions() {
       this.userData.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });
@@ -769,17 +779,16 @@ export default {
         });
     },
     Change() {
-      this.$store.dispatch('getContractNumber', this.selected.number);
-      this.$store.dispatch('getContractId', this.selected.id);
-      // console.log(this.selected.number, this.selected.id);
+      // this.$store.dispatch('getContractNumber', this.selected.number);
+      // this.$store.dispatch('getContractId', this.selected.id);
+      // console.log(this.$store.getters.CONTRACT_ID);
       this.showLoading = true;
-      useJwt.changeContract(this.selected.id)
+      useJwt.changeContract(this.$store.getters.CONTRACT_ID)
         .then((response) => {
           if (response.status) {
             this.cardBalance = response.data;
-            this.cardBalance = response.data;
-            this.refreshConsumptions(this.selected.id);
-            this.refreshData(this.selected.id);
+            this.refreshConsumptions(this.$store.getters.CONTRACT_ID);
+            this.refreshData(this.$store.getters.CONTRACT_ID);
             this.showLoading = false;
           }
         });

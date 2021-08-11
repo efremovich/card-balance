@@ -571,7 +571,7 @@ export default {
       });
     },
     onChange() {
-      this.loadDone = true;
+      // this.loadDone = true;
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
       const arr = (newDate.join('').split('  '));
@@ -588,7 +588,7 @@ export default {
         useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}`).then((response) => {
           if (response.data.status) {
             this.transactions = response.data;
-            this.loadDone = false;
+            // this.loadDone = false;
             this.totalRows = this.transactions.data.result.length;
             if (this.totalRows < 1) {
               this.$toast({
@@ -606,7 +606,7 @@ export default {
         useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
           if (response.data.status) {
             this.transactions = response.data;
-            this.loadDone = false;
+            // this.loadDone = false;
             this.totalRows = this.transactions.data.result.length;
             if (selected === null && this.totalRows < 1) {
               this.$toast({
@@ -647,8 +647,7 @@ export default {
     },
 
     selectDate() {
-      console.log('picker');
-      this.loadDone = true;
+      // this.loadDone = true;
       // const { start } = this;
       // const { end } = this;
       const date = this.rangeDate;
@@ -663,7 +662,7 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.result.length;
-          this.loadDone = false;
+          // this.loadDone = false;
           if (this.rangeDate.length > 22) {
             if (this.totalRows < 1) {
               this.$toast({
@@ -682,7 +681,7 @@ export default {
       if (selected === null) {
         useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${Start}&endDate=${End}`).then((response) => {
           this.transactions = response.data;
-          this.loadDone = false;
+          // this.loadDone = false;
           this.totalRows = this.transactions.data.result.length;
         });
       }
