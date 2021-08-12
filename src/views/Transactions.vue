@@ -322,7 +322,6 @@
   <!-- </div> -->
 </template>
 <script>
-
 import { required, credit } from '@validations';
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import { Russian } from 'flatpickr/dist/l10n/ru';
@@ -373,7 +372,6 @@ export default {
     BOverlay,
     vSelect,
     BSpinner,
-
   },
   data() {
     return {
@@ -404,7 +402,6 @@ export default {
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
-
       fields: [
         {
           key: 'service.full_name',
@@ -493,7 +490,7 @@ export default {
   watch: {
     gotSelectedContract(val) {
       this.getAllCards(val);
-      this.selectDate();
+      // this.selectDate();
       this.onChange();
     },
     // rangeDate() {
@@ -503,7 +500,6 @@ export default {
   created() {
     this.loadDone = true;
   },
-
   beforeMount() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
@@ -518,7 +514,7 @@ export default {
     useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
       if (response.data.status) {
         this.transactions = response.data;
-        this.totalRows = this.transactions.data.result.length;
+        this.totalRows = this.transactions.data.total;
         // this.loadDone = false;
         if (this.totalRows < 1) {
           this.$toast({
@@ -543,19 +539,17 @@ export default {
       this.arr = Array.from(new Set(arr));
       return this.arr;
     },
-
     getAllTransactions() {
       // const ID = this.gotSelectedContract;
       this.loadDone = true;
       useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          this.totalRows = this.transactions.data.result.length;
+          this.totalRows = this.transactions.data.total;
         }
         this.loadDone = false;
       });
     },
-
     getAllCards(val) {
       this.option = [];
       this.busy = true;
@@ -583,13 +577,12 @@ export default {
       // const { start } = this;
       // const { end } = this;
       // const ID = this.gotSelectedContract;
-
       if (selected === null) {
         useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}`).then((response) => {
           if (response.data.status) {
             this.transactions = response.data;
             // this.loadDone = false;
-            this.totalRows = this.transactions.data.result.length;
+            this.totalRows = this.transactions.data.total;
             if (this.totalRows < 1) {
               this.$toast({
                 component: ToastificationContent,
@@ -607,8 +600,9 @@ export default {
           if (response.data.status) {
             this.transactions = response.data;
             // this.loadDone = false;
-            this.totalRows = this.transactions.data.result.length;
-            if (selected === null && this.totalRows < 1) {
+            console.log(this.transactions);
+            this.totalRows = this.transactions.data.total;
+            if ((selected === null || selected.length < 1) && this.totalRows < 1) {
               this.$toast({
                 component: ToastificationContent,
                 props: {
@@ -618,8 +612,7 @@ export default {
                 },
               });
             }
-
-            if (selected !== null && this.totalRows < 1) {
+            if ((selected !== null && selected.length > 0) && this.totalRows < 1) {
               this.$toast({
                 component: ToastificationContent,
                 props: {
@@ -634,18 +627,15 @@ export default {
         });
       }
     },
-
     isToday() {
       const today = new Date();
       return today.toLocaleDateString();
     },
-
     getFirstDay() {
       const date = new Date();
       const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
       return firstDay;
     },
-
     selectDate() {
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
@@ -659,7 +649,7 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           console.log(this.transactions);
-          this.totalRows = this.transactions.data.result.length;
+          this.totalRows = this.transactions.data.total;
           // this.loadDone = false;
           if (this.rangeDate.length > 22) {
             if (this.totalRows < 1) {
@@ -680,11 +670,10 @@ export default {
         useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${Start}&endDate=${End}`).then((response) => {
           this.transactions = response.data;
           // this.loadDone = false;
-          this.totalRows = this.transactions.data.result.length;
+          this.totalRows = this.transactions.data.total;
         });
       }
     },
-
     onFiltered(filteredItems) {
       this.loadDone = true;
       // Trigger pagination to update the number of buttons/pages due to filtering

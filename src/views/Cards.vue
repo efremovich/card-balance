@@ -441,13 +441,14 @@ export default {
     BFormRadio,
   },
   setup() {
-    const contract = ref('');
-    const contractID = ref('');
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      contract.value = userData;
-      contractID.value = contract.value.contract.id;
-    }
+    // const contract = ref('');
+    const contractID = store.getters.CONTRACT_ID;
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+    // if (userData) {
+    //   contract.value = userData;
+    //   contractID.value = contract.value.contract.id;
+    // }
+
     const filters = ref('');
     const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
     const { itemViewOptions, totalProducts } = useShopUi();
@@ -459,7 +460,7 @@ export default {
     const { products } = useShopRemoteData();
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
     const fetchShopProducts = () => {
-      useJwt.getChangeCardsDate(contractID.value, `offset=0&limit=${perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(contractID, `offset=0&limit=${perPage}`).then((response) => {
         if (response.data.status) {
           products.value = response.data;
           totalRows.value = products.value.data.total;
@@ -470,29 +471,15 @@ export default {
         }
       });
     };
-    // const getWidth = computed(() => store.getters['app/currentBreakPoint']);
-    // const checkItemView = () => {
-    //   if (getWidth !== 'xl') {
-    //     itemView.value = 'list-view';
-    //     // store.dispatch('getCardsView', itemView.value);
-    //     console.log(store.getters.CARDS_VIEW);
-    //   } else itemView.value = store.getters.CARDS_VIEW;
-    //   // console.log(store.getters.CARDS_VIEW);
-    //   return itemView;
-    // };
-    //  checkItemView();
+
     fetchShopProducts();
-    // checkItemView();
     watch([filters], () => {
       fetchShopProducts();
     });
 
     return {
       filters,
-      // checkItemView,
-      // getWidth,
       itemViewOptions,
-      // itemView,
       totalProducts,
       toggleProductInWishlist,
       handleCartActionClick,

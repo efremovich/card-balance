@@ -25,8 +25,9 @@
               </p>
               <b-overlay
                 :show="busy"
-                rounded="lg"
-                opacity="0.6">
+                rounded="xs"
+                opacity="0.1"
+                variant="secondary">
                 <template #overlay>
                   <div class="d-flex align-items-center">
                     <b-spinner
@@ -41,7 +42,6 @@
                       style="width: 1rem; height: 1rem;"
                       type="grow"
                       variant="secondary" />
-                    <!-- We add an SR only text for screen readers -->
                     <span class="sr-only">Данные загружаются</span>
                   </div>
                 </template>
@@ -175,16 +175,20 @@ export default {
     },
   },
 
-  created() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      this.contract = userData;
-      this.contractId = this.contract.contract.id;
-      this.start = `${this.getFirstDay()} 00:00:00`;
-      this.end = `${this.isToday()} 00:00:00`;
-      this.rangeDate = [this.start, this.end];
-    }
-    this.getAllCards(this.contractId);
+  beforeMount() {
+    this.contractId = this.gotSelectedContract;
+    this.start = `${this.getFirstDay()} 00:00:00`;
+    this.end = `${this.isToday()} 00:00:00`;
+    this.rangeDate = [this.start, this.end];
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+    // if (userData) {
+    //   this.contract = userData;
+    //   this.contractId = this.contract.contract.id;
+    //   this.start = `${this.getFirstDay()} 00:00:00`;
+    //   this.end = `${this.isToday()} 00:00:00`;
+    //   this.rangeDate = [this.start, this.end];
+    // }
+    this.getAllCards(this.gotSelectedContract);
   },
   methods: {
     isToday() {
