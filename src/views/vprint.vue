@@ -2,25 +2,15 @@
   <div
     id="vprint">
     <div
-
       class="d-flex flex-row flex-wrap justify-content-around"
       :rangeStart="today"
       :rangeEnd="firstDay"
       :transactions="transactions"
       :toogle="onlyForPrintandDownload">
-      <p>
-        {{ rangeStart }}
-      </p>
       <template
-        v-for="(item,index) in transactions.data">
-        <!-- <p
-          v-if="print"
-          :key="item.card_number">
-          Электронные чеки за период {{ rangeDate }}
-        </p> -->
-
+        v-for="(item,index) in transactions.data.result">
         <div
-          :key="index"
+          :key="item.ID"
           class="col-5"
           style="page-break-before: auto;
           page-break-after:avoid;
@@ -210,8 +200,8 @@
 export default {
   props: {
     transactions: {
-      type: Array,
-      default: () => [],
+      type: Object,
+      default: () => {},
     },
     today: {
       type: [String],
@@ -369,9 +359,9 @@ h3 {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: centerl;
-  -ms-flex-align: centerl;
-  align-items: centerl;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
   -webkit-box-pack: justify;
   -ms-flex-pack: justify;
   justify-content: space-between;

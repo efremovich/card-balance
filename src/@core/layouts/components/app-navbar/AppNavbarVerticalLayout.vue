@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar-container d-flex content align-items-center">
+  <div class="navbar-container d-flex content justify-content-between align-items-center">
     <!-- Nav Menu Toggler -->
     <ul class="nav navbar-nav d-xl-none">
       <li class="nav-item">
@@ -15,22 +15,40 @@
 
     <!-- Left Col -->
     <div
-      class="bookmark-wrapper align-items-center flex-grow-1 d-none d-lg-flex">
+      class="bookmark-wrapper align-items-center flex-grow-1 d-none d-lg-flex w-25">
       <!-- Bookmarks Container -->
       <bookmarks />
     </div>
-
-    <b-navbar-nav class="nav align-items-center ml-auto">
-      <dark-Toggler class="d-none d-lg-block" />
-      <search-bar />
-      <notification-dropdown />
-      <user-dropdown />
-    </b-navbar-nav>
+    <div
+      class="d-flex w-100">
+      <div
+        v-if="getWidth>768"
+        class="d-flex w-100 justify-content-center align-items-center">
+        <h6 class="p-1">
+          Договор №:
+        </h6>
+        <v-select
+          v-model="selected"
+          label="number"
+          :options="option"
+          :clearable="false"
+          class="w-50"
+          @input="onChange()" />
+      </div>
+      <b-navbar-nav class="nav flex-nowrap align-items-center justify-content-end ml-auto w-25">
+        <dark-Toggler class="d-none d-lg-block" />
+        <search-bar />
+        <notification-dropdown />
+        <user-dropdown />
+      </b-navbar-nav>
+    </div>
   </div>
 </template>
 
 <script>
 import { BLink, BNavbarNav } from 'bootstrap-vue';
+import vSelect from 'vue-select';
+import useJwt from '@/auth/jwt/useJwt';
 import Bookmarks from './components/Bookmarks.vue';
 import SearchBar from './components/SearchBar.vue';
 import DarkToggler from './components/DarkToggler.vue';
@@ -40,7 +58,6 @@ import UserDropdown from './components/UserDropdown.vue';
 export default {
   components: {
     BLink,
-
     // Navbar Components
     BNavbarNav,
     Bookmarks,
@@ -48,11 +65,62 @@ export default {
     DarkToggler,
     NotificationDropdown,
     UserDropdown,
+    vSelect,
   },
   props: {
     toggleVerticalMenuActive: {
       type: Function,
       default: () => {},
+    },
+  },
+  data() {
+    return {
+      userData: null,
+      option: [],
+      selected: null,
+      getInfo: null,
+      showLoading: false,
+    };
+  },
+  computed: {
+    getWidth() {
+      return this.$store.state.app.windowWidth;
+    },
+  },
+  // watch: {
+  //   getWidth() {
+  //     console.log(this.$store.state.app.windowWidth);
+  //   },
+  // },
+  created() {
+    useJwt.getCurrenUser().then((response) => {
+      if (response.data.status) {
+        this.$store.dispatch('user/getUserData', response.data).then(() => {
+          this.userData = response.data;
+          this.makeOptions();
+          this.getSelected();
+        });
+      }
+    });
+    this.userData = JSON.parse(localStorage.getItem('userData'));
+    if (this.userData) {
+      this.getInfo = this.userData;
+      return this.getInfo;
+    }
+    return { data: { status: false } };
+  },
+  methods: {
+    getSelected() {
+      this.selected = this.userData.contract;
+    },
+    makeOptions() {
+      this.userData.contracts.forEach((el) => {
+        this.option.push({ 'number': el.number, 'id': el.id });
+      });
+    },
+    onChange() {
+      this.$store.dispatch('getContractNumber', this.selected.number);
+      this.$store.dispatch('getContractId', this.selected.id);
     },
   },
 };

@@ -32,7 +32,7 @@
             :disabled="busy"
             :options="names"
             class="w-100 mt-1 mb-1"
-            @input="onChange()" />
+            @input="onChange" />
         </b-overlay>
 
         <p>Выберете карту:</p>
@@ -64,7 +64,7 @@
             multiple
             :options="option"
             class="w-100 mt-1 mb-1"
-            @input="onChange()" />
+            @input="onChange" />
         </b-overlay>
         <p class="mt-1">
           Выберете период:
@@ -105,7 +105,7 @@
 
         class="d-flex flex-row flex-wrap justify-content-around">
         <vprint
-          ref="print"
+          id="print"
           :transactions="transactions" />
       </div>
       <b-pagination
@@ -140,14 +140,12 @@ import {
 } from 'bootstrap-vue';
 import html2pdf from 'html2pdf.js';
 
-import print from 'vue-print-nb';
+// import print from 'vue-print-nb';
 import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import vprint from '../vprint.vue';
-
-// import JSPDF from 'jspdf';
 import useJwt from '../../auth/jwt/useJwt';
 
 export default {
@@ -160,12 +158,11 @@ export default {
     BOverlay,
     BSpinner,
     vprint,
-
   },
 
-  directives: {
-    print,
-  },
+  // directives: {
+  //   print,
+  // },
 
   data() {
     return {
@@ -175,7 +172,7 @@ export default {
       currentConsumption: null,
       currentConsumptionDynamic: null,
       contractId: null,
-      transactions: null,
+      transactions: {},
       option: [],
       onlyForPrintandDownload: false,
       selectedHolder: null,
@@ -208,6 +205,12 @@ export default {
       return this.visible ? 'success' : '';
     },
   },
+  // watch: {
+  //   selectedHolder() {
+  //     console.log(this.selectedHolder);
+  //     this.onChange();
+  //   },
+  // },
 
   created() {
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -220,8 +223,28 @@ export default {
     }
     this.firstDay = this.getFirstDay();
     this.today = this.isToday();
+    useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&limit=10&offset=10`)
+      .then((response) => {
+        if (response.data.status) {
+          this.transactions = response.data;
+          // console.log(this.transactions.data.result);
+          this.totalRows = this.transactions.data.total;
+          this.transactions.data.result = this.order(this.transactions.data.result);
+        }
+        if (this.transactions.data.result.length < 1) {
+          this.haveTransactions = false;
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Отсутвуют транзакции за выбранный период',
+              icon: 'AlertTriangleIcon',
+              variant: 'danger',
+            },
+          });
+        } else this.haveTransactions = true;
+      });
 
-    return this.contract;
+    // return this.contract;
   },
 
   beforeMount() {
@@ -275,9 +298,8 @@ export default {
         .then((response) => {
           if (response.data.status) {
             this.transactions = response.data;
-            this.totalRows = this.transactions.tol.Total;
-            this.transactions.data = this.order(this.transactions.data);
-            // this.onlyForPrintandDownload = true;
+            this.totalRows = this.transactions.data.total;
+            this.transactions.data.result = this.order(this.transactions.data.result);
           }
         });
 
@@ -293,7 +315,7 @@ export default {
     },
 
     clickPrint() {
-      this.$htmlToPaper('vprint');
+      this.$htmlToPaper('print');
     },
 
     download() {
@@ -304,7 +326,7 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
         }
-        return this.order(this.transactions.data);
+        return this.order(this.transactions.data.result);
       });
       setTimeout(this.getAllChecks, 3000);
     },
@@ -336,12 +358,13 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}&holder=${holder}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          this.totalRows = this.transactions.tol.Total;
-          if (this.transactions.data.length > 1) {
+          this.totalRows = this.transactions.data.total;
+          console.log('SelectDate totalRow', this.totalRows);
+          if (this.transactions.data.result.length > 1) {
             this.haveTransactions = true;
           }
 
-          if (this.rangeDate.length > 10 && this.transactions.data.length < 1) {
+          if (this.rangeDate.length > 10 && this.transactions.data.result.length < 1) {
             this.haveTransactions = false;
             this.$toast({
               component: ToastificationContent,
@@ -357,7 +380,7 @@ export default {
         this.today = arr[0]; // для компонента vprint  = rangeDate [абзац с указанием периода операции по карте]
         // eslint-disable-next-line prefer-destructuring
         this.firstDay = arr[1]; // для компонента vprint  = rangeDate [абзац с указанием периода операции по карте]
-        return this.order(this.transactions.data);
+        return this.order(this.transactions.data.result);
       });
     },
 
@@ -370,9 +393,10 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&holder=${holder}&offset=${10 * page}&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
+          console.log('page transactions.data.reasult:', this.transactions.data.result);
         }
 
-        if (this.transactions.data.length < 1) {
+        if (this.transactions.data.result.length < 1) {
           // this.visible = false;
           this.$toast({
             component: ToastificationContent,
@@ -383,7 +407,7 @@ export default {
             },
           });
         }
-        return this.transactions;
+        // return this.transactions.data.result;
       });
     },
 
@@ -397,13 +421,14 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&card_holder=${holder}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          this.totalRows = this.transactions.tol.Total;
-          if (this.transactions.data.length > 1) {
+          console.log('Change/transactions:', this.transactions);
+          this.totalRows = this.transactions.data.total;
+          if (this.transactions.data.total > 1) {
             this.haveTransactions = true;
           } else {
             this.haveTransactions = false;
             this.visible = false;
-            this.transactions = [];
+            this.transactions.data.result = [];
             // this.visible = false;
             this.$toast({
               component: ToastificationContent,
@@ -416,7 +441,7 @@ export default {
           }
         }
 
-        return this.order(this.transactions.data);
+        // return this.order(this.transactions.data.result);
       });
       // if (this.selected.length < 1) {
       //   this.getAllTransactions();
@@ -436,113 +461,5 @@ export default {
 <style lang="scss" scoped>
 @import "@core/scss/vue/libs/vue-select.scss";
 @import "@core/scss/vue/libs/vue-flatpicker.scss";
-
-.flex {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: space-evenly !important;
-}
-
-.container,
-.container-fluid {
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  width: 100%;
-  margin-left: auto;
-}
-.row,
-html {
-  display: -webkit-box;
-}
-.flex-column,
-.flex-row {
-  -webkit-box-direction: normal !important;
-}
-.heading-1,
-.heading-2,
-.heading-3,
-body,
-h1,
-h2,
-h3 {
-  font-style: normal;
-  font-stretch: normal;
-  letter-spacing: normal;
-}
-
-@media only screen and (min-device-width: 480px) {
-  .container {
-    max-width: 290px;
-  }
-}
-@media only screen and (min-device-width: 768px) {
-  .container {
-    max-width: 708px;
-  }
-}
-@media only screen and (min-device-width: 1025px) {
-  .container {
-    max-width: 964px;
-  }
-}
-@media only screen and (min-device-width: 1230px) {
-  .container {
-    max-width: 1170px;
-  }
-}
-
-.check__value {
-  text-align: end;
-}
-
-@media only screen and (min-device-width: 1024px) {
-  .col-5 {
-    // -ms-flex: 0 0 33.33333%;
-    display: flex;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 35.33333%;
-    max-width: 330px;
-  }
-}
-
-@media only screen and(min-device-width: 768px) and (max-device-width: 1023px) {
-  .col-5 {
-    display: flex;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 33.33333%;
-    max-width: 50.33333%;
-  }
-}
-
-@media only screen and(min-device-width: 620px) and (max-device-width: 767px) {
-  .col-5 {
-    display: flex;
-    display: -moz-flex;
-    display: -webkit-flex;
-    display: -ms-flex;
-    display: flex;
-    // -ms-flex: 0 0 33.33333%;
-    // flex: 0 0 33.33333%;
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 33.33333%;
-    max-width: 60.33333%;
-  }
-}
-
-@media only screen and (min-device-width: 380px) and (max-device-width: 619px) {
-  .col-5 {
-    display: flex;
-    display: -moz-flex;
-    display: -webkit-flex;
-    display: -ms-flex;
-    display: flex;
-    // -ms-flex: 0 0 33.33333%;
-    flex: 0 0 33.33333%;
-    max-width: 100%;
-  }
-}
+@import "../src/assets/scss/components/checks.scss";
 </style>

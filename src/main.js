@@ -29,6 +29,7 @@ const options = {
   // ],
   'styles': [
     'https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css',
+    '../src/assets/scss/components/checks.scss',
 
   ],
 };

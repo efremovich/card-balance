@@ -499,9 +499,9 @@ export default {
       this.popoverShow = false;
     },
     resetPhoto() {
-      this.twin.account = '';
-      console.log(this.twin.account);
-      useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
+      this.getInfo.account.avatar = '';
+      this.image = this.twin.avatar;
+      useJwt.refreshGetCurrentUser(JSON.stringify(this.getInfo)).then((response) => {
         console.log('Сброс фото', response);
         // this.image = this.twin.avatar;
       });
