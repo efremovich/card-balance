@@ -160,10 +160,6 @@ export default {
     vprint,
   },
 
-  // directives: {
-  //   print,
-  // },
-
   data() {
     return {
       getInfo: null,
@@ -197,7 +193,6 @@ export default {
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
-
     };
   },
   computed: {
@@ -244,37 +239,30 @@ export default {
         } else this.haveTransactions = true;
       });
 
-    // return this.contract;
   },
-
   beforeMount() {
     this.getAllCards();
   },
-
   methods: {
     isToday() {
       const today = new Date();
       return today.toLocaleDateString();
     },
-
     getFirstDay() {
       const date = new Date();
       const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
       return firstDay;
     },
-
     unique(arr) {
       this.arr = Array.from(new Set(arr));
       return this.arr;
     },
-
     getAllCards() {
       const ID = this.contractId;
       this.busy = true;
       useJwt.getCards(`contract_id=${ID}`).then((response) => {
         if (response.data.status) {
           this.response = response.data;
-
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
           });
@@ -288,7 +276,6 @@ export default {
         this.option = this.unique(this.option);
       });
     },
-
     getAllTransactions() {
       const holder = this.selectedHolder;
       const ID = this.contractId;
@@ -302,22 +289,17 @@ export default {
             this.transactions.data.result = this.order(this.transactions.data.result);
           }
         });
-
       setTimeout(this.clickPrint, 3000);
     },
-
     print() {
       this.getAllTransactions();
     },
-
     order(arr) {
       return arr.slice().sort((a, b) => a.card_number - b.card_number);
     },
-
     clickPrint() {
       this.$htmlToPaper('print');
     },
-
     download() {
       const holder = this.selectedHolder;
       const ID = this.contractId;
@@ -330,7 +312,6 @@ export default {
       });
       setTimeout(this.getAllChecks, 3000);
     },
-
     getAllChecks() {
       html2pdf(this.$refs.print, {
         filename: 'Чеки.pdf',
@@ -342,14 +323,12 @@ export default {
         pagebreak: { mode: 'avoid-all' },
       });
     },
-
     selectDate() {
       const holder = this.selectedHolder;
       const date = this.rangeDate;
       const { selected } = this;
       const newDate = Array.from(date).filter((n) => n !== '—');
       const arr = (newDate.join('').split('  '));
-
       // eslint-disable-next-line prefer-template
       this.start = arr[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
@@ -383,16 +362,17 @@ export default {
         return this.order(this.transactions.data.result);
       });
     },
-
-    selectPage(page) {
+    selectPage() {
       const holder = this.selectedHolder;
+      console.log(this.currentPage);
       const { selected } = this;
       const { start } = this;
       const { end } = this;
       const ID = this.contractId;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&holder=${holder}&offset=${10 * page}&limit=10`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&holder=${holder}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
+
           console.log('page transactions.data.reasult:', this.transactions.data.result);
         }
 
@@ -410,7 +390,6 @@ export default {
         // return this.transactions.data.result;
       });
     },
-
     onChange() {
       const { selected } = this;
       const holder = this.selectedHolder;
@@ -448,18 +427,17 @@ export default {
       //   // this.hidden = true;
       // }
     },
-
     toogle() {
       this.visible = !this.visible;
       this.hidden = !this.hidden;
     },
   },
-
 };
 </script>
 
 <style lang="scss" scoped>
 @import "@core/scss/vue/libs/vue-select.scss";
 @import "@core/scss/vue/libs/vue-flatpicker.scss";
-@import "../src/assets/scss/components/checks.scss";
+@import "../../@core/assets/checks";
+
 </style>

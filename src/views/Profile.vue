@@ -440,13 +440,12 @@ export default {
       // this.$store.dispatch('getAvatar', this.image);
       // this.image = this.$store.state.avatar;
       this.twin.avatar = this.image;
-      this.twin.name = 'Mark';
-      // console.log('Перед запись аватара', this.twin);
+      // this.twin.name = 'Mark';
       useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
         console.log('Запись аватара', response);
-        // this.image = this.twin.avatar;
+        this.image = this.twin.avatar;
       });
-      // console.log(this.image);
+      // console.log(this.twin.avatar);
     },
   },
   created() {

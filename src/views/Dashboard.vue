@@ -12,7 +12,8 @@
               opacity=".75"
               rounded="sm">
               <b-card-actions
-                v-if="getWidth<769"
+                v-if="getWidth === 'xs'"
+
                 ref="userDate"
                 title="Информация по договору"
                 action-refresh
@@ -105,7 +106,7 @@
             </b-overlay>
           </b-col>
           <b-col
-            v-if="currentConsumption.currentConsumption.length>0"
+            v-if="getCurrentConsumptionLength !== null && getCurrentConsumptionLength>0"
             md="6">
             <b-overlay
               :show="showLoading"
@@ -131,11 +132,11 @@
                 <div class="d-flex justify-content-between align-items-end">
                   <h4>Последние изменения <br> по договору:</h4>
                   <h4 class="text-info">
-                    {{ userData.contract.updated | formatDate }}
+                    {{ userData.contract['updated'] | formatDate }}
                   </h4>
                 </div>
                 <b-table
-                  v-if="currentConsumption.currentConsumption.length>0"
+                  v-if="getCurrentConsumptionLength !== null && getCurrentConsumptionLength>0"
                   hover
                   responsive
                   :items="currentConsumption.currentConsumption"
@@ -166,7 +167,7 @@
                 <div class="d-flex justify-content-between align-items-end">
                   <h4>Последние изменения <br> по договору:</h4>
                   <h4 class="text-info">
-                    {{ userData.contract.updated | formatDate }}
+                    {{ userData.contract['updated'] | formatDate }}
                   </h4>
                 </div>
               </b-card-actions>
@@ -390,6 +391,8 @@ import VueApexCharts from 'vue-apexcharts';
 import { ru } from 'apexcharts/dist/locales/ru.json';
 import { $themeColors } from '@themeConfig';
 import { Icon } from 'leaflet';
+import { mapGetters } from 'vuex';
+import store from '@/store';
 import {
   BCardText, BCol, BButton, BTable, BCardBody, BOverlay, BLink,
 } from 'bootstrap-vue';
@@ -548,20 +551,26 @@ export default {
     };
   },
   computed: {
-    activeUserInfo() {
-      return this.$store.state.CurrentUser;
-    },
+    ...mapGetters({
+      gotSelected: 'CONTRACT_NUMBER',
+      gotSelectedContract: 'CONTRACT_ID',
+    }),
     getActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code === 'ACTIVE').length;
     },
     getNotActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
     },
-    gotSelected() {
-      return this.$store.state.contractNumber;
-    },
+
+    // gotSelected() {
+    //   return this.$store.getters.CONTRACT_NUMBER;
+    // },
     getWidth() {
-      return this.$store.state.app.windowWidth;
+      return store.getters['app/currentBreakPoint'];
+    },
+    getCurrentConsumptionLength() {
+      return this.currentConsumption.currentConsumption.length;
+
     },
   },
   watch: {
@@ -571,8 +580,10 @@ export default {
   },
 
   created() {
+    this.download = false;
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
+        this.download = true;
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
           this.makeOptions();
@@ -580,6 +591,15 @@ export default {
         });
       }
     });
+
+    useJwt.getCurrentConsumption().then((response) => {
+      if (response.data.status) {
+        this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
+          this.currentConsumption = response.data;
+        });
+      }
+    });
+
     this.userData = JSON.parse(localStorage.getItem('userData'));
     if (this.userData) {
       this.getInfo = this.userData;
@@ -588,6 +608,7 @@ export default {
     return { data: { status: false } };
   },
   mounted() {
+    this.download = false;
     useJwt.getBalance().then((response) => {
       if (response.data.status) {
         this.cardBalance = response.data;
@@ -595,13 +616,14 @@ export default {
         this.download = true;
       }
     });
-    useJwt.getCurrentConsumption().then((response) => {
-      if (response.data.status) {
-        this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
-          this.currentConsumption = response.data;
-        });
-      }
-    });
+    // useJwt.getCurrentConsumption().then((response) => {
+    //   if (response.data.status) {
+    //     this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
+    //       this.currentConsumption = response.data;
+    //       console.log(this.currentConsumption.currentConsumption);
+    //     });
+    //   }
+    // });
     useJwt.getConsumptionDinamic().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
@@ -635,8 +657,8 @@ export default {
       });
     },
     getSelected() {
-      this.selected = this.$store.state.contractNumber;
-      // console.log(this.selected);
+      this.selected = this.$store.getters.CONTRACT_NUMBER;
+
     },
     makeOptions() {
       this.userData.contracts.forEach((el) => {
@@ -665,7 +687,8 @@ export default {
       });
     },
     refreshExpenses(card) {
-      useJwt.getConsumption(this.$store.state.contractId).then((response) => {
+      useJwt.getConsumption(this.$store.getters.CONTRACT_ID).then((response) => {
+
         if (response.data.status) {
           this.currentConsumption = response.data;
           this.$refs[card].showLoading = false;
@@ -703,7 +726,9 @@ export default {
       });
     },
     refreshConsumption(card) {
-      useJwt.getDynamic(this.$store.state.contractId).then((response) => {
+
+      useJwt.getDynamic(this.$store.getters.CONTRACT_ID).then((response) => {
+
         if (response.data.status) {
           this.currentConsumptionDynamic = response.data;
           this.$refs[card].showLoading = false;
@@ -714,13 +739,14 @@ export default {
     },
     onChange() {
       this.showLoading = true;
-      useJwt.changeContract(this.$store.state.contractId)
+      useJwt.changeContract(this.$store.getters.CONTRACT_ID)
         .then((response) => {
           if (response.status) {
             this.cardBalance = response.data;
-            this.refreshConsumptions(this.$store.state.contractId);
+            this.refreshConsumptions(this.$store.getters.CONTRACT_ID);
             this.showLoading = false;
-            this.refreshData(this.$store.state.contractId);
+            this.refreshData(this.$store.getters.CONTRACT_ID);
+
           }
         });
     },
@@ -742,49 +768,5 @@ export default {
 </script>
 
 <style lang="scss">
-.padding {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-h4 {
-  font-size: 1.2rem !important;
-}
-h3 {
-  font-size: 1.2rem !important;
-}
-.mix {
-  @media (min-width: 550px) {
-    flex-direction: row !important;
-    justify-content: space-evenly !important;
-  }
-}
-.avg-sessions {
-  display: flex !important;
-  flex-direction: column !important;
-}
-.mr-2 mt-1 {
-  display: flex;
-  width: 90%;
-  justify-content: space-around;
-}
-.margin {
-  margin: 3% auto 0 !important;
-}
-.card-body {
-  padding: 1rem !important;
-}
-.card .card-header {
-  padding: 1.5rem !important;
-}
-.table th {
-  padding: 0.72rem 1rem !important;
-}
-.table td {
-  padding: 0.72rem 1rem !important;
-}
-.vue2leaflet-map {
-  &.leaflet-container {
-    height: 350px;
-  }
-}
+@import "../assets/scss/components/dashboard";
 </style>

@@ -10,7 +10,7 @@
         </p>
       </div>
       <b-avatar
-        size="50"
+        size="48"
         :src="userData.account.avatar"
         variant="light-primary"
         class="badge-minimal"
@@ -90,7 +90,6 @@ export default {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
-          // eslint-disable-next-line vue/no-mutating-props
           this.userData = response.data;
         });
       }
@@ -101,7 +100,6 @@ export default {
     change() {
       this.$store.dispatch('getVisible');
       this.visible = true;
-      console.log(this.$store.state.visible);
     },
 
     logout() {

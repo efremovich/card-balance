@@ -340,6 +340,20 @@ export default class JwtService {
     if (userData) {
       const response = await this.axiosIns.get(
         `/api/cards/${userData.account.contract_id}?${params}`,
+
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Инфо по картам при смене контракта (cards)
+  async getChangeCardsDate(contractId, params) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/cards/${contractId}?${params}`,
+
       );
       return response;
     }

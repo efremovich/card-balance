@@ -147,10 +147,10 @@
                             </b-form-group>
                           </validation-provider>
                           <div class="d-flex flex-wrap align-items-center mt-1">
-                            <h6 class="mx-auto">
+                            <h6 class="mr-1">
                               Лимит
                             </h6>
-                            <div class="ml-1 mw-20">
+                            <div class="mr-1 mw-20">
                               <b-form-input
                                 v-model="limit.value" />
                             </div>
@@ -358,8 +358,7 @@
       <div
         v-else>
         <div
-          v-if="limitsLength<1"
-          :key="cardData.data.limits.length">
+          v-if="limitsLength<1">
           <b-card>
             <b-card-header
               class="d-flex justify-content-start">
@@ -643,11 +642,11 @@ export default {
     BCardHeader,
   },
   setup() {
-    const cardData = ref([]);
+    const cardData = ref({});
     const product = ref(null);
     const value = ref(null);
     const totalRows = ref(null);
-    const transactions = ref([]);
+    const transactions = ref({});
     const option = ref([]);
     const loadDone = ref(false);
     const lastDay = ref(null);
@@ -666,7 +665,7 @@ export default {
     const start = ref(null);
     const end = ref(null);
     const contractId = ref(null);
-    const limits = ref([]);
+    // const limits = ref([]);
     const source = ref({});
     const limitsLength = ref(null);
     const cardEmitentCode = ref('0');
@@ -756,7 +755,6 @@ export default {
           services.value.forEach((el) => option.value.push(el.full_name));
           const id = services.value.map((el) => el.id);
           const label = services.value.map((el) => el.label);
-          console.log(label.length);
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < id.length; i++) {
             labelService.value[id[i]] = label[i];
@@ -782,7 +780,7 @@ export default {
           .then((response) => {
             if (response.data.status) {
               transactions.value = response.data;
-              totalRows.value = transactions.value.data.length;
+              totalRows.value = transactions.value.data.result.length;
             }
             loadDone.value = false;
 
@@ -809,11 +807,10 @@ export default {
         cardData.value = response.data;
         cardEmitentCode.value = cardData.value.data.emitent.code;
         limitsLength.value = cardData.value.data.limits.length;
-        console.log(cardEmitentCode.value);
         source.value = JSON.stringify(response.data);
         getService(cardEmitentCode.value);
       }
-      return cardData.value;
+      return cardData;
     });
     const number = ref(null);
 
@@ -860,7 +857,7 @@ export default {
       periods,
       services,
       periodLabel,
-      limits,
+      // limits,
       number,
     };
   },
@@ -877,26 +874,15 @@ export default {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
     },
-
-  },
-  beforeMount() {
-    this.getCardNumber();
   },
   methods: {
-    // eslint-disable-next-line vue/return-in-computed-property
     labelSelected() {
       const empty = [];
       // eslint-disable-next-line no-plusplus
       for (let i = 0; i < this.selected.length; i++) {
         empty.push(this.labelService[this.selected[i]]);
       }
-
       return empty;
-    },
-
-    getCardNumber() {
-      this.$store.dispatch('getCardNumber', this.number);
-      console.log(this.$store.state.cardNumber);
     },
 
     showToast() {
@@ -954,7 +940,6 @@ export default {
         if (response.data.status) {
           this.cardData = response.data;
         }
-        // this.render = this.getRandom();
       });
     },
     getRandom() {
@@ -1008,136 +993,5 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.card {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: end;
-  max-width: 95%;
-  align-items: left;
-  padding: 3px;
-}
-
-.b-overlay-wrap {
-  min-height: 265px !important;
-}
-@media screen and (max-width: 768px) {
-  .column {
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 768px) {
-  .col-md-6 {
-    -webkit-box-flex: 0;
-    -ms-flex: 0 0 50%;
-    flex: 0 0 50%;
-    max-width: 100%;
-  }
-}
-
-.card-body {
-  padding: 0.5rem !important;
-}
-.border {
-  border: 1px solid black;
-  border-radius: 5px;
-}
-.mw-20 {
-  max-width: 20%;
-}
-.icon {
-  max-width: 30px;
-  cursor: pointer;
-  padding: 0 !important;
-}
-.card-header {
-  padding: 1.5rem 0 !important;
-}
-.card-title {
-  margin-bottom: 0.5rem !important;
-}
-
-.bottom {
-  bottom: 50px;
-}
-.b-overlay-wrap:not(:last-child) {
-  margin-bottom: 1rem !important;
-}
-.col {
-  padding-right: 0 !important;
-  padding-left: 0 !important;
-}
-.heigth {
-  height: 200px;
-}
-.card-img-top {
-  max-width: 390px;
-  min-width: 350px;
-}
-// .card-body {
-//   border: 1px solid;
-//   border-radius: 4px;
-// }
-.holder {
-  position: relative;
-  bottom: 70px;
-}
-.item-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  position: relative;
-  bottom: 110px;
-  left: 20px;
-}
-.item-options {
-  display: flex;
-  flex-direction: column;
-  position: absolute !important;
-  bottom: 35px !important;
-  width: 100%;
-}
-.status {
-  position: relative;
-  top: 40px;
-}
-.ecommerce-card {
-  background-color: inherit !important;
-  cursor: pointer;
-  margin: 3px;
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 25px 0 rgba(white, 0.25);
-  }
-}
-.item-price {
-  position: relative;
-  left: 10px;
-  color: #000;
-  text-align: center;
-  text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.5),
-    1px 1px 1px rgba(0, 0, 0, 0.5);
-}
-.item-img {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: auto;
-  width: 95%;
-}
-.limits {
-  width: 90%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 200px;
-  position: relative;
-  top: 25px;
-}
-.views {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-}
+@import "../assets/scss/components/cardDetails";
 </style>

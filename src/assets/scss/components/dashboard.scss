@@ -1,0 +1,45 @@
+.padding {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  h4 {
+    font-size: 1.2rem !important;
+  }
+  h3 {
+    font-size: 1.2rem !important;
+  }
+  .mix {
+    @media (min-width: 550px) {
+      flex-direction: row !important;
+      justify-content: space-evenly !important;
+    }
+  }
+  .avg-sessions {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .mr-2 mt-1 {
+    display: flex;
+    width: 90%;
+    justify-content: space-around;
+  }
+  .margin {
+    margin: 3% auto 0 !important;
+  }
+  .card-body {
+    padding: 1rem !important;
+  }
+  .card .card-header {
+    padding: 1.5rem !important;
+  }
+  .table th {
+    padding: 0.72rem 1rem !important;
+  }
+  .table td {
+    padding: 0.72rem 1rem !important;
+  }
+  .vue2leaflet-map {
+    &.leaflet-container {
+      height: 350px;
+    }
+  }
