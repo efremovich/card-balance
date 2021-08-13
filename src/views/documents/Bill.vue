@@ -380,7 +380,6 @@ export default {
   directives: {
     print,
   },
-
   data() {
     return {
       getInfo: null,
@@ -395,16 +394,16 @@ export default {
       },
     };
   },
-  beforeRouteEnter(to, from, next) {
-    if (to.name === 'bill') {
-      next((vm) => {
-        if (vm.getWidth === 'xs') {
-          console.log(vm.getWidth);
-          next(false);
-        } else next(true);
-      });
-    }
-  },
+  // beforeRouteEnter(to, from, next) {
+  //   if (to.name === 'bill') {
+  //     next((vm) => {
+  //       if (vm.getWidth === 'xs') {
+  //         console.log(vm.getWidth);
+  //         next(false);
+  //       } else next(true);
+  //     });
+  //   }
+  // },
   computed: {
     getNDS() {
       return ((this.summ * 20) / 100).toLocaleString('ru-RU', {
@@ -446,7 +445,7 @@ export default {
     // },
   },
 
-  created() {
+  beforeMount() {
     // useJwt.getCurrenUser().then((response) => {
     //   if (response.data.status) {
     //     this.$store.dispatch('user/getUserData', response.data).then(() => {
@@ -457,7 +456,7 @@ export default {
     //     });
     //   }
     // });
-
+    console.log(store.getters.CONTRACT_ID);
     // const userData = JSON.parse(localStorage.getItem('userData'));
     // if (userData) {
     //   this.contract = userData;

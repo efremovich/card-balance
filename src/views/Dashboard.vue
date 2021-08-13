@@ -606,9 +606,9 @@ export default {
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
-  // getCurrentConsumptionLength() {
-  //   return this.currentConsumption.currentConsumption.length;
-  // },
+    // getCurrentConsumptionLength() {
+    //   return this.currentConsumption.currentConsumption.length;
+    // },
 
   },
   watch: {
@@ -701,7 +701,6 @@ export default {
     //   this.selected = this.$store.getters.CONTRACT_NUMBER;
     // },
 
-
     makeOptions() {
       this.userData.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });
@@ -730,7 +729,6 @@ export default {
     },
     refreshExpenses(card) {
       useJwt.getConsumption(this.$store.getters.CONTRACT_ID).then((response) => {
-
         if (response.data.status) {
           this.currentConsumption = response.data;
           this.$refs[card].showLoading = false;
@@ -768,9 +766,7 @@ export default {
       });
     },
     refreshConsumption(card) {
-
       useJwt.getDynamic(this.$store.getters.CONTRACT_ID).then((response) => {
-
         if (response.data.status) {
           this.currentConsumptionDynamic = response.data;
           this.$refs[card].showLoading = false;
@@ -788,7 +784,6 @@ export default {
             this.refreshConsumptions(this.$store.getters.CONTRACT_ID);
             this.refreshData(this.$store.getters.CONTRACT_ID);
             this.showLoading = false;
-
           }
         });
     },

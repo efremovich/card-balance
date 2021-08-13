@@ -84,7 +84,7 @@
         :per-page="perPage"
         :current-page="currentPage"
         class="position-relative table-hover text-center"
-        :fields="fields" />
+        :fields="fields"/>
     </b-card>
   </div>
 </template>
@@ -165,7 +165,6 @@ export default {
   },
   computed: {
     ...mapGetters({
-      // gotSelected: 'CONTRACT_NUMBER',
       gotSelectedContract: 'CONTRACT_ID',
     }),
   },
@@ -173,13 +172,39 @@ export default {
     gotSelectedContract(val) {
       this.getAllCards(val);
     },
+    selected(val) {
+        const date = this.rangeDate;
+      const newDate = Array.from(date).filter((n) => n !== '—');
+      const arr = (newDate.join('').split('  '));
+      // eslint-disable-next-line prefer-template
+      this.start = arr[0] + ' 00:00:00';
+      // eslint-disable-next-line prefer-template
+      this.end = arr[1] + ' 00:00:00';
+      useJwt.GetRequests(`contract_id=${this.gotSelectedContract}&startDate=${this.start}&endDate=${this.end}&card_number=${val}`).then((response) => {
+        if (response.data.status) {
+          this.request = response.data;
+          // console.log(this.request);
+          if (this.rangeDate.length > 10 && this.request.data.length < 1) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют заявки за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
+        }
+      });
+
+    },
   },
 
   beforeMount() {
     this.contractId = this.gotSelectedContract;
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
-    this.rangeDate = [this.start, this.end];
+    // this.rangeDate = [this.start, this.end];
     // const userData = JSON.parse(localStorage.getItem('userData'));
     // if (userData) {
     //   this.contract = userData;
@@ -188,7 +213,24 @@ export default {
     //   this.end = `${this.isToday()} 00:00:00`;
     //   this.rangeDate = [this.start, this.end];
     // }
+    this.rangeDate = [this.start, this.end];
     this.getAllCards(this.gotSelectedContract);
+      useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=7824861010051464017`).then((response) => {
+        if (response.data.status) {
+          this.request = response.data;
+          console.log(this.request);
+          if (this.rangeDate.length > 10 && this.request.data.length < 1) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют заявки за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
+        }
+      });
   },
   methods: {
     isToday() {
@@ -232,7 +274,7 @@ export default {
       // eslint-disable-next-line prefer-template
       this.end = arr[1] + ' 00:00:00';
       const ID = this.contractId;
-      useJwt.GetRequests(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=7824861010051464017`).then((response) => {
+      useJwt.GetRequests(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`).then((response) => {
         if (response.data.status) {
           this.request = response.data;
           // console.log(this.request);

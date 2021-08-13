@@ -37,7 +37,6 @@ export default new Vuex.Store({
       commit('changeContractId', payload);
     },
     getCardsView({ commit }, payload) {
-
       commit('setCardsView', payload);
     },
 

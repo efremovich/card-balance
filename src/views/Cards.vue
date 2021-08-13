@@ -170,7 +170,6 @@
               <h5> Держатель: {{ product.holder }} </h5>
               <h5> Последняя активность </h5>
               <h5> Индекс активности </h5>
-
             </div>
             <div
               class="d-flex flex-column align-items-start mt-2">
@@ -571,7 +570,6 @@ export default {
 };
 </script>
 
-
 <style lang="scss" scoped>
-@import "../assets/scss/components/cards;
+@import "../assets/scss/components/cards";
 </style>
