@@ -2,7 +2,6 @@
   <div
     id="vprint">
     <div
-
       class="d-flex flex-row flex-wrap justify-content-around"
       :rangeStart="today"
       :rangeEnd="firstDay"
@@ -11,7 +10,7 @@
       <template
         v-for="(item,index) in transactions.data.result">
         <div
-          :key="index"
+          :key="item.ID"
           class="col-5"
           style="page-break-before: auto;
           page-break-after:avoid;

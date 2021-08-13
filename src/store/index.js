@@ -26,6 +26,7 @@ export default new Vuex.Store({
     getNotVisible({ commit }) {
       commit('getNotVisible');
     },
+
     getAvatar({ commit }, payload) {
       commit('getSrc', payload);
     },
@@ -36,10 +37,12 @@ export default new Vuex.Store({
       commit('changeContractId', payload);
     },
     getCardsView({ commit }, payload) {
+
       commit('setCardsView', payload);
     },
     getSelectedPages({ commit }, payload) {
       commit('getSelectedPages', payload);
+
     },
   },
   mutations: {
@@ -49,6 +52,7 @@ export default new Vuex.Store({
     getNotVisible(state) {
       state.visible = false;
     },
+
     getSrc(state, payload) {
       state.avatar = payload;
     },
@@ -58,6 +62,7 @@ export default new Vuex.Store({
     changeContractId(state, payload) {
       state.contractId = payload;
     },
+
     setCardsView(state, cardsView) {
       state.cardsView = cardsView;
     },
@@ -70,6 +75,7 @@ export default new Vuex.Store({
     CONTRACT_NUMBER: (state) => state.contractNumber,
     CARDS_VIEW: (state) => state.cardsView,
     SELECTED_PAGES: (state) => state.selectedPage,
+
   },
   modules: {
     app,

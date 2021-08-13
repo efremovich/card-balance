@@ -342,12 +342,13 @@
             <div
               class="limits pb-1">
               <label>Остаток по карте </label>
-              <b-progress
+              ress
                 variant="success"
                 show-value
                 class="mb-1"
                 :value="getValue(product.limits)"
                 :max="getMaxValue(product.limits)" />
+
             </div>
           </b-card>
         </section>
@@ -420,9 +421,11 @@ import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
 import { watch, ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
+
 import store from '@/store';
 import { mapGetters, mapMutations } from 'vuex';
 // import { $themeBreakpoints } from '@themeConfig';
+
 import { useShopUi, useShopRemoteData } from './useECommerceShop';
 import { useEcommerceUi } from './useEcommerce';
 
@@ -459,7 +462,6 @@ export default {
     const totalRows = ref(null);
     const pageOptions = [6, 12, 18];
     const currentPage = 1;
-    // const itemView = ref('');
     const perPage = 6;
     const { products } = useShopRemoteData();
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
@@ -476,6 +478,7 @@ export default {
         }
       });
     };
+
     // const getWidth = computed(() => store.getters['app/currentBreakPoint']);
     // const checkItemView = () => {
     //   if (getWidth !== 'xl') {
@@ -489,14 +492,13 @@ export default {
     //  checkItemView();
     fetchShopProducts();
     // checkItemView();
+
     watch([filters], () => {
       fetchShopProducts();
     });
 
     return {
       filters,
-      // checkItemView,
-      // getWidth,
       itemViewOptions,
       // itemView,
       totalProducts,
@@ -515,6 +517,7 @@ export default {
     return {
       // number: null,
       view: true,
+
       page: 1,
       itemView: this.$store.state.cardsView,
     };
@@ -576,6 +579,7 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
     },
+
     getValue(item) {
       if (item.length < 1) {
         return 0;
@@ -588,6 +592,7 @@ export default {
 };
 </script>
 
+
 <style lang="scss" scoped>
-@import "../assets/scss/components/cards";
+@import "../assets/scss/components/cards;
 </style>

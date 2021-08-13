@@ -139,6 +139,7 @@ import {
   BCard, BButton, BPagination, BOverlay, BSpinner,
 } from 'bootstrap-vue';
 import html2pdf from 'html2pdf.js';
+
 // import print from 'vue-print-nb';
 import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
@@ -158,9 +159,7 @@ export default {
     BSpinner,
     vprint,
   },
-  // directives: {
-  //   print,
-  // },
+
   data() {
     return {
       getInfo: null,
@@ -207,6 +206,7 @@ export default {
   //     this.onChange();
   //   },
   // },
+
   created() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
@@ -238,7 +238,7 @@ export default {
           });
         } else this.haveTransactions = true;
       });
-    // return this.contract;
+
   },
   beforeMount() {
     this.getAllCards();
@@ -342,6 +342,7 @@ export default {
           if (this.transactions.data.result.length > 1) {
             this.haveTransactions = true;
           }
+
           if (this.rangeDate.length > 10 && this.transactions.data.result.length < 1) {
             this.haveTransactions = false;
             this.$toast({
@@ -371,8 +372,10 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&holder=${holder}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          console.log('page transactions.data:', this.transactions.data);
+
+          console.log('page transactions.data.reasult:', this.transactions.data.result);
         }
+
         if (this.transactions.data.result.length < 1) {
           // this.visible = false;
           this.$toast({
@@ -416,6 +419,7 @@ export default {
             });
           }
         }
+
         // return this.order(this.transactions.data.result);
       });
       // if (this.selected.length < 1) {
@@ -435,4 +439,5 @@ export default {
 @import "@core/scss/vue/libs/vue-select.scss";
 @import "@core/scss/vue/libs/vue-flatpicker.scss";
 @import "../../@core/assets/checks";
+
 </style>

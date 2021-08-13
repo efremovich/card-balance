@@ -23,6 +23,7 @@
       class="d-flex w-100">
       <div
         v-if="getWidth !== 'xs'"
+
         class="d-flex w-100 justify-content-center align-items-center">
         <h6 class="p-1">
           Договор №:
@@ -49,7 +50,10 @@
 import { BLink, BNavbarNav } from 'bootstrap-vue';
 import vSelect from 'vue-select';
 import useJwt from '@/auth/jwt/useJwt';
+
 import store from '@/store';
+
+
 import Bookmarks from './components/Bookmarks.vue';
 import SearchBar from './components/SearchBar.vue';
 import DarkToggler from './components/DarkToggler.vue';
@@ -93,6 +97,7 @@ export default {
       return this.getWidth;
     },
   },
+
   created() {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {

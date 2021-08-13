@@ -476,9 +476,11 @@ export default {
         .filter((f) => f.sortable)
         .map((f) => ({ text: f.label, value: f.key }));
     },
+
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
+
   },
   created() {
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -511,6 +513,7 @@ export default {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.result.length;
           console.log(this.totalRows);
+
         }
         this.loadDone = false;
         return this.transactions;
@@ -544,7 +547,9 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.loadDone = false;
-          this.totalRows = this.transactions.data.result.length;
+
+          this.totalRows = this.transactions.result.total;
+
           if (this.transactions.data.result.length < 1 && selected !== null) {
             this.$toast({
               component: ToastificationContent,
