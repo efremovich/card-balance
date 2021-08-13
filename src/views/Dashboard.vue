@@ -40,6 +40,7 @@
                     <h5 v-if="cardBalance.contract.deposit !== 0">
                       Допустимая задолженность:
                       <span class="text-danger h5">  {{ cardBalance.contract.deposit.toLocaleString('ru-RU', {
+
                         style: 'currency',
                         currency: 'RUB'
                       }) }}</span>
@@ -594,9 +595,11 @@ export default {
     getNotActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
     },
+
     getCardsSumm() {
       return this.cardBalance.card_statistic.length;
     },
+
     // gotSelected() {
     //   return this.$store.getters.CONTRACT_NUMBER;
     // },
@@ -606,6 +609,7 @@ export default {
   // getCurrentConsumptionLength() {
   //   return this.currentConsumption.currentConsumption.length;
   // },
+
   },
   watch: {
     gotSelected() {
@@ -627,6 +631,7 @@ export default {
         });
       }
     });
+
     useJwt.getCurrentConsumption().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
@@ -634,6 +639,7 @@ export default {
         });
       }
     });
+
     this.userData = JSON.parse(localStorage.getItem('userData'));
     if (this.userData) {
       this.getInfo = this.userData;
@@ -646,6 +652,7 @@ export default {
     useJwt.getBalance().then((response) => {
       if (response.data.status) {
         this.cardBalance = response.data;
+        console.log('cardbalance:', this.cardBalance);
         this.download = true;
       }
     });
@@ -689,9 +696,12 @@ export default {
         month: 'long',
       });
     },
+
     // getSelected() {
     //   this.selected = this.$store.getters.CONTRACT_NUMBER;
     // },
+
+
     makeOptions() {
       this.userData.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });
@@ -720,6 +730,7 @@ export default {
     },
     refreshExpenses(card) {
       useJwt.getConsumption(this.$store.getters.CONTRACT_ID).then((response) => {
+
         if (response.data.status) {
           this.currentConsumption = response.data;
           this.$refs[card].showLoading = false;
@@ -757,7 +768,9 @@ export default {
       });
     },
     refreshConsumption(card) {
+
       useJwt.getDynamic(this.$store.getters.CONTRACT_ID).then((response) => {
+
         if (response.data.status) {
           this.currentConsumptionDynamic = response.data;
           this.$refs[card].showLoading = false;
@@ -775,6 +788,7 @@ export default {
             this.refreshConsumptions(this.$store.getters.CONTRACT_ID);
             this.refreshData(this.$store.getters.CONTRACT_ID);
             this.showLoading = false;
+
           }
         });
     },

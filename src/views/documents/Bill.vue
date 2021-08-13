@@ -21,7 +21,7 @@
           @input="getVisible" />
         <b-button
           v-if="visible"
-          v-print="'#check'"
+          v-print="printObj"
           variant="success"
           class="btn btn-primary mt-1">
           Печать
@@ -390,6 +390,9 @@ export default {
       visible: false,
       download: false,
       text: 'Оплата согласно договора ',
+      printObj: {
+        id: 'check',
+      },
     };
   },
   beforeRouteEnter(to, from, next) {

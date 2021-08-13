@@ -10,7 +10,7 @@
       <template
         v-for="(item,index) in transactions.data.result">
         <div
-          :key="index"
+          :key="item.ID"
           class="col-5"
           style="page-break-before: auto;
           page-break-after:avoid;

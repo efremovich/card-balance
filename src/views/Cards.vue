@@ -170,6 +170,7 @@
               <h5> Держатель: {{ product.holder }} </h5>
               <h5> Последняя активность </h5>
               <h5> Индекс активности </h5>
+
             </div>
             <div
               class="d-flex flex-column align-items-start mt-2">
@@ -410,9 +411,11 @@ import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
 import { watch, ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
+
 import store from '@/store';
 import { mapGetters, mapMutations } from 'vuex';
 // import { $themeBreakpoints } from '@themeConfig';
+
 import { useShopUi, useShopRemoteData } from './useECommerceShop';
 import { useEcommerceUi } from './useEcommerce';
 
@@ -455,7 +458,6 @@ export default {
     const totalRows = ref(null);
     const pageOptions = [6, 12, 18];
     const currentPage = 1;
-    // const itemView = ref('');
     const perPage = 6;
     const { products } = useShopRemoteData();
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
@@ -473,6 +475,7 @@ export default {
     };
 
     fetchShopProducts();
+
     watch([filters], () => {
       fetchShopProducts();
     });
@@ -494,6 +497,7 @@ export default {
   data() {
     return {
       view: true,
+
       page: 1,
       itemView: this.$store.state.cardsView,
     };
@@ -554,6 +558,7 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
     },
+
     getValue(item) {
       if (item === undefined || null || item.length < 1) {
         return 0;
@@ -566,6 +571,7 @@ export default {
 };
 </script>
 
+
 <style lang="scss" scoped>
-@import "../assets/scss/components/cards";
+@import "../assets/scss/components/cards;
 </style>

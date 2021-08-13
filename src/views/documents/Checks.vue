@@ -140,6 +140,7 @@ import {
   BCard, BButton, BPagination, BOverlay, BSpinner,
 } from 'bootstrap-vue';
 import html2pdf from 'html2pdf.js';
+
 // import print from 'vue-print-nb';
 import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
@@ -161,9 +162,7 @@ export default {
     BSpinner,
     vprint,
   },
-  // directives: {
-  //   print,
-  // },
+
   data() {
     return {
       getInfo: null,
@@ -225,6 +224,7 @@ export default {
     // },
   },
 
+
   created() {
     this.busy = true;
   },
@@ -260,6 +260,7 @@ export default {
         } else this.haveTransactions = true;
       });
     this.getAllCards(this.contractId);
+
   },
   methods: {
     isToday() {
@@ -364,6 +365,7 @@ export default {
           if (this.transactions.data.result.length > 1) {
             this.haveTransactions = true;
           }
+
           if (this.rangeDate.length > 10 && this.transactions.data.result.length < 1) {
             this.haveTransactions = false;
             this.$toast({
@@ -394,7 +396,9 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           // console.log('page transactions.data:', this.transactions.data);
+
         }
+
         if (this.transactions.data.result.length < 1) {
           // this.visible = false;
           this.$toast({
@@ -451,6 +455,7 @@ export default {
             });
           }
         }
+
         // return this.order(this.transactions.data.result);
       });
       // if (this.selected.length < 1) {
@@ -470,4 +475,5 @@ export default {
 @import "@core/scss/vue/libs/vue-select.scss";
 @import "@core/scss/vue/libs/vue-flatpicker.scss";
 @import "../../@core/assets/checks";
+
 </style>

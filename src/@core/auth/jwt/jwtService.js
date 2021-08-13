@@ -352,6 +352,7 @@ export default class JwtService {
     if (userData) {
       const response = await this.axiosIns.get(
         `/api/cards/${userData.account.contract_id}?${params}`,
+
       );
       return response;
     }
@@ -364,6 +365,7 @@ export default class JwtService {
     if (userData) {
       const response = await this.axiosIns.get(
         `/api/cards/${contractId}?${params}`,
+
       );
       return response;
     }

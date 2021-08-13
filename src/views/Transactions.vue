@@ -483,9 +483,11 @@ export default {
         .filter((f) => f.sortable)
         .map((f) => ({ text: f.label, value: f.key }));
     },
+
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
+
   },
   watch: {
     gotSelectedContract(val) {
@@ -546,6 +548,7 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.total;
+
         }
         this.loadDone = false;
       });
@@ -622,6 +625,7 @@ export default {
                 },
               });
             }
+
           }
         // return this.transactions;
         });

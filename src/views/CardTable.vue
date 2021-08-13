@@ -399,6 +399,10 @@ export default {
 .card {
   border-radius: 5px !important;
 }
+.pad {
+  padding-bottom:0.2%;
+  padding-left:0.1%;
+}
 .card .card-header {
   padding: 1rem !important;
 }
