@@ -25,8 +25,9 @@
               </p>
               <b-overlay
                 :show="busy"
-                rounded="lg"
-                opacity="0.6">
+                rounded="xs"
+                opacity="0.1"
+                variant="secondary">
                 <template #overlay>
                   <div class="d-flex align-items-center">
                     <b-spinner
@@ -41,7 +42,6 @@
                       style="width: 1rem; height: 1rem;"
                       type="grow"
                       variant="secondary" />
-                    <!-- We add an SR only text for screen readers -->
                     <span class="sr-only">Данные загружаются</span>
                   </div>
                 </template>
@@ -84,106 +84,7 @@
         :per-page="perPage"
         :current-page="currentPage"
         class="position-relative table-hover text-center"
-        :fields="fields">
-        <template #cell(summ)="row">
-          <b-col @click="row.toggleDetails">
-            <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseInt(row.item.summ).toLocaleString('ru-RU', {
-              style: 'currency',
-              currency: 'RUB'
-            }) }}</span><br>
-
-            <b-button
-              class="mt-1"
-              pill
-              size="sm"
-              @click="row.detailsShowing">
-              Детали
-            </b-button>
-          </b-col>
-        </template>
-
-        <template
-          #cell(date)="row">
-          <b-col @click="row.toggleDetails" />
-        </template>
-
-        <template #row-details="row">
-          <b-card
-            @click="row.toggleDetails">
-            <b-row class="mb-2">
-              <b-col
-                md="4"
-                class="mb-1">
-                <strong>Дата/время : </strong>
-              </b-col>
-              <b-col
-                md="4"
-                class="mb-1">
-                <strong>Количество : </strong>{{ }}
-              </b-col>
-              <b-col
-                md="4"
-                class="mb-1">
-                <strong>услуга : </strong>
-              </b-col>
-            </b-row>
-
-            <b-button
-              size="sm"
-              variant="outline-secondary"
-              @click="row.toggleDetails">
-              Скрыть детали
-            </b-button>
-          </b-card>
-        </template>
-
-        <template #cell(period)="row">
-          <b-col @click="row.toggleDetails">
-            {{ row.item.date | formatDate }}
-          </b-col>
-        </template>
-      </b-table>
-      <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
-        <!-- page length -->
-        <b-form-group
-          label="На странице"
-          label-cols="7"
-          label-align="left"
-          label-size="sm"
-          label-for="sortBySelect"
-          class="text-nowrap mb-md-0">
-          <b-form-select
-            id="perPageSelect"
-            v-model="perPage"
-            size="sm"
-            inline
-            :options="pageOptions" />
-        </b-form-group>
-
-        <!-- pagination -->
-        <div>
-          <b-pagination
-            v-model="currentPage"
-            :total-rows="totalRows"
-            :per-page="perPage"
-            first-number
-            last-number
-            prev-class="prev-item"
-            next-class="next-item"
-            class="mb-0">
-            <template #prev-text>
-              <feather-icon
-                icon="ChevronLeftIcon"
-                size="18" />
-            </template>
-            <template #next-text>
-              <feather-icon
-                icon="ChevronRightIcon"
-                size="18" />
-            </template>
-          </b-pagination>
-        </div>
-      </b-card-body>
+        :fields="fields" />
     </b-card>
   </div>
 </template>
@@ -191,9 +92,10 @@
 <script>
 import {
   BCard, BTable, BFormGroup,
-  BFormInput, BCardBody, BButton, BInputGroup, BInputGroupAppend, BOverlay, BSpinner, BPagination, BFormSelect,
+  BFormInput, BCardBody, BButton, BInputGroup, BInputGroupAppend, BOverlay, BSpinner,
 } from 'bootstrap-vue';
 import vSelect from 'vue-select';
+import { mapGetters } from 'vuex';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
@@ -213,8 +115,6 @@ export default {
     vSelect,
     BOverlay,
     BSpinner,
-    BPagination,
-    BFormSelect,
 
   },
   data() {
@@ -263,24 +163,33 @@ export default {
 
     };
   },
-
-  created() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      this.contract = userData;
-      this.contractId = this.contract.contract.id;
-      this.start = `${this.getFirstDay()} 00:00:00`;
-      this.end = `${this.isToday()} 00:00:00`;
-      this.rangeDate = [this.start, this.end];
-    }
-
-    return this.contract;
+  computed: {
+    ...mapGetters({
+      // gotSelected: 'CONTRACT_NUMBER',
+      gotSelectedContract: 'CONTRACT_ID',
+    }),
+  },
+  watch: {
+    gotSelectedContract(val) {
+      this.getAllCards(val);
+    },
   },
 
   beforeMount() {
-    this.getAllCards();
+    this.contractId = this.gotSelectedContract;
+    this.start = `${this.getFirstDay()} 00:00:00`;
+    this.end = `${this.isToday()} 00:00:00`;
+    this.rangeDate = [this.start, this.end];
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+    // if (userData) {
+    //   this.contract = userData;
+    //   this.contractId = this.contract.contract.id;
+    //   this.start = `${this.getFirstDay()} 00:00:00`;
+    //   this.end = `${this.isToday()} 00:00:00`;
+    //   this.rangeDate = [this.start, this.end];
+    // }
+    this.getAllCards(this.gotSelectedContract);
   },
-
   methods: {
     isToday() {
       const today = new Date();
@@ -298,17 +207,18 @@ export default {
       return this.arr;
     },
 
-    getAllCards() {
-      const ID = this.contractId;
+    getAllCards(val) {
+      this.option = [];
       this.busy = true;
-      useJwt.getCards(`contract_id=${ID}`).then((response) => {
+      useJwt.getCards(val).then((response) => {
         if (response.data.status) {
           this.response = response.data;
-          this.busy = false;
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
           });
         }
+        this.busy = false;
+        // console.log('Карт: ', this.option);
         this.option = this.unique(this.option);
       });
     },
@@ -325,7 +235,7 @@ export default {
       useJwt.GetRequests(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=7824861010051464017`).then((response) => {
         if (response.data.status) {
           this.request = response.data;
-          console.log(this.request);
+          // console.log(this.request);
           if (this.rangeDate.length > 10 && this.request.data.length < 1) {
             this.$toast({
               component: ToastificationContent,

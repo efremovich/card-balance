@@ -32,7 +32,6 @@
         @click="getVisible()">
         {{ visible ? "Убрать счёт" : "Показать счёт" }}
       </b-button> -->
-
         <div
           v-show="visible"
           id="check"
@@ -69,7 +68,7 @@
                 <p
                   style="text-align: left;
                   padding-left: 10px;padding-top: 10px;">
-                  КПП {{ getInfo.company.kpp }}
+                  КПП {{ getInfo.contract.company.kpp }}
                 </p>
               </div>
               <div
@@ -78,7 +77,7 @@
                 <p
                   style="text-align: left;
     padding-left: 10px;padding-top: 10px;">
-                  ИНН {{ getInfo.company.inn }}
+                  ИНН {{ getInfo.contract.company.inn }}
                 </p>
               </div>
             </div>
@@ -190,7 +189,7 @@
             </div>
             <div class="rekv2">
               <p class="l">
-                ИНН {{ getInfo.company.inn }}, КПП {{ getInfo.company.kpp }}, {{ getInfo.company.full_name }} , {{ getInfo.company.legal_address }}
+                ИНН {{ getInfo.contract.company.inn }}, КПП {{ getInfo.contract.company.kpp }}, {{ getInfo.contract.company.full_name }} , {{ getInfo.contract.company.legal_address }}
               </p>
             </div>
           </div>
@@ -366,6 +365,8 @@ import {
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import print from 'vue-print-nb';
+import { mapGetters } from 'vuex';
+import store from '@/store';
 
 export default {
   components: {
@@ -394,7 +395,16 @@ export default {
       },
     };
   },
-
+  beforeRouteEnter(to, from, next) {
+    if (to.name === 'bill') {
+      next((vm) => {
+        if (vm.getWidth === 'xs') {
+          console.log(vm.getWidth);
+          next(false);
+        } else next(true);
+      });
+    }
+  },
   computed: {
     getNDS() {
       return ((this.summ * 20) / 100).toLocaleString('ru-RU', {
@@ -402,29 +412,66 @@ export default {
         currency: 'RUB',
       });
     },
+    ...mapGetters({
+      gotSelected: 'CONTRACT_NUMBER',
+      gotSelectedContract: 'CONTRACT_ID',
+    }),
     getSumm() {
       return Number(this.summ).toLocaleString('ru-RU', {
         style: 'currency',
         currency: 'RUB',
       });
     },
+    getWidth() {
+      return store.getters['app/currentBreakPoint'];
+    },
 
     getRandom() {
       return Math.floor(Math.random() * 10000);
     },
   },
+  watch: {
+    gotSelectedContract(val) {
+      useJwt.changeContract(val)
+        .then((response) => {
+          if (response.status) {
+            this.getInfo = response.data;
+            const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
+            this.contract = `${this.gotSelected} от ${dateContract}`;
+          }
+        });
+    },
+    // rangeDate() {
+    //   this.selectDate();
+    // },
+  },
 
   created() {
-    useJwt.getCurrenUser().then((response) => {
-      if (response.data.status) {
-        this.$store.dispatch('user/getUserData', response.data).then(() => {
+    // useJwt.getCurrenUser().then((response) => {
+    //   if (response.data.status) {
+    //     this.$store.dispatch('user/getUserData', response.data).then(() => {
+    //       this.getInfo = response.data;
+    //       this.download = true;
+    //       const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
+    //       this.contract = `${this.getInfo.contract.number} от ${dateContract}`;
+    //     });
+    //   }
+    // });
+
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+    // if (userData) {
+    //   this.contract = userData;
+    //   this.contractId = this.contract.contract.id;
+    // }
+    useJwt.changeContract(this.gotSelectedContract)
+      .then((response) => {
+        if (response.status) {
           this.getInfo = response.data;
           this.download = true;
           const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
           this.contract = `${this.getInfo.contract.number} от ${dateContract}`;
-        });
-      }
-    });
+        }
+      });
   },
 
   methods: {

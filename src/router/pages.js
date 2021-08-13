@@ -137,6 +137,15 @@ export default [
       ],
       rule: 'editor',
     },
+    // beforeEnter(to, from, next) {
+    //   if (to.name === 'bill') {
+    //     next((vm) => {
+    //       console.log(vm.download);
+    //       console.log('bill');
+    //     });
+    //   }
+    // },
+
   },
   {
     path: '/documents/checks',

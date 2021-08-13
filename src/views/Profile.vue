@@ -470,15 +470,7 @@ export default {
           // this.twin.name = 'Хакер';
           // this.twin.phone = '+7892246643456456';
           useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
-            console.log(response);
-            // this.$toast({
-            //   component: ToastificationContent,
-            //   props: {
-            //     title: 'Данные сохранены',
-            //     icon: 'EditIcon',
-            //     variant: 'success',
-            //   },
-            // });
+            this.twin = response;
             this.$swal({
               position: 'center',
               icon: 'success',
@@ -498,12 +490,13 @@ export default {
       this.popoverShow = false;
     },
     resetPhoto() {
-      this.getInfo.account.avatar = '';
-      this.image = this.twin.avatar;
-      useJwt.refreshGetCurrentUser(JSON.stringify(this.getInfo)).then((response) => {
+      useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
+
         console.log('Сброс фото', response);
         // this.image = this.twin.avatar;
+        this.twin = response;
       });
+      // return this.twin;
     },
     onOk() {
       this.onClose();
@@ -559,11 +552,11 @@ export default {
             old_password: this.oldPassword,
             email: this.twin.email,
           };
-          console.log(newPassword);
-          console.log('Старый пароль', this.oldPassword);
+          // console.log(newPassword);
+          // console.log('Старый пароль', this.oldPassword);
           useJwt.changePassword(JSON.stringify(newPassword)).then((response) => {
             console.log(response);
-            console.log(this.newPasswordValue);
+            // console.log(this.newPasswordValue);
             (this.$store.dispatch('getPassword', this.newPasswordValue));
             // this.$toast({
             //   component: ToastificationContent,

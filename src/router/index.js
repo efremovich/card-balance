@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import 'animate.css';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
-import 'swiper/swiper-bundle.css';
+// import 'swiper/swiper-bundle.css';
 // Routes
 import { canNavigate } from '@/libs/acl/routeProtection';
 // import { getModal } from '@/views/CardDetails.vue';
@@ -96,6 +96,16 @@ Vue.mixin({
       next(true);
     }
   },
+  // beforeRouteEnter(to, from, next) {
+  //   if (to.name === 'bill') {
+  //     next((vm) => {
+  //       if (vm.getWidth === 'xs') {
+  //         console.log('xs');
+  //         next(false);
+  //       } else next(true);
+  //     });
+  //   }
+  // },
 });
 
 export default router;

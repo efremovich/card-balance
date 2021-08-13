@@ -75,61 +75,62 @@
           class="form-control mb-0"
           :config="config"
           @on-change="selectDate" />
+        <!-- <div class="d-flex flex-column justify-content-center"> -->
         <b-button
           :disabled="!visible"
           :variant="color"
-          class="btn btn-primary mt-1"
+          :class="['btn', 'btn-primary', 'mt-1', getWidth !== 'xs'? '': 'btn-block']"
           @click="print">
           Печать
         </b-button>
 
         <b-button
           :disabled="!haveTransactions"
-          class="btn btn-primary mt-1 ml-3"
+          :class="['btn', 'btn-primary', 'mt-1', getWidth !== 'xs'? 'ml-3': 'btn-block']"
           @click="toogle">
           {{ visible ? "Скрыть чеки" : "Показать чеки" }}
         </b-button>
 
         <b-button
           :disabled="!haveTransactions"
-          class="btn btn-primary mt-1 ml-3"
+          :class="['btn', 'btn-primary', 'mt-1', getWidth !== 'xs'? 'ml-3': 'btn-block']"
           @click="download">
           Скачать чеки
         </b-button>
-      </div>
+        <!-- </div> -->
 
-      <div
-        v-if="visible"
-        id="check"
-        ref="print"
-
-        class="d-flex flex-row flex-wrap justify-content-around">
-        <vprint
-          id="print"
-          :transactions="transactions" />
+        <div
+          v-if="visible"
+          id="check"
+          ref="print"
+          class="d-flex flex-row flex-wrap justify-content-around">
+          <vprint
+            id="print"
+            :transactions="transactions" />
+        </div>
+        <b-pagination
+          v-if="hidden"
+          v-model="currentPage"
+          :total-rows="totalRows"
+          first-number
+          last-number
+          prev-class="prev-item"
+          next-class="next-item"
+          class="mb-0 "
+          align="center"
+          @change="selectPage">
+          <template #prev-text>
+            <feather-icon
+              icon="ChevronLeftIcon"
+              size="18" />
+          </template>
+          <template #next-text>
+            <feather-icon
+              icon="ChevronRightIcon"
+              size="18" />
+          </template>
+        </b-pagination>
       </div>
-      <b-pagination
-        v-if="hidden"
-        v-model="currentPage"
-        :total-rows="totalRows"
-        first-number
-        last-number
-        prev-class="prev-item"
-        next-class="next-item"
-        class="mb-0 "
-        align="center"
-        @change="selectPage">
-        <template #prev-text>
-          <feather-icon
-            icon="ChevronLeftIcon"
-            size="18" />
-        </template>
-        <template #next-text>
-          <feather-icon
-            icon="ChevronRightIcon"
-            size="18" />
-        </template>
-      </b-pagination>
     </b-card>
   </div>
 </template>
@@ -145,6 +146,8 @@ import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import { mapGetters } from 'vuex';
+import store from '@/store';
 import vprint from '../vprint.vue';
 import useJwt from '../../auth/jwt/useJwt';
 
@@ -199,6 +202,12 @@ export default {
     color() {
       return this.visible ? 'success' : '';
     },
+    ...mapGetters({
+      gotSelectedContract: 'CONTRACT_ID',
+    }),
+    getWidth() {
+      return store.getters['app/currentBreakPoint'];
+    },
   },
   // watch: {
   //   selectedHolder() {
@@ -206,8 +215,20 @@ export default {
   //     this.onChange();
   //   },
   // },
+  watch: {
+    gotSelectedContract(val) {
+      this.getAllCards(val);
+    },
+    // rangeDate() {
+    //   this.selectDate();
+    // },
+  },
+
 
   created() {
+    this.busy = true;
+  },
+  beforeMount() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       this.contract = userData;
@@ -238,10 +259,8 @@ export default {
           });
         } else this.haveTransactions = true;
       });
+    this.getAllCards(this.contractId);
 
-  },
-  beforeMount() {
-    this.getAllCards();
   },
   methods: {
     isToday() {
@@ -257,12 +276,15 @@ export default {
       this.arr = Array.from(new Set(arr));
       return this.arr;
     },
-    getAllCards() {
-      const ID = this.contractId;
+    getAllCards(val) {
+      // console.log(val);
+      this.option = [];
+      this.names = [];
       this.busy = true;
-      useJwt.getCards(`contract_id=${ID}`).then((response) => {
+      useJwt.getCards(val).then((response) => {
         if (response.data.status) {
           this.response = response.data;
+          // console.log(this.response.cards);
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
           });
@@ -270,12 +292,13 @@ export default {
             this.names.push(el.holder);
           });
         }
-        this.busy = false;
         this.names = this.unique(this.names);
         this.names = this.names.filter((el) => el !== '');
         this.option = this.unique(this.option);
+        this.busy = false;
       });
     },
+
     getAllTransactions() {
       const holder = this.selectedHolder;
       const ID = this.contractId;
@@ -338,7 +361,7 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.total;
-          console.log('SelectDate totalRow', this.totalRows);
+          // console.log('SelectDate totalRow', this.totalRows);
           if (this.transactions.data.result.length > 1) {
             this.haveTransactions = true;
           }
@@ -372,8 +395,8 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&holder=${holder}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
+          // console.log('page transactions.data:', this.transactions.data);
 
-          console.log('page transactions.data.reasult:', this.transactions.data.result);
         }
 
         if (this.transactions.data.result.length < 1) {
@@ -400,10 +423,23 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&card_holder=${holder}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          console.log('Change/transactions:', this.transactions);
+          // console.log('Change/transactions:', this.transactions);
           this.totalRows = this.transactions.data.total;
           if (this.transactions.data.total > 1) {
             this.haveTransactions = true;
+          }
+          if (this.transactions.data.total < 1 && this.selected < 1) {
+            this.haveTransactions = false;
+            this.visible = false;
+            this.transactions.data.result = [];
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют операции за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
           } else {
             this.haveTransactions = false;
             this.visible = false;
