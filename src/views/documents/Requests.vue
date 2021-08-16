@@ -84,7 +84,7 @@
         :per-page="perPage"
         :current-page="currentPage"
         class="position-relative table-hover text-center"
-        :fields="fields"/>
+        :fields="fields" />
     </b-card>
   </div>
 </template>
@@ -173,7 +173,7 @@ export default {
       this.getAllCards(val);
     },
     selected(val) {
-        const date = this.rangeDate;
+      const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
       const arr = (newDate.join('').split('  '));
       // eslint-disable-next-line prefer-template
@@ -196,7 +196,6 @@ export default {
           }
         }
       });
-
     },
   },
 
@@ -215,22 +214,22 @@ export default {
     // }
     this.rangeDate = [this.start, this.end];
     this.getAllCards(this.gotSelectedContract);
-      useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=7824861010051464017`).then((response) => {
-        if (response.data.status) {
-          this.request = response.data;
-          console.log(this.request);
-          if (this.rangeDate.length > 10 && this.request.data.length < 1) {
-            this.$toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Отсутвуют заявки за выбранный период',
-                icon: 'AlertTriangleIcon',
-                variant: 'danger',
-              },
-            });
-          }
+    useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=7824861010051464017`).then((response) => {
+      if (response.data.status) {
+        this.request = response.data;
+        console.log(this.request);
+        if (this.rangeDate.length > 10 && this.request.data.length < 1) {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Отсутвуют заявки за выбранный период',
+              icon: 'AlertTriangleIcon',
+              variant: 'danger',
+            },
+          });
         }
-      });
+      }
+    });
   },
   methods: {
     isToday() {

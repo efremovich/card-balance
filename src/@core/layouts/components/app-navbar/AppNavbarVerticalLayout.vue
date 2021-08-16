@@ -53,7 +53,6 @@ import useJwt from '@/auth/jwt/useJwt';
 
 import store from '@/store';
 
-
 import Bookmarks from './components/Bookmarks.vue';
 import SearchBar from './components/SearchBar.vue';
 import DarkToggler from './components/DarkToggler.vue';
@@ -108,7 +107,6 @@ export default {
   //   }
   // },
   beforeMount() {
-
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {

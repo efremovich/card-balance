@@ -584,7 +584,7 @@ export default {
         return this.$store.getters.CONTRACT_NUMBER;
       },
       set(value) {
-        console.log(value);
+        // console.log(value);
         this.$store.dispatch('getContractNumber', value.number);
         this.$store.dispatch('getContractId', value.id);
       },
@@ -606,10 +606,6 @@ export default {
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
-    // getCurrentConsumptionLength() {
-    //   return this.currentConsumption.currentConsumption.length;
-    // },
-
   },
   watch: {
     gotSelected() {
@@ -652,7 +648,7 @@ export default {
     useJwt.getBalance().then((response) => {
       if (response.data.status) {
         this.cardBalance = response.data;
-        console.log('cardbalance:', this.cardBalance);
+        // console.log('cardbalance:', this.cardBalance);
         this.download = true;
       }
     });

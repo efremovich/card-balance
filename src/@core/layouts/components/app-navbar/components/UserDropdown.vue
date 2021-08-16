@@ -86,7 +86,7 @@ export default {
       }
     });
   },
-  created() {
+  beforeMount() {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {

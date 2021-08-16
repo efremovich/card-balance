@@ -201,7 +201,8 @@ export default {
                     title: 'Ошибка',
                     icon: 'AlertOctagonIcon',
                     variant: 'danger',
-                    text: response.data.message,
+                    text: 'Произошла ошибка при авторизации',
+                    // response.data.message,
                   },
                 });
               }

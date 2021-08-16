@@ -1,3 +1,4 @@
+/* eslint-disable prefer-template */
 <template>
   <b-overlay
     :show="loadDone"
@@ -503,17 +504,19 @@ export default {
     this.loadDone = true;
   },
   beforeMount() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      this.contract = userData;
-      this.contractId = this.contract.contract.id;
-    }
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+    // if (userData) {
+    //   this.contract = userData;
+    //   this.contractId = this.contract.contract.id;
+    // }
     this.loadDone = true;
     this.getAllCards(this.gotSelectedContract);
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
+    console.log(this.end, this.start);
     this.rangeDate = [this.start, this.end];
-    useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+    // console.log('create', this.rangeDate);
+    useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
       if (response.data.status) {
         this.transactions = response.data;
         this.totalRows = this.transactions.data.total;
@@ -548,7 +551,6 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.total;
-
         }
         this.loadDone = false;
       });
@@ -568,15 +570,21 @@ export default {
       });
     },
     onChange() {
+      // console.log(val);
       // this.loadDone = true;
+      const { selected } = this;
+      console.log('range', selected);
+
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
-      const arr = (newDate.join('').split('  '));
-      // // eslint-disable-next-line prefer-template
-      const start = `${arr[0]} 00:00:00`;
-      // // eslint-disable-next-line prefer-template
-      const end = `${arr[1]} 00:00:00`;
-      const { selected } = this;
+      // const prot = (newDate.join('').split('00:00:00'));
+      const arr = newDate.join('').split('00:00:00');
+      const trim = arr.join('').split(' ').filter((n) => n !== '');
+      // eslint-disable-next-line prefer-template
+      const start = trim[0] + ' 00:00:00';
+      // eslint-disable-next-line prefer-template
+      const end = trim[1] + ' 00:00:00';
+      console.log('date:', 'trim', trim, 'arr', arr);
       // const { start } = this;
       // const { end } = this;
       // const ID = this.gotSelectedContract;
@@ -603,7 +611,7 @@ export default {
           if (response.data.status) {
             this.transactions = response.data;
             // this.loadDone = false;
-            console.log(this.transactions);
+            // console.log(this.transactions);
             this.totalRows = this.transactions.data.total;
             if ((selected === null || selected.length < 1) && this.totalRows < 1) {
               this.$toast({
@@ -625,9 +633,8 @@ export default {
                 },
               });
             }
-
           }
-        // return this.transactions;
+          // return this.transactions;
         });
       }
     },
@@ -643,13 +650,26 @@ export default {
     selectDate() {
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
-      const arr = (newDate.join('').split('  '));
+      const prot = (newDate.join('').split('00:00:00'));
+      const arr = prot.join('').split(' ').filter((n) => n !== '');
+      console.log('arr', arr);
       // eslint-disable-next-line prefer-template
-      const Start = arr[0] + ' 00:00:00';
+      const start = `${arr[0]} 00:00:00`;
       // eslint-disable-next-line prefer-template
-      const End = arr[1] + ' 00:00:00';
+      const end = `${arr[1]} 00:00:00`;
+      // const date = this.rangeDate;
+      // console.log('selecteDate', this.rangeDate);
+      // const start = `${this.rangeDate[0]}00:00:00`;
+      // const end = `${this.rangeDate[1]}00:00:00`;
+      console.log('range', start, end);
+      // const newDate = Array.from(date).filter((n) => n !== '—');
+      // const arr = (newDate.join('').split('  '));
+      // eslint-disable-next-line prefer-template
+      // const Start = arr[0] + ' 00:00:00';
+      // eslint-disable-next-line prefer-template
+      // const End = arr[1] + ' 00:00:00';
       const { selected } = this;
-      useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${Start}&endDate=${End}&card_number=${selected}`).then((response) => {
+      useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           console.log(this.transactions);
@@ -671,7 +691,7 @@ export default {
         // return this.transactions;
       });
       if (selected === null) {
-        useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${Start}&endDate=${End}`).then((response) => {
+        useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}`).then((response) => {
           this.transactions = response.data;
           // this.loadDone = false;
           this.totalRows = this.transactions.data.total;
