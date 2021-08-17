@@ -170,7 +170,7 @@
                             </b-col>
                           </div>
                           <div class="mt-1">
-                            <label>Остаток: {{ limit.value - limit.consumption }} л.</label>
+                            <label>Остаток: {{ limit.value - limit.consumption }}  {{ limit.limit_unit_code = "L" ? "литров" : "рублей" }}</label>
                             <b-progress
                               :value="limit.value - limit.consumption"
                               :max="limit.value" />
@@ -207,7 +207,7 @@
                           </h4>
                           <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
                           <h4>
-                            Остаток: {{ limit.value - limit.consumption }} литров.
+                            Остаток: {{ limit.value - limit.consumption }} {{ limit.limit_unit_code = "L" ? "литров" : "рублей" }}.
                           </h4>
 
                           <hr>
@@ -234,7 +234,7 @@
             </b-tab>
             <b-tab title="Транзакции">
               <h4
-                v-if="totalRows < 1"
+                v-if="totalRows<1"
                 class="text-center">
                 Транзакции по карте № {{ cardData.data.number }} за период c
                 {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
@@ -299,7 +299,7 @@
                   class="position-relative"
                   :per-page="perPage"
                   :current-page="currentPage"
-                  :items="transactions.data"
+                  :items="transactions.data.result"
                   :fields="fields"
                   :filter="filter">
                   <template #cell(cardData)="row">
@@ -687,6 +687,10 @@ export default {
       },
     ];
 
+    const unicodeLabel = {
+      L: 'литров',
+      RUB: 'рублей',
+    };
     const periodLabel = {
       DAY: 'Суточный',
       WEEK: 'Недельный',
@@ -780,11 +784,12 @@ export default {
           .then((response) => {
             if (response.data.status) {
               transactions.value = response.data;
-              totalRows.value = transactions.value.data.result.length;
+              totalRows.value = transactions.value.data.total;
+              console.log(transactions.value);
             }
             loadDone.value = false;
 
-            return transactions.value;
+            // return transactions.value;
           });
       }
     };
@@ -831,6 +836,7 @@ export default {
       product,
       cardEmitentCode,
       limitsLength,
+      unicodeLabel,
       // labelSelected
       source,
       download,

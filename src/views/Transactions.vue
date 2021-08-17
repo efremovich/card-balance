@@ -11,13 +11,12 @@
     rounded="md">
     <div v-if="!loadDone">
       <b-container
-        fluid
-        class="d-flex justify-content-center">
+        :class="['d-flex', 'justify-content-center', {'pl-0': getWidth === 'xs'}, {'pr-0': getWidth === 'xs'}]">
         <b-col>
           <b-card class="text-rigth">
             <!-- ТАБЛИЦА -->
             <b-card-body>
-              <div class="d-flex justify-content-between  flex-wrap">
+              <div :class="['d-flex', 'justify-content-between', 'flex-wrap', {'container-fluid': getWidth !== 'xs'}, ]">
                 <div :class="['d-flex', 'flex-column', {'w-100': getWidth === 'xs'}]">
                   <b-form-group>
                     <p class="mt-1">
@@ -174,7 +173,7 @@
                     <b-col
                       md="4"
                       class="mb-1">
-                      <strong>услуга : </strong>{{ row.item.service.full_name }}
+                      <strong>Товар/Услуга : </strong>{{ row.item.service.full_name }}
                     </b-col>
                   </b-row>
 
@@ -188,7 +187,7 @@
               </template>
 
               <template #cell(period)="row">
-                <b-col>
+                <b-col @click="row.toggleDetails">
                   {{ row.item.date | formatDate }}
                 </b-col>
               </template>
@@ -200,7 +199,7 @@
               class="position-relative table-hover text-center"
               :per-page="perPage"
               :current-page="currentPage"
-              :items="transactions.data"
+              :items="transactions.data.result"
               :fields="fieldsSM"
               :sort-by.sync="sortBy"
               :sort-desc.sync="sortDesc"
@@ -224,13 +223,13 @@
                   </b-button>
                 </b-col>
               </template>
-              <!--
+
               <template
                 #cell(date)="row">
                 <b-col @click="row.toggleDetails">
                   {{ row.item.date | formatDate }}
                 </b-col>
-              </template> -->
+              </template>
 
               <template #row-details="row">
                 <b-card
