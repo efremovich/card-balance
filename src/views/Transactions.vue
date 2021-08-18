@@ -1,4 +1,3 @@
-/* eslint-disable prefer-template */
 <template>
   <b-overlay
     :show="loadDone"
@@ -583,7 +582,7 @@ export default {
       const start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
       const end = trim[1] + ' 00:00:00';
-      console.log('date:', 'trim', trim, 'arr', arr);
+      // console.log('date:', 'trim', trim, 'arr', arr);
       // const { start } = this;
       // const { end } = this;
       // const ID = this.gotSelectedContract;

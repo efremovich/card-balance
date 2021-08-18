@@ -149,6 +149,7 @@ import { mapGetters } from 'vuex';
 import store from '@/store';
 import vprint from '../vprint.vue';
 import useJwt from '../../auth/jwt/useJwt';
+
 export default {
   components: {
     BCard,
@@ -215,14 +216,15 @@ export default {
   watch: {
     gotSelectedContract(val) {
       this.getAllCards(val);
+      this.getAllTransactions(val);
     },
     // rangeDate() {
     //   this.selectDate();
     // },
   },
-  created() {
-    this.busy = true;
-  },
+  // created() {
+  //   this.busy = true;
+  // },
   beforeMount() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
@@ -292,23 +294,39 @@ export default {
         this.busy = false;
       });
     },
-    getAllTransactions() {
+    getAllTransactions(val) {
       const holder = this.selectedHolder;
-      const ID = this.contractId;
+      // const ID = this.gotSelectedContract;
       const { selected } = this;
       // eslint-disable-next-line consistent-return
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&holder=${holder}&card_number=${selected}`)
+      useJwt.getTransactions(`contract_id=${val}&startDate=${this.start}&endDate=${this.end}&holder=${holder}&card_number=${selected}`)
         .then((response) => {
           if (response.data.status) {
             this.transactions = response.data;
             this.totalRows = this.transactions.data.total;
             this.transactions.data.result = this.order(this.transactions.data.result);
           }
+          if (this.transactions.data.result.length > 1) {
+            this.haveTransactions = true;
+            // this.visible = true;
+          } else {
+            this.haveTransactions = false;
+            this.visible = false;
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют транзакции за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
         });
-      setTimeout(this.clickPrint, 3000);
+      // setTimeout(this.clickPrint, 3000);
     },
     print() {
-      this.getAllTransactions();
+      this.getAllTransactions(this.gotSelectedContract);
+      setTimeout(this.getAllChecks, 2000);
     },
     order(arr) {
       return arr.slice().sort((a, b) => a.card_number - b.card_number);
@@ -318,7 +336,7 @@ export default {
     },
     download() {
       const holder = this.selectedHolder;
-      const ID = this.contractId;
+      const ID = this.gotSelectedContract;
       const { selected } = this;
       useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&holder=${holder}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
@@ -326,7 +344,7 @@ export default {
         }
         return this.order(this.transactions.data.result);
       });
-      setTimeout(this.getAllChecks, 3000);
+      setTimeout(this.getAllChecks, 2000);
     },
     getAllChecks() {
       html2pdf(this.$refs.print, {
@@ -349,7 +367,7 @@ export default {
       this.start = arr[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
       this.end = arr[1] + ' 00:00:00';
-      const ID = this.contractId;
+      const ID = this.gotSelectedContract;
       useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}&holder=${holder}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
@@ -383,7 +401,7 @@ export default {
       const { selected } = this;
       const { start } = this;
       const { end } = this;
-      const ID = this.contractId;
+      const ID = this.gotSelectedContract;
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&holder=${holder}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
@@ -391,6 +409,7 @@ export default {
         }
         if (this.transactions.data.result.length < 1) {
           // this.visible = false;
+          this.hidden = false;
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -409,7 +428,7 @@ export default {
       // this.hidden = false;
       const { start } = this;
       const { end } = this;
-      const ID = this.contractId;
+      const ID = this.gotSelectedContract;
       useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&card_holder=${holder}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
@@ -417,6 +436,7 @@ export default {
           this.totalRows = this.transactions.data.total;
           if (this.transactions.data.total > 1) {
             this.haveTransactions = true;
+            this.hidden = true;
           }
           if (this.transactions.data.total < 1 && this.selected < 1) {
             this.haveTransactions = false;
@@ -434,7 +454,7 @@ export default {
             this.haveTransactions = false;
             this.visible = false;
             this.transactions.data.result = [];
-            // this.visible = false;
+            this.hidden = false;
             this.$toast({
               component: ToastificationContent,
               props: {
