@@ -465,16 +465,15 @@ export default {
         transactions: [],
         status_card: '',
       },
-      // contract: null,
-      // gotSelectedContract: store.getters.CONTRACT_ID,
+
       credit,
       formatDate,
-      // codeRowDetailsSupport,
+
     };
   },
   computed: {
     ...mapGetters({
-      // gotSelected: 'CONTRACT_NUMBER',
+
       gotSelectedContract: 'CONTRACT_ID',
     }),
     sortOptions() {
@@ -491,12 +490,10 @@ export default {
   watch: {
     gotSelectedContract(val) {
       this.getAllCards(val);
-      // this.selectDate();
+
       this.onChange();
     },
-    // rangeDate() {
-    //   this.selectDate();
-    // },
+
   },
   created() {
     this.loadDone = true;
@@ -530,7 +527,6 @@ export default {
           });
         }
       }
-      // return this.transactions;
     });
   },
   mounted() {
@@ -571,8 +567,7 @@ export default {
       // console.log(val);
       // this.loadDone = true;
       const { selected } = this;
-      console.log('range', selected);
-
+      // console.log('range', selected);
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
       // const prot = (newDate.join('').split('00:00:00'));
@@ -596,7 +591,7 @@ export default {
               this.$toast({
                 component: ToastificationContent,
                 props: {
-                  title: 'Отсутвуют транзакции за выбранный период',
+                  title: 'Отсутвуют транзакции за выбранный период1',
                   icon: 'AlertTriangleIcon',
                   variant: 'danger',
                 },
@@ -611,7 +606,7 @@ export default {
             // this.loadDone = false;
             // console.log(this.transactions);
             this.totalRows = this.transactions.data.total;
-            if ((selected === null || selected.length < 1) && this.totalRows < 1) {
+            if (selected === null && this.totalRows < 1) {
               this.$toast({
                 component: ToastificationContent,
                 props: {
@@ -621,7 +616,7 @@ export default {
                 },
               });
             }
-            if ((selected !== null && selected.length > 0) && this.totalRows < 1) {
+            if (this.totalRows < 1) {
               this.$toast({
                 component: ToastificationContent,
                 props: {
@@ -650,28 +645,19 @@ export default {
       const newDate = Array.from(date).filter((n) => n !== '—');
       const prot = (newDate.join('').split('00:00:00'));
       const arr = prot.join('').split(' ').filter((n) => n !== '');
-      console.log('arr', arr);
+      // console.log('arr', arr);
       // eslint-disable-next-line prefer-template
       const start = `${arr[0]} 00:00:00`;
       // eslint-disable-next-line prefer-template
       const end = `${arr[1]} 00:00:00`;
-      // const date = this.rangeDate;
-      // console.log('selecteDate', this.rangeDate);
-      // const start = `${this.rangeDate[0]}00:00:00`;
-      // const end = `${this.rangeDate[1]}00:00:00`;
-      console.log('range', start, end);
-      // const newDate = Array.from(date).filter((n) => n !== '—');
-      // const arr = (newDate.join('').split('  '));
-      // eslint-disable-next-line prefer-template
-      // const Start = arr[0] + ' 00:00:00';
-      // eslint-disable-next-line prefer-template
-      // const End = arr[1] + ' 00:00:00';
+
       const { selected } = this;
       useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          console.log(this.transactions);
+          // console.log(this.transactions);
           this.totalRows = this.transactions.data.total;
+          console.log(this.totalRows);
           // this.loadDone = false;
           if (this.rangeDate.length > 22) {
             if (this.totalRows < 1) {

@@ -226,14 +226,15 @@ export default {
   //   this.busy = true;
   // },
   beforeMount() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      this.contract = userData;
-      this.contractId = this.contract.contract.id;
-      this.start = `${this.getFirstDay()} 00:00:00`;
-      this.end = `${this.isToday()} 00:00:00`;
-      this.rangeDate = [this.start, this.end];
-    }
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+    // if (userData) {
+    //  this.contract = userData;
+    //  this.contractId = this.contract.contract.id;
+    this.contractId = this.gotSelectedContract;
+    this.start = `${this.getFirstDay()} 00:00:00`;
+    this.end = `${this.isToday()} 00:00:00`;
+    this.rangeDate = [this.start, this.end];
+    // }
     this.firstDay = this.getFirstDay();
     this.today = this.isToday();
     useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&limit=10&offset=10`)
