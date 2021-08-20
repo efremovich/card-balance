@@ -457,12 +457,12 @@ export default {
     //   }
     // });
     console.log(store.getters.CONTRACT_ID);
-    // const userData = JSON.parse(localStorage.getItem('userData'));
-    // if (userData) {
-    //   this.contract = userData;
-    //   this.contractId = this.contract.contract.id;
-    // }
-    useJwt.changeContract(this.gotSelectedContract)
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      this.contract = userData;
+      this.contractId = this.contract.contract.id;
+    }
+    useJwt.changeContract(this.contractId)
       .then((response) => {
         if (response.status) {
           this.getInfo = response.data;

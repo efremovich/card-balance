@@ -346,9 +346,9 @@
               title="Динамика потребления"
               @refresh="refreshConsumption('consumption')">
               <b-card-body class="pb-0">
-                <div class="d-flex flex-column mb-3 mix">
+                <!-- <div class="d-flex flex-column mb-3 mix">
                   <h3>Пустота</h3>
-                </div>
+                </div> -->
 
                 <!-- apex chart -->
                 <vue-apex-charts

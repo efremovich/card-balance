@@ -443,13 +443,14 @@ export default {
     BFormRadio,
   },
   setup() {
-    // const contract = ref('');
-    const contractID = store.getters.CONTRACT_ID;
-    // const userData = JSON.parse(localStorage.getItem('userData'));
-    // if (userData) {
-    //   contract.value = userData;
-    //   contractID.value = contract.value.contract.id;
-    // }
+    const contract = ref('');
+    const contractID = ref('');
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      contract.value = userData;
+      contractID.value = contract.value.contract.id;
+      console.log(contractID.value);
+    }
 
     const filters = ref('');
     const { handleCartActionClick, toggleProductInWishlist } = useEcommerceUi();
@@ -461,7 +462,7 @@ export default {
     const { products } = useShopRemoteData();
     const { mqShallShowLeftSidebar } = useResponsiveAppLeftSidebarVisibility();
     const fetchShopProducts = () => {
-      useJwt.getChangeCardsDate(contractID, `offset=0&limit=${perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(contractID.value, `offset=0&limit=${perPage}`).then((response) => {
         if (response.data.status) {
           products.value = response.data;
           totalRows.value = products.value.data.total;
@@ -512,7 +513,7 @@ export default {
   },
   watch: {
     perPage() {
-      useJwt.getChangeCardsDate(this.$store.getters.CONTRACT_ID, `offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.gotSelected, `offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
           // console.log(this.products.data.result);
@@ -522,7 +523,7 @@ export default {
     },
     gotSelected() {
       this.loading = true;
-      useJwt.getChangeCardsDate(this.$store.getters.CONTRACT_ID, `offset=${this.currentPage * this.page}&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.gotSelected, `offset=${this.currentPage * this.page}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
           this.totalRows = this.products.data.total;
@@ -536,7 +537,7 @@ export default {
     currentPage() {
       this.page = this.currentPage;
       // this.$store.dispatch('getSelectedPages', this.page);
-      useJwt.getChangeCardsDate(this.$store.getters.CONTRACT_ID, `&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.gotSelected, `&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
           // console.log(this.products.data);
