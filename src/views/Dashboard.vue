@@ -639,7 +639,7 @@ export default {
     this.userData = JSON.parse(localStorage.getItem('userData'));
     if (this.userData) {
       this.getInfo = this.userData;
-      return this.getInfo;
+      // return this.getInfo;
     }
     return { data: { status: false } };
   },

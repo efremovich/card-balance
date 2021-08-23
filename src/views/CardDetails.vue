@@ -1,6 +1,6 @@
 <template>
   <b-overlay
-    :show="!download"
+    :show="!showLoading"
     variant="black"
     spinner-type="grow"
     spinner-variant="primary"
@@ -21,7 +21,7 @@
                 size="30" />
             </b-link>
             <h3>
-              Настройка карты № {{ cardData.data.number }}
+              Настройка карты № {{ number }}
             </h3>
           </b-card-header>
           <div class="d-flex flex-wrap justify-content-between">
@@ -29,7 +29,7 @@
               <b-img
                 class="card-img-top"
                 :src="
-                  require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
+                  require(`../assets/images/cards-icon/${cardEmitentCode}.svg`)
                 " />
               <div class="item-wrapper">
                 <h6 class="item-price">
@@ -184,7 +184,7 @@
                   md="5"
                   class="border">
                   <b-overlay
-                    :show="showLoading"
+                    :show="!showLoading"
                     variant="black"
                     spinner-variant="primary"
                     blur="0"
@@ -369,7 +369,7 @@
                   size="30" />
               </b-link>
               <h3>
-                Настройка карты № {{ cardData.data.number }}
+                Настройка карты № {{ number }}
               </h3>
             </b-card-header>
             <div class="d-flex flex-wrap justify-content-between">
@@ -377,7 +377,7 @@
                 <b-img
                   class="card-img-top"
                   :src="
-                    require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
+                    require(`../assets/images/cards-icon/${cardEmitentCode}.svg`)
                   " />
                 <div class="item-wrapper">
                   <h6 class="item-price">
@@ -660,15 +660,18 @@ export default {
     const units = ref([]);
     const periods = ref([]);
     const services = ref([]);
+    const showLoading = ref(true);
     const download = ref(false);
     const quantity = ref(null);
     const start = ref(null);
     const end = ref(null);
     const contractId = ref(null);
     // const limits = ref([]);
-    const source = ref({});
+    const source = ref(null);
     const limitsLength = ref(null);
     const cardEmitentCode = ref('0');
+    const number = ref(null);
+
     const fields = [
       {
         key: 'service.full_name',
@@ -784,8 +787,7 @@ export default {
           .then((response) => {
             if (response.data.status) {
               transactions.value = response.data;
-              totalRows.value = transactions.value.data.total;
-              console.log(transactions.value);
+              totalRows.value = transactions.value.total;
             }
             loadDone.value = false;
 
@@ -812,18 +814,19 @@ export default {
         cardData.value = response.data;
         cardEmitentCode.value = cardData.value.data.emitent.code;
         limitsLength.value = cardData.value.data.limits.length;
-        source.value = JSON.stringify(response.data);
+        source.value = response.data;
+        // console.log(cardData.value, source.value);
         getService(cardEmitentCode.value);
       }
       // return cardData;
     });
-    const number = ref(null);
 
     const fetchProduct = () => {
       const { route } = useRouter();
       cardDate(route.value.params.card_number);
       number.value = route.value.params.card_number;
       download.value = true;
+      showLoading.value = true;
     };
 
     fetchProduct();
@@ -837,6 +840,7 @@ export default {
       cardEmitentCode,
       limitsLength,
       unicodeLabel,
+      showLoading,
       // labelSelected
       source,
       download,
@@ -871,16 +875,20 @@ export default {
     return {
       newLimit: {},
       required,
-      showLoading: false,
       saveChange: false,
+      comparison: true,
     };
   },
-
   computed: {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
     },
   },
+  // watch: {
+  //   source(val) {
+  //     if(val !==)
+  //   },
+  // },
   methods: {
     labelSelected() {
       const empty = [];
@@ -990,6 +998,18 @@ export default {
     //   return label;
     // },
   },
+  // beforeRouteLeave(to, from, next) {
+  //   if ((JSON.stringify(this.cardData) === JSON.stringify(this.source))) {
+  //     // console.log((this.cardData));
+  //     // console.log(JSON.stringify(this.source));
+  //     console.log((JSON.stringify(this.cardData) === (JSON.stringify(this.source))));
+  //     console.log('GO');
+  //     next(true);
+  //   } else {
+  //     next(true);
+  //     console.log((JSON.stringify(this.cardData) === (JSON.stringify(this.source))));
+  //   }
+  // },
 };
 </script>
 

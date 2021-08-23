@@ -39,7 +39,6 @@ export default [
       to.meta.breadcrumb.push({ text: to.params.card_number, active: true });
       next();
     },
-
   },
 
   {
