@@ -51,7 +51,10 @@ router.beforeEach((to, _, next) => {
 });
 Vue.mixin({
   beforeRouteLeave(to, from, next) {
-    if ((from.name === 'card' && JSON.stringify(this.cardData) === JSON.stringify(this.source) && this.saveChange === false) || (from.name === 'profile' && this.comparison === true && this.saveChange !== true)) {
+    if ((from.name === 'card' && JSON.stringify(this.cardData) !== JSON.stringify(this.source) && this.saveChange === false) || (from.name === 'profile' && this.comparison === true && this.saveChange !== true)) {
+      const a = (JSON.parse(JSON.stringify(this.cardData)));
+      console.log(JSON.stringify(this.source));
+      console.log('CardData:', JSON.stringify(a));
       this.$bvModal
         .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
           title: 'Уведомление',

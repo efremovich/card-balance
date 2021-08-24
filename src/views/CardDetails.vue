@@ -690,10 +690,10 @@ export default {
       },
     ];
 
-    const unicodeLabel = {
-      L: 'литров',
-      RUB: 'рублей',
-    };
+    // const unicodeLabel = {
+    //   L: 'литров',
+    //   RUB: 'рублей',
+    // };
     const periodLabel = {
       DAY: 'Суточный',
       WEEK: 'Недельный',
@@ -809,14 +809,13 @@ export default {
         }
       });
     };
+
     const cardDate = (params) => useJwt.getCardData(params).then((response) => {
       if (response.data.status) {
         cardData.value = response.data;
         cardEmitentCode.value = cardData.value.data.emitent.code;
         limitsLength.value = cardData.value.data.limits.length;
-        source.value = response.data;
-        console.log(cardData.value, source.value);
-        console.log(cardData.value === source.value);
+        source.value = JSON.parse(JSON.stringify(response.data));
         getService(cardEmitentCode.value);
       }
       // return cardData;
@@ -830,6 +829,9 @@ export default {
       showLoading.value = true;
     };
 
+    // watch([cardData], () => {
+    //   console.log(JSON.stringify(cardData.value) === JSON.stringify(source.value));
+    // });
     fetchProduct();
     getAllTransactions();
     // getService(cardEmitentCode.value);
@@ -840,7 +842,7 @@ export default {
       product,
       cardEmitentCode,
       limitsLength,
-      unicodeLabel,
+      // unicodeLabel,
       showLoading,
       // labelSelected
       source,
@@ -885,11 +887,17 @@ export default {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
     },
   },
-  // watch: {
-  //   source(val) {
-  //     if(val !==)
-  //   },
-  // },
+  watch: {
+    cardData: {
+      deep: true,
+      handler(val) {
+        console.log('Литров', JSON.stringify(val));
+        const b = JSON.stringify(this.source);
+        console.log(b);
+        console.log((JSON.stringify(val)) === b);
+      },
+    },
+  },
   methods: {
     labelSelected() {
       const empty = [];
