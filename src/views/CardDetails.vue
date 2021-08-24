@@ -29,7 +29,7 @@
               <b-img
                 class="card-img-top"
                 :src="
-                  require(`../assets/images/cards-icon/${cardEmitentCode}.svg`)
+                  require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
                 " />
               <div class="item-wrapper">
                 <h6 class="item-price">
@@ -815,7 +815,8 @@ export default {
         cardEmitentCode.value = cardData.value.data.emitent.code;
         limitsLength.value = cardData.value.data.limits.length;
         source.value = response.data;
-        // console.log(cardData.value, source.value);
+        console.log(cardData.value, source.value);
+        console.log(cardData.value === source.value);
         getService(cardEmitentCode.value);
       }
       // return cardData;
@@ -999,7 +1000,7 @@ export default {
     // },
   },
   // beforeRouteLeave(to, from, next) {
-  //   if ((JSON.stringify(this.cardData) === JSON.stringify(this.source))) {
+  //   if ((JSON.stringify(this.cardData) === this.source)) {
   //     // console.log((this.cardData));
   //     // console.log(JSON.stringify(this.source));
   //     console.log((JSON.stringify(this.cardData) === (JSON.stringify(this.source))));

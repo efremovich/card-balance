@@ -1,7 +1,5 @@
 <template>
-  <div
-    v-if="download"
-    class="navbar-container d-flex content justify-content-between align-items-center">
+  <div class="navbar-container d-flex content justify-content-between align-items-center">
     <!-- Nav Menu Toggler -->
     <ul class="nav navbar-nav d-xl-none">
       <li class="nav-item">
@@ -85,7 +83,6 @@ export default {
       getInfo: null,
       showLoading: false,
       contract: null,
-      download: false,
     };
   },
   computed: {
@@ -102,7 +99,7 @@ export default {
   //   const storage = JSON.parse(localStorage.getItem('userData'));
   //   if (storage) {
   //     this.contract = storage;
-  //     this.selected = this.contract.contract.number;
+  //     // this.selected = this.contract.contract.number;
   //     console.log(this.contract);
   //   }
   // },
@@ -119,9 +116,6 @@ export default {
     this.userData = JSON.parse(localStorage.getItem('userData'));
     if (this.userData) {
       this.getInfo = this.userData;
-      this.selected = this.getInfo.contract.number;
-      // console.log(this.getInfo);
-      this.download = true;
     }
     return { data: { status: false } };
   },
