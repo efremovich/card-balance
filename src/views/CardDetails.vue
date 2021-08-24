@@ -815,7 +815,7 @@ export default {
         cardData.value = response.data;
         cardEmitentCode.value = cardData.value.data.emitent.code;
         limitsLength.value = cardData.value.data.limits.length;
-        source.value = JSON.parse(JSON.stringify(response.data));
+        source.value = JSON.parse(JSON.stringify(cardData.value.data.limits));
         getService(cardEmitentCode.value);
       }
       // return cardData;
@@ -888,13 +888,13 @@ export default {
     },
   },
   watch: {
-    cardData: {
+    'cardData.data.limits': {
       deep: true,
       handler(val) {
-        console.log('Литров', JSON.stringify(val));
+        console.log('data', JSON.stringify(val));
         const b = JSON.stringify(this.source);
-        console.log(b);
-        console.log((JSON.stringify(val)) === b);
+        console.log('source:', b);
+        // console.log((JSON.stringify(val)) === b);
       },
     },
   },
