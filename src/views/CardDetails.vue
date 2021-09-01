@@ -829,9 +829,6 @@ export default {
       showLoading.value = true;
     };
 
-    // watch([cardData], () => {
-    //   console.log(JSON.stringify(cardData.value) === JSON.stringify(source.value));
-    // });
     fetchProduct();
     getAllTransactions();
     // getService(cardEmitentCode.value);
