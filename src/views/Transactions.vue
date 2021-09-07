@@ -391,7 +391,7 @@ export default {
       filterOn: [],
       required,
       option: [],
-      selected: [],
+      selected: null,
       transactions: {},
       rangeDate: null, // датапикер
       config: {
@@ -490,7 +490,7 @@ export default {
   watch: {
     gotSelectedContract(val) {
       this.getAllCards(val);
-
+      this.contractId = val;
       this.onChange();
     },
 
@@ -504,11 +504,12 @@ export default {
       this.contract = userData;
       this.contractId = this.contract.contract.id;
     }
+
     this.loadDone = true;
     this.getAllCards(this.contractId);
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
-    console.log(this.end, this.start);
+    // console.log(this.end, this.start);
     this.rangeDate = [this.start, this.end];
     // console.log('create', this.rangeDate);
     useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
@@ -545,6 +546,17 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.total;
+          // console.log(this.transactions);
+          // if (this.totalRows < 1) {
+          //   this.$toast({
+          //     component: ToastificationContent,
+          //     props: {
+          //       title: 'Отсутвуют транзакции за выбранный период',
+          //       icon: 'AlertTriangleIcon',
+          //       variant: 'danger',
+          //     },
+          //   });
+          // }
         }
         this.loadDone = false;
       });
@@ -564,7 +576,6 @@ export default {
       });
     },
     onChange() {
-      // console.log(val);
       // this.loadDone = true;
       const { selected } = this;
       // console.log('range', selected);
@@ -577,36 +588,18 @@ export default {
       const start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
       const end = trim[1] + ' 00:00:00';
-      // console.log('date:', 'trim', trim, 'arr', arr);
+      // console.log(this.contractId);
       // const { start } = this;
       // const { end } = this;
       // const ID = this.gotSelectedContract;
       if (selected === null) {
-        useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}`).then((response) => {
+        useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}`).then((response) => {
           if (response.data.status) {
             this.transactions = response.data;
             // this.loadDone = false;
             this.totalRows = this.transactions.data.total;
+            console.log(this.totalRows);
             if (this.totalRows < 1) {
-              this.$toast({
-                component: ToastificationContent,
-                props: {
-                  title: 'Отсутвуют транзакции за выбранный период1',
-                  icon: 'AlertTriangleIcon',
-                  variant: 'danger',
-                },
-              });
-            }
-          }
-        });
-      } else {
-        useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
-          if (response.data.status) {
-            this.transactions = response.data;
-            // this.loadDone = false;
-            // console.log(this.transactions);
-            this.totalRows = this.transactions.data.total;
-            if (selected === null && this.totalRows < 1) {
               this.$toast({
                 component: ToastificationContent,
                 props: {
@@ -616,6 +609,24 @@ export default {
                 },
               });
             }
+          }
+        });
+      } else {
+        useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
+          if (response.data.status) {
+            this.transactions = response.data;
+            this.totalRows = this.transactions.data.total;
+            // this.loadDone = false;
+            // if (selected === null && this.totalRows < 1) {
+            //   this.$toast({
+            //     component: ToastificationContent,
+            //     props: {
+            //       title: 'Отсутвуют транзакции за выбранный период',
+            //       icon: 'AlertTriangleIcon',
+            //       variant: 'danger',
+            //     },
+            //   });
+            // }
             if (this.totalRows < 1) {
               this.$toast({
                 component: ToastificationContent,
@@ -652,12 +663,12 @@ export default {
       const end = `${arr[1]} 00:00:00`;
 
       const { selected } = this;
-      useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           // console.log(this.transactions);
           this.totalRows = this.transactions.data.total;
-          console.log(this.totalRows);
+          console.log(this.rangeDate.length);
           // this.loadDone = false;
           if (this.rangeDate.length > 22) {
             if (this.totalRows < 1) {
@@ -675,10 +686,22 @@ export default {
         // return this.transactions;
       });
       if (selected === null) {
-        useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${start}&endDate=${end}`).then((response) => {
+        useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}`).then((response) => {
           this.transactions = response.data;
           // this.loadDone = false;
           this.totalRows = this.transactions.data.total;
+          if (this.rangeDate.length > 22) {
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
         });
       }
     },

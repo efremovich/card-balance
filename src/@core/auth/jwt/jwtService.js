@@ -209,7 +209,7 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
-  // ТРАНЗАКЦИ
+  // ТРАНЗАКЦИИ
   async getTransactions(params) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {

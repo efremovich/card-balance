@@ -170,7 +170,7 @@
                             </b-col>
                           </div>
                           <div class="mt-1">
-                            <label>Остаток: {{ limit.value - limit.consumption }}  {{ limit.limit_unit_code = "L" ? "литров" : "рублей" }}</label>
+                            <label>Остаток: {{ limit.value - limit.consumption }}  {{ limit.limit_unit_code }} </label>
                             <b-progress
                               :value="limit.value - limit.consumption"
                               :max="limit.value" />
@@ -207,7 +207,7 @@
                           </h4>
                           <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
                           <h4>
-                            Остаток: {{ limit.value - limit.consumption }} {{ limit.limit_unit_code = "L" ? "литров" : "рублей" }}.
+                            Остаток: {{ limit.value - limit.consumption }} {{ limit.limit_unit_code }}.
                           </h4>
 
                           <hr>
@@ -239,7 +239,7 @@
                 Транзакции по карте № {{ cardData.data.number }} за период c
                 {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
               </h4>
-              <div v-if="totalRows > 0">
+              <div v-if="totalRows>0">
                 <b-card>
                   <div class="d-flex justify-content-between flex-wrap">
                     <!-- filter -->
@@ -267,7 +267,7 @@
                     <div>
                       <export-excel
                         class="btn btn-primary"
-                        :data="transactions.data"
+                        :data="transactions.data.result"
                         :fields="columns"
                         type="xlsx"
                         name="Транзакции.xlsx">
@@ -486,7 +486,7 @@
                       <div>
                         <export-excel
                           class="btn btn-primary"
-                          :data="transactions.data"
+                          :data="transactions.data.result"
                           :fields="columns"
                           type="xlsx"
                           name="Транзакции.xlsx">
@@ -518,7 +518,7 @@
                     class="position-relative"
                     :per-page="perPage"
                     :current-page="currentPage"
-                    :items="transactions.data"
+                    :items="transactions.data.result"
                     :fields="fields"
                     :filter="filter">
                     <template #cell(cardData)="row">
@@ -779,7 +779,6 @@ export default {
         start.value = `${getFirstDay()} 00:00:00`;
         end.value = `${isToday()} 00:00:00`;
         loadDone.value = true;
-
         useJwt
           .getTransactions(
             `contract_id=${contractId.value}&startDate=${start.value}&endDate=${end.value}&card_number=${product.value}`,
@@ -787,7 +786,7 @@ export default {
           .then((response) => {
             if (response.data.status) {
               transactions.value = response.data;
-              totalRows.value = transactions.value.total;
+              totalRows.value = transactions.value.data.total;
             }
             loadDone.value = false;
 
@@ -888,10 +887,9 @@ export default {
     'cardData.data.limits': {
       deep: true,
       handler(val) {
-        console.log('data', JSON.stringify(val));
-        const b = JSON.stringify(this.source);
-        console.log('source:', b);
-        // console.log((JSON.stringify(val)) === b);
+        if (JSON.stringify(val) === JSON.stringify(this.source)) {
+          this.comparison = true;
+        } else this.comparison = false;
       },
     },
   },
