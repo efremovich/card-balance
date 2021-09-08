@@ -6,7 +6,7 @@ import axios from 'axios';
 const axiosIns = axios.create({
   // You can add your headers here
   // ================================
-  baseURL: 'http://164.132.201.231:8000',
+  baseURL: 'http://server.re-base.ru:8000',
   timeout: 10000,
   // headers: {'X-Custom-Header': 'foobar'}
 });

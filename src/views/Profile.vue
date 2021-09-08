@@ -491,7 +491,6 @@ export default {
     },
     resetPhoto() {
       useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
-
         console.log('Сброс фото', response);
         // this.image = this.twin.avatar;
         this.twin = response;
