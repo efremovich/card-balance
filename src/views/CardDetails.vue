@@ -170,7 +170,7 @@
                             </b-col>
                           </div>
                           <div class="mt-1">
-                            <label>Остаток: {{ limit.value - limit.consumption }}  {{ limit.limit_unit_code }} </label>
+                            <label>Остаток: {{ limit.value - limit.consumption }}  {{ unicodeLabel[limit.limit_unit_code] }} </label>
                             <b-progress
                               :value="limit.value - limit.consumption"
                               :max="limit.value" />
@@ -207,7 +207,7 @@
                           </h4>
                           <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
                           <h4>
-                            Остаток: {{ limit.value - limit.consumption }} {{ limit.limit_unit_code }}.
+                            Остаток: {{ limit.value - limit.consumption }} {{ unicodeLabel[limit.limit_unit_code] }}.
                           </h4>
 
                           <hr>
@@ -690,10 +690,10 @@ export default {
       },
     ];
 
-    // const unicodeLabel = {
-    //   L: 'литров',
-    //   RUB: 'рублей',
-    // };
+    const unicodeLabel = {
+      L: 'литров',
+      RU: 'рублей',
+    };
     const periodLabel = {
       DAY: 'Суточный',
       WEEK: 'Недельный',
@@ -838,7 +838,7 @@ export default {
       product,
       cardEmitentCode,
       limitsLength,
-      // unicodeLabel,
+      unicodeLabel,
       showLoading,
       // labelSelected
       source,
