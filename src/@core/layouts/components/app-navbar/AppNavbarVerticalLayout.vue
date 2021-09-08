@@ -81,7 +81,6 @@ export default {
       option: [],
       selected: '',
       getInfo: null,
-      showLoading: false,
       contract: null,
     };
   },

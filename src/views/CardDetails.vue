@@ -889,7 +889,9 @@ export default {
       handler(val) {
         if (JSON.stringify(val) === JSON.stringify(this.source)) {
           this.comparison = true;
-        } else this.comparison = false;
+        } else {
+          this.comparison = false;
+        }
       },
     },
   },

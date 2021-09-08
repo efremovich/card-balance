@@ -456,7 +456,6 @@ export default {
     //     });
     //   }
     // });
-    console.log(store.getters.CONTRACT_ID);
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       this.contract = userData;
