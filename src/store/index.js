@@ -54,7 +54,6 @@ export default new Vuex.Store({
     changeContractId(state, payload) {
       state.contractId = payload;
     },
-
     setCardsView(state, cardsView) {
       state.cardsView = cardsView;
     },

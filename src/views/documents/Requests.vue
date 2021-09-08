@@ -278,15 +278,6 @@ export default {
     },
 
     selectDate() {
-      // const date = this.rangeDate;
-      // const newDate = Array.from(date).filter((n) => n !== '—');
-      // const prot = (newDate.join('').split('00:00:00'));
-      // const arr = prot.join('').split(' ').filter((n) => n !== '');
-      // // console.log('arr', arr);
-      // // eslint-disable-next-line prefer-template
-      // const start = `${arr[0]} 00:00:00`;
-      // // eslint-disable-next-line prefer-template
-      // const end = `${arr[1]} 00:00:00`;
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
       // const prot = (newDate.join('').split('00:00:00'));
