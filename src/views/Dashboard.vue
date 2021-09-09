@@ -595,11 +595,9 @@ export default {
     getNotActiveCard() {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
     },
-
     getCardsSumm() {
       return this.cardBalance.card_statistic.length;
     },
-
     // gotSelected() {
     //   return this.$store.getters.CONTRACT_NUMBER;
     // },
@@ -612,7 +610,6 @@ export default {
       this.onChange();
     },
   },
-
   beforeMount() {
     // this.showLoading = true;
     // this.download = false;
@@ -627,7 +624,6 @@ export default {
         });
       }
     });
-
     useJwt.getCurrentConsumption().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
@@ -635,7 +631,6 @@ export default {
         });
       }
     });
-
     this.userData = JSON.parse(localStorage.getItem('userData'));
     if (this.userData) {
       this.getInfo = this.userData;
@@ -645,33 +640,37 @@ export default {
   },
   mounted() {
     // this.download = false;
-    useJwt.getBalance().then((response) => {
-      if (response.data.status) {
-        this.cardBalance = response.data;
+    if (this.gotSelectedContract === null) {
+      useJwt.getBalance().then((response) => {
+        if (response.data.status) {
+          this.cardBalance = response.data;
         // console.log('cardbalance:', this.cardBalance);
         // this.download = true;
-      }
-    });
-    // useJwt.getCurrentConsumption().then((response) => {
-    //   if (response.data.status) {
-    //     this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
-    //       this.currentConsumption = response.data;
-    //       console.log(this.currentConsumption.currentConsumption);
-    //     });
-    //   }
-    // });
-    useJwt.getConsumptionDinamic().then((response) => {
-      if (response.data.status) {
-        this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
-          this.currentConsumptionDynamic = response.data;
-        });
-      }
-    });
-    useJwt.getCardStatistic().then((response) => {
-      if (response.data.status) {
-        this.statisticsData = response.data;
-      }
-    });
+        }
+      });
+      // useJwt.getCurrentConsumption().then((response) => {
+      //   if (response.data.status) {
+      //     this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
+      //       this.currentConsumption = response.data;
+      //       console.log(this.currentConsumption.currentConsumption);
+      //     });
+      //   }
+      // });
+      useJwt.getConsumptionDinamic().then((response) => {
+        if (response.data.status) {
+          this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
+            this.currentConsumptionDynamic = response.data;
+          });
+        }
+      });
+      useJwt.getCardStatistic().then((response) => {
+        if (response.data.status) {
+          this.statisticsData = response.data;
+        }
+      });
+    } else {
+      this.onChange();
+    }
   },
   methods: {
     showToast() {
@@ -692,11 +691,9 @@ export default {
         month: 'long',
       });
     },
-
     // getSelected() {
     //   this.selected = this.$store.getters.CONTRACT_NUMBER;
     // },
-
     makeOptions() {
       this.userData.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });

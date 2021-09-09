@@ -33,8 +33,7 @@
           label="number"
           :options="option"
           :clearable="false"
-          class="w-50"
-          @input="onChange()" />
+          class="w-50" />
       </div>
       <b-navbar-nav class="nav flex-nowrap align-items-center justify-content-end ml-auto w-25">
         <dark-Toggler class="d-none d-lg-block" />
@@ -48,6 +47,7 @@
 
 <script>
 import { BLink, BNavbarNav } from 'bootstrap-vue';
+import { mapGetters } from 'vuex';
 import vSelect from 'vue-select';
 import useJwt from '@/auth/jwt/useJwt';
 import store from '@/store';
@@ -79,7 +79,6 @@ export default {
     return {
       userData: null,
       option: [],
-      selected: '',
       getInfo: null,
       contract: null,
     };
@@ -87,6 +86,19 @@ export default {
   computed: {
     getWidth() {
       return store.getters['app/currentBreakPoint'];
+    },
+    ...mapGetters({
+      gotSelected: 'CONTRACT_NUMBER',
+      gotSelectedContract: 'CONTRACT_ID',
+    }),
+    selected: {
+      get() {
+        return this.gotSelected;
+      },
+      set(value) {
+        this.$store.dispatch('getContractNumber', value.number);
+        this.$store.dispatch('getContractId', value.id);
+      },
     },
   },
   watch: {
@@ -127,10 +139,10 @@ export default {
         this.option.push({ 'number': el.number, 'id': el.id });
       });
     },
-    onChange() {
-      this.$store.dispatch('getContractNumber', this.selected.number);
-      this.$store.dispatch('getContractId', this.selected.id);
-    },
+    // onChange() {
+    //   this.$store.commit('changeContractId', this.selected.id);
+    //   this.$store.commit('changeContractNumber', this.selected.number);
+    // },
   },
 };
 </script>

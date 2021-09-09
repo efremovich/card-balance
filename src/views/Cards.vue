@@ -565,10 +565,10 @@ export default {
   },
   beforeMount() {
     const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
+    if (userData && this.gotSelected === null) {
       this.contract = userData;
       this.contractId = this.contract.contract.id;
-    }
+    } else this.contractId = this.gotSelected;
   },
 
   methods: {

@@ -493,10 +493,10 @@ export default {
   },
   beforeMount() {
     const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
+    if (userData && this.gotSelectedContract === null) {
       this.contract = userData;
       this.contractId = this.contract.contract.id;
-    }
+    } else this.contractId = this.gotSelectedContract;
     this.loadDone = true;
     this.getAllCards(this.contractId);
     this.start = `${this.getFirstDay()} 00:00:00`;

@@ -187,11 +187,22 @@ export default class JwtService {
   }
 
   // Данные при смене договора
-  async getCurrenUserFromID(params) {
+  async getCurrentUserFromID(params) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
         `/api/user/${params}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getCardStatisticFromID(param) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/card/getcardstatistic/${param}`,
       );
       return response;
     }
@@ -284,6 +295,18 @@ export default class JwtService {
     if (userData) {
       const response = await this.axiosIns.get(
         `/api/getBalance/${userData.account.contract_id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // при обновлении договора
+  async getRefreshBalance(param) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getBalance/${param}`,
       );
       return response;
     }
