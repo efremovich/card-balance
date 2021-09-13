@@ -482,22 +482,24 @@ export default {
     },
   },
   watch: {
-    gotSelectedContract(val) {
+    gotSelectedContract(val, oldVal) {
       this.getAllCards(val);
       this.contractId = val;
-      this.onChange();
+      if (oldVal !== null) {
+        this.onChange();
+      }
     },
   },
-  created() {
-    this.loadDone = true;
-  },
+  // created() {
+  //   console.log('created', this.gotSelectedContract);
+  // },
   beforeMount() {
+    this.loadDone = true;
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData && this.gotSelectedContract === null) {
       this.contract = userData;
       this.contractId = this.contract.contract.id;
     } else this.contractId = this.gotSelectedContract;
-    this.loadDone = true;
     this.getAllCards(this.contractId);
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
@@ -521,7 +523,7 @@ export default {
   },
   mounted() {
     this.loadDone = false;
-    this.getAllTransactions();
+    // this.getAllTransactions();
   },
   methods: {
     unique(arr) {
@@ -556,7 +558,6 @@ export default {
       const { selected } = this;
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
-
       const arr = newDate.join('').split('00:00:00');
       const trim = arr.join('').split(' ').filter((n) => n !== '');
       // eslint-disable-next-line prefer-template
