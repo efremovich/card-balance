@@ -3,15 +3,13 @@
     class="dropdown-cart mr-25"
     menu-class="dropdown-menu-media"
     right
-    @show="fetchItems"
-  >
+    @show="fetchItems">
     <template #button-content>
       <feather-icon
         :badge="$store.state['app-ecommerce'].cartItemsCount"
         class="text-body"
         icon="ShoppingCartIcon"
-        size="21"
-      />
+        size="21" />
     </template>
 
     <!-- Header -->
@@ -22,8 +20,7 @@
         </h4>
         <b-badge
           pill
-          variant="light-primary"
-        >
+          variant="light-primary">
           {{ $store.state['app-ecommerce'].cartItemsCount }} Items
         </b-badge>
       </div>
@@ -34,25 +31,21 @@
       v-if="items.length"
       :settings="perfectScrollbarSettings"
       class="scrollable-container media-list scroll-area"
-      tagname="li"
-    >
+      tagname="li">
       <b-media
         v-for="item in items"
-        :key="item.name"
-      >
+        :key="item.name">
         <template #aside>
           <b-img
             :src="item.image"
             :alt="item.name"
             rounded
-            width="62px"
-          />
+            width="62px" />
         </template>
         <feather-icon
           icon="XIcon"
           class="cart-item-remove cursor-pointer"
-          @click.stop="removeItemFromCart(item.id)"
-        />
+          @click.stop="removeItemFromCart(item.id)" />
         <div class="media-heading">
           <h6 class="cart-item-title">
             <b-link class="text-body">
@@ -66,8 +59,7 @@
           <b-form-spinbutton
             v-model="item.qty"
             min="1"
-            size="sm"
-          />
+            size="sm" />
         </div>
 
         <h5 class="cart-item-price">
@@ -79,8 +71,7 @@
     <!-- Cart Footer -->
     <li
       v-if="items.length"
-      class="dropdown-menu-footer"
-    >
+      class="dropdown-menu-footer">
       <div class="d-flex justify-content-between mb-1">
         <h6 class="font-weight-bolder mb-0">
           Total:
@@ -93,16 +84,14 @@
         v-ripple.400="'rgba(255, 255, 255, 0.15)'"
         variant="primary"
         block
-        :to="{ name: 'apps-e-commerce-checkout' }"
-      >
+        :to="{ name: 'apps-e-commerce-checkout' }">
         Checkout
       </b-button>
     </li>
 
     <p
       v-if="!items.length"
-      class="m-0 p-1 text-center"
-    >
+      class="m-0 p-1 text-center">
       Your cart is empty
     </p>
   </b-nav-item-dropdown>
@@ -111,9 +100,9 @@
 <script>
 import {
   BNavItemDropdown, BBadge, BMedia, BLink, BImg, BFormSpinbutton, BButton,
-} from 'bootstrap-vue'
-import VuePerfectScrollbar from 'vue-perfect-scrollbar'
-import Ripple from 'vue-ripple-directive'
+} from 'bootstrap-vue';
+import VuePerfectScrollbar from 'vue-perfect-scrollbar';
+import Ripple from 'vue-ripple-directive';
 
 export default {
   components: {
@@ -136,34 +125,34 @@ export default {
         maxScrollbarLength: 60,
         wheelPropagation: false,
       },
-    }
+    };
   },
   computed: {
     totalAmount() {
-      let total = 0
-      this.items.forEach(i => { total += i.price })
-      return total
+      let total = 0;
+      this.items.forEach((i) => { total += i.price; });
+      return total;
     },
   },
   methods: {
     fetchItems() {
       this.$store.dispatch('app-ecommerce/fetchCartProducts')
-        .then(response => {
-          this.items = response.data.products
-        })
+        .then((response) => {
+          this.items = response.data.products;
+        });
     },
     removeItemFromCart(productId) {
       this.$store.dispatch('app-ecommerce/removeProductFromCart', { productId })
         .then(() => {
-          const itemIndex = this.items.findIndex(p => p.id === productId)
-          this.items.splice(itemIndex, 1)
+          const itemIndex = this.items.findIndex((p) => p.id === productId);
+          this.items.splice(itemIndex, 1);
 
           // Update count in cart items state
-          this.$store.commit('app-ecommerce/UPDATE_CART_ITEMS_COUNT', this.items.length)
-        })
+          this.$store.commit('app-ecommerce/UPDATE_CART_ITEMS_COUNT', this.items.length);
+        });
     },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
