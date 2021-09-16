@@ -1,5 +1,5 @@
 <template>
-  <b-card title="Локатор" />
+  <b-card title="Локатор?" />
 </template>
 
 <script>
