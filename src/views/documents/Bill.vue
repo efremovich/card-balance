@@ -384,7 +384,9 @@ export default {
     return {
       getInfo: null,
       today: null,
-      contract: null,
+      // contract: null,
+      fullContract: null,
+      contractId: null,
       summ: '',
       visible: false,
       download: false,
@@ -428,6 +430,26 @@ export default {
     getRandom() {
       return Math.floor(Math.random() * 10000);
     },
+    contract: {
+      get() {
+        return this.fullContract;
+      },
+
+      set() {
+        // useJwt.changeContract(value)
+        //   .then((response) => {
+        //     if (response.status) {
+        //       this.getInfo = response.data;
+        //       console.log(this.getInfo);
+        //       this.dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
+        //       this.fullContract = `${this.getInfo.contract.number} от ${this.dateContract}`;
+        //       console.log(this.fullContract);
+        //     }
+        //   });
+        // return this.fullContract;
+      },
+
+    },
   },
   watch: {
     gotSelectedContract(val) {
@@ -435,40 +457,26 @@ export default {
         .then((response) => {
           if (response.status) {
             this.getInfo = response.data;
-            const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
-            this.contract = `${this.gotSelected} от ${dateContract}`;
+            this.dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
+            this.fullContract = `${this.getInfo.contract.number} от ${this.dateContract}`;
           }
         });
     },
-    // rangeDate() {
-    //   this.selectDate();
-    // },
   },
 
   beforeMount() {
-    // useJwt.getCurrenUser().then((response) => {
-    //   if (response.data.status) {
-    //     this.$store.dispatch('user/getUserData', response.data).then(() => {
-    //       this.getInfo = response.data;
-    //       this.download = true;
-    //       const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
-    //       this.contract = `${this.getInfo.contract.number} от ${dateContract}`;
-    //     });
-    //   }
-    // });
-    console.log(store.getters.CONTRACT_ID);
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      this.contract = userData;
-      this.contractId = this.contract.contract.id;
-    }
-    useJwt.changeContract(this.contractId)
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+    // if (userData) {
+    //   const a = userData;
+    //   this.contractId = a.contract.id;
+    // }
+    useJwt.changeContract(this.gotSelectedContract)
       .then((response) => {
         if (response.status) {
           this.getInfo = response.data;
           this.download = true;
-          const dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
-          this.contract = `${this.getInfo.contract.number} от ${dateContract}`;
+          this.dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
+          this.fullContract = `${this.getInfo.contract.number} от ${this.dateContract}`;
         }
       });
   },

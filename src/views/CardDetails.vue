@@ -170,7 +170,7 @@
                             </b-col>
                           </div>
                           <div class="mt-1">
-                            <label>Остаток: {{ limit.value - limit.consumption }}  {{ limit.limit_unit_code = "L" ? "литров" : "рублей" }}</label>
+                            <label>Остаток: {{ limit.value - limit.consumption }}  {{ unicodeLabel[limit.limit_unit_code] }} </label>
                             <b-progress
                               :value="limit.value - limit.consumption"
                               :max="limit.value" />
@@ -207,7 +207,7 @@
                           </h4>
                           <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
                           <h4>
-                            Остаток: {{ limit.value - limit.consumption }} {{ limit.limit_unit_code = "L" ? "литров" : "рублей" }}.
+                            Остаток: {{ limit.value - limit.consumption }} {{ unicodeLabel[limit.limit_unit_code] }}.
                           </h4>
 
                           <hr>
@@ -239,7 +239,7 @@
                 Транзакции по карте № {{ cardData.data.number }} за период c
                 {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
               </h4>
-              <div v-if="totalRows > 0">
+              <div v-if="totalRows>0">
                 <b-card>
                   <div class="d-flex justify-content-between flex-wrap">
                     <!-- filter -->
@@ -267,7 +267,7 @@
                     <div>
                       <export-excel
                         class="btn btn-primary"
-                        :data="transactions.data"
+                        :data="transactions.data.result"
                         :fields="columns"
                         type="xlsx"
                         name="Транзакции.xlsx">
@@ -486,7 +486,7 @@
                       <div>
                         <export-excel
                           class="btn btn-primary"
-                          :data="transactions.data"
+                          :data="transactions.data.result"
                           :fields="columns"
                           type="xlsx"
                           name="Транзакции.xlsx">
@@ -518,7 +518,7 @@
                     class="position-relative"
                     :per-page="perPage"
                     :current-page="currentPage"
-                    :items="transactions.data"
+                    :items="transactions.data.result"
                     :fields="fields"
                     :filter="filter">
                     <template #cell(cardData)="row">
@@ -692,7 +692,7 @@ export default {
 
     const unicodeLabel = {
       L: 'литров',
-      RUB: 'рублей',
+      RU: 'рублей',
     };
     const periodLabel = {
       DAY: 'Суточный',
@@ -779,7 +779,6 @@ export default {
         start.value = `${getFirstDay()} 00:00:00`;
         end.value = `${isToday()} 00:00:00`;
         loadDone.value = true;
-
         useJwt
           .getTransactions(
             `contract_id=${contractId.value}&startDate=${start.value}&endDate=${end.value}&card_number=${product.value}`,
@@ -787,7 +786,7 @@ export default {
           .then((response) => {
             if (response.data.status) {
               transactions.value = response.data;
-              totalRows.value = transactions.value.total;
+              totalRows.value = transactions.value.data.total;
             }
             loadDone.value = false;
 
@@ -809,14 +808,13 @@ export default {
         }
       });
     };
+
     const cardDate = (params) => useJwt.getCardData(params).then((response) => {
       if (response.data.status) {
         cardData.value = response.data;
         cardEmitentCode.value = cardData.value.data.emitent.code;
         limitsLength.value = cardData.value.data.limits.length;
-        source.value = response.data;
-        console.log(cardData.value, source.value);
-        console.log(cardData.value === source.value);
+        source.value = JSON.parse(JSON.stringify(cardData.value.data.limits));
         getService(cardEmitentCode.value);
       }
       // return cardData;
@@ -885,11 +883,18 @@ export default {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
     },
   },
-  // watch: {
-  //   source(val) {
-  //     if(val !==)
-  //   },
-  // },
+  watch: {
+    'cardData.data.limits': {
+      deep: true,
+      handler(val) {
+        if (JSON.stringify(val) === JSON.stringify(this.source)) {
+          this.comparison = true;
+        } else {
+          this.comparison = false;
+        }
+      },
+    },
+  },
   methods: {
     labelSelected() {
       const empty = [];

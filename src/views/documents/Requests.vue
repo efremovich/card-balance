@@ -79,7 +79,7 @@
 
       <b-table
         hover
-        :item="request"
+        :item="request.data.result"
         responsive
         :per-page="perPage"
         :current-page="currentPage"
@@ -171,19 +171,26 @@ export default {
   watch: {
     gotSelectedContract(val) {
       this.getAllCards(val);
+      this.contractId = val;
     },
     selected(val) {
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
-      const arr = (newDate.join('').split('  '));
+      // const arr = (newDate.join('').split('  '));
+      // // eslint-disable-next-line prefer-template
+      // this.start = arr[0] + ' 00:00:00';
+      // // eslint-disable-next-line prefer-template
+      // this.end = arr[1] + ' 00:00:00';
+      const arr = newDate.join('').split('00:00:00');
+      const trim = arr.join('').split(' ').filter((n) => n !== '');
       // eslint-disable-next-line prefer-template
-      this.start = arr[0] + ' 00:00:00';
+      const start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
-      this.end = arr[1] + ' 00:00:00';
-      useJwt.GetRequests(`contract_id=${this.gotSelectedContract}&startDate=${this.start}&endDate=${this.end}&card_number=${val}`).then((response) => {
+      const end = trim[1] + ' 00:00:00';
+      useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}&card_number=${val}`).then((response) => {
         if (response.data.status) {
           this.request = response.data;
-          // console.log(this.request);
+          console.log(this.request);
           if (this.rangeDate.length > 10 && this.request.data.length < 1) {
             this.$toast({
               component: ToastificationContent,
@@ -200,7 +207,13 @@ export default {
   },
 
   beforeMount() {
-    this.contractId = this.gotSelectedContract;
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData && this.gotSelectedContract === null) {
+      this.contract = userData;
+      this.contractId = this.contract.contract.id;
+    } else this.contractId = this.gotSelectedContract;
+
+    // this.contractId = this.gotSelectedContract;
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
     // this.rangeDate = [this.start, this.end];
@@ -213,7 +226,8 @@ export default {
     //   this.rangeDate = [this.start, this.end];
     // }
     this.rangeDate = [this.start, this.end];
-    this.getAllCards(this.gotSelectedContract);
+    console.log(this.rangeDate);
+    this.getAllCards(this.contractId);
     useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=7824861010051464017`).then((response) => {
       if (response.data.status) {
         this.request = response.data;
@@ -259,7 +273,6 @@ export default {
           });
         }
         this.busy = false;
-        // console.log('Карт: ', this.option);
         this.option = this.unique(this.option);
       });
     },
@@ -267,16 +280,21 @@ export default {
     selectDate() {
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
-      const arr = (newDate.join('').split('  '));
+      // const prot = (newDate.join('').split('00:00:00'));
+      const arr = newDate.join('').split('00:00:00');
+      const trim = arr.join('').split(' ').filter((n) => n !== '');
       // eslint-disable-next-line prefer-template
-      this.start = arr[0] + ' 00:00:00';
+      const start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
-      this.end = arr[1] + ' 00:00:00';
+      const end = trim[1] + ' 00:00:00';
+      // console.log(start, end);
+
+      const { selected } = this;
       const ID = this.contractId;
-      useJwt.GetRequests(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`).then((response) => {
+      useJwt.GetRequests(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.request = response.data;
-          // console.log(this.request);
+          console.log(this.request);
           if (this.rangeDate.length > 10 && this.request.data.length < 1) {
             this.$toast({
               component: ToastificationContent,
