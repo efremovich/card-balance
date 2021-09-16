@@ -50,9 +50,7 @@
 import { BLink, BNavbarNav } from 'bootstrap-vue';
 import vSelect from 'vue-select';
 import useJwt from '@/auth/jwt/useJwt';
-
 import store from '@/store';
-
 import Bookmarks from './components/Bookmarks.vue';
 import SearchBar from './components/SearchBar.vue';
 import DarkToggler from './components/DarkToggler.vue';
@@ -97,7 +95,6 @@ export default {
       return this.getWidth;
     },
   },
-
   // created() {
   //   const storage = JSON.parse(localStorage.getItem('userData'));
   //   if (storage) {

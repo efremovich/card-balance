@@ -499,19 +499,19 @@ export default {
     this.loadDone = true;
   },
   beforeMount() {
-    // const userData = JSON.parse(localStorage.getItem('userData'));
-    // if (userData) {
-    //   this.contract = userData;
-    //   this.contractId = this.contract.contract.id;
-    // }
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      this.contract = userData;
+      this.contractId = this.contract.contract.id;
+    }
     this.loadDone = true;
-    this.getAllCards(this.gotSelectedContract);
+    this.getAllCards(this.contractId);
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
     console.log(this.end, this.start);
     this.rangeDate = [this.start, this.end];
     // console.log('create', this.rangeDate);
-    useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+    useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
       if (response.data.status) {
         this.transactions = response.data;
         this.totalRows = this.transactions.data.total;
@@ -541,7 +541,7 @@ export default {
     getAllTransactions() {
       // const ID = this.gotSelectedContract;
       this.loadDone = true;
-      useJwt.getTransactions(`contract_id=${this.gotSelectedContract}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
           this.totalRows = this.transactions.data.total;
