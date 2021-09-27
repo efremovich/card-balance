@@ -667,7 +667,7 @@ export default {
     const end = ref(null);
     const contractId = ref(null);
     // const limits = ref([]);
-    const source = ref(null);
+    const source = ref({});
     const limitsLength = ref(null);
     const cardEmitentCode = ref('0');
     const number = ref(null);
@@ -876,6 +876,7 @@ export default {
       required,
       saveChange: false,
       comparison: true,
+      newLimits: null,
     };
   },
   computed: {
@@ -891,8 +892,15 @@ export default {
           this.comparison = true;
         } else {
           this.comparison = false;
+          this.newLimits = val;
+          console.log(this.newLimits);
         }
       },
+    },
+    saveChange() {
+      if (this.saveChange === true) {
+        this.sendRequest();
+      }
     },
   },
   methods: {
@@ -927,7 +935,34 @@ export default {
         }
       });
     },
+    sendRequest() {
+      const request = {
+        card_number: this.cardData.data.number,
+        request_type_code: 'EDIT',
+        request_status_code: 'CREATED',
+        contract_id: this.cardData.data.contract_id,
+        limits: this.newLimits, // всё о лимитах
+        // limits: [
+        //   {
 
+        //     'card_number': this.cardData.data.number,
+        //     'contract_id': this.cardData.data.contract_id,
+        //     'value': 300,
+        //     'limit_unit_code': 'L',
+        //     'limit_type_code': 'INDIVID',
+        //     'limit_period_code': 'MONTH',
+        //     'consumption': 0,
+        //     'limit_common': [
+        //       {
+        //         'service_id': '6b6f5f4a-1232-11e7-aaff-0025225e28fb',
+        //       },
+        //     ],
+        //   },
+        // ],
+      };
+      useJwt.refreshDataUserLimits(request);
+      // console.log(request);
+    },
     newLimitsData() {
       this.$refs.limitsForm.validate().then((success) => {
         if (success) {

@@ -152,6 +152,19 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // Изменение лимитов пользователем (заявка)
+  async refreshDataUserLimits(payload) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.post(
+        '/api/request/new',
+        payload,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
   async changePassword(payload) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
