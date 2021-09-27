@@ -937,35 +937,10 @@ export default {
     },
     sendRequest() {
       const request = {
-        ID: this.getRandom(),
-        CreatedAt: new Date().toLocaleDateString(),
-        UpdatedAt: new Date().toLocaleDateString(),
-        DeletedAt: null,
         card_number: this.cardData.data.number,
         request_type_code: 'EDIT',
-        limit_request_id: 9,
-        request_type: {
-          name: '',
-          code: '',
-        },
         request_status_code: 'CREATED',
-        request_status: {
-          name: '',
-          code: '',
-        },
         contract_id: this.cardData.data.contract_id,
-        contract: { // ?
-          created: '0001-01-01T00:00:00Z',
-          updated: '0001-01-01T00:00:00Z',
-          opening_balance: 0,
-          incoming: 0,
-          expence: 0,
-          balance: 0,
-          deposit: 0,
-          organisation: {},
-          company: {},
-          pay_account: {},
-        }, // ?
         limits: this.newLimits, // всё о лимитах
         // limits: [
         //   {
