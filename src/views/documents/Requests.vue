@@ -1,6 +1,6 @@
 <template>
   <b-overlay
-    :show="loadDone"
+    :show="!loadDone"
     spinner-type="grow"
     spinner-variant="primary"
     spinner-medium
@@ -8,7 +8,7 @@
     blur="5px"
     opacity=".75"
     rounded="md">
-    <div v-if="!loadDone">
+    <div v-if="loadDone">
       <b-card title="Заявки">
         <b-card-body>
           <div class="d-flex justify-content-between  flex-wrap  align-items-end">
@@ -58,8 +58,7 @@
                     v-model="selected"
                     :disabled="busy"
                     :options="option"
-                    class="w-100 mb-1"
-                    @input="onChange()" />
+                    class="w-100 mb-1" />
                 </b-overlay>
               </div>
             </b-form-group>
@@ -125,7 +124,6 @@ export default {
     vSelect,
     BOverlay,
     BSpinner,
-
   },
   data() {
     return {
@@ -185,46 +183,54 @@ export default {
       this.contractId = val;
     },
     selected(val) {
+      this.loadDone = false;
       const date = this.rangeDate;
-      const newDate = Array.from(date).filter((n) => n !== '—');
-      // const arr = (newDate.join('').split('  '));
-      // // eslint-disable-next-line prefer-template
-      // this.start = arr[0] + ' 00:00:00';
-      // // eslint-disable-next-line prefer-template
-      // this.end = arr[1] + ' 00:00:00';
-      const arr = newDate.join('').split('00:00:00');
-      const trim = arr.join('').split(' ').filter((n) => n !== '');
-      // eslint-disable-next-line prefer-template
-      const start = trim[0] + ' 00:00:00';
-      // eslint-disable-next-line prefer-template
-      const end = trim[1] + ' 00:00:00';
-      useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}&card_number=${val}`).then((response) => {
-        if (response.data.status) {
-          this.requests = response.data;
-          console.log(this.requests);
-          if (this.rangeDate.length > 10 && this.requests.data.result < 1) {
-            this.$toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Отсутвуют заявки за выбранный период',
-                icon: 'AlertTriangleIcon',
-                variant: 'danger',
-              },
-            });
+      const [start, end] = date;
+      console.log(start, end);
+      if (val !== null) {
+        useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}&card_number=${val}`).then((response) => {
+          if (response.data.status) {
+            this.requests = response.data;
+            if (this.requests.data.result < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутствуют заявки по карте за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
           }
-        }
-      });
+        });
+      } else {
+        useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}`).then((response) => {
+          if (response.data.status) {
+            this.requests = response.data;
+            if (this.requests.data.result < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутствуют заявки за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      }
+      this.loadDone = true;
     },
   },
 
   beforeMount() {
-    this.loadDone = false;
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData && this.gotSelectedContract === null) {
       this.contract = userData;
       this.contractId = this.contract.contract.id;
     } else this.contractId = this.gotSelectedContract;
-    this.loadDone = true;
+
     // this.contractId = this.gotSelectedContract;
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
@@ -237,6 +243,7 @@ export default {
     //   this.end = `${this.isToday()} 00:00:00`;
     //   this.rangeDate = [this.start, this.end];
     // }
+
     this.rangeDate = [this.start, this.end];
     this.getAllCards(this.contractId);
     useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=7824861010051464017`).then((response) => {
@@ -246,7 +253,7 @@ export default {
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'Отсутвуют заявки за выбранный период',
+              title: 'Отсутствуют заявки за выбранный период',
               icon: 'AlertTriangleIcon',
               variant: 'danger',
             },
@@ -254,6 +261,7 @@ export default {
         }
       }
     });
+    this.loadDone = true;
   },
   methods: {
     isToday() {
@@ -273,7 +281,7 @@ export default {
     },
 
     getAllCards(val) {
-      this.loadDone = true;
+      this.loadDone = false;
       this.option = [];
       this.busy = true;
       useJwt.getCards(val).then((response) => {
@@ -286,91 +294,73 @@ export default {
         this.busy = false;
         this.option = this.unique(this.option);
       });
-      this.loadDone = false;
+      this.loadDone = true;
     },
 
-    onChange() {
-      this.loadDone = true;
-      const { selected } = this;
-      const date = this.rangeDate;
-      const newDate = Array.from(date).filter((n) => n !== '—');
-      const arr = newDate.join('').split('00:00:00');
-      const trim = arr.join('').split(' ').filter((n) => n !== '');
-      // eslint-disable-next-line prefer-template
-      const start = trim[0] + ' 00:00:00';
-      // eslint-disable-next-line prefer-template
-      const end = trim[1] + ' 00:00:00';
-      if (selected === null) {
-        useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}`).then((response) => {
-          if (response.data.status) {
-            this.requests = response.data;
-            this.totalRows = this.requests.data.total;
-            if (this.rangeDate.length > 10 && this.totalRows < 1) {
-              this.$toast({
-                component: ToastificationContent,
-                props: {
-                  title: 'Отсутвуют транзакции за выбранный период',
-                  icon: 'AlertTriangleIcon',
-                  variant: 'danger',
-                },
-              });
-            }
-          }
-        });
-        this.loadDone = false;
-      } else {
-        useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
-          if (response.data.status) {
-            this.requests = response.data;
-            this.totalRows = this.requests.data.total;
-            if (this.rangeDate.length > 10 && this.totalRows < 1) {
-              this.$toast({
-                component: ToastificationContent,
-                props: {
-                  title: 'Отсутвуют транзакции по карте за выбранный период',
-                  icon: 'AlertTriangleIcon',
-                  variant: 'danger',
-                },
-              });
-            }
-            this.loadDone = false;
-          }
-        });
-      }
-    },
+    // onChange() {
+    //   this.loadDone = false;
+    //   const { selected } = this;
+    //   const date = this.rangeDate;
+    //   // const newDate = Array.from(date).filter((n) => n !== '—');
+    //   // const arr = newDate.join('').split('00:00:00');
+    //   // const trim = arr.join('').split(' ').filter((n) => n !== '');
+    //   // // eslint-disable-next-line prefer-template
+    //   // const start = trim[0] + ' 00:00:00';
+    //   // // eslint-disable-next-line prefer-template
+    //   // const end = trim[1] + ' 00:00:00';
+    //   const [start, end] = date;
+    //   if (selected === null) {
+    //     useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}`).then((response) => {
+    //       if (response.data.status) {
+    //         this.requests = response.data;
+    //         this.totalRows = this.requests.data.total;
+    //         if (this.rangeDate.length > 10 && this.totalRows < 1) {
+    //           this.$toast({
+    //             component: ToastificationContent,
+    //             props: {
+    //               title: 'Отсутствуют заявки за выбранный период',
+    //               icon: 'AlertTriangleIcon',
+    //               variant: 'danger',
+    //             },
+    //           });
+    //         }
+    //       }
+    //     });
+    //   } else {
+    //     useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
+    //       if (response.data.status) {
+    //         this.requests = response.data;
+    //         this.totalRows = this.requests.data.total;
+    //         if (this.rangeDate.length > 10 && this.totalRows < 1) {
+    //           this.$toast({
+    //             component: ToastificationContent,
+    //             props: {
+    //               title: 'Отсутствуют заявки по карте за выбранный период',
+    //               icon: 'AlertTriangleIcon',
+    //               variant: 'danger',
+    //             },
+    //           });
+    //         }
+    //       }
+    //     });
+    //   }
+    //   this.loadDone = true;
+    // },
 
     selectDate() {
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
       const prot = (newDate.join('').split('00:00:00'));
       const arr = prot.join('').split(' ').filter((n) => n !== '');
-
       // eslint-disable-next-line prefer-template
       const start = `${arr[0]} 00:00:00`;
       // eslint-disable-next-line prefer-template
       const end = `${arr[1]} 00:00:00`;
+      // const [start, end] = date;
       const { selected } = this;
-      if (selected === null) {
-        useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}`).then((response) => {
-          this.requests = response.data;
-          this.totalRows = this.requests.data.total;
-          console.log('selected');
-          if (this.rangeDate.length > 22) {
-            if (this.totalRows < 1) {
-              this.$toast({
-                component: ToastificationContent,
-                props: {
-                  title: 'Отсутвуют заявки за выбранный период',
-                  icon: 'AlertTriangleIcon',
-                  variant: 'danger',
-                },
-              });
-            }
-          }
-        });
-      } else {
-        useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
-          if (response.data.status) {
+      if (date.length > 22) {
+        if (selected === null) {
+          useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}`).then((response) => {
             this.requests = response.data;
             this.totalRows = this.requests.data.total;
             if (this.rangeDate.length > 22) {
@@ -378,18 +368,39 @@ export default {
                 this.$toast({
                   component: ToastificationContent,
                   props: {
-                    title: 'Отсутвуют заявки по карте за выбранный период',
+                    title: 'Отсутствуют заявки за выбранный период',
                     icon: 'AlertTriangleIcon',
                     variant: 'danger',
                   },
                 });
               }
             }
-          }
-        });
+          });
+        } else {
+          useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${start}&endDate=${end}&card_number=${selected}`).then((response) => {
+            if (response.data.status) {
+              this.requests = response.data;
+              this.totalRows = this.requests.data.total;
+              if (this.totalRows < 1) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Отсутствуют заявки по карте за выбранный период',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'danger',
+                  },
+                });
+              }
+            }
+          });
+        }
       }
     },
   },
 
 };
 </script>
+
+<style lang="scss">
+@import "@core/scss/vue/libs/vue-flatpicker.scss";
+</style>

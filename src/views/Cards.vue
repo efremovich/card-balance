@@ -48,7 +48,7 @@
       </div>
       <div v-if="getWidth === 'xl'">
         <section
-          v-if="gotItemView === 'grid-view'"
+          v-if="gotItemView !== 'grid-view'"
           class="views">
           <b-card
             v-for="(product, index) in products.data.result"
