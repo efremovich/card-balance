@@ -936,7 +936,7 @@ export default {
       });
     },
     sendRequest() {
-      const request = {
+      const request = [{
         card_number: this.cardData.data.number,
         request_type_code: 'EDIT',
         request_status_code: 'CREATED',
@@ -959,9 +959,8 @@ export default {
         //     ],
         //   },
         // ],
-      };
+      }];
       useJwt.refreshDataUserLimits(request);
-      console.log(request);
       // this.saveChange = false;
     },
 
