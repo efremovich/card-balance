@@ -12,7 +12,7 @@ export default {
       { title: 'Заказать счет', route: { name: 'bill' }, icon: 'ClipboardIcon', isBookmarked: true },
       { title: 'Электронные чеки', route: { name: 'checks' }, icon: 'FileIcon', isBookmarked: false },
       { title: 'Платежи', route: { name: 'payments' }, icon: 'DollarSignIcon', isBookmarked: false },
-      { title: 'Локатор', route: { name: 'locator' }, icon: 'CompassIcon', isBookmarked: false },
+      // { title: 'Локатор', route: { name: 'locator' }, icon: 'CompassIcon', isBookmarked: false },
       // { title: 'Basic Card', route: { name: 'card-basic' }, icon: 'CreditCardIcon', isBookmarked: false },
       // { title: 'Blog Detail', route: { name: 'pages-blog-detail', params: { id: 1 } }, icon: 'FileTextIcon', isBookmarked: false },
       // { title: 'Blog Edit', route: { name: 'pages-blog-edit', params: { id: 1 } }, icon: 'FileTextIcon', isBookmarked: false },

@@ -85,31 +85,18 @@ export default [
       rule: 'editor',
     },
   },
-  {
-    path: '/locator',
-    name: 'locator',
-    component: () => import('@/views/Locator.vue'),
-    meta: {
-      breadcrumb: [
-        // { text: 'Главная', to: '/' },
-        { text: 'Локатор', active: true },
-      ],
-      rule: 'editor',
-    },
-  },
-
-  {
-    path: '/documents',
-    name: 'documents',
-    component: () => import('@/views/documents/Documents.vue'),
-    meta: {
-      breadcrumb: [
-        // { text: 'Главная', to: '/' },
-        { text: 'Документы', active: true },
-      ],
-      rule: 'editor',
-    },
-  },
+  // {
+  //   path: '/documents',
+  //   name: 'documents',
+  //   component: () => import('@/views/documents/Documents.vue'),
+  //   meta: {
+  //     breadcrumb: [
+  //       // { text: 'Главная', to: '/' },
+  //       { text: 'Документы', active: true },
+  //     ],
+  //     rule: 'editor',
+  //   },
+  // },
 
   {
     path: '/documents/payments',

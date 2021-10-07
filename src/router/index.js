@@ -77,6 +77,7 @@ Vue.mixin({
         }).then((value) => {
           this.saveChange = value;
           if (this.saveChange === true) {
+            this.sendRequest();
             this.$toast({
               component: ToastificationContent,
               props: {

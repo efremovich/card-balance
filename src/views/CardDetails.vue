@@ -876,7 +876,7 @@ export default {
       required,
       saveChange: false,
       comparison: true,
-      newLimits: null,
+      newLimits: {},
     };
   },
   computed: {
@@ -893,7 +893,6 @@ export default {
         } else {
           this.comparison = false;
           this.newLimits = val;
-          console.log(this.newLimits);
         }
       },
     },
