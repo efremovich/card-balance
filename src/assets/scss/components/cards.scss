@@ -4,7 +4,7 @@
     justify-content: end;
     max-width: 390px;
     align-items: center;
-    padding: 3px;
+    // padding: 3px;
     min-width:270px;
   }
   // .pad {
@@ -17,6 +17,18 @@
     align-items: flex-start;
     position: relative;
     left: 20px;
+    bottom: 110px;
+  }
+
+  .wrap {
+  background-color: rgba(242, 50, 24, 0.67) !important;
+  z-index: 1000;
+  }
+
+  .icon-margin {
+    left:30px;
+    top: 30px;
+    color: white;
   }
   
   .item-options {
@@ -87,8 +99,14 @@
     align-items: center;
     min-width: 200px;
     position: relative;
-    top: 25px;
+    // top: 25px;
   }
+
+  .top-negative {
+    bottom:50px;
+    width: 100%;
+  }
+
   .views {
     display: flex;
     flex-wrap: wrap;

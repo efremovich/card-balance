@@ -53,13 +53,73 @@
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            class="ecommerce-card mb-1"
+            :class="[product.card_status_id !== 'ACTIVE'?'':'ecommerce-card', 'mb-1', 'position-relative',]"
             no-body>
+            <div
+              class="d-flex flex-row flex-nowrap justify-content-around mt-1">
+              <b-button-group>
+                <b-button
+                  v-b-tooltip.hover.top="'Внести изменения'"
+                  variant="light"
+                  tag="a"
+                  class="btn-wishlist mb-1"
+                  @click="toggleProductInWishlist(product)">
+                  <feather-icon
+                    icon="SettingsIcon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Внести изменения'"
+                  variant="light"
+                  tag="a"
+                  class="btn-wishlist mb-1"
+                  @click="toggleProductInWishlist(product)">
+                  <feather-icon
+                    icon="Edit3Icon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Удалить карту'"
+                  variant="light"
+                  tag="a"
+                  class="btn-cart mb-1"
+                  @click="handleCartActionClick(product)">
+                  <feather-icon
+                    icon="Trash2Icon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Заблокировать карту'"
+                  variant="light"
+                  tag="a"
+                  class="btn-cart mb-1"
+                  @click="handleCartActionClick(product)">
+                  <feather-icon
+                    icon="LockIcon"
+                    class="mr-50" />
+                </b-button>
+              </b-button-group>
+            </div>
             <b-link
+
               :to="{ name: 'card', params: { card_number: product.number } }">
               <b-img
-                class="card-img-top"
+                class="card-img-top "
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+              <!-- <span
+                v-if="product.card_status_id !== 'ACTIVE'"
+                class="position-absolute">
+                <feather-icon
+                  v-b-tooltip.hover.top="'Заявка в обработке'"
+                  icon="AlertTriangleIcon"
+                  class="position-absolute icon-margin"
+                  size="30" />
+              </span> -->
+              <feather-icon
+                v-b-tooltip.hover.top="'Заявка в обработке'"
+                icon="AlertTriangleIcon"
+                class="position-absolute icon-margin"
+                size="30" />
             </b-link>
             <div class="item-options">
               <b-link
@@ -73,7 +133,7 @@
                   </h5>
                 </div>
               </b-link>
-              <div
+              <!-- <div
                 class="d-flex flex-row flex-nowrap justify-content-around mt-2">
                 <b-button-group>
                   <b-button
@@ -117,19 +177,36 @@
                       class="mr-50" />
                   </b-button>
                 </b-button-group>
+              </div> -->
+            </div>
+            <div class="d-flex flex-column align-items-center w-100 position-relative top-negative">
+              <div
+                class="limits mt-2">
+                <label>Остаток по карте </label>
+                <b-progress
+                  variant="success"
+                  show-value
+                  :value="getValue(product.limits)"
+                  :max="getMaxValue(product.limits)" />
+              </div>
+              <!-- <h5 class="mt-1 mb-2">
+              Статус: {{ product.card_status.name }}
+            </h5> -->
+              <div class="limits">
+                <b-badge
+                  :variant="colorMap[product.card_status_id]"
+                  class="w-100 badge-glow mb-1 mt-1 pl-1 pr-1">
+                  {{ product.card_status.name }}
+                </b-badge>
               </div>
             </div>
 
-            <div
-              class="limits pb-1">
-              <label>Остаток по карте </label>
-              <b-progress
-                variant="success"
-                show-value
-                class="mb-1"
-                :value="getValue(product.limits)"
-                :max="getMaxValue(product.limits)" />
-            </div>
+            <!-- <b-badge
+              class="badge-glow"
+              pill
+              variant="success">
+              {{ product.card_status.name }}
+            </b-badge> -->
           </b-card>
         </section>
 
@@ -148,6 +225,13 @@
                 <b-img
                   class="card card-img-top w-100 "
                   :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+                <div class="limits top-negative">
+                  <b-badge
+                    :variant="colorMap[product.card_status_id]"
+                    class="w-100 badge-glow">
+                    {{ product.card_status.name }}
+                  </b-badge>
+                </div>
               </b-link>
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
@@ -178,7 +262,7 @@
               <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1">
                 <h5> Держатель: {{ product.holder }} </h5>
                 <h5> Последняя активность </h5>
-                <h5> Индекс активности </h5>
+                <h5> Индекс активности: </h5>
               </div>
               <div
                 class="d-flex flex-column align-items-start mt-2">
@@ -281,6 +365,7 @@
                 class="card-img-top"
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
             </b-link>
+
             <div class="item-options">
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
@@ -416,10 +501,11 @@ import {
   BFormRadioGroup,
   BFormRadio,
   BCardBody,
+  BBadge,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
-import { watch, ref } from '@vue/composition-api';
+import { ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
 
 import store from '@/store';
@@ -453,10 +539,11 @@ export default {
     BInputGroupAppend,
     BFormRadioGroup,
     BFormRadio,
+    BBadge,
   },
   setup() {
     const contract = ref('');
-    const contractID = ref('');
+    const contractID = ref(null);
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       contract.value = userData;
@@ -482,18 +569,18 @@ export default {
           // console.log(products.value, download.value, showLoading.value);
           totalRows.value = products.value.data.total;
 
-          if (filters.value !== '') {
-            products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
-          }
+          // if (filters.value !== '') {
+          //   products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
+          // }
         }
       });
     };
 
     fetchShopProducts();
 
-    watch([filters], () => {
-      fetchShopProducts();
-    });
+    // watch([filters], () => {
+    //   fetchShopProducts();
+    // });
 
     return {
       filters,
@@ -516,7 +603,17 @@ export default {
       view: true,
       page: 1,
       itemView: this.$store.state.cardsView,
-      contractId: null,
+      // contractId: null,
+      colorMap: {
+        FINANCE: 'warning',
+        ACTIVE: 'success',
+        BLOCK: 'danger',
+        BROKEN: 'danger',
+        DELETED: 'secondary',
+        LOST: 'secondary',
+        RETURN: 'secondary',
+        SOLD: 'secondary',
+      },
     };
   },
   computed: {
@@ -530,7 +627,7 @@ export default {
   },
   watch: {
     perPage() {
-      useJwt.getChangeCardsDate(this.contractId, `offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.contractID, `offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
           // console.log(this.products.data.result);
@@ -539,26 +636,54 @@ export default {
       });
     },
     gotSelected(val) {
-      this.contractId = val;
-      useJwt.getChangeCardsDate(this.contractId, `offset=${this.currentPage * this.page}&limit=${this.perPage}`).then((response) => {
-        if (response.data.status) {
-          this.products = response.data;
-          this.totalRows = this.products.data.total;
+      this.contractID = val;
+      if (this.currentPage === 1) {
+        useJwt.getChangeCardsDate(this.contractID, `offset=0&limit=${this.perPage}`).then((response) => {
+          if (response.data.status) {
+            this.products = response.data;
+            this.totalRows = this.products.data.total;
 
           // if (this.filters !== '') {
           //   this.products.data.result = response.data.data.result.filter((product) => product.number.includes(this.filters));
           // }
-        }
-      });
+          }
+        });
+      } else {
+        useJwt.getChangeCardsDate(this.contractID, `offset=${this.currentPage * this.page}&limit=${this.perPage}`).then((response) => {
+          if (response.data.status) {
+            this.products = response.data;
+            this.totalRows = this.products.data.total;
+
+          // if (this.filters !== '') {
+          //   this.products.data.result = response.data.data.result.filter((product) => product.number.includes(this.filters));
+          // }
+          }
+        });
+      }
     },
     currentPage() {
       this.page = this.currentPage;
       // this.$store.dispatch('getSelectedPages', this.page);
-      useJwt.getChangeCardsDate(this.contractId, `&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.contractID, `&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
           // console.log(this.products.data);
           // this.totalRows = this.products.data.total;
+        }
+      });
+    },
+    filters(val) {
+      useJwt.getChangeCardsDate(this.gotSelected, `offset=0&limit=${this.perPage}`).then((response) => {
+        if (response.data.status) {
+          this.products = response.data;
+          this.showLoading = false;
+          this.download = true;
+          // console.log(products.value, download.value, showLoading.value);
+          this.totalRows = this.products.data.total;
+
+          if (val !== '') {
+            this.products.data.result = response.data.data.result.filter((product) => product.number.includes(val));
+          }
         }
       });
     },
@@ -567,8 +692,8 @@ export default {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData && this.gotSelected === null) {
       this.contract = userData;
-      this.contractId = this.contract.contract.id;
-    } else this.contractId = this.gotSelected;
+      this.contractID = this.contract.contract.id;
+    } else this.contractID = this.gotSelected;
   },
 
   methods: {
