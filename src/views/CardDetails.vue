@@ -152,7 +152,8 @@
                             </h6>
                             <div class="mr-1 mw-20">
                               <b-form-input
-                                v-model="limit.value" />
+                                v-model="limit.value"
+                                type="number" />
                             </div>
                             <b-col class="mr-1">
                               <v-select
@@ -643,6 +644,7 @@ export default {
   },
   setup() {
     const cardData = ref({});
+    const unfulfilledRequest = ref(null); // неисполненная заявка
     const product = ref(null);
     const value = ref(null);
     const totalRows = ref(null);
@@ -840,6 +842,7 @@ export default {
       limitsLength,
       unicodeLabel,
       showLoading,
+      unfulfilledRequest,
       // labelSelected
       source,
       download,
@@ -936,6 +939,10 @@ export default {
     },
     sendRequest() {
       const request = [{
+        ID: 45,
+        CreatedAt: '2021-11-12T14:52:37.4280415+03:00',
+        UpdatedAt: '2021-11-12T14:52:37.4280415+03:00',
+        DeletedAt: null,
         card_number: this.cardData.data.number,
         request_type_code: 'EDIT',
         request_status_code: 'CREATED',
