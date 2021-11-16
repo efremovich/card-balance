@@ -5,6 +5,7 @@ import Vuex from 'vuex';
 import app from './app';
 import appConfig from './app-config';
 import verticalMenu from './vertical-menu';
+// eslint-disable-next-line import/no-cycle
 import user from './app-user';
 
 Vue.use(Vuex);
@@ -15,7 +16,6 @@ export default new Vuex.Store({
     visible: false,
     contractNumber: null,
     contractId: null,
-    // avatar: '',
     cardsView: '',
     selectedPage: 1,
   },

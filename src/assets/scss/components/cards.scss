@@ -17,12 +17,15 @@
     align-items: flex-start;
     position: relative;
     left: 20px;
+    
+  }
+
+  .down {
     bottom: 110px;
   }
 
-  .wrap {
-  background-color: rgba(242, 50, 24, 0.67) !important;
-  z-index: 1000;
+  .min-w {
+    min-width: 230px;
   }
 
   .icon-margin {
@@ -39,7 +42,7 @@
     width: 100%;
   }
   .width {
-    max-width:100% !important;
+    max-width:70% !important;
   }
   .table {
     &:hover {
@@ -70,7 +73,7 @@
   .abs {
     position: absolute;
     //buttom:40% / 110px;
-    top: 40%;
+    top: 45%;
     left:30px;
     
   }

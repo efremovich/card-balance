@@ -115,16 +115,16 @@
                   class="position-absolute icon-margin"
                   size="30" />
               </span> -->
-              <feather-icon
+              <!-- <feather-icon
                 v-b-tooltip.hover.top="'Заявка в обработке'"
                 icon="AlertTriangleIcon"
                 class="position-absolute icon-margin"
-                size="30" />
+                size="30" /> -->
             </b-link>
             <div class="item-options">
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
-                <div class="item-wrapper">
+                <div class="item-wrapper down">
                   <h6 class="item-price">
                     PIN: {{ product.pin }}
                   </h6>
@@ -213,11 +213,11 @@
         <!----ТАБЛИЦА---->
         <section
           v-else
-          class="d-flex flex-column">
+          class="d-flex flex-column align-items-center">
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            class="table width d-flex justify-content-between  mb-1 rlt w-100 "
+            class="table width d-flex justify-content-between  mb-1 rlt"
             no-body>
             <div class="d-flex position-relative p-1 w-100">
               <b-link
@@ -245,7 +245,7 @@
                 </div>
               </b-link>
 
-              <div class="d-flex flex-column w-60 mr-1 ml-1">
+              <div class="d-flex flex-column w-60 mr-1 ml-1 mt-2">
                 <label> Остаток: {{ getValue(product.limits) }}</label>
                 <div
                   v-for="(i) in product.limits"
@@ -259,7 +259,7 @@
                     :max="i.value" />
                 </div>
               </div>
-              <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1">
+              <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1 mt-2">
                 <h5> Держатель: {{ product.holder }} </h5>
                 <h5> Последняя активность </h5>
                 <h5> Индекс активности: </h5>
@@ -269,7 +269,7 @@
                 <b-button
                   variant="light"
                   tag="a"
-                  class="btn-wishlist mb-1 mw-100 p-1"
+                  class="btn-wishlist mb-1 mw-100 p-1 min-w"
                   @click="toggleProductInWishlist(product)">
                   <feather-icon
                     icon="EditIcon"
@@ -279,7 +279,7 @@
                 <b-button
                   variant="light"
                   tag="a"
-                  class="btn-wishlist mb-1 mw-100 p-1"
+                  class="btn-wishlist mb-1 mw-100 p-1 min-w"
                   @click="toggleProductInWishlist(product)">
                   <feather-icon
                     icon="LockIcon"
@@ -289,7 +289,7 @@
                 <b-button
                   variant="light"
                   tag="a"
-                  class="btn-wishlist mb-1 mw-100 p-1"
+                  class="btn-wishlist mb-1 mw-100 p-1 min-w"
                   @click="toggleProductInWishlist(product)">
                   <feather-icon
                     icon="NavigationIcon"
@@ -299,7 +299,7 @@
                 <b-button
                   variant="light"
                   tag="a"
-                  class="btn-wishlist mw-100 mb-1 w-100 p-1"
+                  class="btn-wishlist mw-100 mb-1 w-100 p-1 min-w"
                   @click="toggleProductInWishlist(product)">
                   <feather-icon
                     icon="ListIcon"
@@ -545,10 +545,16 @@ export default {
     const contract = ref('');
     const contractID = ref(null);
     const userData = JSON.parse(localStorage.getItem('userData'));
+    // console.log(store.state.contractId);
     if (userData) {
       contract.value = userData;
       contractID.value = contract.value.contract.id;
     }
+    // } else {
+    //   contractID.value = store.state.contractId;
+    //   // console.log(store.state.CONTRACT_ID);
+    // }
+
     const showLoading = ref(true);
     const download = ref(false);
     const filters = ref('');

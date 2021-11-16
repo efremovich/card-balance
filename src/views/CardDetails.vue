@@ -152,8 +152,7 @@
                             </h6>
                             <div class="mr-1 mw-20">
                               <b-form-input
-                                v-model="limit.value"
-                                type="number" />
+                                v-model="limit.value" />
                             </div>
                             <b-col class="mr-1">
                               <v-select
@@ -939,15 +938,20 @@ export default {
     },
     sendRequest() {
       const request = [{
-        ID: 45,
-        CreatedAt: '2021-11-12T14:52:37.4280415+03:00',
-        UpdatedAt: '2021-11-12T14:52:37.4280415+03:00',
-        DeletedAt: null,
+        // ID: 45,
+        // CreatedAt: '2021-11-12T14:52:37.4280415+03:00',
+        // UpdatedAt: '2021-11-12T14:52:37.4280415+03:00',
+        // DeletedAt: null,
+        // card_number: this.cardData.data.number,
+        // request_type_code: 'EDIT',
+        // request_status_code: 'CREATED',
+        // contract_id: this.cardData.data.contract_id,
+        // limits: this.newLimits, // всё о лимитах
         card_number: this.cardData.data.number,
         request_type_code: 'EDIT',
         request_status_code: 'CREATED',
         contract_id: this.cardData.data.contract_id,
-        limits: this.newLimits, // всё о лимитах
+        limits: this.newLimits,
         // limits: [
         //   {
 

@@ -1,5 +1,9 @@
 import Vue from 'vue';
+
 import VueRouter from 'vue-router';
+// eslint-disable-next-line import/no-cycle
+// import store from '@/store';
+// import { mapGetters } from 'vuex';
 import 'animate.css';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 // import 'swiper/swiper-bundle.css';
@@ -11,9 +15,13 @@ import {
   getUserData,
   getHomeRouteForLoggedInUser,
 } from '@/auth/utils';
+// eslint-disable-next-line import/no-cycle
 import pages from './pages';
 
 Vue.use(VueRouter);
+// import { useStore } from 'vuex';
+
+// const store = useStore();
 
 const router = new VueRouter({
   mode: 'history',
