@@ -358,7 +358,7 @@
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            :class="[product.card_status_id !== 'ACTIVE'?'':'ecommerce-card', 'mb-1', 'position-relative', 'mr-9']"
+            :class="[product.card_status_id !== 'ACTIVE'?'':'ecommerce-card', 'mb-1', 'position-relative', getWidth === 'xl'?'mr-9':'']"
             no-body>
             <div
               class="d-flex flex-row flex-nowrap justify-content-around">
@@ -409,7 +409,7 @@
               class="w-80"
               :to="{ name: 'card', params: { card_number: product.number } }">
               <b-img
-                class="card-img-top "
+                class="card-img-top"
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
               <!-- <span
                 v-if="product.card_status_id !== 'ACTIVE'"

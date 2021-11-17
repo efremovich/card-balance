@@ -11,7 +11,8 @@
       v-if="download">
       <div
         v-if="limitsLength>0">
-        <b-card>
+        <b-card
+          :class="[getWidth === 'xs'?'max-w': '']">
           <b-card-header
             class="d-flex justify-content-start">
             <b-link :to="{ name: 'cards' }">
@@ -27,7 +28,7 @@
           <div class="d-flex flex-wrap justify-content-between">
             <div class="image">
               <b-img
-                class="card-img-top"
+                :class="['card-img-top', getWidth === 'xs'? 'min-w270':'']"
                 :src="
                   require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
                 " />
@@ -146,24 +147,28 @@
                                 class="text-danger">{{ errors[0] }}</small>
                             </b-form-group>
                           </validation-provider>
-                          <div class="d-flex flex-wrap align-items-center mt-1">
-                            <h6 class="mr-1">
-                              Лимит
-                            </h6>
-                            <div class="mr-1 mw-20">
-                              <b-form-input
-                                v-model="limit.value" />
+                          <div :class="['d-flex', 'flex-wrap', 'mt-1', getWidth === 'xs'?'align-items-center': '']">
+                            <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1']">
+                              <h6 class="mr-1">
+                                Лимит
+                              </h6>
+                              <div class="mr-1 mw-20">
+                                <b-form-input
+                                  v-model="limit.value" />
+                              </div>
+                              <b-col
+                                :class="[getWidth === 'xs'? '': 'mr-1']">
+                                <v-select
+                                  v-model="limit.limit_unit_code"
+                                  :clearable="false"
+                                  :reduce="(unit) => unit.code"
+                                  :options="units" />
+                              </b-col>
                             </div>
-                            <b-col class="mr-1">
-                              <v-select
-                                v-model="limit.limit_unit_code"
-                                :clearable="false"
-                                :reduce="(unit) => unit.code"
-                                :options="units" />
-                            </b-col>
                             <b-col>
                               <v-select
                                 v-model="limit.limit_period_code"
+                                :class="[getWidth === 'xs'?'mt-1 mb-1': '']"
                                 :clearable="false"
                                 :reduce="(period) => period.code"
                                 :options="periods" />
@@ -605,6 +610,7 @@ import {
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import vSelect from 'vue-select';
+import store from '@/store';
 import { required } from '@validations';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 import { ref } from '@vue/composition-api';
@@ -884,6 +890,9 @@ export default {
   computed: {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
+    },
+    getWidth() {
+      return store.getters['app/currentBreakPoint'];
     },
   },
   watch: {
