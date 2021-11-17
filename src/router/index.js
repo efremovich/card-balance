@@ -59,18 +59,19 @@ router.beforeEach((to, _, next) => {
 });
 Vue.mixin({
   beforeRouteLeave(to, from, next) {
-    if (from.name === 'card' && this.servicesLength === true) {
-      next(false);
-      this.$toast({
-        component: ToastificationContent,
-        props: {
-          title: 'Укажите вид(ы) топлива',
-          icon: 'AlertTriangleIcon',
-          variant: 'danger',
-        },
+    // if (from.name === 'card' && this.servicesLength === true) {
+    //   next(false);
+    //   this.$toast({
+    //     component: ToastificationContent,
+    //     props: {
+    //       title: 'Укажите вид(ы) топлива',
+    //       icon: 'AlertTriangleIcon',
+    //       variant: 'danger',
+    //     },
 
-      });
-    } else if ((from.name === 'card' && this.comparison === false && this.saveChange === false)
+    //   });
+    // }
+    if ((from.name === 'card' && this.comparison === false && this.saveChange === false)
     || (from.name === 'profile' && this.comparison === true && this.saveChange !== true)) {
       this.$bvModal
         .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
@@ -84,7 +85,21 @@ Vue.mixin({
           centered: true,
         }).then((value) => {
           this.saveChange = value;
-          if (this.saveChange === true) {
+          if (this.saveChange === true && this.servicesLength === true) {
+            next(false);
+            this.$refs.limitsForm.validate();
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Укажите вид(ы) топлива',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+
+            });
+          }
+
+          if (this.saveChange === true && this.servicesLength === false) {
             this.sendRequest();
             this.$toast({
               component: ToastificationContent,
@@ -94,6 +109,7 @@ Vue.mixin({
                 variant: 'success',
               },
             });
+            next(true);
             // this.$swal({
             //   position: 'center',
             //   icon: 'success',
@@ -109,11 +125,13 @@ Vue.mixin({
             //   buttonsStyling: false,
             // });
           }
-          if (this.saveChange !== null) {
+
+          if (this.saveChange === false) {
             next(true);
-          } else next(false);
+          }
+          // else next(false);
         });
-    } else {
+    } else { // Это позволяет уйти со страницы при повторной попытке выхода
       next(true);
     }
   },

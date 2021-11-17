@@ -35,7 +35,7 @@
               <b-form-input
                 v-model="filters"
                 autofocus
-                placeholder="Найти по номеру карты"
+                placeholder="Поиск по номеру карты"
                 class="search-product" />
               <b-input-group-append is-text>
                 <feather-icon
@@ -48,21 +48,21 @@
       </div>
       <div v-if="getWidth === 'xl'">
         <section
-          v-if="gotItemView !== 'grid-view'"
+          v-if="gotItemView !== 'list-view'"
           class="views">
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            :class="[product.card_status_id !== 'ACTIVE'?'':'ecommerce-card', 'mb-1', 'position-relative',]"
+            :class="[product.card_status_id !== 'ACTIVE'?'':'ecommerce-card', 'mb-1', 'position-relative', 'mr-9']"
             no-body>
             <div
-              class="d-flex flex-row flex-nowrap justify-content-around mt-1">
+              class="d-flex flex-row flex-nowrap justify-content-around">
               <b-button-group>
                 <b-button
                   v-b-tooltip.hover.top="'Внести изменения'"
                   variant="light"
                   tag="a"
-                  class="btn-wishlist mb-1"
+                  class="btn-wishlist"
                   @click="toggleProductInWishlist(product)">
                   <feather-icon
                     icon="SettingsIcon"
@@ -72,7 +72,7 @@
                   v-b-tooltip.hover.top="'Внести изменения'"
                   variant="light"
                   tag="a"
-                  class="btn-wishlist mb-1"
+                  class="btn-wishlist"
                   @click="toggleProductInWishlist(product)">
                   <feather-icon
                     icon="Edit3Icon"
@@ -82,7 +82,7 @@
                   v-b-tooltip.hover.top="'Удалить карту'"
                   variant="light"
                   tag="a"
-                  class="btn-cart mb-1"
+                  class="btn-cart"
                   @click="handleCartActionClick(product)">
                   <feather-icon
                     icon="Trash2Icon"
@@ -92,7 +92,7 @@
                   v-b-tooltip.hover.top="'Заблокировать карту'"
                   variant="light"
                   tag="a"
-                  class="btn-cart mb-1"
+                  class="btn-cart"
                   @click="handleCartActionClick(product)">
                   <feather-icon
                     icon="LockIcon"
@@ -101,7 +101,7 @@
               </b-button-group>
             </div>
             <b-link
-
+              class="w-80"
               :to="{ name: 'card', params: { card_number: product.number } }">
               <b-img
                 class="card-img-top "
@@ -181,7 +181,7 @@
             </div>
             <div class="d-flex flex-column align-items-center w-100 position-relative top-negative">
               <div
-                class="limits mt-2">
+                class="limits mt-1">
                 <label>Остаток по карте </label>
                 <b-progress
                   variant="success"
@@ -192,10 +192,10 @@
               <!-- <h5 class="mt-1 mb-2">
               Статус: {{ product.card_status.name }}
             </h5> -->
-              <div class="limits">
+              <div class="wrap">
                 <b-badge
                   :variant="colorMap[product.card_status_id]"
-                  class="w-100 badge-glow mb-1 mt-1 pl-1 pr-1">
+                  class="w-100 adge-glow mb-1 mt-1">
                   {{ product.card_status.name }}
                 </b-badge>
               </div>
@@ -217,18 +217,19 @@
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            class="table width d-flex justify-content-between  mb-1 rlt"
+            class="table d-flex justify-content-between  mb-1 rlt width"
             no-body>
             <div class="d-flex position-relative p-1 w-100">
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
-                <b-img
-                  class="card card-img-top w-100 "
-                  :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
-                <div class="limits top-negative">
+                <div class="d-flex flex-column align-items-center">
+                  <b-img
+                    class="card card-img-top w-100 "
+                    :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+
                   <b-badge
                     :variant="colorMap[product.card_status_id]"
-                    class="w-100 badge-glow">
+                    class="w-95 position-relative badge-glow b-80">
                     {{ product.card_status.name }}
                   </b-badge>
                 </div>
@@ -357,19 +358,78 @@
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            class="ecommerce-card mb-1"
+            :class="[product.card_status_id !== 'ACTIVE'?'':'ecommerce-card', 'mb-1', 'position-relative', 'mr-9']"
             no-body>
+            <div
+              class="d-flex flex-row flex-nowrap justify-content-around">
+              <b-button-group>
+                <b-button
+                  v-b-tooltip.hover.top="'Внести изменения'"
+                  variant="light"
+                  tag="a"
+                  class="btn-wishlist"
+                  @click="toggleProductInWishlist(product)">
+                  <feather-icon
+                    icon="SettingsIcon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Внести изменения'"
+                  variant="light"
+                  tag="a"
+                  class="btn-wishlist"
+                  @click="toggleProductInWishlist(product)">
+                  <feather-icon
+                    icon="Edit3Icon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Удалить карту'"
+                  variant="light"
+                  tag="a"
+                  class="btn-cart"
+                  @click="handleCartActionClick(product)">
+                  <feather-icon
+                    icon="Trash2Icon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Заблокировать карту'"
+                  variant="light"
+                  tag="a"
+                  class="btn-cart"
+                  @click="handleCartActionClick(product)">
+                  <feather-icon
+                    icon="LockIcon"
+                    class="mr-50" />
+                </b-button>
+              </b-button-group>
+            </div>
             <b-link
+              class="w-80"
               :to="{ name: 'card', params: { card_number: product.number } }">
               <b-img
-                class="card-img-top"
+                class="card-img-top "
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+              <!-- <span
+                v-if="product.card_status_id !== 'ACTIVE'"
+                class="position-absolute">
+                <feather-icon
+                  v-b-tooltip.hover.top="'Заявка в обработке'"
+                  icon="AlertTriangleIcon"
+                  class="position-absolute icon-margin"
+                  size="30" />
+              </span> -->
+              <!-- <feather-icon
+                v-b-tooltip.hover.top="'Заявка в обработке'"
+                icon="AlertTriangleIcon"
+                class="position-absolute icon-margin"
+                size="30" /> -->
             </b-link>
-
             <div class="item-options">
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
-                <div class="item-wrapper">
+                <div class="item-wrapper down">
                   <h6 class="item-price">
                     PIN: {{ product.pin }}
                   </h6>
@@ -378,7 +438,7 @@
                   </h5>
                 </div>
               </b-link>
-              <div
+              <!-- <div
                 class="d-flex flex-row flex-nowrap justify-content-around mt-2">
                 <b-button-group>
                   <b-button
@@ -422,19 +482,36 @@
                       class="mr-50" />
                   </b-button>
                 </b-button-group>
+              </div> -->
+            </div>
+            <div class="d-flex flex-column align-items-center w-100 position-relative top-negative">
+              <div
+                class="limits mt-1">
+                <label>Остаток по карте </label>
+                <b-progress
+                  variant="success"
+                  show-value
+                  :value="getValue(product.limits)"
+                  :max="getMaxValue(product.limits)" />
+              </div>
+              <!-- <h5 class="mt-1 mb-2">
+              Статус: {{ product.card_status.name }}
+            </h5> -->
+              <div class="wrap">
+                <b-badge
+                  :variant="colorMap[product.card_status_id]"
+                  class="w-100 adge-glow mb-1 mt-1">
+                  {{ product.card_status.name }}
+                </b-badge>
               </div>
             </div>
 
-            <div
-              class="limits pb-1">
-              <label>Остаток по карте </label>
-              <b-progress
-                variant="success"
-                show-value
-                class="mb-1"
-                :value="getValue(product.limits)"
-                :max="getMaxValue(product.limits)" />
-            </div>
+            <!-- <b-badge
+              class="badge-glow"
+              pill
+              variant="success">
+              {{ product.card_status.name }}
+            </b-badge> -->
           </b-card>
         </section>
         <b-card-body class="d-flex justify-content-center flex-wrap align-items-center">

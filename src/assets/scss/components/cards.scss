@@ -1,11 +1,19 @@
 .card {
     display: flex;
     flex-wrap: wrap;
-    justify-content: end;
+    justify-content: start;
     max-width: 390px;
     align-items: center;
     // padding: 3px;
-    min-width:270px;
+    min-width:360px;
+    min-height: 330px;
+    
+  }
+.b-80 {
+  bottom: 80px;
+}
+  .mr-9 {
+    margin-right: 9% !important;
   }
   // .pad {
   //   bottom:45% !important;
@@ -17,12 +25,33 @@
     align-items: flex-start;
     position: relative;
     left: 20px;
-    
+  }
+
+.w-95 {
+  width: 100%;
+  margin-top: 1%;
+
+}
+  .wrap {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // min-width: 200px;
+    //position: relative;
+    position: absolute;
+    top: 40px;
+  }
+
+  .w-80 {
+    width: 90%;
   }
 
   .down {
-    bottom: 110px;
+    bottom: 65px;
+    left:40px;
   }
+
 
   .min-w {
     min-width: 230px;
@@ -42,8 +71,13 @@
     width: 100%;
   }
   .width {
-    max-width:70% !important;
+    max-width:100% !important;
   }
+
+  .bottom-negative {
+top:60px;
+  }
+
   .table {
     &:hover {
       transform: translateY(-5px);
@@ -101,7 +135,8 @@
     flex-direction: column;
     align-items: center;
     min-width: 200px;
-    position: relative;
+    //position: relative;
+    position: absolute;
     // top: 25px;
   }
 
