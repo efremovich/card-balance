@@ -97,9 +97,7 @@ Vue.mixin({
               },
 
             });
-          }
-
-          if (this.saveChange === true && this.servicesLength === false) {
+          } else if (this.saveChange === true && this.servicesLength === false) {
             this.sendRequest();
             this.$toast({
               component: ToastificationContent,
@@ -110,23 +108,7 @@ Vue.mixin({
               },
             });
             next(true);
-            // this.$swal({
-            //   position: 'center',
-            //   icon: 'success',
-            //   title: 'Данные сохранены',
-            //   showConfirmButton: false,
-            //   timer: 1500,
-            //   customClass: {
-            //     confirmButton: 'btn btn-primary',
-            //   },
-            //   showClass: {
-            //     popup: 'animate__animated animate__flipInX',
-            //   },
-            //   buttonsStyling: false,
-            // });
-          }
-
-          if (this.saveChange === false) {
+          } else if (this.saveChange === false) {
             next(true);
           }
           // else next(false);

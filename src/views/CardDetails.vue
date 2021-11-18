@@ -660,7 +660,7 @@ export default {
     const firstDayOfMonth = ref(null);
     const labelService = ref({});
     const perPage = 5;
-    const selected = ref([]);
+    // const selected = ref([]);
     const pageOptions = [3, 5, 10];
     const currentPage = 1;
     const filter = ref(null);
@@ -678,7 +678,6 @@ export default {
     const limitsLength = ref(null);
     const cardEmitentCode = ref('0');
     const number = ref(null);
-
     const fields = [
       {
         key: 'service.full_name',
@@ -696,7 +695,6 @@ export default {
         sortable: true,
       },
     ];
-
     const unicodeLabel = {
       L: 'литров',
       RU: 'рублей',
@@ -748,20 +746,20 @@ export default {
       ).toLocaleDateString();
       return firstDay;
     };
-    const getAllService = () => {
-      useJwt.getService().then((response) => {
-        if (response.data.status) {
-          services.value = response.data.data;
-          services.value.forEach((el) => option.value.push(el.full_name));
-          const id = services.value.map((el) => el.id);
-          const label = services.value.map((el) => el.label);
-          // eslint-disable-next-line no-plusplus
-          for (let i = 0; i < id.length; i++) {
-            labelService.value[id[i]] = label[i];
-          }
-        }
-      });
-    };
+    // const getAllService = () => {
+    //   useJwt.getService().then((response) => {
+    //     if (response.data.status) {
+    //       services.value = response.data.data;
+    //       services.value.forEach((el) => option.value.push(el.full_name));
+    //       const id = services.value.map((el) => el.id);
+    //       const label = services.value.map((el) => el.label);
+    //       // eslint-disable-next-line no-plusplus
+    //       for (let i = 0; i < id.length; i++) {
+    //         labelService.value[id[i]] = label[i];
+    //       }
+    //     }
+    //   });
+    // };
     const getService = (params) => {
       useJwt.getServiceFromEmitent(`emitent_code=${params}`).then((response) => {
         if (response.data.status) {
@@ -796,7 +794,6 @@ export default {
               totalRows.value = transactions.value.data.total;
             }
             loadDone.value = false;
-
             // return transactions.value;
           });
       }
@@ -815,7 +812,6 @@ export default {
         }
       });
     };
-
     const cardDate = (params) => useJwt.getCardData(params).then((response) => {
       if (response.data.status) {
         cardData.value = response.data;
@@ -826,7 +822,6 @@ export default {
       }
       // return cardData;
     });
-
     const fetchProduct = () => {
       const { route } = useRouter();
       cardDate(route.value.params.card_number);
@@ -834,13 +829,14 @@ export default {
       download.value = true;
       showLoading.value = true;
     };
-
     fetchProduct();
     getAllTransactions();
-    // getService(cardEmitentCode.value);
-    getAllService();
+    // getAllService();
     getAllPeriods();
     getAllUnits();
+    // watch('cardData.data', () => {
+    //   console.log('WATCH');
+    // });
     return {
       product,
       cardEmitentCode,
@@ -868,7 +864,7 @@ export default {
       lastDay,
       firstDayOfMonth,
       option,
-      selected,
+      // selected,
       quantity,
       units,
       periods,
@@ -885,6 +881,7 @@ export default {
       saveChange: false,
       comparison: true,
       newLimits: {},
+      selectedServices: [],
     };
   },
   computed: {
@@ -904,9 +901,32 @@ export default {
         } else {
           this.comparison = false;
           this.newLimits = val;
+          const service = this.newLimits.map((el) => el.limit_services);
+          const emptyList = [];
+          service.map((el) => el.forEach((i) => emptyList.push(i)));
+          this.selectedServices = Array.from(new Set(emptyList));
+          const onlyServices = this.services.filter((f) => !this.selectedServices.includes(f.id));
+          this.services = onlyServices;
+
+          this.services.forEach((el) => this.option.push(el.full_name));
+          const id = this.services.map((el) => el.id);
+          const label = this.services.map((el) => el.label);
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < id.length; i++) {
+            this.labelService[id[i]] = label[i];
+          }
+          console.log(this.services);
+          // res = arr.filter(f => !brr.includes(f));
         }
       },
     },
+    // 'cardData.data.limits.limit': {
+    //   deep: true,
+    //   handler(val) {
+    //     console.log(val);
+    //   },
+
+    // },
     saveChange() {
       if (this.saveChange === true) {
         this.sendRequest();
@@ -914,15 +934,17 @@ export default {
     },
   },
   methods: {
-    labelSelected() {
-      const empty = [];
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < this.selected.length; i++) {
-        empty.push(this.labelService[this.selected[i]]);
-      }
-      return empty;
-    },
-
+    // labelSelected() {
+    //   const empty = [];
+    //   // eslint-disable-next-line no-plusplus
+    //   for (let i = 0; i < this.selected.length; i++) {
+    //     empty.push(this.labelService[this.selected[i]]);
+    //   }
+    //   return empty;
+    // },
+    // abc(arr) {
+    //   return arr.filter((el) !== arr.id);
+    // },
     showToast() {
       this.$toast({
         component: ToastificationContent,
@@ -933,7 +955,6 @@ export default {
         },
       });
     },
-
     refreshLimits(card) {
       useJwt.getCardData(this.cardData.data.number).then((response) => {
         if (response.data.status) {
@@ -963,7 +984,6 @@ export default {
         limits: this.newLimits,
         // limits: [
         //   {
-
         //     'card_number': this.cardData.data.number,
         //     'contract_id': this.cardData.data.contract_id,
         //     'value': 300,
@@ -982,7 +1002,6 @@ export default {
       useJwt.refreshDataUserLimits(request);
       // this.saveChange = false;
     },
-
     newLimitsData() {
       this.$refs.limitsForm.validate().then((success) => {
         if (success) {
@@ -994,7 +1013,6 @@ export default {
               icon: 'EditIcon',
               variant: 'success',
             },
-
           });
         } else {
           this.$toast({
@@ -1004,7 +1022,6 @@ export default {
               icon: 'AlertTriangleIcon',
               variant: 'danger',
             },
-
           });
         }
       });
@@ -1020,7 +1037,6 @@ export default {
     getRandom() {
       return Math.floor(Math.random() * 10000);
     },
-
     addLimit() {
       this.newLimit = {
         limit_period_code: 'MONTH',
@@ -1033,11 +1049,9 @@ export default {
       };
       this.cardData.data.limits.unshift(this.newLimit);
     },
-
     hide(index) {
       this.cardData.data.limits.splice(index, 1);
     },
-
     selectedService(arrService) {
       if (arrService === null) {
         return '';
@@ -1047,7 +1061,6 @@ export default {
       arrService.forEach((el) => (label += `${this.labelService[el]}, `));
       return label.split('').slice(0, -2).join('');
     },
-
     // selectedService(arrService) {
     //   const label = [];
     //   // eslint-disable-next-line no-return-assign
