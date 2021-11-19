@@ -142,7 +142,8 @@
                                 multiple
                                 label="full_name"
                                 :reduce="(services) => `${services.id}`"
-                                :options="services" />
+                                :options="services"
+                                @input="getVal" />
                               <small
                                 class="text-danger">{{ errors[0] }}</small>
                             </b-form-group>
@@ -204,7 +205,7 @@
                       <h4>Текущие лимиты по карте:</h4>
                       <hr>
                       <template
-                        v-for="limit in cardData.data.limits">
+                        v-for="(limit) in cardData.data.limits">
                         <div :key="limit.limit_id">
                           <h4>
                             Вид топлива:
@@ -774,6 +775,18 @@ export default {
         }
       });
     };
+
+    const getVal = (val) => {
+      services.value = services.value.filter((f) => !val.includes(f.id));
+      // services.value.forEach((el) => option.value.push(el.full_name));
+      // const id = services.value.map((el) => el.id);
+      // const label = services.value.map((el) => el.label);
+      // // eslint-disable-next-line no-plusplus
+      // for (let i = 0; i < id.length; i++) {
+      //   labelService.value[id[i]] = label[i];
+      // }
+      console.log(services.value);
+    };
     const getAllTransactions = () => {
       firstDayOfMonth.value = getFirstDay();
       lastDay.value = isToday();
@@ -831,20 +844,16 @@ export default {
     };
     fetchProduct();
     getAllTransactions();
-    // getAllService();
     getAllPeriods();
     getAllUnits();
-    // watch('cardData.data', () => {
-    //   console.log('WATCH');
-    // });
     return {
+      getVal,
       product,
       cardEmitentCode,
       limitsLength,
       unicodeLabel,
       showLoading,
       unfulfilledRequest,
-      // labelSelected
       source,
       download,
       cardData,
@@ -864,13 +873,11 @@ export default {
       lastDay,
       firstDayOfMonth,
       option,
-      // selected,
       quantity,
       units,
       periods,
       services,
       periodLabel,
-      // limits,
       number,
     };
   },
@@ -881,7 +888,6 @@ export default {
       saveChange: false,
       comparison: true,
       newLimits: {},
-      selectedServices: [],
     };
   },
   computed: {
@@ -901,32 +907,10 @@ export default {
         } else {
           this.comparison = false;
           this.newLimits = val;
-          const service = this.newLimits.map((el) => el.limit_services);
-          const emptyList = [];
-          service.map((el) => el.forEach((i) => emptyList.push(i)));
-          this.selectedServices = Array.from(new Set(emptyList));
-          const onlyServices = this.services.filter((f) => !this.selectedServices.includes(f.id));
-          this.services = onlyServices;
-
-          this.services.forEach((el) => this.option.push(el.full_name));
-          const id = this.services.map((el) => el.id);
-          const label = this.services.map((el) => el.label);
-          // eslint-disable-next-line no-plusplus
-          for (let i = 0; i < id.length; i++) {
-            this.labelService[id[i]] = label[i];
-          }
-          console.log(this.services);
-          // res = arr.filter(f => !brr.includes(f));
+          // const service = this.newLimits.map((el) => el.limit_services);
         }
       },
     },
-    // 'cardData.data.limits.limit': {
-    //   deep: true,
-    //   handler(val) {
-    //     console.log(val);
-    //   },
-
-    // },
     saveChange() {
       if (this.saveChange === true) {
         this.sendRequest();
@@ -934,16 +918,17 @@ export default {
     },
   },
   methods: {
-    // labelSelected() {
-    //   const empty = [];
-    //   // eslint-disable-next-line no-plusplus
-    //   for (let i = 0; i < this.selected.length; i++) {
-    //     empty.push(this.labelService[this.selected[i]]);
-    //   }
-    //   return empty;
-    // },
-    // abc(arr) {
-    //   return arr.filter((el) !== arr.id);
+    // getVal(val) {
+    //   console.log(val);
+    //   // const onlyServices = this.services.filter((f) => !val.includes(f.id));
+    //   // this.services = onlyServices;
+    //   // const id = this.services.map((el) => el.id);
+    //   // const label = this.services.map((el) => el.label);
+    //   // // eslint-disable-next-line no-plusplus
+    //   // for (let i = 0; i < id.length; i++) {
+    //   //   this.labelService.[id[i]] = label[i];
+    //   // }
+    //   // return this.services;
     // },
     showToast() {
       this.$toast({
@@ -1061,29 +1046,7 @@ export default {
       arrService.forEach((el) => (label += `${this.labelService[el]}, `));
       return label.split('').slice(0, -2).join('');
     },
-    // selectedService(arrService) {
-    //   const label = [];
-    //   // eslint-disable-next-line no-return-assign
-    //   // label.push(arrService);
-    //   // eslint-disable-next-line no-plusplus
-    //   for (let i = 0; i < arrService.length; i++) {
-    //     label.push(this.labelService[arrService[i]]);
-    //   }
-    //   return label;
-    // },
   },
-  // beforeRouteLeave(to, from, next) {
-  //   if ((JSON.stringify(this.cardData) === this.source)) {
-  //     // console.log((this.cardData));
-  //     // console.log(JSON.stringify(this.source));
-  //     console.log((JSON.stringify(this.cardData) === (JSON.stringify(this.source))));
-  //     console.log('GO');
-  //     next(true);
-  //   } else {
-  //     next(true);
-  //     console.log((JSON.stringify(this.cardData) === (JSON.stringify(this.source))));
-  //   }
-  // },
 };
 </script>
 
