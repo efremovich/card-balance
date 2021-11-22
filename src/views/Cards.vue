@@ -582,11 +582,11 @@ import {
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
-import { ref } from '@vue/composition-api';
+import { computed, ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
-
-import store from '@/store';
 import { mapGetters, mapMutations } from 'vuex';
+import store from '@/store';
+
 // import { $themeBreakpoints } from '@themeConfig';
 
 import { useShopUi, useShopRemoteData } from './useECommerceShop';
@@ -619,18 +619,14 @@ export default {
     BBadge,
   },
   setup() {
+    const contractID = computed(() => store.getters.CONTRACT_ID); // ранее contractID было null.
     const contract = ref('');
-    const contractID = ref(null);
+    // const contractID = ref(null); // // Была проблема при переходе с cardDetails в cards на тот же договор: не отслеживался договор к которому принадлежит карта
     const userData = JSON.parse(localStorage.getItem('userData'));
-    // console.log(store.state.contractId);
-    if (userData) {
+    if (userData && store.getters.CONTRACT_ID === null) {
       contract.value = userData;
       contractID.value = contract.value.contract.id;
     }
-    // } else {
-    //   contractID.value = store.state.contractId;
-    //   // console.log(store.state.CONTRACT_ID);
-    // }
 
     const showLoading = ref(true);
     const download = ref(false);

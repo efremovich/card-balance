@@ -60,7 +60,9 @@
               </b-button>
               <div class="mb-2">
                 <h6>
-                  Выдана: {{ cardData.data.limits[0].CreatedAt | formatOnlyDate }}
+                  Выдана: {{ cardData.data.expiry_date | formatOnlyDate }}
+                  <!-- указать дату выдачи карты не в лимитах, а выше иначе при удалении всех лимитов
+                  невозможно создать новый лимит -->
                 </h6>
               </div>
               <div class="mb-2">
@@ -778,14 +780,16 @@ export default {
 
     const getVal = (val) => {
       services.value = services.value.filter((f) => !val.includes(f.id));
-      // services.value.forEach((el) => option.value.push(el.full_name));
-      // const id = services.value.map((el) => el.id);
-      // const label = services.value.map((el) => el.label);
-      // // eslint-disable-next-line no-plusplus
-      // for (let i = 0; i < id.length; i++) {
-      //   labelService.value[id[i]] = label[i];
-      // }
+      services.value.forEach((el) => option.value.push(el.full_name));
+      const id = services.value.map((el) => el.id);
+      const label = services.value.map((el) => el.label);
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < id.length; i++) {
+        labelService.value[id[i]] = label[i];
+      }
       console.log(services.value);
+      // const c = d.map((el) => el.id);
+      // console.log('', c);
     };
     const getAllTransactions = () => {
       firstDayOfMonth.value = getFirstDay();
