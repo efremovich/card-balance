@@ -53,7 +53,7 @@
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            :class="[product.card_status_id !== 'ACTIVE'?'':'ecommerce-card', 'mb-1', 'position-relative', 'mr-9']"
+            class="ecommerce-card mb-1 position-relative mr-9"
             no-body>
             <div
               class="d-flex flex-row flex-nowrap justify-content-around">
@@ -115,11 +115,6 @@
                   class="position-absolute icon-margin"
                   size="30" />
               </span> -->
-              <!-- <feather-icon
-                v-b-tooltip.hover.top="'Заявка в обработке'"
-                icon="AlertTriangleIcon"
-                class="position-absolute icon-margin"
-                size="30" /> -->
             </b-link>
             <div class="item-options">
               <b-link
@@ -582,7 +577,7 @@ import {
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
-import { computed, ref } from '@vue/composition-api';
+import { ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
 import { mapGetters, mapMutations } from 'vuex';
 import store from '@/store';
@@ -619,13 +614,16 @@ export default {
     BBadge,
   },
   setup() {
-    const contractID = computed(() => store.getters.CONTRACT_ID); // ранее contractID было null.
+    // const contractID = computed(() => store.getters.CONTRACT_ID); // ранее contractID было null.
     const contract = ref('');
-    // const contractID = ref(null); // // Была проблема при переходе с cardDetails в cards на тот же договор: не отслеживался договор к которому принадлежит карта
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData && store.getters.CONTRACT_ID === null) {
+    const contractID = ref(null); // // Была проблема при переходе с cardDetails в cards на тот же договор: не отслеживался договор к которому принадлежит карта, т.е. выбранный пользователем договор
+
+    const userData = JSON.parse(localStorage.getItem('userData')); // загрузка номера контракта из localStorage
+    if (userData && store.getters.CONTRACT_ID === null) { // Если это убрать, то contractID  в виде computed  свойства тоже работает, но выдаёт warning
       contract.value = userData;
       contractID.value = contract.value.contract.id;
+    } else {
+      contractID.value = store.getters.CONTRACT_ID;
     }
 
     const showLoading = ref(true);
@@ -645,7 +643,6 @@ export default {
           products.value = response.data;
           showLoading.value = false;
           download.value = true;
-          // console.log(products.value, download.value, showLoading.value);
           totalRows.value = products.value.data.total;
 
           // if (filters.value !== '') {
@@ -675,6 +672,7 @@ export default {
       perPage,
       showLoading,
       download,
+      contractID,
     };
   },
   data() {
@@ -682,7 +680,6 @@ export default {
       view: true,
       page: 1,
       itemView: this.$store.state.cardsView,
-      // contractId: null,
       colorMap: {
         FINANCE: 'warning',
         ACTIVE: 'success',
@@ -709,8 +706,6 @@ export default {
       useJwt.getChangeCardsDate(this.contractID, `offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
-          // console.log(this.products.data.result);
-          // this.totalRows = this.products.data.result.length;
         }
       });
     },
@@ -746,8 +741,6 @@ export default {
       useJwt.getChangeCardsDate(this.contractID, `&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
-          // console.log(this.products.data);
-          // this.totalRows = this.products.data.total;
         }
       });
     },
@@ -757,7 +750,7 @@ export default {
           this.products = response.data;
           this.showLoading = false;
           this.download = true;
-          // console.log(products.value, download.value, showLoading.value);
+
           this.totalRows = this.products.data.total;
 
           if (val !== '') {
