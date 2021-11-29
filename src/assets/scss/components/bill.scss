@@ -1,6 +1,6 @@
 .A4 {
-  max-width: 797px;
-  max-height: 1127px;
+  width: 797px;
+  height: 1127px;
   background-color: white;
 }
 
@@ -9,7 +9,6 @@
   margin: 60px auto 0;
   width: 94%;
   align-content: flex-start;
-  padding-bottom: 3%;
 }
 
 .align-r {
@@ -22,7 +21,6 @@ p {
   text-align: left;
   padding-top: 10px;
   padding-left: 10px;
-  font-size: 1rem;
 }
 
 .bb {
@@ -48,6 +46,7 @@ p {
   width: 90%;
   margin: 0 auto;
 }
+
 .grid-container3 {
   display: grid;
   width: 90%;
@@ -90,14 +89,17 @@ p {
   font-size: 20px;
   font-weight: bold;
 }
+
 .marg {
   margin: 80px auto 0;
   width: 90%;
 }
+
 .i {
   text-align: center;
   vertical-align: baseline;
 }
+
 .grid-container2 {
   margin: 50px auto 0;
   display: grid;
@@ -111,35 +113,45 @@ p {
   height: 120px;
   border: 1px solid black;
 }
+
 .qw {
   grid-area: qw;
+  /* border: 1px solid black; */
 }
+
 .we {
   border-left: 1px solid black;
   border-right: 1px solid black;
 }
+
 .ew {
   grid-area: ew;
+  /* border: 1px solid black; */
 }
+
 .rtrt {
   grid-area: rtrt;
   border-top: 1px solid black;
 }
+
 .tyty {
   grid-area: tyty;
   border-top: 1px solid black;
   border-left: 1px solid black;
   border-right: 1px solid black;
 }
+
 .jhjh {
   grid-area: jhjh;
   border-top: 1px solid black;
 }
+
 .mnmn {
   grid-area: mnmn;
   border-right: 1px solid black;
   border-bottom: 1px solid black;
 }
+
 .vcvc {
   grid-area: vcvc;
   border-right: 1px solid black;
