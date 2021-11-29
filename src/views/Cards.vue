@@ -212,9 +212,9 @@
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            class="table d-flex justify-content-between  mb-1 rlt width"
+            class="table d-flex justify-content-between  mb-1 rlt width mh-300"
             no-body>
-            <div class="d-flex position-relative p-1 w-100">
+            <div class="d-flex position-relative pr-1 pl-1 w-100">
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
                 <div class="d-flex flex-column align-items-center">

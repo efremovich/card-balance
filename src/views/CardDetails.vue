@@ -144,7 +144,7 @@
                                 multiple
                                 label="full_name"
                                 :reduce="(services) => `${services.id}`"
-                                :options="services"/>
+                                :options="services" />
                               <small
                                 class="text-danger">{{ errors[0] }}</small>
                             </b-form-group>
@@ -156,8 +156,8 @@
                               </h6>
                               <div class="mr-1 mw-20">
                                 <b-form-input
-                                  v-model="limit.value"
-                                  type="number" />
+                                  v-model.number="limit.value"
+                                  />
                               </div>
                               <b-col
                                 :class="[getWidth === 'xs'? '': 'mr-1']">
