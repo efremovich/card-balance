@@ -208,7 +208,16 @@ export default {
                     });
                   })
                   .catch((error) => {
-                    console.log('На форме:', error);
+                    // console.log('На форме:', error);
+                    this.$toast({
+                      component: ToastificationContent,
+                      position: 'top-right',
+                      props: {
+                        title: 'Произошла ошибка при входе',
+                        icon: 'AlignRightIcon ',
+                        variant: 'danger',
+                      },
+                    });
 
                     this.$refs.loginForm.setErrors(error.response.data.message);
                   });

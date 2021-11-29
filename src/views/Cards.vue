@@ -35,7 +35,7 @@
               <b-form-input
                 v-model="filters"
                 autofocus
-                placeholder="Найти по номеру карты"
+                placeholder="Поиск по номеру карты"
                 class="search-product" />
               <b-input-group-append is-text>
                 <feather-icon
@@ -48,23 +48,78 @@
       </div>
       <div v-if="getWidth === 'xl'">
         <section
-          v-if="gotItemView === 'grid-view'"
+          v-if="gotItemView !== 'list-view'"
           class="views">
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            class="ecommerce-card mb-1"
+            class="ecommerce-card mb-1 position-relative mr-9"
             no-body>
+            <div
+              class="d-flex flex-row flex-nowrap justify-content-around">
+              <b-button-group>
+                <b-button
+                  v-b-tooltip.hover.top="'Внести изменения'"
+                  variant="light"
+                  tag="a"
+                  class="btn-wishlist"
+                  @click="toggleProductInWishlist(product)">
+                  <feather-icon
+                    icon="SettingsIcon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Внести изменения'"
+                  variant="light"
+                  tag="a"
+                  class="btn-wishlist"
+                  @click="toggleProductInWishlist(product)">
+                  <feather-icon
+                    icon="Edit3Icon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Удалить карту'"
+                  variant="light"
+                  tag="a"
+                  class="btn-cart"
+                  @click="handleCartActionClick(product)">
+                  <feather-icon
+                    icon="Trash2Icon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Заблокировать карту'"
+                  variant="light"
+                  tag="a"
+                  class="btn-cart"
+                  @click="handleCartActionClick(product)">
+                  <feather-icon
+                    icon="LockIcon"
+                    class="mr-50" />
+                </b-button>
+              </b-button-group>
+            </div>
             <b-link
+              class="w-80"
               :to="{ name: 'card', params: { card_number: product.number } }">
               <b-img
-                class="card-img-top"
+                class="card-img-top "
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+              <!-- <span
+                v-if="product.card_status_id !== 'ACTIVE'"
+                class="position-absolute">
+                <feather-icon
+                  v-b-tooltip.hover.top="'Заявка в обработке'"
+                  icon="AlertTriangleIcon"
+                  class="position-absolute icon-margin"
+                  size="30" />
+              </span> -->
             </b-link>
             <div class="item-options">
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
-                <div class="item-wrapper">
+                <div class="item-wrapper down">
                   <h6 class="item-price">
                     PIN: {{ product.pin }}
                   </h6>
@@ -73,7 +128,7 @@
                   </h5>
                 </div>
               </b-link>
-              <div
+              <!-- <div
                 class="d-flex flex-row flex-nowrap justify-content-around mt-2">
                 <b-button-group>
                   <b-button
@@ -117,37 +172,62 @@
                       class="mr-50" />
                   </b-button>
                 </b-button-group>
+              </div> -->
+            </div>
+            <div class="d-flex flex-column align-items-center w-100 position-relative top-negative">
+              <div
+                class="limits mt-1">
+                <label>Остаток по карте </label>
+                <b-progress
+                  variant="success"
+                  show-value
+                  :value="getValue(product.limits)"
+                  :max="getMaxValue(product.limits)" />
+              </div>
+              <!-- <h5 class="mt-1 mb-2">
+              Статус: {{ product.card_status.name }}
+            </h5> -->
+              <div class="wrap">
+                <b-badge
+                  :variant="colorMap[product.card_status_id]"
+                  class="w-100 adge-glow mb-1 mt-1">
+                  {{ product.card_status.name }}
+                </b-badge>
               </div>
             </div>
 
-            <div
-              class="limits pb-1">
-              <label>Остаток по карте </label>
-              <b-progress
-                variant="success"
-                show-value
-                class="mb-1"
-                :value="getValue(product.limits)"
-                :max="getMaxValue(product.limits)" />
-            </div>
+            <!-- <b-badge
+              class="badge-glow"
+              pill
+              variant="success">
+              {{ product.card_status.name }}
+            </b-badge> -->
           </b-card>
         </section>
 
         <!----ТАБЛИЦА---->
         <section
           v-else
-          class="d-flex flex-column">
+          class="d-flex flex-column align-items-center">
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            class="table width d-flex justify-content-between  mb-1 rlt w-100 "
+            class="table d-flex justify-content-between  mb-1 rlt width"
             no-body>
             <div class="d-flex position-relative p-1 w-100">
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
-                <b-img
-                  class="card card-img-top w-100 "
-                  :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+                <div class="d-flex flex-column align-items-center">
+                  <b-img
+                    class="card card-img-top w-100 "
+                    :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+
+                  <b-badge
+                    :variant="colorMap[product.card_status_id]"
+                    class="w-95 position-relative badge-glow b-80">
+                    {{ product.card_status.name }}
+                  </b-badge>
+                </div>
               </b-link>
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
@@ -161,7 +241,7 @@
                 </div>
               </b-link>
 
-              <div class="d-flex flex-column w-60 mr-1 ml-1">
+              <div class="d-flex flex-column w-60 mr-1 ml-1 mt-2">
                 <label> Остаток: {{ getValue(product.limits) }}</label>
                 <div
                   v-for="(i) in product.limits"
@@ -175,17 +255,17 @@
                     :max="i.value" />
                 </div>
               </div>
-              <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1">
+              <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1 mt-2">
                 <h5> Держатель: {{ product.holder }} </h5>
                 <h5> Последняя активность </h5>
-                <h5> Индекс активности </h5>
+                <h5> Индекс активности: </h5>
               </div>
               <div
                 class="d-flex flex-column align-items-start mt-2">
                 <b-button
                   variant="light"
                   tag="a"
-                  class="btn-wishlist mb-1 mw-100 p-1"
+                  class="btn-wishlist mb-1 mw-100 p-1 min-w"
                   @click="toggleProductInWishlist(product)">
                   <feather-icon
                     icon="EditIcon"
@@ -195,7 +275,7 @@
                 <b-button
                   variant="light"
                   tag="a"
-                  class="btn-wishlist mb-1 mw-100 p-1"
+                  class="btn-wishlist mb-1 mw-100 p-1 min-w"
                   @click="toggleProductInWishlist(product)">
                   <feather-icon
                     icon="LockIcon"
@@ -205,7 +285,7 @@
                 <b-button
                   variant="light"
                   tag="a"
-                  class="btn-wishlist mb-1 mw-100 p-1"
+                  class="btn-wishlist mb-1 mw-100 p-1 min-w"
                   @click="toggleProductInWishlist(product)">
                   <feather-icon
                     icon="NavigationIcon"
@@ -215,7 +295,7 @@
                 <b-button
                   variant="light"
                   tag="a"
-                  class="btn-wishlist mw-100 mb-1 w-100 p-1"
+                  class="btn-wishlist mw-100 mb-1 w-100 p-1 min-w"
                   @click="toggleProductInWishlist(product)">
                   <feather-icon
                     icon="ListIcon"
@@ -273,18 +353,78 @@
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            class="ecommerce-card mb-1"
+            :class="[product.card_status_id !== 'ACTIVE'?'':'ecommerce-card', 'mb-1', 'position-relative', getWidth === 'xl'?'mr-9':'']"
             no-body>
+            <div
+              class="d-flex flex-row flex-nowrap justify-content-around">
+              <b-button-group>
+                <b-button
+                  v-b-tooltip.hover.top="'Внести изменения'"
+                  variant="light"
+                  tag="a"
+                  class="btn-wishlist"
+                  @click="toggleProductInWishlist(product)">
+                  <feather-icon
+                    icon="SettingsIcon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Внести изменения'"
+                  variant="light"
+                  tag="a"
+                  class="btn-wishlist"
+                  @click="toggleProductInWishlist(product)">
+                  <feather-icon
+                    icon="Edit3Icon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Удалить карту'"
+                  variant="light"
+                  tag="a"
+                  class="btn-cart"
+                  @click="handleCartActionClick(product)">
+                  <feather-icon
+                    icon="Trash2Icon"
+                    class="mr-50" />
+                </b-button>
+                <b-button
+                  v-b-tooltip.hover.top="'Заблокировать карту'"
+                  variant="light"
+                  tag="a"
+                  class="btn-cart"
+                  @click="handleCartActionClick(product)">
+                  <feather-icon
+                    icon="LockIcon"
+                    class="mr-50" />
+                </b-button>
+              </b-button-group>
+            </div>
             <b-link
+              class="w-80"
               :to="{ name: 'card', params: { card_number: product.number } }">
               <b-img
                 class="card-img-top"
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+              <!-- <span
+                v-if="product.card_status_id !== 'ACTIVE'"
+                class="position-absolute">
+                <feather-icon
+                  v-b-tooltip.hover.top="'Заявка в обработке'"
+                  icon="AlertTriangleIcon"
+                  class="position-absolute icon-margin"
+                  size="30" />
+              </span> -->
+              <!-- <feather-icon
+                v-b-tooltip.hover.top="'Заявка в обработке'"
+                icon="AlertTriangleIcon"
+                class="position-absolute icon-margin"
+                size="30" /> -->
             </b-link>
             <div class="item-options">
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
-                <div class="item-wrapper">
+                <div class="item-wrapper down">
                   <h6 class="item-price">
                     PIN: {{ product.pin }}
                   </h6>
@@ -293,7 +433,7 @@
                   </h5>
                 </div>
               </b-link>
-              <div
+              <!-- <div
                 class="d-flex flex-row flex-nowrap justify-content-around mt-2">
                 <b-button-group>
                   <b-button
@@ -337,19 +477,36 @@
                       class="mr-50" />
                   </b-button>
                 </b-button-group>
+              </div> -->
+            </div>
+            <div class="d-flex flex-column align-items-center w-100 position-relative top-negative">
+              <div
+                class="limits mt-1">
+                <label>Остаток по карте </label>
+                <b-progress
+                  variant="success"
+                  show-value
+                  :value="getValue(product.limits)"
+                  :max="getMaxValue(product.limits)" />
+              </div>
+              <!-- <h5 class="mt-1 mb-2">
+              Статус: {{ product.card_status.name }}
+            </h5> -->
+              <div class="wrap">
+                <b-badge
+                  :variant="colorMap[product.card_status_id]"
+                  class="w-100 adge-glow mb-1 mt-1">
+                  {{ product.card_status.name }}
+                </b-badge>
               </div>
             </div>
 
-            <div
-              class="limits pb-1">
-              <label>Остаток по карте </label>
-              <b-progress
-                variant="success"
-                show-value
-                class="mb-1"
-                :value="getValue(product.limits)"
-                :max="getMaxValue(product.limits)" />
-            </div>
+            <!-- <b-badge
+              class="badge-glow"
+              pill
+              variant="success">
+              {{ product.card_status.name }}
+            </b-badge> -->
           </b-card>
         </section>
         <b-card-body class="d-flex justify-content-center flex-wrap align-items-center">
@@ -416,14 +573,15 @@ import {
   BFormRadioGroup,
   BFormRadio,
   BCardBody,
+  BBadge,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
-import { watch, ref } from '@vue/composition-api';
+import { ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
-
-import store from '@/store';
 import { mapGetters, mapMutations } from 'vuex';
+import store from '@/store';
+
 // import { $themeBreakpoints } from '@themeConfig';
 
 import { useShopUi, useShopRemoteData } from './useECommerceShop';
@@ -453,15 +611,21 @@ export default {
     BInputGroupAppend,
     BFormRadioGroup,
     BFormRadio,
+    BBadge,
   },
   setup() {
+    // const contractID = computed(() => store.getters.CONTRACT_ID); // ранее contractID было null.
     const contract = ref('');
-    const contractID = ref('');
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
+    const contractID = ref(null); // // Была проблема при переходе с cardDetails в cards на тот же договор: не отслеживался договор к которому принадлежит карта, т.е. выбранный пользователем договор
+
+    const userData = JSON.parse(localStorage.getItem('userData')); // загрузка номера контракта из localStorage
+    if (userData && store.getters.CONTRACT_ID === null) { // Если это убрать, то contractID  в виде computed  свойства тоже работает, но выдаёт warning
       contract.value = userData;
       contractID.value = contract.value.contract.id;
+    } else {
+      contractID.value = store.getters.CONTRACT_ID;
     }
+
     const showLoading = ref(true);
     const download = ref(false);
     const filters = ref('');
@@ -479,21 +643,20 @@ export default {
           products.value = response.data;
           showLoading.value = false;
           download.value = true;
-          // console.log(products.value, download.value, showLoading.value);
           totalRows.value = products.value.data.total;
 
-          if (filters.value !== '') {
-            products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
-          }
+          // if (filters.value !== '') {
+          //   products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
+          // }
         }
       });
     };
 
     fetchShopProducts();
 
-    watch([filters], () => {
-      fetchShopProducts();
-    });
+    // watch([filters], () => {
+    //   fetchShopProducts();
+    // });
 
     return {
       filters,
@@ -509,6 +672,7 @@ export default {
       perPage,
       showLoading,
       download,
+      contractID,
     };
   },
   data() {
@@ -516,7 +680,16 @@ export default {
       view: true,
       page: 1,
       itemView: this.$store.state.cardsView,
-      contractId: null,
+      colorMap: {
+        FINANCE: 'warning',
+        ACTIVE: 'success',
+        BLOCK: 'danger',
+        BROKEN: 'danger',
+        DELETED: 'secondary',
+        LOST: 'secondary',
+        RETURN: 'secondary',
+        SOLD: 'secondary',
+      },
     };
   },
   computed: {
@@ -530,35 +703,59 @@ export default {
   },
   watch: {
     perPage() {
-      useJwt.getChangeCardsDate(this.contractId, `offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.contractID, `offset=${this.currentPage * this.perPage}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
-          // console.log(this.products.data.result);
-          // this.totalRows = this.products.data.result.length;
         }
       });
     },
     gotSelected(val) {
-      this.contractId = val;
-      useJwt.getChangeCardsDate(this.contractId, `offset=${this.currentPage * this.page}&limit=${this.perPage}`).then((response) => {
-        if (response.data.status) {
-          this.products = response.data;
-          this.totalRows = this.products.data.total;
+      this.contractID = val;
+      if (this.currentPage === 1) {
+        useJwt.getChangeCardsDate(this.contractID, `offset=0&limit=${this.perPage}`).then((response) => {
+          if (response.data.status) {
+            this.products = response.data;
+            this.totalRows = this.products.data.total;
 
           // if (this.filters !== '') {
           //   this.products.data.result = response.data.data.result.filter((product) => product.number.includes(this.filters));
           // }
-        }
-      });
+          }
+        });
+      } else {
+        useJwt.getChangeCardsDate(this.contractID, `offset=${this.currentPage * this.page}&limit=${this.perPage}`).then((response) => {
+          if (response.data.status) {
+            this.products = response.data;
+            this.totalRows = this.products.data.total;
+
+          // if (this.filters !== '') {
+          //   this.products.data.result = response.data.data.result.filter((product) => product.number.includes(this.filters));
+          // }
+          }
+        });
+      }
     },
     currentPage() {
       this.page = this.currentPage;
       // this.$store.dispatch('getSelectedPages', this.page);
-      useJwt.getChangeCardsDate(this.contractId, `&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.contractID, `&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
-          // console.log(this.products.data);
-          // this.totalRows = this.products.data.total;
+        }
+      });
+    },
+    filters(val) {
+      useJwt.getChangeCardsDate(this.gotSelected, `offset=0&limit=${this.perPage}`).then((response) => {
+        if (response.data.status) {
+          this.products = response.data;
+          this.showLoading = false;
+          this.download = true;
+
+          this.totalRows = this.products.data.total;
+
+          if (val !== '') {
+            this.products.data.result = response.data.data.result.filter((product) => product.number.includes(val));
+          }
         }
       });
     },
@@ -567,8 +764,8 @@ export default {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData && this.gotSelected === null) {
       this.contract = userData;
-      this.contractId = this.contract.contract.id;
-    } else this.contractId = this.gotSelected;
+      this.contractID = this.contract.contract.id;
+    } else this.contractID = this.gotSelected;
   },
 
   methods: {

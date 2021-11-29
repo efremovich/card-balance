@@ -1,5 +1,9 @@
 import Vue from 'vue';
+
 import VueRouter from 'vue-router';
+// eslint-disable-next-line import/no-cycle
+// import store from '@/store';
+// import { mapGetters } from 'vuex';
 import 'animate.css';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 // import 'swiper/swiper-bundle.css';
@@ -11,9 +15,13 @@ import {
   getUserData,
   getHomeRouteForLoggedInUser,
 } from '@/auth/utils';
+// eslint-disable-next-line import/no-cycle
 import pages from './pages';
 
 Vue.use(VueRouter);
+// import { useStore } from 'vuex';
+
+// const store = useStore();
 
 const router = new VueRouter({
   mode: 'history',
@@ -51,18 +59,19 @@ router.beforeEach((to, _, next) => {
 });
 Vue.mixin({
   beforeRouteLeave(to, from, next) {
-    if (from.name === 'card' && this.servicesLength === true) {
-      next(false);
-      this.$toast({
-        component: ToastificationContent,
-        props: {
-          title: 'Укажите вид(ы) топлива',
-          icon: 'AlertTriangleIcon',
-          variant: 'danger',
-        },
+    // if (from.name === 'card' && this.servicesLength === true) {
+    //   next(false);
+    //   this.$toast({
+    //     component: ToastificationContent,
+    //     props: {
+    //       title: 'Укажите вид(ы) топлива',
+    //       icon: 'AlertTriangleIcon',
+    //       variant: 'danger',
+    //     },
 
-      });
-    } else if ((from.name === 'card' && this.comparison === false && this.saveChange === false)
+    //   });
+    // }
+    if ((from.name === 'card' && this.comparison === false && this.saveChange === false)
     || (from.name === 'profile' && this.comparison === true && this.saveChange !== true)) {
       this.$bvModal
         .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
@@ -76,7 +85,20 @@ Vue.mixin({
           centered: true,
         }).then((value) => {
           this.saveChange = value;
-          if (this.saveChange === true) {
+          if (this.saveChange === true && this.servicesLength === true) {
+            next(false);
+            this.$refs.limitsForm.validate();
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Укажите вид(ы) топлива',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+
+            });
+          } else if (this.saveChange === true && this.servicesLength === false) {
+            this.sendRequest();
             this.$toast({
               component: ToastificationContent,
               props: {
@@ -85,26 +107,13 @@ Vue.mixin({
                 variant: 'success',
               },
             });
-            // this.$swal({
-            //   position: 'center',
-            //   icon: 'success',
-            //   title: 'Данные сохранены',
-            //   showConfirmButton: false,
-            //   timer: 1500,
-            //   customClass: {
-            //     confirmButton: 'btn btn-primary',
-            //   },
-            //   showClass: {
-            //     popup: 'animate__animated animate__flipInX',
-            //   },
-            //   buttonsStyling: false,
-            // });
-          }
-          if (this.saveChange !== null) {
             next(true);
-          } else next(false);
+          } else if (this.saveChange === false) {
+            next(true);
+          }
+          // else next(false);
         });
-    } else {
+    } else { // Это позволяет уйти со страницы при повторной попытке выхода
       next(true);
     }
   },

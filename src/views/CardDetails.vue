@@ -11,7 +11,8 @@
       v-if="download">
       <div
         v-if="limitsLength>0">
-        <b-card>
+        <b-card
+          :class="[getWidth === 'xs'?'max-w': '']">
           <b-card-header
             class="d-flex justify-content-start">
             <b-link :to="{ name: 'cards' }">
@@ -27,7 +28,7 @@
           <div class="d-flex flex-wrap justify-content-between">
             <div class="image">
               <b-img
-                class="card-img-top"
+                :class="['card-img-top', getWidth === 'xs'? 'min-w270':'']"
                 :src="
                   require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
                 " />
@@ -59,7 +60,9 @@
               </b-button>
               <div class="mb-2">
                 <h6>
-                  Выдана: {{ cardData.data.limits[0].CreatedAt | formatOnlyDate }}
+                  Выдана: {{ cardData.data.expiry_date | formatOnlyDate }}
+                  <!-- указать дату выдачи карты не в лимитах, а выше иначе при удалении всех лимитов
+                  невозможно создать новый лимит -->
                 </h6>
               </div>
               <div class="mb-2">
@@ -141,29 +144,34 @@
                                 multiple
                                 label="full_name"
                                 :reduce="(services) => `${services.id}`"
-                                :options="services" />
+                                :options="services"/>
                               <small
                                 class="text-danger">{{ errors[0] }}</small>
                             </b-form-group>
                           </validation-provider>
-                          <div class="d-flex flex-wrap align-items-center mt-1">
-                            <h6 class="mr-1">
-                              Лимит
-                            </h6>
-                            <div class="mr-1 mw-20">
-                              <b-form-input
-                                v-model="limit.value" />
+                          <div :class="['d-flex', 'flex-wrap', 'mt-1', getWidth === 'xs'?'align-items-center': '']">
+                            <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1']">
+                              <h6 class="mr-1">
+                                Лимит
+                              </h6>
+                              <div class="mr-1 mw-20">
+                                <b-form-input
+                                  v-model="limit.value"
+                                  type="number" />
+                              </div>
+                              <b-col
+                                :class="[getWidth === 'xs'? '': 'mr-1']">
+                                <v-select
+                                  v-model="limit.limit_unit_code"
+                                  :clearable="false"
+                                  :reduce="(unit) => unit.code"
+                                  :options="units" />
+                              </b-col>
                             </div>
-                            <b-col class="mr-1">
-                              <v-select
-                                v-model="limit.limit_unit_code"
-                                :clearable="false"
-                                :reduce="(unit) => unit.code"
-                                :options="units" />
-                            </b-col>
                             <b-col>
                               <v-select
                                 v-model="limit.limit_period_code"
+                                :class="[getWidth === 'xs'?'mt-1 mb-1': '']"
                                 :clearable="false"
                                 :reduce="(period) => period.code"
                                 :options="periods" />
@@ -199,7 +207,7 @@
                       <h4>Текущие лимиты по карте:</h4>
                       <hr>
                       <template
-                        v-for="limit in cardData.data.limits">
+                        v-for="(limit) in cardData.data.limits">
                         <div :key="limit.limit_id">
                           <h4>
                             Вид топлива:
@@ -605,6 +613,7 @@ import {
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import vSelect from 'vue-select';
+import store from '@/store';
 import { required } from '@validations';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 import { ref } from '@vue/composition-api';
@@ -643,6 +652,7 @@ export default {
   },
   setup() {
     const cardData = ref({});
+    const unfulfilledRequest = ref(null); // неисполненная заявка
     const product = ref(null);
     const value = ref(null);
     const totalRows = ref(null);
@@ -653,7 +663,7 @@ export default {
     const firstDayOfMonth = ref(null);
     const labelService = ref({});
     const perPage = 5;
-    const selected = ref([]);
+    // const selected = ref([]);
     const pageOptions = [3, 5, 10];
     const currentPage = 1;
     const filter = ref(null);
@@ -667,11 +677,10 @@ export default {
     const end = ref(null);
     const contractId = ref(null);
     // const limits = ref([]);
-    const source = ref(null);
+    const source = ref({});
     const limitsLength = ref(null);
     const cardEmitentCode = ref('0');
     const number = ref(null);
-
     const fields = [
       {
         key: 'service.full_name',
@@ -689,7 +698,6 @@ export default {
         sortable: true,
       },
     ];
-
     const unicodeLabel = {
       L: 'литров',
       RU: 'рублей',
@@ -741,20 +749,20 @@ export default {
       ).toLocaleDateString();
       return firstDay;
     };
-    const getAllService = () => {
-      useJwt.getService().then((response) => {
-        if (response.data.status) {
-          services.value = response.data.data;
-          services.value.forEach((el) => option.value.push(el.full_name));
-          const id = services.value.map((el) => el.id);
-          const label = services.value.map((el) => el.label);
-          // eslint-disable-next-line no-plusplus
-          for (let i = 0; i < id.length; i++) {
-            labelService.value[id[i]] = label[i];
-          }
-        }
-      });
-    };
+    // const getAllService = () => {
+    //   useJwt.getService().then((response) => {
+    //     if (response.data.status) {
+    //       services.value = response.data.data;
+    //       services.value.forEach((el) => option.value.push(el.full_name));
+    //       const id = services.value.map((el) => el.id);
+    //       const label = services.value.map((el) => el.label);
+    //       // eslint-disable-next-line no-plusplus
+    //       for (let i = 0; i < id.length; i++) {
+    //         labelService.value[id[i]] = label[i];
+    //       }
+    //     }
+    //   });
+    // };
     const getService = (params) => {
       useJwt.getServiceFromEmitent(`emitent_code=${params}`).then((response) => {
         if (response.data.status) {
@@ -768,6 +776,20 @@ export default {
           }
         }
       });
+    };
+
+    const getVal = (val) => {
+      services.value = services.value.filter((f) => !val.includes(f.id));
+      services.value.forEach((el) => option.value.push(el.full_name));
+      const id = services.value.map((el) => el.id);
+      const label = services.value.map((el) => el.label);
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < id.length; i++) {
+        labelService.value[id[i]] = label[i];
+      }
+      console.log(services.value);
+      // const c = d.map((el) => el.id);
+      // console.log('', c);
     };
     const getAllTransactions = () => {
       firstDayOfMonth.value = getFirstDay();
@@ -789,7 +811,6 @@ export default {
               totalRows.value = transactions.value.data.total;
             }
             loadDone.value = false;
-
             // return transactions.value;
           });
       }
@@ -808,7 +829,6 @@ export default {
         }
       });
     };
-
     const cardDate = (params) => useJwt.getCardData(params).then((response) => {
       if (response.data.status) {
         cardData.value = response.data;
@@ -819,7 +839,6 @@ export default {
       }
       // return cardData;
     });
-
     const fetchProduct = () => {
       const { route } = useRouter();
       cardDate(route.value.params.card_number);
@@ -827,20 +846,18 @@ export default {
       download.value = true;
       showLoading.value = true;
     };
-
     fetchProduct();
     getAllTransactions();
-    // getService(cardEmitentCode.value);
-    getAllService();
     getAllPeriods();
     getAllUnits();
     return {
+      getVal,
       product,
       cardEmitentCode,
       limitsLength,
       unicodeLabel,
       showLoading,
-      // labelSelected
+      unfulfilledRequest,
       source,
       download,
       cardData,
@@ -860,13 +877,11 @@ export default {
       lastDay,
       firstDayOfMonth,
       option,
-      selected,
       quantity,
       units,
       periods,
       services,
       periodLabel,
-      // limits,
       number,
     };
   },
@@ -876,11 +891,15 @@ export default {
       required,
       saveChange: false,
       comparison: true,
+      newLimits: {},
     };
   },
   computed: {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
+    },
+    getWidth() {
+      return store.getters['app/currentBreakPoint'];
     },
   },
   watch: {
@@ -891,20 +910,30 @@ export default {
           this.comparison = true;
         } else {
           this.comparison = false;
+          this.newLimits = val;
+          // const service = this.newLimits.map((el) => el.limit_services);
         }
       },
     },
+    saveChange() {
+      if (this.saveChange === true) {
+        this.sendRequest();
+      }
+    },
   },
   methods: {
-    labelSelected() {
-      const empty = [];
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < this.selected.length; i++) {
-        empty.push(this.labelService[this.selected[i]]);
-      }
-      return empty;
-    },
-
+    // getVal(val) {
+    //   console.log(val);
+    //   // const onlyServices = this.services.filter((f) => !val.includes(f.id));
+    //   // this.services = onlyServices;
+    //   // const id = this.services.map((el) => el.id);
+    //   // const label = this.services.map((el) => el.label);
+    //   // // eslint-disable-next-line no-plusplus
+    //   // for (let i = 0; i < id.length; i++) {
+    //   //   this.labelService.[id[i]] = label[i];
+    //   // }
+    //   // return this.services;
+    // },
     showToast() {
       this.$toast({
         component: ToastificationContent,
@@ -915,7 +944,6 @@ export default {
         },
       });
     },
-
     refreshLimits(card) {
       useJwt.getCardData(this.cardData.data.number).then((response) => {
         if (response.data.status) {
@@ -927,7 +955,42 @@ export default {
         }
       });
     },
-
+    sendRequest() {
+      const request = [{
+        // ID: 45,
+        // CreatedAt: '2021-11-12T14:52:37.4280415+03:00',
+        // UpdatedAt: '2021-11-12T14:52:37.4280415+03:00',
+        // DeletedAt: null,
+        // card_number: this.cardData.data.number,
+        // request_type_code: 'EDIT',
+        // request_status_code: 'CREATED',
+        // contract_id: this.cardData.data.contract_id,
+        // limits: this.newLimits, // всё о лимитах
+        card_number: this.cardData.data.number,
+        request_type_code: 'EDIT',
+        request_status_code: 'CREATED',
+        contract_id: this.cardData.data.contract_id,
+        limits: this.newLimits,
+        // limits: [
+        //   {
+        //     'card_number': this.cardData.data.number,
+        //     'contract_id': this.cardData.data.contract_id,
+        //     'value': 300,
+        //     'limit_unit_code': 'L',
+        //     'limit_type_code': 'INDIVID',
+        //     'limit_period_code': 'MONTH',
+        //     'consumption': 0,
+        //     'limit_common': [
+        //       {
+        //         'service_id': '6b6f5f4a-1232-11e7-aaff-0025225e28fb',
+        //       },
+        //     ],
+        //   },
+        // ],
+      }];
+      useJwt.refreshDataUserLimits(request);
+      // this.saveChange = false;
+    },
     newLimitsData() {
       this.$refs.limitsForm.validate().then((success) => {
         if (success) {
@@ -939,7 +1002,6 @@ export default {
               icon: 'EditIcon',
               variant: 'success',
             },
-
           });
         } else {
           this.$toast({
@@ -949,7 +1011,6 @@ export default {
               icon: 'AlertTriangleIcon',
               variant: 'danger',
             },
-
           });
         }
       });
@@ -965,7 +1026,6 @@ export default {
     getRandom() {
       return Math.floor(Math.random() * 10000);
     },
-
     addLimit() {
       this.newLimit = {
         limit_period_code: 'MONTH',
@@ -978,11 +1038,9 @@ export default {
       };
       this.cardData.data.limits.unshift(this.newLimit);
     },
-
     hide(index) {
       this.cardData.data.limits.splice(index, 1);
     },
-
     selectedService(arrService) {
       if (arrService === null) {
         return '';
@@ -992,30 +1050,7 @@ export default {
       arrService.forEach((el) => (label += `${this.labelService[el]}, `));
       return label.split('').slice(0, -2).join('');
     },
-
-    // selectedService(arrService) {
-    //   const label = [];
-    //   // eslint-disable-next-line no-return-assign
-    //   // label.push(arrService);
-    //   // eslint-disable-next-line no-plusplus
-    //   for (let i = 0; i < arrService.length; i++) {
-    //     label.push(this.labelService[arrService[i]]);
-    //   }
-    //   return label;
-    // },
   },
-  // beforeRouteLeave(to, from, next) {
-  //   if ((JSON.stringify(this.cardData) === this.source)) {
-  //     // console.log((this.cardData));
-  //     // console.log(JSON.stringify(this.source));
-  //     console.log((JSON.stringify(this.cardData) === (JSON.stringify(this.source))));
-  //     console.log('GO');
-  //     next(true);
-  //   } else {
-  //     next(true);
-  //     console.log((JSON.stringify(this.cardData) === (JSON.stringify(this.source))));
-  //   }
-  // },
 };
 </script>
 

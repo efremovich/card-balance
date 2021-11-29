@@ -364,7 +364,7 @@
         </div>
 
         <!-- GEO-->
-        <b-overlay
+        <!-- <b-overlay
           :show="showLoading"
           spinner-variant="primary"
           spinner-type="grow"
@@ -393,7 +393,7 @@
               </l-map>
             </div>
           </b-card-actions>
-        </b-overlay>
+        </b-overlay> -->
       <!--GEO-->
       </div>
     <!-- </b-overlay> -->
@@ -405,16 +405,16 @@
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 // GEO
-import {
-  LMap, LTileLayer, LMarker, LCircle,
-} from 'vue2-leaflet';
-import 'leaflet/dist/leaflet.css';
+// import {
+//   LMap, LTileLayer, LMarker, LCircle,
+// } from 'vue2-leaflet';
+// import 'leaflet/dist/leaflet.css';
 // end GEO
 import vSelect from 'vue-select';
 import VueApexCharts from 'vue-apexcharts';
 import { ru } from 'apexcharts/dist/locales/ru.json';
 import { $themeColors } from '@themeConfig';
-import { Icon } from 'leaflet';
+// import { Icon } from 'leaflet';
 import { mapGetters } from 'vuex';
 import store from '@/store';
 import {
@@ -422,15 +422,15 @@ import {
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line no-underscore-dangle
-delete Icon.Default.prototype._getIconUrl;
-Icon.Default.mergeOptions({
-  // eslint-disable-next-line global-require
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  // eslint-disable-next-line global-require
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  // eslint-disable-next-line global-require
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-});
+// delete Icon.Default.prototype._getIconUrl;
+// Icon.Default.mergeOptions({
+//   // eslint-disable-next-line global-require
+//   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+//   // eslint-disable-next-line global-require
+//   iconUrl: require('leaflet/dist/images/marker-icon.png'),
+//   // eslint-disable-next-line global-require
+//   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+// });
 export default {
   components: {
     BCardActions,
@@ -445,10 +445,10 @@ export default {
     BTable,
     // BProgress,
     VueApexCharts,
-    LMap,
-    LTileLayer,
-    LMarker,
-    LCircle,
+    // LMap,
+    // LTileLayer,
+    // LMarker,
+    // LCircle,
   },
   data() {
     return {
@@ -482,15 +482,15 @@ export default {
         },
       ],
       // GEO
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      zoom: 10,
-      center: [45.0352566, 38.9764814],
-      markerLatLng: [45.0352566, 38.9764814],
-      circle: {
-        center: [45.0352566, 38.9764814],
-        radius: 150,
-        color: '#EA5455',
-      },
+      // url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      // zoom: 10,
+      // center: [45.0352566, 38.9764814],
+      // markerLatLng: [45.0352566, 38.9764814],
+      // circle: {
+      //   center: [45.0352566, 38.9764814],
+      //   radius: 150,
+      //   color: '#EA5455',
+      // },
       // end GEO
       revenue: {},
       revenueComparisonLine: {

@@ -25,7 +25,7 @@
         v-if="getWidth !== 'xs'"
 
         class="d-flex w-100 justify-content-center align-items-center">
-        <h6 class="p-1">
+        <h6 class="mt-1 mr-1 min-vw-25">
           Договор №:
         </h6>
         <v-select

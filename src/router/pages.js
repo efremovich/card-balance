@@ -1,4 +1,5 @@
 export default [
+
   {
     path: '/',
     name: 'dashboard',
@@ -18,6 +19,12 @@ export default [
         { text: 'Топливные карты', active: true },
       ],
       // rule: 'editor',
+      // beforeEnter: (to, from) => {
+      //   if (from.name === 'card') {
+      //     this.contractID = store.getters.contractID;
+      //     console.log('ROUTE', this.contractID);
+      //   }
+      // },
     },
   },
   {
@@ -39,6 +46,14 @@ export default [
       to.meta.breadcrumb.push({ text: to.params.card_number, active: true });
       next();
     },
+    // beforeRouteLeave(to) {
+    //   if (to.name === 'cards') {
+    //     const ID = computed(() => store.getters.CONTRACT_ID);
+    //     // this.contractID = ID;
+    //     console.log('index:', ID);
+    //   }
+    // },
+
   },
 
   {
@@ -85,31 +100,18 @@ export default [
       rule: 'editor',
     },
   },
-  {
-    path: '/locator',
-    name: 'locator',
-    component: () => import('@/views/Locator.vue'),
-    meta: {
-      breadcrumb: [
-        // { text: 'Главная', to: '/' },
-        { text: 'Локатор', active: true },
-      ],
-      rule: 'editor',
-    },
-  },
-
-  {
-    path: '/documents',
-    name: 'documents',
-    component: () => import('@/views/documents/Documents.vue'),
-    meta: {
-      breadcrumb: [
-        // { text: 'Главная', to: '/' },
-        { text: 'Документы', active: true },
-      ],
-      rule: 'editor',
-    },
-  },
+  // {
+  //   path: '/documents',
+  //   name: 'documents',
+  //   component: () => import('@/views/documents/Documents.vue'),
+  //   meta: {
+  //     breadcrumb: [
+  //       // { text: 'Главная', to: '/' },
+  //       { text: 'Документы', active: true },
+  //     ],
+  //     rule: 'editor',
+  //   },
+  // },
 
   {
     path: '/documents/payments',
