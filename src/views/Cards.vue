@@ -219,19 +219,19 @@
                 :to="{ name: 'card', params: { card_number: product.number } }">
                 <div class="d-flex flex-column align-items-center">
                   <b-img
-                    class="card card-img-top w-100 "
+                    class="card card-img-top pt-1 w-100 mh-270"
                     :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
 
                   <b-badge
                     :variant="colorMap[product.card_status_id]"
-                    class="w-95 position-relative badge-glow b-80">
+                    class="w-95 position-relative badge-glow b-70">
                     {{ product.card_status.name }}
                   </b-badge>
                 </div>
               </b-link>
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
-                <div class="item-wrapper abs pad">
+                <div class="item-wrapper pad bt-15">
                   <h6 class="item-price">
                     PIN: {{ product.pin }}
                   </h6>

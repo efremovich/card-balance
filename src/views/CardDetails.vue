@@ -156,8 +156,7 @@
                               </h6>
                               <div class="mr-1 mw-20">
                                 <b-form-input
-                                  v-model.number="limit.value"
-                                  />
+                                  v-model.number="limit.value" />
                               </div>
                               <b-col
                                 :class="[getWidth === 'xs'? '': 'mr-1']">

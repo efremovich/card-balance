@@ -12,14 +12,22 @@
   }
 
   .mh-300 {
-   // max-height: 320px !important;
-    height: 300px !important;
-    // min-height: 300px !important;
+   max-height: 305px !important;
+    // height: 300px !important;
+    min-height: 290px !important;
+  }
+
+  .mh-270 {
+    min-height: 270px !important;
   }
 
  
-.b-80 {
-  bottom: 80px;
+.b-70 {
+  bottom: 70px;
+}
+
+.ml-20 {
+  left:40px;
 }
   .mr-9 {
     margin-right: 9% !important;
@@ -113,11 +121,10 @@ top:60px;
   .rlt {
     position: relative;
   }
-  .abs {
+  .bt-15 {
     position: absolute;
-    //buttom:40% / 110px;
-    top: 45%;
-    left:30px;
+     bottom:35%;
+
     
   }
   .w-20 {
