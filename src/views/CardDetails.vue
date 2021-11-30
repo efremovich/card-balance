@@ -145,6 +145,9 @@
                                 label="full_name"
                                 :reduce="(services) => `${services.id}`"
                                 :options="services" />
+                              <p>{{ alreadySelectedServices }} </p>
+                              <p>{{ getUnelectedServices }} </p>
+                              <!-- Нужно отследить выбранные значения и фильтровать по ним services и затем передовать их options. Передавать computed свойство. -->
                               <small
                                 class="text-danger">{{ errors[0] }}</small>
                             </b-form-group>
@@ -662,6 +665,8 @@ export default {
     const firstDayOfMonth = ref(null);
     const labelService = ref({});
     const perPage = 5;
+    const optionService = ref(null);
+    const alreadySelectedServices = ref(null); // установленные лимиты
     // const selected = ref([]);
     const pageOptions = [3, 5, 10];
     const currentPage = 1;
@@ -679,6 +684,7 @@ export default {
     const source = ref({});
     const limitsLength = ref(null);
     const cardEmitentCode = ref('0');
+    /// const alreadySelectedServices = ref(null);
     const number = ref(null);
     const fields = [
       {
@@ -766,7 +772,9 @@ export default {
       useJwt.getServiceFromEmitent(`emitent_code=${params}`).then((response) => {
         if (response.data.status) {
           services.value = response.data.data;
-          services.value.forEach((el) => option.value.push(el.full_name));
+          // services.value.forEach((el) => option.value.push(el.full_name));
+          alreadySelectedServices.value = cardData.value.data.limits.map((el) => el.limit_services); // выбранные виды топлива
+          // services.value = (services.value.filter((f) => !alreadySelectedServices.value.flat(1).includes(f.id)));
           const id = services.value.map((el) => el.id);
           const label = services.value.map((el) => el.label);
           // eslint-disable-next-line no-plusplus
@@ -777,19 +785,6 @@ export default {
       });
     };
 
-    const getVal = (val) => {
-      services.value = services.value.filter((f) => !val.includes(f.id));
-      services.value.forEach((el) => option.value.push(el.full_name));
-      const id = services.value.map((el) => el.id);
-      const label = services.value.map((el) => el.label);
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < id.length; i++) {
-        labelService.value[id[i]] = label[i];
-      }
-      console.log(services.value);
-      // const c = d.map((el) => el.id);
-      // console.log('', c);
-    };
     const getAllTransactions = () => {
       firstDayOfMonth.value = getFirstDay();
       lastDay.value = isToday();
@@ -836,8 +831,8 @@ export default {
         source.value = JSON.parse(JSON.stringify(cardData.value.data.limits));
         getService(cardEmitentCode.value);
       }
-      // return cardData;
     });
+
     const fetchProduct = () => {
       const { route } = useRouter();
       cardDate(route.value.params.card_number);
@@ -849,10 +844,16 @@ export default {
     getAllTransactions();
     getAllPeriods();
     getAllUnits();
+
+    // const getSelectedServices = () => computed(() => cardData.value.data.limits.map((el) => el.limit_services));
+    // const getUnelectedServices = () => computed(() => services.value.filter((f) => !getSelectedServices.value.flat(1).includes(f.id)));
     return {
-      getVal,
       product,
       cardEmitentCode,
+      alreadySelectedServices,
+      optionService,
+      // getSelectedServices,
+      // getUnelectedServices,
       limitsLength,
       unicodeLabel,
       showLoading,
@@ -897,6 +898,12 @@ export default {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
     },
+    getSelectedServices() {
+      return this.cardData.data.limits.map((el) => el.limit_services);
+    },
+    getUnelectedServices() {
+      return this.services.filter((f) => !this.getSelectedServices.flat(1).includes(f.id));
+    },
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
@@ -919,20 +926,20 @@ export default {
         this.sendRequest();
       }
     },
+    // getUnelectedServices(val) {
+    //   //   console.log(this.getSelectedServices);
+    //   //   val.filter((f) => !this.getSelectedServices.flat(1).includes(f.id));
+    //   //   console.log(val.filter((f) => !this.getSelectedServices.flat(1).includes(f.id)));
+    //   // },
+    //   // getUnelectedServices(val) {
+    //   console.log(val);
+    //   // this.services = val;
+    // },
+  },
+  mounted() {
+    console.log('', this.alreadySelectedServices);
   },
   methods: {
-    // getVal(val) {
-    //   console.log(val);
-    //   // const onlyServices = this.services.filter((f) => !val.includes(f.id));
-    //   // this.services = onlyServices;
-    //   // const id = this.services.map((el) => el.id);
-    //   // const label = this.services.map((el) => el.label);
-    //   // // eslint-disable-next-line no-plusplus
-    //   // for (let i = 0; i < id.length; i++) {
-    //   //   this.labelService.[id[i]] = label[i];
-    //   // }
-    //   // return this.services;
-    // },
     showToast() {
       this.$toast({
         component: ToastificationContent,
@@ -943,6 +950,7 @@ export default {
         },
       });
     },
+
     refreshLimits(card) {
       useJwt.getCardData(this.cardData.data.number).then((response) => {
         if (response.data.status) {
