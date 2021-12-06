@@ -584,8 +584,8 @@ import store from '@/store';
 
 // import { $themeBreakpoints } from '@themeConfig';
 
-import { useShopUi, useShopRemoteData } from './useECommerceShop';
-import { useEcommerceUi } from './useEcommerce';
+import { useShopUi, useShopRemoteData } from '../libs/useECommerceShop';
+import { useEcommerceUi } from '../libs/useEcommerce';
 
 export default {
   directives: {

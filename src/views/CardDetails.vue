@@ -140,13 +140,13 @@
                               label-for="labelServices">
                               <v-select
                                 id="labelServices"
+                                :key="index"
                                 v-model="limit.limit_services"
                                 multiple
                                 label="full_name"
                                 :reduce="(services) => `${services.id}`"
-                                :options="services" />
-                              <p>{{ alreadySelectedServices }} </p>
-                              <p>{{ getUnelectedServices }} </p>
+                                :options="services"
+                                :selectable="(option) => (!getSelectedServices.flat(1).includes(option.id))" />
                               <!-- Нужно отследить выбранные значения и фильтровать по ним services и затем передовать их options. Передавать computed свойство. -->
                               <small
                                 class="text-danger">{{ errors[0] }}</small>
@@ -776,6 +776,7 @@ export default {
           alreadySelectedServices.value = cardData.value.data.limits.map((el) => el.limit_services); // выбранные виды топлива
           // services.value = (services.value.filter((f) => !alreadySelectedServices.value.flat(1).includes(f.id)));
           const id = services.value.map((el) => el.id);
+          // console.log(alreadySelectedServices.value);
           const label = services.value.map((el) => el.label);
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < id.length; i++) {
@@ -892,6 +893,7 @@ export default {
       saveChange: false,
       comparison: true,
       newLimits: {},
+      randomKey: null,
     };
   },
   computed: {
@@ -936,9 +938,9 @@ export default {
     //   // this.services = val;
     // },
   },
-  mounted() {
-    console.log('', this.alreadySelectedServices);
-  },
+  // mounted() {
+  //   console.log('', this.alreadySelectedServices);
+  // },
   methods: {
     showToast() {
       this.$toast({
@@ -950,7 +952,11 @@ export default {
         },
       });
     },
-
+    // changeOptions() {
+    //   // this.randomKey = this.getRandom();
+    //   this.services = this.getUnelectedServices;
+    //   console.log(this.services);
+    // },
     refreshLimits(card) {
       useJwt.getCardData(this.cardData.data.number).then((response) => {
         if (response.data.status) {
@@ -1048,7 +1054,8 @@ export default {
     hide(index) {
       this.cardData.data.limits.splice(index, 1);
     },
-    selectedService(arrService) {
+    // eslint-disable-next-line consistent-return
+    selectedService(arrService) { // параметр функции у нас объект,
       if (arrService === null) {
         return '';
       }
