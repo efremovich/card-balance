@@ -43,11 +43,14 @@ $vs-dropdown-box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.1);
   }
 }
 
-.vs__dropdown-option--disabled {
-  &.vs__dropdown-option--selected {
+
+  .vs__dropdown-option--selected {
     background: $primary !important;
+    opacity: 0.5;
   }
-  opacity: 0.5;
+  
+.vs__dropdown-option--disabled {
+  display: none;
 }
 
 // Options list color

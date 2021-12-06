@@ -142,6 +142,7 @@
                                 id="labelServices"
                                 :key="index"
                                 v-model="limit.limit_services"
+                                :filter="fuseSearch"
                                 multiple
                                 label="full_name"
                                 :reduce="(services) => `${services.id}`"
@@ -234,6 +235,7 @@
                   @click="newLimitsData">
                   Сохранить
                 </b-button>
+                <!-- При сохранении формы следует перенаправлять пользователя в cards -->
                 <b-button
                   class="mr-1"
                   variant="primary"
@@ -619,6 +621,7 @@ import store from '@/store';
 import { required } from '@validations';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 import { ref } from '@vue/composition-api';
+import Fuse from 'fuse.js';
 import { useRouter } from '../@core/utils/utils';
 import useJwt from '../auth/jwt/useJwt';
 
@@ -666,8 +669,6 @@ export default {
     const labelService = ref({});
     const perPage = 5;
     const optionService = ref(null);
-    const alreadySelectedServices = ref(null); // установленные лимиты
-    // const selected = ref([]);
     const pageOptions = [3, 5, 10];
     const currentPage = 1;
     const filter = ref(null);
@@ -680,11 +681,9 @@ export default {
     const start = ref(null);
     const end = ref(null);
     const contractId = ref(null);
-    // const limits = ref([]);
     const source = ref({});
     const limitsLength = ref(null);
     const cardEmitentCode = ref('0');
-    /// const alreadySelectedServices = ref(null);
     const number = ref(null);
     const fields = [
       {
@@ -754,29 +753,12 @@ export default {
       ).toLocaleDateString();
       return firstDay;
     };
-    // const getAllService = () => {
-    //   useJwt.getService().then((response) => {
-    //     if (response.data.status) {
-    //       services.value = response.data.data;
-    //       services.value.forEach((el) => option.value.push(el.full_name));
-    //       const id = services.value.map((el) => el.id);
-    //       const label = services.value.map((el) => el.label);
-    //       // eslint-disable-next-line no-plusplus
-    //       for (let i = 0; i < id.length; i++) {
-    //         labelService.value[id[i]] = label[i];
-    //       }
-    //     }
-    //   });
-    // };
+
     const getService = (params) => {
       useJwt.getServiceFromEmitent(`emitent_code=${params}`).then((response) => {
         if (response.data.status) {
           services.value = response.data.data;
-          // services.value.forEach((el) => option.value.push(el.full_name));
-          alreadySelectedServices.value = cardData.value.data.limits.map((el) => el.limit_services); // выбранные виды топлива
-          // services.value = (services.value.filter((f) => !alreadySelectedServices.value.flat(1).includes(f.id)));
           const id = services.value.map((el) => el.id);
-          // console.log(alreadySelectedServices.value);
           const label = services.value.map((el) => el.label);
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < id.length; i++) {
@@ -806,7 +788,6 @@ export default {
               totalRows.value = transactions.value.data.total;
             }
             loadDone.value = false;
-            // return transactions.value;
           });
       }
     };
@@ -846,15 +827,10 @@ export default {
     getAllPeriods();
     getAllUnits();
 
-    // const getSelectedServices = () => computed(() => cardData.value.data.limits.map((el) => el.limit_services));
-    // const getUnelectedServices = () => computed(() => services.value.filter((f) => !getSelectedServices.value.flat(1).includes(f.id)));
     return {
       product,
       cardEmitentCode,
-      alreadySelectedServices,
       optionService,
-      // getSelectedServices,
-      // getUnelectedServices,
       limitsLength,
       unicodeLabel,
       showLoading,
@@ -903,9 +879,9 @@ export default {
     getSelectedServices() {
       return this.cardData.data.limits.map((el) => el.limit_services);
     },
-    getUnelectedServices() {
-      return this.services.filter((f) => !this.getSelectedServices.flat(1).includes(f.id));
-    },
+    // getUnelectedServices() {
+    //   return this.services.filter((f) => !this.getSelectedServices.flat(1).includes(f.id));
+    // },
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
@@ -919,7 +895,6 @@ export default {
         } else {
           this.comparison = false;
           this.newLimits = val;
-          // const service = this.newLimits.map((el) => el.limit_services);
         }
       },
     },
@@ -928,19 +903,7 @@ export default {
         this.sendRequest();
       }
     },
-    // getUnelectedServices(val) {
-    //   //   console.log(this.getSelectedServices);
-    //   //   val.filter((f) => !this.getSelectedServices.flat(1).includes(f.id));
-    //   //   console.log(val.filter((f) => !this.getSelectedServices.flat(1).includes(f.id)));
-    //   // },
-    //   // getUnelectedServices(val) {
-    //   console.log(val);
-    //   // this.services = val;
-    // },
   },
-  // mounted() {
-  //   console.log('', this.alreadySelectedServices);
-  // },
   methods: {
     showToast() {
       this.$toast({
@@ -952,62 +915,41 @@ export default {
         },
       });
     },
-    // changeOptions() {
-    //   // this.randomKey = this.getRandom();
-    //   this.services = this.getUnelectedServices;
-    //   console.log(this.services);
-    // },
+    fuseSearch(options, search) {
+      const fuse = new Fuse(options, {
+        keys: ['full_name'],
+        shouldSort: true,
+      });
+      return search.length
+        ? fuse.search(search).map(({ item }) => item)
+        : fuse.list;
+    },
     refreshLimits(card) {
       useJwt.getCardData(this.cardData.data.number).then((response) => {
         if (response.data.status) {
           this.cardData = response.data;
           this.$refs[card].showLoading = false;
         } else {
-          //  this.showLoading = false;
           this.showToast();
         }
       });
     },
     sendRequest() {
       const request = [{
-        // ID: 45,
-        // CreatedAt: '2021-11-12T14:52:37.4280415+03:00',
-        // UpdatedAt: '2021-11-12T14:52:37.4280415+03:00',
-        // DeletedAt: null,
-        // card_number: this.cardData.data.number,
-        // request_type_code: 'EDIT',
-        // request_status_code: 'CREATED',
-        // contract_id: this.cardData.data.contract_id,
-        // limits: this.newLimits, // всё о лимитах
         card_number: this.cardData.data.number,
         request_type_code: 'EDIT',
         request_status_code: 'CREATED',
         contract_id: this.cardData.data.contract_id,
         limits: this.newLimits,
-        // limits: [
-        //   {
-        //     'card_number': this.cardData.data.number,
-        //     'contract_id': this.cardData.data.contract_id,
-        //     'value': 300,
-        //     'limit_unit_code': 'L',
-        //     'limit_type_code': 'INDIVID',
-        //     'limit_period_code': 'MONTH',
-        //     'consumption': 0,
-        //     'limit_common': [
-        //       {
-        //         'service_id': '6b6f5f4a-1232-11e7-aaff-0025225e28fb',
-        //       },
-        //     ],
-        //   },
-        // ],
+
       }];
       useJwt.refreshDataUserLimits(request);
-      // this.saveChange = false;
     },
     newLimitsData() {
       this.$refs.limitsForm.validate().then((success) => {
         if (success) {
           this.saveChange = true;
+          this.$router.push({ name: 'cards' });
           this.$toast({
             component: ToastificationContent,
             props: {

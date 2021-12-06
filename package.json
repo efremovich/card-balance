@@ -28,6 +28,7 @@
     "core-js": "3.8.1",
     "echarts": "4.8.0",
     "flatpickr": "^4.6.9",
+    "fuse.js": "^6.4.6",
     "html2canvas": "^1.0.0-rc.7",
     "html2pdf.js": "^0.9.2",
     "jsonwebtoken": "8.5.1",
