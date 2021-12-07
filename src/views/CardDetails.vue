@@ -154,11 +154,11 @@
                             </b-form-group>
                           </validation-provider>
                           <div :class="['d-flex', 'flex-wrap', 'mt-1', getWidth === 'xs'?'align-items-center': '']">
-                            <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1']">
+                            <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1','align-items-center']">
                               <h6 class="mr-1">
                                 Лимит
                               </h6>
-                              <div class="mr-1 mw-20">
+                              <div class="mr-1 mw-25">
                                 <b-form-input
                                   v-model.number="limit.value" />
                               </div>
@@ -212,7 +212,7 @@
                       <template
                         v-for="(limit) in cardData.data.limits">
                         <div :key="limit.limit_id">
-                          <h4>
+                          <h4 :key="limit.limit_services">
                             Вид топлива:
                             {{ selectedService(limit.limit_services) }}
                           </h4>
@@ -904,6 +904,10 @@ export default {
       }
     },
   },
+  // beforeMount() {
+  //   this.refreshLimits('limits');
+  // },
+
   methods: {
     showToast() {
       this.$toast({
@@ -1002,8 +1006,10 @@ export default {
         return '';
       }
       let label = '';
+      const arr = [...arrService];
+      console.log(typeof (arr));
       // eslint-disable-next-line no-return-assign
-      arrService.forEach((el) => (label += `${this.labelService[el]}, `));
+      arr.forEach((el) => (label += `${this.labelService[el]}, `));
       return label.split('').slice(0, -2).join('');
     },
   },
