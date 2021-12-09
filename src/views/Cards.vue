@@ -53,7 +53,7 @@
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            class="ecommerce-card mb-1 position-relative mr-9"
+            class="ecommerce-card mb-1 mr-9"
             no-body>
             <div
               class="d-flex flex-row flex-nowrap justify-content-around">
@@ -101,13 +101,13 @@
               </b-button-group>
             </div>
             <b-link
-              class="w-80"
+              class="w-80 "
               :to="{ name: 'card', params: { card_number: product.number } }">
               <b-img
-                class="card-img-top "
+                class="card-img-top"
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
               <!-- <span
-                v-if="product.card_status_id !== 'ACTIVE'"
+                v-if="getStatusRequests(product.request_status)"
                 class="position-absolute">
                 <feather-icon
                   v-b-tooltip.hover.top="'Заявка в обработке'"
@@ -115,6 +115,13 @@
                   class="position-absolute icon-margin"
                   size="30" />
               </span> -->
+              <b-badge
+                v-if="getStatusRequests(product.request_status)"
+                class="badge-glow position-absolute mar"
+                pill
+                variant="warning">
+                Заявка в обработке
+              </b-badge>
             </b-link>
             <div class="item-options">
               <b-link
@@ -195,13 +202,6 @@
                 </b-badge>
               </div>
             </div>
-
-            <!-- <b-badge
-              class="badge-glow"
-              pill
-              variant="success">
-              {{ product.card_status.name }}
-            </b-badge> -->
           </b-card>
         </section>
 
@@ -218,8 +218,16 @@
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
                 <div class="d-flex flex-column align-items-center">
+                  <b-badge
+                    v-if="getStatusRequests(product.request_status)"
+                    pill
+                    variant="warning"
+                    class="badge-glow">
+                    Заявка в обработке
+                  </b-badge>
+
                   <b-img
-                    class="card card-img-top pt-1 w-100 mh-270"
+                    class="card card-img-top pt-1 w-100 mh-270 bg-c"
                     :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
 
                   <b-badge
@@ -232,9 +240,11 @@
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
                 <div class="item-wrapper pad bt-15">
-                  <h6 class="item-price">
+                  <h6
+                    class="item-price">
                     PIN: {{ product.pin }}
                   </h6>
+
                   <h5 class="item-price">
                     {{ product.number }}
                   </h5>
@@ -778,6 +788,11 @@ export default {
       }
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
+    },
+    getStatusRequests(item) {
+      if (item === 'PROCESSING' || item === 'CREATED') {
+        return true;
+      } return false;
     },
 
     getValue(item) {

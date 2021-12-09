@@ -399,7 +399,6 @@ export default {
     },
     selectPage() {
       const holder = this.selectedHolder;
-      console.log(this.currentPage);
       const { selected } = this;
       const { start } = this;
       const { end } = this;

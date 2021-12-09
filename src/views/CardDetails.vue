@@ -32,6 +32,20 @@
                 :src="
                   require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
                 " />
+              <!-- отрицание (!) стоит для наглядности - потом убрать -->
+              <b-badge
+                v-if="!getStatusRequests(cardData.data.request_status)"
+                class="badge-glow position-absolute margin"
+                pill
+                variant="warning">
+                <feather-icon
+                  icon="ClockIcon"
+                  class="mr-25" />
+                <span>
+                  В обработке
+                </span>
+              </b-badge>
+
               <div class="item-wrapper">
                 <h6 class="item-price">
                   PIN: {{ cardData.data.pin }}
@@ -44,7 +58,8 @@
                 <h6 class="ml-1">
                   Держатель:
                 </h6>
-                <b-form-input :value="cardData.data.holder" />
+                <b-form-input
+                  :value="cardData.data.holder" />
               </div>
             </div>
             <div
@@ -108,12 +123,18 @@
               active
               title="Лимиты">
               <b-button
+                v-if="getRequestStatus"
                 class="mr-1 mb-1"
                 variant="success"
                 :disabled="servicesLength"
                 @click="addLimit">
                 Добавить лимит
               </b-button>
+              <h5
+                v-if="!getRequestStatus"
+                class="mt-1 mb-1">
+                Редактировать данные вы  сможете после обработки предыдущий заявки.
+              </h5>
               <div
                 class="d-flex flex-nowrap column ">
                 <b-col
@@ -127,9 +148,10 @@
                         v-for="(limit,index) in cardData.data.limits">
                         <b-card-actions
                           :key="limit.limit_id"
+
                           no-body
                           action-close
-                          class="border pl-1 pr-1"
+                          :class="['border', 'pl-1', 'pr-1', {'pointer-events-none':!getRequestStatus}]"
                           @close="hide(index)">
                           <validation-provider
                             v-slot="{ errors }"
@@ -140,7 +162,6 @@
                               label-for="labelServices">
                               <v-select
                                 id="labelServices"
-                                :key="index"
                                 v-model="limit.limit_services"
                                 :filter="fuseSearch"
                                 multiple
@@ -154,7 +175,7 @@
                             </b-form-group>
                           </validation-provider>
                           <div :class="['d-flex', 'flex-wrap', 'mt-1', getWidth === 'xs'?'align-items-center': '']">
-                            <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1','align-items-center']">
+                            <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1 align-items-center' ]">
                               <h6 class="mr-1">
                                 Лимит
                               </h6>
@@ -163,7 +184,7 @@
                                   v-model.number="limit.value" />
                               </div>
                               <b-col
-                                :class="[getWidth === 'xs'? '': 'mr-1']">
+                                class="mw-75">
                                 <v-select
                                   v-model="limit.limit_unit_code"
                                   :clearable="false"
@@ -171,7 +192,7 @@
                                   :options="units" />
                               </b-col>
                             </div>
-                            <b-col>
+                            <b-col class="flex-grow-1">
                               <v-select
                                 v-model="limit.limit_period_code"
                                 :class="[getWidth === 'xs'?'mt-1 mb-1': '']"
@@ -210,9 +231,9 @@
                       <h4>Текущие лимиты по карте:</h4>
                       <hr>
                       <template
-                        v-for="(limit) in cardData.data.limits">
-                        <div :key="limit.limit_id">
-                          <h4 :key="limit.limit_services">
+                        v-for="(limit,index) in cardData.data.limits">
+                        <div :key="limit.limit_services[index]">
+                          <h4>
                             Вид топлива:
                             {{ selectedService(limit.limit_services) }}
                           </h4>
@@ -220,7 +241,6 @@
                           <h4>
                             Остаток: {{ limit.value - limit.consumption }} {{ unicodeLabel[limit.limit_unit_code] }}.
                           </h4>
-
                           <hr>
                         </div>
                       </template>
@@ -230,6 +250,7 @@
               </div>
               <div class="d-flex justify-content-around w-90 position-sticky bottom">
                 <b-button
+                  v-if="getRequestStatus"
                   variant="success"
                   type="submit"
                   @click="newLimitsData">
@@ -237,6 +258,7 @@
                 </b-button>
                 <!-- При сохранении формы следует перенаправлять пользователя в cards -->
                 <b-button
+                  v-if="getRequestStatus"
                   class="mr-1"
                   variant="primary"
                   @click="undoChange">
@@ -610,6 +632,7 @@ import {
   BFormSelect,
   BInputGroup,
   BLink,
+  BBadge,
   BCardHeader,
   VBTooltip,
   BInputGroupAppend,
@@ -654,6 +677,7 @@ export default {
     BProgress,
     BInputGroupAppend,
     BCardHeader,
+    BBadge,
   },
   setup() {
     const cardData = ref({});
@@ -869,7 +893,7 @@ export default {
       saveChange: false,
       comparison: true,
       newLimits: {},
-      randomKey: null,
+
     };
   },
   computed: {
@@ -884,6 +908,9 @@ export default {
     // },
     getWidth() {
       return store.getters['app/currentBreakPoint'];
+    },
+    getRequestStatus() {
+      return this.getStatusRequests(this.cardData.data.request_status);
     },
   },
   watch: {
@@ -904,9 +931,6 @@ export default {
       }
     },
   },
-  // beforeMount() {
-  //   this.refreshLimits('limits');
-  // },
 
   methods: {
     showToast() {
@@ -918,6 +942,11 @@ export default {
           text: '🙄 Данные обновить не удалось. Попробуйте позже, а мы пока починим 👨‍🔧',
         },
       });
+    },
+    getStatusRequests(item) {
+      if (item === 'PROCESSING' || item === 'CREATED') {
+        return true;
+      } return false;
     },
     fuseSearch(options, search) {
       const fuse = new Fuse(options, {
@@ -1007,7 +1036,6 @@ export default {
       }
       let label = '';
       const arr = [...arrService];
-      console.log(typeof (arr));
       // eslint-disable-next-line no-return-assign
       arr.forEach((el) => (label += `${this.labelService[el]}, `));
       return label.split('').slice(0, -2).join('');

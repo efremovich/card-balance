@@ -35,6 +35,14 @@
   .mw-25 {
     max-width: 25%;
   }
+ 
+
+  .mw-30 {
+    max-width: 30% !important;
+  }
+  .w-60 {
+    width: 60% !important;
+  }
   .icon {
     max-width: 30px;
     cursor: pointer;
@@ -43,6 +51,7 @@
   .card-header {
     padding: 1.5rem 0 !important;
   }
+
   .card-title {
     margin-bottom: 0.5rem !important;
   }
@@ -64,7 +73,14 @@
     max-width: 390px;
     min-width: 350px;
   }
+.margin{
+  top: 110px;
+  left: 220px;
+}
 
+.pointer-events-none {
+  pointer-events: none;
+}
    .min-w270 {
     min-width: 270px !important;
   }
