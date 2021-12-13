@@ -35,7 +35,7 @@
               <!-- отрицание (!) стоит для наглядности - потом убрать -->
               <b-badge
                 v-if="!getStatusRequests(cardData.data.request_status)"
-                class="badge-glow position-absolute margin"
+                :class="['badge-glow position-absolute',{'xs-margin':getWidth === 'xs'},{'md-margin':getWidth === 'md'},{'sm-margin':getWidth === 'sm'}, {'lg-margin':getWidth === 'lg'}]"
                 pill
                 variant="warning">
                 <feather-icon
@@ -133,8 +133,9 @@
               <h5
                 v-if="!getRequestStatus"
                 class="mt-1 mb-1">
-                Редактировать данные вы  сможете после обработки предыдущий заявки.
+                Редактировать данные вы сможете после обработки предыдущей заявки.
               </h5>
+              <p>{{ getWidth }}</p>
               <div
                 class="d-flex flex-nowrap column ">
                 <b-col
