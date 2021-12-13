@@ -222,12 +222,12 @@
                     v-if="getStatusRequests(product.request_status)"
                     pill
                     variant="warning"
-                    class="badge-glow">
+                    class="badge-glow position-absolute list-badge">
                     Заявка в обработке
                   </b-badge>
 
                   <b-img
-                    class="card card-img-top pt-1 w-100 mh-270 bg-c"
+                    class="card card-img-top pt-1 w-100 mh-270"
                     :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
 
                   <b-badge

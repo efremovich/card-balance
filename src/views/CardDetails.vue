@@ -35,7 +35,7 @@
               <!-- отрицание (!) стоит для наглядности - потом убрать -->
               <b-badge
                 v-if="!getStatusRequests(cardData.data.request_status)"
-                :class="['badge-glow position-absolute',{'xs-margin':getWidth === 'xs'},{'md-margin':getWidth === 'md'},{'sm-margin':getWidth === 'sm'}, {'lg-margin':getWidth === 'lg'}]"
+                :class="['badge-glow position-absolute',{'xs-margin':getWidth === 'xs'},{'md-margin':getWidth === 'md'},{'sm-margin':getWidth === 'sm'}, {'lg-margin':getWidth === 'lg'},{'xl-margin':getWidth === 'xl'}]"
                 pill
                 variant="warning">
                 <feather-icon
@@ -46,7 +46,7 @@
                 </span>
               </b-badge>
 
-              <div class="item-wrapper">
+              <div :class="[getWidth === 'xs' ? 'b-xs':'item-wrapper']">
                 <h6 class="item-price">
                   PIN: {{ cardData.data.pin }}
                 </h6>
@@ -132,10 +132,9 @@
               </b-button>
               <h5
                 v-if="!getRequestStatus"
-                class="mt-1 mb-1">
-                Редактировать данные вы сможете после обработки предыдущей заявки.
+                class="mt-1 mb-1 text-center">
+                Возможность редактирования данных станет доступна после обработки ранее направленной заявки.
               </h5>
-              <p>{{ getWidth }}</p>
               <div
                 class="d-flex flex-nowrap column ">
                 <b-col
@@ -149,7 +148,6 @@
                         v-for="(limit,index) in cardData.data.limits">
                         <b-card-actions
                           :key="limit.limit_id"
-
                           no-body
                           action-close
                           :class="['border', 'pl-1', 'pr-1', {'pointer-events-none':!getRequestStatus}]"
@@ -169,14 +167,14 @@
                                 label="full_name"
                                 :reduce="(services) => `${services.id}`"
                                 :options="services"
-                                :selectable="(option) => (!getSelectedServices.flat(1).includes(option.id))" />
+                                :selectable="(option) => !getSelectedServices.flat(1).includes(option.id)" />
                               <!-- Нужно отследить выбранные значения и фильтровать по ним services и затем передовать их options. Передавать computed свойство. -->
                               <small
                                 class="text-danger">{{ errors[0] }}</small>
                             </b-form-group>
                           </validation-provider>
-                          <div :class="['d-flex', 'flex-wrap', 'mt-1', getWidth === 'xs'?'align-items-center': '']">
-                            <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1 align-items-center' ]">
+                          <div :class="['d-flex', 'flex-wrap', 'mt-1', getWidth === 'xs'?'align-items-center': '', ]">
+                            <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1 align-items-center',{'w-100': getWidth === 'md'} ]">
                               <h6 class="mr-1">
                                 Лимит
                               </h6>
@@ -188,15 +186,16 @@
                                 class="mw-75">
                                 <v-select
                                   v-model="limit.limit_unit_code"
+                                  :class="[ {'mw-50':getWidth === 'xl'}]"
                                   :clearable="false"
                                   :reduce="(unit) => unit.code"
                                   :options="units" />
                               </b-col>
                             </div>
-                            <b-col class="flex-grow-1">
+                            <b-col :class="['flex-grow-1', {'ml-1': getWidth === 'sm'}]">
                               <v-select
                                 v-model="limit.limit_period_code"
-                                :class="[getWidth === 'xs'?'mt-1 mb-1': '']"
+                                :class="[{'mt-1 mb-1 ml-1':getWidth === 'xs'}, {'ml-1':getWidth === 'xl'},{'ml-1':getWidth === 'lg'}]"
                                 :clearable="false"
                                 :reduce="(period) => period.code"
                                 :options="periods" />
@@ -949,6 +948,18 @@ export default {
         return true;
       } return false;
     },
+    getMessage(param) {
+      if (param) {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'В обработке',
+            icon: 'EditIcon',
+            variant: 'success',
+          },
+        });
+      }
+    },
     fuseSearch(options, search) {
       const fuse = new Fuse(options, {
         keys: ['full_name'],
@@ -1035,10 +1046,13 @@ export default {
       if (arrService === null) {
         return '';
       }
+      // console.log(arrService);
       let label = '';
-      const arr = [...arrService];
+      // const arr = [...arrService];
+      // console.log(Object.values(arr));
       // eslint-disable-next-line no-return-assign
-      arr.forEach((el) => (label += `${this.labelService[el]}, `));
+      Object.values(arrService).forEach((el) => (label += `${this.labelService[el]}, `));
+      console.log(label);
       return label.split('').slice(0, -2).join('');
     },
   },

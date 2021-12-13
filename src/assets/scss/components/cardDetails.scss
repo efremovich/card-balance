@@ -40,6 +40,7 @@
   .mw-30 {
     max-width: 30% !important;
   }
+
   .w-60 {
     width: 60% !important;
   }
@@ -93,6 +94,10 @@ left: 15rem;
   top: 8rem;
   left: 15rem;
 }
+.xl-margin {
+  top: 8rem;
+  left: 16rem;
+}
 
 .pointer-events-none {
   pointer-events: none;
@@ -123,6 +128,15 @@ left: 15rem;
     position: relative;
     bottom: 110px;
     left: 20px;
+  }
+
+  .b-xs {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    left: 20px;
+    bottom: 100px;
   }
   .item-options {
     display: flex;

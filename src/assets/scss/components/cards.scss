@@ -6,8 +6,8 @@
     align-items: center;
     // padding: 3px;
     min-width:360px;
-    min-height: 320px;
-    max-height: 330px;
+    min-height: 335px;
+    max-height: 340px;
     
   }
 
@@ -18,7 +18,7 @@
   }
 
   .mh-270 {
-    min-height: 270px !important;
+    min-height: 260px !important;
   }
 
  
@@ -49,11 +49,10 @@
   margin-top: 1%;
 
 }
-
-.bg-c {
-  // background-color:rgba(0,0,0,.3) !important;
-  filter: brightness(180%);
-
+.list-badge {
+  top: 3rem;
+z-index: 100;
+left: 14rem;
 }
 
 .mar {
@@ -136,6 +135,7 @@ top:60px;
   .bt-15 {
     position: absolute;
      bottom:35%;
+     left:30px;
 
     
   }
