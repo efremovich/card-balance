@@ -89,7 +89,7 @@
                     class="mr-50" />
                 </b-button>
                 <b-button
-                  v-b-tooltip.hover.top="'Заблокировать карту'"
+                  v-b-tooltip.hover.top="cardDate(product.number)"
                   variant="light"
                   tag="a"
                   class="btn-cart"
@@ -101,7 +101,8 @@
               </b-button-group>
             </div>
             <b-link
-              class="w-80 "
+              v-b-tooltip.hover.bottom="`${product.pin}`"
+              class="w-80"
               :to="{ name: 'card', params: { card_number: product.number } }">
               <b-img
                 class="card-img-top"
@@ -216,6 +217,7 @@
             no-body>
             <div class="d-flex position-relative pr-1 pl-1 w-100">
               <b-link
+                v-b-tooltip.hover.left="getWidth"
                 :to="{ name: 'card', params: { card_number: product.number } }">
                 <div class="d-flex flex-column align-items-center">
                   <b-badge
@@ -296,7 +298,7 @@
                   variant="light"
                   tag="a"
                   class="btn-wishlist mb-1 mw-100 p-1 min-w"
-                  @click="toggleProductInWishlist(product)">
+                  @click="cardDate(product.number)">
                   <feather-icon
                     icon="NavigationIcon"
                     class="mr-50" />
@@ -635,7 +637,15 @@ export default {
     } else {
       contractID.value = store.getters.CONTRACT_ID;
     }
-
+    // const cardData = ref({});
+    // const cardDate = (params) => useJwt.getCardData(params).then((response) => {
+    //   if (response.data.status) {
+    //     cardData.value = response.data;
+    //     // eslint-disable-next-line no-undef
+    //     // console.log(cardData.value.data.limits.map((el) => el.limit_services));
+    //     console.log(cardData.value.data.limits);
+    //   }
+    // });
     const showLoading = ref(true);
     const download = ref(false);
     const filters = ref('');
@@ -661,7 +671,7 @@ export default {
         }
       });
     };
-
+    // cardDate(512809229);
     fetchShopProducts();
 
     // watch([filters], () => {
@@ -689,6 +699,7 @@ export default {
     return {
       view: true,
       page: 1,
+      cardData: null,
       itemView: this.$store.state.cardsView,
       colorMap: {
         FINANCE: 'warning',
@@ -709,6 +720,9 @@ export default {
     }),
     getWidth() {
       return store.getters['app/currentBreakPoint'];
+    },
+    getAllLimits() {
+      return this.products.data.result;
     },
   },
   watch: {
@@ -789,6 +803,16 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
     },
+
+    cardDate(params) {
+      useJwt.getCardData(params).then((response) => {
+        if (response.data.status) {
+          this.cardData = response.data;
+        }
+        return this.cardData.data.limits.map((el) => el.limit_services);
+      });
+    },
+
     getStatusRequests(item) {
       if (item === 'PROCESSING' || item === 'CREATED') {
         return true;

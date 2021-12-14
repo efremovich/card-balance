@@ -634,7 +634,6 @@ export default {
       // const end = `${arr[1]} 00:00:00`;
       // const [start, end] = date;
       this.getDate();
-      console.log(this.start, this.end);
       const { selected } = this;
       if (date.length > 22) {
         if (selected === null) {

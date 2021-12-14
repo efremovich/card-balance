@@ -132,7 +132,7 @@
               </b-button>
               <h5
                 v-if="!getRequestStatus"
-                class="mt-1 mb-1 text-center">
+                class="mt-1 mb-1 text-center text-danger">
                 Возможность редактирования данных станет доступна после обработки ранее направленной заявки.
               </h5>
               <div
@@ -231,8 +231,8 @@
                       <h4>Текущие лимиты по карте:</h4>
                       <hr>
                       <template
-                        v-for="(limit,index) in cardData.data.limits">
-                        <div :key="limit.limit_services[index]">
+                        v-for="(limit) in cardData.data.limits">
+                        <div :key="limit.ID">
                           <h4>
                             Вид топлива:
                             {{ selectedService(limit.limit_services) }}
@@ -1041,18 +1041,14 @@ export default {
     hide(index) {
       this.cardData.data.limits.splice(index, 1);
     },
-    // eslint-disable-next-line consistent-return
+
     selectedService(arrService) { // параметр функции у нас объект,
       if (arrService === null) {
         return '';
       }
-      // console.log(arrService);
       let label = '';
-      // const arr = [...arrService];
-      // console.log(Object.values(arr));
       // eslint-disable-next-line no-return-assign
       Object.values(arrService).forEach((el) => (label += `${this.labelService[el]}, `));
-      console.log(label);
       return label.split('').slice(0, -2).join('');
     },
   },
