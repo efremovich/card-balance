@@ -931,7 +931,6 @@ export default {
       }
     },
   },
-
   methods: {
     showToast() {
       this.$toast({

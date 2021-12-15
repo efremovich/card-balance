@@ -390,7 +390,7 @@ export default {
       filterOn: [],
       required,
       option: [],
-      selected: null,
+      // selected: store.getters.CARD_NUMBER,
       transactions: {},
       rangeDate: null, // датапикер
       config: {
@@ -471,6 +471,7 @@ export default {
   computed: {
     ...mapGetters({
       gotSelectedContract: 'CONTRACT_ID',
+      gotCardNumber: 'CARD_NUMBER',
     }),
     sortOptions() {
       return this.fields
@@ -479,6 +480,14 @@ export default {
     },
     getWidth() {
       return store.getters['app/currentBreakPoint'];
+    },
+    selected: {
+      get() {
+        return this.gotCardNumber;
+      },
+      set(value) {
+        this.$store.dispatch('getCardNumber', value);
+      },
     },
   },
   watch: {
@@ -504,22 +513,42 @@ export default {
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
     this.rangeDate = [this.start, this.end];
-    useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
-      if (response.data.status) {
-        this.transactions = response.data;
-        this.totalRows = this.transactions.data.total;
-        if (this.totalRows < 1) {
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Отсутвуют транзакции за выбранный период',
-              icon: 'AlertTriangleIcon',
-              variant: 'danger',
-            },
-          });
+
+    if (this.selected === null) {
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+        if (response.data.status) {
+          this.transactions = response.data;
+          this.totalRows = this.transactions.data.total;
+          if (this.totalRows < 1) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют транзакции за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
         }
-      }
-    });
+      });
+    } else {
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`).then((response) => {
+        if (response.data.status) {
+          this.transactions = response.data;
+          this.totalRows = this.transactions.data.total;
+          if (this.totalRows < 1) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют транзакции по карте за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
+        }
+      });
+    }
   },
   mounted() {
     this.loadDone = false;
@@ -680,10 +709,10 @@ export default {
       this.currentPage = 1;
       this.loadDone = false;
     },
-    back() {
-      this.items.status_card = '';
-      this.items.transactions = [];
-    },
+    // back() {
+    //   this.items.status_card = '';
+    //   this.items.transactions = [];
+    // },
   },
 };
 </script>

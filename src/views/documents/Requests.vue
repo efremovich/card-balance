@@ -230,7 +230,6 @@ export default {
     selected(val) {
       this.loadDone = false;
       // const date = this.rangeDate;
-      console.log(val);
       this.getDate();
       if (val !== null) {
         useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${val}`).then((response) => {
@@ -252,7 +251,6 @@ export default {
         useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
           if (response.data.status) {
             this.requests = response.data;
-            console.log(this.requests.data.result);
             if (this.requests.data.result < 1) {
               this.$toast({
                 component: ToastificationContent,
