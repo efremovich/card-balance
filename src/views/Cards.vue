@@ -371,20 +371,6 @@
               <b-img
                 class="card-img-top"
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
-              <!-- <span
-                v-if="product.card_status_id !== 'ACTIVE'"
-                class="position-absolute">
-                <feather-icon
-                  v-b-tooltip.hover.top="'Заявка в обработке'"
-                  icon="AlertTriangleIcon"
-                  class="position-absolute icon-margin"
-                  size="30" />
-              </span> -->
-              <!-- <feather-icon
-                v-b-tooltip.hover.top="'Заявка в обработке'"
-                icon="AlertTriangleIcon"
-                class="position-absolute icon-margin"
-                size="30" /> -->
             </b-link>
             <div class="item-options">
               <b-link
@@ -545,6 +531,7 @@ import { ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
 import { mapGetters, mapMutations } from 'vuex';
 import store from '@/store';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { useShopUi, useShopRemoteData } from '../libs/useECommerceShop';
 import { useEcommerceUi } from '../libs/useEcommerce';
 
@@ -764,10 +751,61 @@ export default {
         return this.cardData.data.limits.map((el) => el.limit_services);
       });
     },
-    // getRouteToCard(val) {
-
-    // }
-
+    // Смена статуса карты
+    getLockCard(item) {
+      this.$bvModal
+        .msgBoxConfirm(`Вы уверены что хотите заблокировать карту № ${item.number}?`, {
+          cancelVariant: 'outline-secondary',
+          okVariant: 'primary',
+          okTitle: 'Да',
+          cancelTitle: 'Нет',
+          centered: true,
+        })
+        .then((value) => {
+          if (value === true && item.card_status_id === 'ACTIVE') {
+            const status = {
+              'name': 'Заблокирована',
+              'code': 'BLOCK',
+            };
+            useJwt.changeCardStatus(status);
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Направлена заявка на блокировку',
+                icon: 'LockIcon',
+                variant: 'success',
+              },
+            });
+          }
+        });
+    },
+    getUnlockCard(item) {
+      this.$bvModal
+        .msgBoxConfirm(`Вы уверены что хотите разблокировать карту № ${item.number}?`, {
+          cancelVariant: 'outline-secondary',
+          okVariant: 'success',
+          okTitle: 'Да',
+          cancelTitle: 'Нет',
+          centered: true,
+        })
+        .then((value) => {
+          if (value === true && item.card_status_id === 'BLOCK') {
+            const status = {
+              'name': 'Активна',
+              'code': 'ACTIVE',
+            };
+            useJwt.changeCardStatus(status);
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Направлена заявка на разблокировку',
+                icon: 'UnlockIcon',
+                variant: 'success',
+              },
+            });
+          }
+        });
+    },
     getStatusRequests(item) {
       if (item === 'PROCESSING' || item === 'CREATED') {
         return true;

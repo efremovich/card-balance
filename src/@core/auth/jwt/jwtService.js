@@ -165,6 +165,20 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // Блокировка || Разблокировка карты
+  async changeCardStatus(payload) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.post(
+        '/api/user/cardStatus/new',
+        payload,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Смена контракта
   async changePassword(payload) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
