@@ -42,6 +42,7 @@
                   icon="SearchIcon"
                   class="text-muted" />
               </b-input-group-append>
+              <p>{{ getWidth }}</p>
             </b-input-group>
           </b-col>
         </b-row>
@@ -118,12 +119,6 @@
                   class="w-100 adge-glow mb-1 mt-1">
                   {{ product.card_status.name }}
                 </b-badge>
-                <!-- <b-badge
-                 v-if="product.card_status_id === 'BLOCK'"
-                  :variant="colorMap[product.card_status_id]"
-                  class="w-100 adge-glow mb-1 mt-1">
-                  {{ product.card_status.name }}
-                </b-badge> -->
               </div>
             </div>
           </b-card>
@@ -302,51 +297,6 @@
             :key="index"
             :class="[product.card_status_id !== 'ACTIVE'?'':'ecommerce-card', 'mb-1', 'position-relative', getWidth === 'xl'?'mr-9':'']"
             no-body>
-            <!-- <div
-              class="d-flex flex-row flex-nowrap justify-content-around">
-              <b-button-group>
-                <b-button
-                  v-b-tooltip.hover.top="'Внести изменения'"
-                  variant="light"
-                  tag="a"
-                  class="btn-wishlist"
-                  @click="toggleProductInWishlist(product)">
-                  <feather-icon
-                    icon="SettingsIcon"
-                    class="mr-50" />
-                </b-button>
-                <b-button
-                  v-b-tooltip.hover.top="'Внести изменения'"
-                  variant="light"
-                  tag="a"
-                  class="btn-wishlist"
-                  @click="toggleProductInWishlist(product)">
-                  <feather-icon
-                    icon="Edit3Icon"
-                    class="mr-50" />
-                </b-button>
-                <b-button
-                  v-b-tooltip.hover.top="'Удалить карту'"
-                  variant="light"
-                  tag="a"
-                  class="btn-cart"
-                  @click="handleCartActionClick(product)">
-                  <feather-icon
-                    icon="Trash2Icon"
-                    class="mr-50" />
-                </b-button>
-                <b-button
-                  v-b-tooltip.hover.top="'Заблокировать карту'"
-                  variant="light"
-                  tag="a"
-                  class="btn-cart"
-                  @click="handleCartActionClick(product)">
-                  <feather-icon
-                    icon="LockIcon"
-                    class="mr-50" />
-                </b-button>
-              </b-button-group>
-            </div> -->
             <b-button
               v-if="product.card_status_id !== 'BLOCK'"
               variant="danger"
@@ -371,6 +321,14 @@
               <b-img
                 class="card-img-top"
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
+
+              <b-badge
+                v-if="getStatusRequests(product.request_status)"
+                class="badge-glow position-absolute mar"
+                pill
+                variant="warning">
+                Заявка в обработке
+              </b-badge>
             </b-link>
             <div class="item-options">
               <b-link
@@ -384,51 +342,6 @@
                   </h5>
                 </div>
               </b-link>
-              <!-- <div
-                class="d-flex flex-row flex-nowrap justify-content-around mt-2">
-                <b-button-group>
-                  <b-button
-                    v-b-tooltip.hover.top="'Внести изменения'"
-                    variant="light"
-                    tag="a"
-                    class="btn-wishlist mb-1"
-                    @click="toggleProductInWishlist(product)">
-                    <feather-icon
-                      icon="SettingsIcon"
-                      class="mr-50" />
-                  </b-button>
-                  <b-button
-                    v-b-tooltip.hover.top="'Внести изменения'"
-                    variant="light"
-                    tag="a"
-                    class="btn-wishlist mb-1"
-                    @click="toggleProductInWishlist(product)">
-                    <feather-icon
-                      icon="Edit3Icon"
-                      class="mr-50" />
-                  </b-button>
-                  <b-button
-                    v-b-tooltip.hover.top="'Удалить карту'"
-                    variant="light"
-                    tag="a"
-                    class="btn-cart mb-1"
-                    @click="handleCartActionClick(product)">
-                    <feather-icon
-                      icon="Trash2Icon"
-                      class="mr-50" />
-                  </b-button>
-                  <b-button
-                    v-b-tooltip.hover.top="'Заблокировать карту'"
-                    variant="light"
-                    tag="a"
-                    class="btn-cart mb-1"
-                    @click="handleCartActionClick(product)">
-                    <feather-icon
-                      icon="LockIcon"
-                      class="mr-50" />
-                  </b-button>
-                </b-button-group>
-              </div> -->
             </div>
             <div class="d-flex flex-column align-items-center w-100 position-relative top-negative">
               <div
@@ -440,9 +353,6 @@
                   :value="getValue(product.limits)"
                   :max="getMaxValue(product.limits)" />
               </div>
-              <!-- <h5 class="mt-1 mb-2">
-              Статус: {{ product.card_status.name }}
-            </h5> -->
               <div class="wrap">
                 <b-badge
                   :variant="colorMap[product.card_status_id]"
@@ -451,13 +361,6 @@
                 </b-badge>
               </div>
             </div>
-
-            <!-- <b-badge
-              class="badge-glow"
-              pill
-              variant="success">
-              {{ product.card_status.name }}
-            </b-badge> -->
           </b-card>
         </section>
         <b-card-body class="d-flex justify-content-center flex-wrap align-items-center">
@@ -763,11 +666,13 @@ export default {
         })
         .then((value) => {
           if (value === true && item.card_status_id === 'ACTIVE') {
-            const status = {
-              'name': 'Заблокирована',
-              'code': 'BLOCK',
-            };
-            useJwt.changeCardStatus(status);
+            const status = [{
+              'card_number': item.number,
+              'request_type_code': 'LOCK',
+              'request_status_code': 'CREATED',
+              'contract_id': this.contractID,
+            }];
+            useJwt.refreshDataUserLimits(status);
             this.$toast({
               component: ToastificationContent,
               props: {
@@ -790,11 +695,13 @@ export default {
         })
         .then((value) => {
           if (value === true && item.card_status_id === 'BLOCK') {
-            const status = {
-              'name': 'Активна',
-              'code': 'ACTIVE',
-            };
-            useJwt.changeCardStatus(status);
+            const status = [{
+              'card_number': item.number,
+              'request_type_code': 'UNLOCK',
+              'request_status_code': 'CREATED',
+              'contract_id': this.contractID,
+            }];
+            useJwt.refreshDataUserLimits(status);
             this.$toast({
               component: ToastificationContent,
               props: {
