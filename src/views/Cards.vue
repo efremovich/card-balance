@@ -672,14 +672,26 @@ export default {
               'request_status_code': 'CREATED',
               'contract_id': this.contractID,
             }];
-            useJwt.refreshDataUserLimits(status);
-            this.$toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Направлена заявка на блокировку',
-                icon: 'LockIcon',
-                variant: 'success',
-              },
+            useJwt.refreshDataUserLimits(status).then((response) => {
+              if (response.data.status) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Направлена заявка на блокировку',
+                    icon: 'LockIcon',
+                    variant: 'success',
+                  },
+                });
+              } else {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: '🙄 Ошибка. Попробуйте позже, а мы пока починим 👨‍🔧',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'warning',
+                  },
+                });
+              }
             });
           }
         });
@@ -701,14 +713,26 @@ export default {
               'request_status_code': 'CREATED',
               'contract_id': this.contractID,
             }];
-            useJwt.refreshDataUserLimits(status);
-            this.$toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Направлена заявка на разблокировку',
-                icon: 'UnlockIcon',
-                variant: 'success',
-              },
+            useJwt.refreshDataUserLimits(status).then((response) => {
+              if (response.data.status) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Направлена заявка на разблокировку',
+                    icon: 'LockIcon',
+                    variant: 'success',
+                  },
+                });
+              } else {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: '🙄 Ошибка. Попробуйте позже, а мы пока починим 👨‍🔧',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'warning',
+                  },
+                });
+              }
             });
           }
         });

@@ -223,9 +223,12 @@ export default {
     }),
   },
   watch: {
-    gotSelectedContract(val) {
+    gotSelectedContract(val, oldVal) {
       this.getAllCards(val);
       this.contractId = val;
+      if (oldVal !== null) {
+        this.onChange();
+      }
     },
     selected(val) {
       this.loadDone = false;
@@ -350,6 +353,46 @@ export default {
         this.option = this.unique(this.option);
       });
       this.loadDone = true;
+    },
+
+    onChange() {
+      const { selected } = this;
+      this.getDate();
+      if (selected === null) {
+        useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+          if (response.data.status) {
+            this.requests = response.data;
+            this.totalRows = this.requests.data.total;
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      } else {
+        useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}`).then((response) => {
+          if (response.data.status) {
+            this.requests = response.data;
+            this.totalRows = this.requests.data.total;
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции по карте за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      }
     },
 
     selectDate() {
