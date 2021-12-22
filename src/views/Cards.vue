@@ -42,7 +42,6 @@
                   icon="SearchIcon"
                   class="text-muted" />
               </b-input-group-append>
-              <p>{{ getWidth }}</p>
             </b-input-group>
           </b-col>
         </b-row>
@@ -76,6 +75,7 @@
             </b-button>
 
             <b-link
+              v-b-tooltip.hover.right="getLabelCards(product.limits)"
               class="w-80"
               :to="{ name: 'card', params: { card_number: product.number } }">
               <b-img
@@ -131,9 +131,9 @@
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            class="table d-flex justify-content-between  mb-1 rlt width mh-300"
+            class="table d-flex justify-content-between mb-1 width mh-300"
             no-body>
-            <div class="d-flex position-relative pr-1 pl-1 w-100">
+            <div class="d-flex pr-1 pl-1 w-100">
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
                 <div class="d-flex flex-column align-items-center">
@@ -146,6 +146,7 @@
                   </b-badge>
 
                   <b-img
+                    variant="outline-primary"
                     class="card card-img-top pt-1 w-100 mh-270"
                     :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
 
@@ -154,11 +155,21 @@
                     class="w-95 position-relative badge-glow b-70">
                     {{ product.card_status.name }}
                   </b-badge>
+                  <div class="item-wrapper pad mt-10">
+                    <h6
+                      class="item-price">
+                      PIN: {{ product.pin }}
+                    </h6>
+
+                    <h5 class="item-price">
+                      {{ product.number }}
+                    </h5>
+                  </div>
                 </div>
               </b-link>
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
-                <div class="item-wrapper pad bt-15">
+                <!-- <div class="item-wrapper pad bt-15">
                   <h6
                     class="item-price">
                     PIN: {{ product.pin }}
@@ -167,19 +178,58 @@
                   <h5 class="item-price">
                     {{ product.number }}
                   </h5>
-                </div>
+                </div> -->
               </b-link>
 
               <div class="d-flex flex-column w-60 mr-1 ml-1 mt-2">
-                <label> Остаток: {{ getValue(product.limits) }}</label>
+                <h5> Остаток: {{ getValue(product.limits) }}</h5>
                 <div
                   v-for="(i) in product.limits"
                   :key="i.ID"
                   class="mw-50">
+                  <h5 class="text-center pt-1 pr-1 pl-1">
+                    {{ getLabel(i.limit_services_labels) }}
+                  </h5>
                   <b-progress
                     variant="success"
                     show-value
                     class="mt-1"
+                    :value="i.value - i.consumption"
+                    :max="i.value" />
+                  <h5 class="text-center pt-1 pr-1 pl-1">
+                    {{ getLabel(i.limit_services_labels) }}
+                  </h5>
+                  <b-progress
+                    variant="success"
+                    show-value
+                    class="mt-1"
+                    :value="i.value - i.consumption"
+                    :max="i.value" />
+                  <h5 class="text-center pt-1 pr-1 pl-1">
+                    {{ getLabel(i.limit_services_labels) }}
+                  </h5>
+                  <b-progress
+                    variant="success"
+                    show-value
+                    class="mt-1"
+                    :value="i.value - i.consumption"
+                    :max="i.value" />
+                  <h5 class="text-center pt-1 pr-1 pl-1">
+                    {{ getLabel(i.limit_services_labels) }}
+                  </h5>
+                  <b-progress
+                    variant="success"
+                    show-value
+                    class="mt-1"
+                    :value="i.value - i.consumption"
+                    :max="i.value" />
+                  <h5 class="text-center pt-1 pr-1 pl-1">
+                    {{ getLabel(i.limit_services_labels) }}
+                  </h5>
+                  <b-progress
+                    variant="success"
+                    show-value
+                    class="mt-1 mb-1"
                     :value="i.value - i.consumption"
                     :max="i.value" />
                 </div>
@@ -188,7 +238,6 @@
                 <h5> Держатель: {{ product.holder }} </h5>
                 <h5> Последняя активность: </h5>
                 <h5> Индекс активности: </h5>
-                <!-- <h5>{{ product.limits }}</h5> -->
               </div>
               <div
                 class="d-flex flex-column align-items-start mt-2">
@@ -738,9 +787,12 @@ export default {
         });
     },
     getStatusRequests(item) {
-      if (item === 'PROCESSING' || item === 'CREATED') {
+      if (item === 'PROCESSING' || item === 'CREATED' || item !== null) {
         return true;
       } return false;
+    },
+    getLabelCards(item) {
+      console.log(item.limit_services_labels);
     },
 
     getValue(item) {
@@ -750,6 +802,11 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       const consumption = item.reduce((accumulator, el) => accumulator + el.consumption, 0);
       return totalSumm - consumption;
+    },
+    getLabel(item) {
+      if (item) {
+        return String(item);
+      } return '';
     },
   },
 };

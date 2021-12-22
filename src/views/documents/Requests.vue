@@ -11,7 +11,7 @@
     <div v-if="loadDone">
       <b-card title="Заявки">
         <b-card-body>
-          <div class="d-flex justify-content-between  flex-wrap  align-items-end">
+          <div class="d-flex justify-content-between flex-wrap align-items-end">
             <b-form-group
               label-align-sm="left"
               label-size="sm"
@@ -232,7 +232,6 @@ export default {
     },
     selected(val) {
       this.loadDone = false;
-      // const date = this.rangeDate;
       this.getDate();
       if (val !== null) {
         useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${val}`).then((response) => {
@@ -278,19 +277,8 @@ export default {
       this.contractId = this.contract.contract.id;
     } else this.contractId = this.gotSelectedContract;
 
-    // this.contractId = this.gotSelectedContract;
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
-    // this.rangeDate = [this.start, this.end];
-    // const userData = JSON.parse(localStorage.getItem('userData'));
-    // if (userData) {
-    //   this.contract = userData;
-    //   this.contractId = this.contract.contract.id;
-    //   this.start = `${this.getFirstDay()} 00:00:00`;
-    //   this.end = `${this.isToday()} 00:00:00`;
-    //   this.rangeDate = [this.start, this.end];
-    // }
-
     this.rangeDate = [this.start, this.end];
     this.getAllCards(this.contractId);
     useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {

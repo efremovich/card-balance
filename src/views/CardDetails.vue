@@ -34,7 +34,7 @@
                 " />
               <!-- отрицание (!) стоит для наглядности - потом убрать -->
               <b-badge
-                v-if="!getStatusRequests(cardData.data.request_status)"
+                v-if="getStatusRequests(cardData.data.request_status)"
                 :class="['badge-glow position-absolute',{'xs-margin':getWidth === 'xs'},{'md-margin':getWidth === 'md'},{'sm-margin':getWidth === 'sm'}, {'lg-margin':getWidth === 'lg'},{'xl-margin':getWidth === 'xl'}]"
                 pill
                 variant="warning">
@@ -150,7 +150,7 @@
                           :key="limit.limit_id"
                           no-body
                           action-close
-                          :class="['border', 'pl-1', 'pr-1', {'pointer-events-none':!getRequestStatus}]"
+                          :class="['border', 'pl-1', 'pr-1', {'pointer-events-none':getRequestStatus}]"
                           @close="hide(index)">
                           <validation-provider
                             v-slot="{ errors }"
@@ -464,6 +464,7 @@
                 active
                 title="Лимиты">
                 <b-button
+                  v-if="getRequestStatus"
                   class="mr-1 mb-1"
                   variant="success"
                   :disabled="servicesLength"
@@ -634,7 +635,7 @@ import {
   BLink,
   BBadge,
   BCardHeader,
-  VBTooltip,
+  // VBTooltip,
   BInputGroupAppend,
 } from 'bootstrap-vue';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
@@ -649,9 +650,9 @@ import { useRouter } from '../@core/utils/utils';
 import useJwt from '../auth/jwt/useJwt';
 
 export default {
-  directives: {
-    'b-tooltip': VBTooltip,
-  },
+  // directives: {
+  //   'b-tooltip': VBTooltip,
+  // },
   components: {
     ValidationProvider,
     ValidationObserver,
@@ -903,9 +904,6 @@ export default {
     getSelectedServices() {
       return this.cardData.data.limits.map((el) => el.limit_services);
     },
-    // getUnelectedServices() {
-    //   return this.services.filter((f) => !this.getSelectedServices.flat(1).includes(f.id));
-    // },
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },

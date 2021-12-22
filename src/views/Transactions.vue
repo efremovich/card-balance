@@ -597,15 +597,6 @@ export default {
     onChange() {
       const { selected } = this;
       this.getDate();
-      // const date = this.rangeDate;
-      // const newDate = Array.from(date).filter((n) => n !== '—');
-      // const arr = newDate.join('').split('00:00:00');
-      // const trim = arr.join('').split(' ').filter((n) => n !== '');
-      // // eslint-disable-next-line prefer-template
-      // const start = trim[0] + ' 00:00:00';
-      // // eslint-disable-next-line prefer-template
-      // const end = trim[1] + ' 00:00:00';
-      // // const [start, end] = date;
       if (selected === null) {
         useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
           if (response.data.status) {
