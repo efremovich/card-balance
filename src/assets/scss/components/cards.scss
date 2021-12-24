@@ -80,10 +80,20 @@ left: 15rem;
     left:40px;
   }
 
-
   .min-w {
     min-width: 230px;
   }
+
+  .mh {
+min-height:10px !important;
+width: 100% !important;
+min-width: 100% !important;
+  }
+.collapse  {
+  
+  min-width: 100% !important;
+
+}
 
   .icon-margin {
     left:30px;
