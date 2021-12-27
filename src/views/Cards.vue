@@ -221,14 +221,13 @@
                     </div>
                   </template>
 
-                  <app-collapse
-
-                    class="w-100">
+                  <app-collapse>
                     <app-collapse-item
 
-                      class="w-100 mh"
+                      class="mh"
                       title="Ещё">
-                      <template v-for="(item,index) in (getLabelServicesLength(product.limits)-2)">
+                      <template
+                        v-for="(item,index) in (getLabelServicesLength(product.limits)-2)">
                         <h5
                           :key="index"
                           class="text-center pt-1 pr-1 pl-1">
@@ -244,137 +243,8 @@
                       </template>
                     </app-collapse-item>
                   </app-collapse>
-
-                  <!-- <app-collapse
-                    :key="index"
-                    class="w-100">
-                    <app-collapse-item
-                      v-for="(item,index) in getLabelServicesLength(product.limits)"
-                      :key="index"
-                      class="w-100 mh"
-                      title="Ещё">
-                      <h5 class="text-center pt-1 pr-1 pl-1">
-                        {{ getLabel(product.limits[index].limit_services_labels) }}
-                      </h5>
-                      <b-progress
-                        variant="success"
-                        show-value
-                        class="mt-1"
-                        :value="product.limits[index].value - product.limits[index].consumption"
-                        :max="product.limits[index].value" />
-                    </app-collapse-item>
-                  </app-collapse> -->
                 </div>
-
-                <!-- АККОРДЕОН -->
-                <!-- <template v-if="getServicesLength(product.limits)"> -->
-
-                <!-- <div
-                  class="mw-50">
-                  <template v-for="(i, index) in 3">
-                    <div
-                      v-for="(list) in product.limits"
-                      :key="index">
-                      <h5
-                        :key="list.number"
-                        class="text-center pt-1 pr-1 pl-1">
-                        {{ getLabel( product.limits[index].limit_services_labels) }}
-                      </h5>
-                      <h5>{{ product.limits[index] }}</h5>
-
-                      <b-progress
-                        :key="index"
-                        variant="success"
-                        show-value
-                        class="mt-1"
-                        :value="list.value - list.consumption"
-                        :max="list.value" />
-                    </div>
-                  </template>
-                </div> -->
-
-                <!-- <template
-                  v-if="!getServicesLength(product.limits)">
-                  <div
-                    v-for="(item,index) in product.limits"
-                    :key="index">
-                    <h5 class="text-center pt-1 pr-1 pl-1">
-                      {{ getLabel(item.limit_services_labels) }}
-                    </h5>
-                    <b-progress
-                      variant="success"
-                      show-value
-                      class="mt-1"
-                      :value="item.value - item.consumption"
-                      :max="item.value" />
-                  </div>
-
-                  <app-collapse class="w-100">
-                    <app-collapse-item
-                      class="w-100 mh"
-                      title="Ещё">
-                      <h5 class="text-center pt-1 pr-1 pl-1">
-                        {{ getLabel(item.limit_services_labels) }}
-                      </h5>
-                      <b-progress
-                        variant="success"
-                        show-value
-                        class="mt-1"
-                        :value="item.value - item.consumption"
-                        :max="item.value" />
-                    </app-collapse-item>
-                  </app-collapse>
-                </template> -->
-                <!-- </template> -->
               </div>
-
-              <!--
-                <template v-for="(item, index) in 2">
-              <template v-for="(item, index) in data.limit_commons">
-                <b-col
-                  :key="index"
-                  class="mb-2">
-                  <b-card-text class="mb-50 text-info">
-                    АИ-92:   {{ data.item.age[index] }}л.
-                    {{ item.service_id[index] }}
-                  </b-card-text>
-                  <b-progress
-                    :value="data.item.age[index]"
-                    :variant="getPopularityColor(data.item.age[index])"
-                    :value="item[index].limits.id"
-                    :variant="getPopularityColor(item[index].limits.id)"
-                    height="6px" />
-                </b-col>
-              </template>
-
-                 <template
-                v-if="data.item.age.length>2">
-                v-if="item[index].length>2">
-                <app-collapse
-                  id="collapse-1">
-                  <app-collapse-item
-                    id="collapse-2"
-                    title="ещё...  ">
-                    <b-col
-                      v-for="(item, index) in data.item.age.length-2"
-                      v-for="(item, index) in item.length-2"
-                      :key="index+2"
-
-                      class="mb-2">
-                      <b-card-text class="mb-50 text-info">
-                        АИ-92:   {{ data.item.age[index+2] }}
-                        АИ-92:   {{ item.limits.id[index+2] }}
-                      </b-card-text>
-                      <b-progress
-                        :value="data.item.age[index+2]"
-                        :variant="getPopularityColor(data.item.age[index+2])"
-                        :value="item[index+2]"
-                        :variant="getPopularityColor(item[index+2])"
-                        height="6px" />
-                    </b-col>
-                  </app-collapse-item>
-                </app-collapse>
-              </template> -->
 
               <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1 mt-2">
                 <h5> Держатель: {{ product.holder }} </h5>
@@ -795,7 +665,6 @@ export default {
     },
     currentPage() {
       this.page = this.currentPage;
-      // this.$store.dispatch('getSelectedPages', this.page);
       useJwt.getChangeCardsDate(this.contractID, `&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;

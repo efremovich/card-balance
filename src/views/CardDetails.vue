@@ -32,7 +32,6 @@
                 :src="
                   require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
                 " />
-              <!-- отрицание (!) стоит для наглядности - потом убрать -->
               <b-badge
                 v-if="getStatusRequests(cardData.data.request_status)"
                 :class="['badge-glow position-absolute',{'xs-margin':getWidth === 'xs'},{'md-margin':getWidth === 'md'},{'sm-margin':getWidth === 'sm'}, {'lg-margin':getWidth === 'lg'},{'xl-margin':getWidth === 'xl'}]"
@@ -123,7 +122,7 @@
               active
               title="Лимиты">
               <b-button
-                v-if="getRequestStatus"
+                v-if="!getRequestStatus"
                 class="mr-1 mb-1"
                 variant="success"
                 :disabled="servicesLength"
@@ -131,7 +130,7 @@
                 Добавить лимит
               </b-button>
               <h5
-                v-if="!getRequestStatus"
+                v-if="getRequestStatus"
                 class="mt-1 mb-1 text-center text-danger">
                 Возможность редактирования данных станет доступна после обработки ранее направленной заявки.
               </h5>
@@ -144,6 +143,8 @@
                     ref="limitsForm">
                     <b-form
                       @submit.prevent="newLimitsData">
+                      <!-- Нужен template для отрисовки карты без заданнных при открытии лимитов, отрисовывать
+                      шаблон лимита (newLimit), но не пустоту -->
                       <template
                         v-for="(limit,index) in cardData.data.limits">
                         <b-card-actions
@@ -159,6 +160,8 @@
                             <b-form-group
                               label="Виды топлива:"
                               label-for="labelServices">
+                              <!-- Добавление нового лимита при отсутствии первого невозможно
+                              в виду limit.limit_services - null,   v-if="limit.limit_services !== null" -->
                               <v-select
                                 id="labelServices"
                                 v-model="limit.limit_services"
@@ -250,7 +253,7 @@
               </div>
               <div class="d-flex justify-content-around w-90 position-sticky bottom">
                 <b-button
-                  v-if="getRequestStatus"
+                  v-if="!getRequestStatus"
                   variant="success"
                   type="submit"
                   @click="newLimitsData">
@@ -258,7 +261,7 @@
                 </b-button>
                 <!-- При сохранении формы следует перенаправлять пользователя в cards -->
                 <b-button
-                  v-if="getRequestStatus"
+                  v-if="!getRequestStatus"
                   class="mr-1"
                   variant="primary"
                   @click="undoChange">
@@ -464,7 +467,7 @@
                 active
                 title="Лимиты">
                 <b-button
-                  v-if="getRequestStatus"
+                  v-if="!getRequestStatus"
                   class="mr-1 mb-1"
                   variant="success"
                   :disabled="servicesLength"
@@ -1033,7 +1036,10 @@ export default {
         consumption: 0,
         limit_id: this.getRandom(),
       };
-      this.cardData.data.limits.unshift(this.newLimit);
+      if (this.cardData.data.limits.length === 0) { // При отсутствии первоначального лимита
+        this.cardData.data.limits.concat(this.newLimit);
+        console.log(this.cardData.data.limits);
+      } else { this.cardData.data.limits.unshift(this.newLimit); }
     },
     hide(index) {
       this.cardData.data.limits.splice(index, 1);
