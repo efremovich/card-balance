@@ -11,8 +11,11 @@
       v-if="download">
       <b-card>
         <p>Создать счёт по договору №  {{ contract }}</p>
-        <b-form-input
-          v-model="text" />
+        <v-select
+          v-model="selected"
+          :clearable="false"
+          :options="option"
+          class="w-100 mt-1 mb-1" />
         <b-form-input
           v-model="summ"
           autofocus
@@ -239,7 +242,7 @@
                   style="
   text-align: left;
     padding-left: 10px;">
-                  {{ text }}№ {{ contract }}
+                  {{ selected }}№ {{ contract }}
                 </p>
               </div>
               <div
@@ -365,6 +368,7 @@ import {
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import print from 'vue-print-nb';
+import vSelect from 'vue-select';
 import { mapGetters } from 'vuex';
 import store from '@/store';
 
@@ -374,6 +378,7 @@ export default {
     BFormInput,
     BButton,
     BOverlay,
+    vSelect,
 
   },
 
@@ -383,29 +388,19 @@ export default {
   data() {
     return {
       getInfo: null,
+      option: ['Оплата за ГСМ согласно договора поставки ', 'Предоплата за ГСМ  согласно договора поставки ', 'Оплата за информационное обслуживание согласно договора поставки ', 'Оплата за утерянную топливную карту по договору '],
       today: null,
-      // contract: null,
       fullContract: null,
+      selected: 'Оплата за ГСМ согласно договора поставки ',
       contractId: null,
       summ: '',
       visible: false,
       download: false,
-      text: 'Оплата согласно договора ',
       printObj: {
         id: 'check',
       },
     };
   },
-  // beforeRouteEnter(to, from, next) {
-  //   if (to.name === 'bill') {
-  //     next((vm) => {
-  //       if (vm.getWidth === 'xs') {
-  //         console.log(vm.getWidth);
-  //         next(false);
-  //       } else next(true);
-  //     });
-  //   }
-  // },
   computed: {
     getNDS() {
       return ((this.summ * 20) / 100).toLocaleString('ru-RU', {
@@ -491,9 +486,7 @@ export default {
         this.visible = true;
       } else this.visible = false;
     },
-
   },
-
 };
 
 </script>

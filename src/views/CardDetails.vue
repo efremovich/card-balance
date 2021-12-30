@@ -9,97 +9,97 @@
     rounded="md">
     <div
       v-if="download">
-      <div
-        v-if="limitsLength>0">
-        <b-card
-          :class="[getWidth === 'xs'?'max-w': '']">
-          <b-card-header
-            class="d-flex justify-content-start">
-            <b-link :to="{ name: 'cards' }">
+      <!-- <div
+        v-if="limitsLength>0"> -->
+      <b-card
+        :class="[getWidth === 'xs'?'max-w': '']">
+        <b-card-header
+          class="d-flex justify-content-start">
+          <b-link :to="{ name: 'cards' }">
+            <feather-icon
+              class="mr-1"
+              icon="ArrowLeftCircleIcon"
+              size="30" />
+          </b-link>
+          <h3>
+            Настройка карты № {{ number }}
+          </h3>
+        </b-card-header>
+        <div class="d-flex flex-wrap justify-content-between">
+          <div class="image">
+            <b-img
+              :class="['card-img-top', getWidth === 'xs'? 'min-w270':'']"
+              :src="
+                require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
+              " />
+            <b-badge
+              v-if="getStatusRequests(cardData.data.request_status)"
+              :class="['badge-glow position-absolute',{'xs-margin':getWidth === 'xs'},{'md-margin':getWidth === 'md'},{'sm-margin':getWidth === 'sm'}, {'lg-margin':getWidth === 'lg'},{'xl-margin':getWidth === 'xl'}]"
+              pill
+              variant="warning">
               <feather-icon
-                class="mr-1"
-                icon="ArrowLeftCircleIcon"
-                size="30" />
-            </b-link>
-            <h3>
-              Настройка карты № {{ number }}
-            </h3>
-          </b-card-header>
-          <div class="d-flex flex-wrap justify-content-between">
-            <div class="image">
-              <b-img
-                :class="['card-img-top', getWidth === 'xs'? 'min-w270':'']"
-                :src="
-                  require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
-                " />
-              <b-badge
-                v-if="getStatusRequests(cardData.data.request_status)"
-                :class="['badge-glow position-absolute',{'xs-margin':getWidth === 'xs'},{'md-margin':getWidth === 'md'},{'sm-margin':getWidth === 'sm'}, {'lg-margin':getWidth === 'lg'},{'xl-margin':getWidth === 'xl'}]"
-                pill
-                variant="warning">
-                <feather-icon
-                  icon="ClockIcon"
-                  class="mr-25" />
-                <span>
-                  В обработке
-                </span>
-              </b-badge>
+                icon="ClockIcon"
+                class="mr-25" />
+              <span>
+                В обработке
+              </span>
+            </b-badge>
 
-              <div :class="[getWidth === 'xs' ? 'b-xs':'item-wrapper']">
-                <h6 class="item-price">
-                  PIN: {{ cardData.data.pin }}
-                </h6>
-                <h5 class="item-price">
-                  {{ cardData.data.number }}
-                </h5>
-              </div>
-              <div class="holder">
-                <h6 class="ml-1">
-                  Держатель:
-                </h6>
-                <b-form-input
-                  :value="cardData.data.holder" />
-              </div>
+            <div :class="[getWidth === 'xs' ? 'b-xs':'item-wrapper']">
+              <h6 class="item-price">
+                PIN: {{ cardData.data.pin }}
+              </h6>
+              <h5 class="item-price">
+                {{ cardData.data.number }}
+              </h5>
             </div>
-            <div
-              class="d-flex flex-column align-items-start justify-content-start heigth ml-1 mt-2">
-              <b-button
-                variant="danger"
-                class="btn mb-2"
-                @click="handleCartActionClick(product)">
-                Заблокировать карту
-                <feather-icon
-                  icon="LockIcon"
-                  class="mr-50" />
-              </b-button>
-              <div class="mb-2">
-                <h6>
-                  Выдана: {{ cardData.data.expiry_date | formatOnlyDate }}
-                  <!-- указать дату выдачи карты не в лимитах, а выше иначе при удалении всех лимитов
+            <div class="holder">
+              <h6 class="ml-1">
+                Держатель:
+              </h6>
+              <b-form-input
+                :value="cardData.data.holder" />
+            </div>
+          </div>
+          <div
+            class="d-flex flex-column align-items-start justify-content-start heigth ml-1 mt-2">
+            <b-button
+              variant="danger"
+              class="btn mb-2"
+              @click="handleCartActionClick(product)">
+              Заблокировать карту
+              <feather-icon
+                icon="LockIcon"
+                class="mr-50" />
+            </b-button>
+            <div class="mb-2">
+              <h6>
+                Выдана: {{ cardData.data.expiry_date | formatOnlyDate }}
+                <!-- указать дату выдачи карты не в лимитах, а выше, иначе при удалении всех лимитов
                   невозможно создать новый лимит -->
-                </h6>
-              </div>
-              <div class="mb-2">
-                <h6>
-                  Действует до: {{ cardData.data.expiry_date | formatDateNoTime }}
-                </h6>
-              </div>
-              <div class="mb-2">
-                <h6>
-                  Последнее изменения:<br>
-                  {{ cardData.data.emitent.last_updated | formatDate }}
-                </h6>
-              </div>
+              </h6>
             </div>
-            <!-- <div class="appex">
+            <div class="mb-2">
+              <h6>
+                Действует до: {{ cardData.data.expiry_date | formatDateNoTime }}
+              </h6>
+            </div>
+            <div class="mb-2">
+              <h6>
+                Последнее изменения:<br>
+                {{ cardData.data.emitent.last_updated | formatDate }}
+              </h6>
+            </div>
+          </div>
+          <!-- <div class="appex">
             <vue-apex-charts
               type="radialBar"
               height="325"
               :options="productOrdersRadialBar.chartOptions"
               :series="productOrdersRadialBar.series" /> -->
 
-            <!-- chart info -->
-            <!-- <div
+          <!-- chart info -->
+          <!-- <div
               v-for="(data,key,index) in cardData.data"
               :key="key"
               class="d-flex justify-content-between"
@@ -113,506 +113,572 @@
               </div>
               <span>{{ data }}</span>
             </div> -->
-            <!-- </div> -->
-          </div>
-          <b-tabs
-            content-class="pt-1 position-relative"
-            fill>
-            <b-tab
-              active
-              title="Лимиты">
-              <b-button
-                v-if="!getRequestStatus"
-                class="mr-1 mb-1"
-                variant="success"
-                :disabled="servicesLength"
-                @click="addLimit">
-                Добавить лимит
-              </b-button>
-              <h5
-                v-if="getRequestStatus"
-                class="mt-1 mb-1 text-center text-danger">
-                Возможность редактирования данных станет доступна после обработки ранее направленной заявки.
-              </h5>
-              <div
-                class="d-flex flex-nowrap column ">
-                <b-col
-                  md="7"
-                  class="p-0">
-                  <validation-observer
-                    ref="limitsForm">
-                    <b-form
-                      @submit.prevent="newLimitsData">
-                      <!-- Нужен template для отрисовки карты без заданнных при открытии лимитов, отрисовывать
+          <!-- </div> -->
+        </div>
+        <b-tabs
+          content-class="pt-1 position-relative"
+          fill>
+          <b-tab
+            active
+            title="Лимиты">
+            <b-button
+              v-if="!getRequestStatus"
+              class="mr-1 mb-1"
+              variant="success"
+              :disabled="servicesLength"
+              @click="addLimit">
+              Добавить лимит
+            </b-button>
+            <h5
+              v-if="getRequestStatus"
+              class="mt-1 mb-1 text-center text-danger">
+              Возможность редактирования данных станет доступна после обработки ранее направленной заявки.
+            </h5>
+            <div
+              class="d-flex flex-nowrap column ">
+              <b-col
+                md="7"
+                class="p-0">
+                <validation-observer
+                  ref="limitsForm">
+                  <b-form
+                    @submit.prevent="newLimitsData">
+                    <!-- Нужен template для отрисовки карты без заданнных при открытии карты лимитов, отрисовывать
                       шаблон лимита (newLimit), но не пустоту -->
-                      <template
-                        v-for="(limit,index) in cardData.data.limits">
-                        <b-card-actions
-                          :key="limit.limit_id"
-                          no-body
-                          action-close
-                          :class="['border', 'pl-1', 'pr-1', {'pointer-events-none':getRequestStatus}]"
-                          @close="hide(index)">
-                          <validation-provider
-                            v-slot="{ errors }"
-                            name="Виды топлива"
-                            rules="required">
-                            <b-form-group
-                              label="Виды топлива:"
-                              label-for="labelServices">
-                              <!-- Добавление нового лимита при отсутствии первого невозможно
+                    <template v-if="limitsLength<1">
+                      <b-card-actions
+                        no-body
+                        action-close
+                        class="borderpl-1 pr-1">
+                        <validation-provider
+                          v-slot="{ errors }"
+                          name="Виды топлива"
+                          rules="required">
+                          <b-form-group
+                            label="Виды топлива:"
+                            label-for="labelServices">
+                            <!-- Добавление нового лимита при отсутствии первого невозможно
                               в виду limit.limit_services - null,   v-if="limit.limit_services !== null" -->
-                              <v-select
-                                id="labelServices"
-                                v-model="limit.limit_services"
-                                :filter="fuseSearch"
-                                multiple
-                                label="full_name"
-                                :reduce="(services) => `${services.id}`"
-                                :options="services"
-                                :selectable="(option) => !getSelectedServices.flat(1).includes(option.id)" />
-                              <!-- Нужно отследить выбранные значения и фильтровать по ним services и затем передовать их options. Передавать computed свойство. -->
-                              <small
-                                class="text-danger">{{ errors[0] }}</small>
-                            </b-form-group>
-                          </validation-provider>
-                          <div :class="['d-flex', 'flex-wrap', 'mt-1', getWidth === 'xs'?'align-items-center': '', ]">
-                            <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1 align-items-center',{'w-100': getWidth === 'md'} ]">
-                              <h6 class="mr-1">
-                                Лимит
-                              </h6>
-                              <div class="mr-1 mw-25">
-                                <b-form-input
-                                  v-model.number="limit.value" />
-                              </div>
-                              <b-col
-                                class="mw-75">
-                                <v-select
-                                  v-model="limit.limit_unit_code"
-                                  :class="[ {'mw-50':getWidth === 'xl'}]"
-                                  :clearable="false"
-                                  :reduce="(unit) => unit.code"
-                                  :options="units" />
-                              </b-col>
+                            <v-select
+                              id="labelServices"
+                              v-model="newLimits.limit_services"
+                              :filter="fuseSearch"
+                              multiple
+                              label="full_name"
+                              :reduce="(services) => `${services.id}`"
+                              :options="services" />
+                            <!-- Нужно отследить выбранные значения и фильтровать по ним services и затем передовать их options. Передавать computed свойство. -->
+                            <small
+                              class="text-danger">{{ errors[0] }}</small>
+                          </b-form-group>
+                        </validation-provider>
+                        <div :class="['d-flex', 'flex-wrap', 'mt-1', getWidth === 'xs'?'align-items-center': '', ]">
+                          <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1 align-items-center',{'w-100': getWidth === 'md'} ]">
+                            <h6 class="mr-1">
+                              Лимит
+                            </h6>
+                            <div class="mr-1 mw-25">
+                              <b-form-input
+                                v-model.number="emptyValue" />
                             </div>
-                            <b-col :class="['flex-grow-1', {'ml-1': getWidth === 'sm'}]">
+                            <b-col
+                              class="mw-75">
                               <v-select
-                                v-model="limit.limit_period_code"
-                                :class="[{'mt-1 mb-1 ml-1':getWidth === 'xs'}, {'ml-1':getWidth === 'xl'},{'ml-1':getWidth === 'lg'}]"
+                                v-model="newLimits.limit_unit_code"
+                                :class="[ {'mw-50':getWidth === 'xl'}]"
                                 :clearable="false"
-                                :reduce="(period) => period.code"
-                                :options="periods" />
+                                :reduce="(unit) => unit.code"
+                                :options="units" />
                             </b-col>
                           </div>
-                          <div class="mt-1">
-                            <label>Остаток: {{ limit.value - limit.consumption }}  {{ unicodeLabel[limit.limit_unit_code] }} </label>
-                            <b-progress
-                              :value="limit.value - limit.consumption"
-                              :max="limit.value" />
-                          </div>
-                        </b-card-actions>
-                      </template>
-                    </b-form>
-                  </validation-observer>
-                </b-col>
-                <b-col
-                  md="5"
-                  class="border">
-                  <b-overlay
-                    :show="!showLoading"
-                    variant="black"
-                    spinner-variant="primary"
-                    blur="0"
-                    opacity=".75"
-                    rounded="sm">
-                    <b-card-actions
-                      ref="limits"
-                      action-refresh
-                      show
-                      class="pl-1"
-                      @refresh="refreshLimits('limits')">
-                      <h4>Текущие лимиты по карте:</h4>
-                      <hr>
-                      <template
-                        v-for="(limit) in cardData.data.limits">
-                        <div :key="limit.ID">
-                          <h4>
-                            Вид топлива:
-                            {{ selectedService(limit.limit_services) }}
-                          </h4>
-                          <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
-                          <h4>
-                            Остаток: {{ limit.value - limit.consumption }} {{ unicodeLabel[limit.limit_unit_code] }}.
-                          </h4>
-                          <hr>
+                          <b-col :class="['flex-grow-1', {'ml-1': getWidth === 'sm'}]">
+                            <v-select
+                              v-model="selected"
+                              :class="[{'mt-1 mb-1 ml-1':getWidth === 'xs'}, {'ml-1':getWidth === 'xl'},{'ml-1':getWidth === 'lg'}]"
+                              :clearable="false"
+                              :reduce="(period) => period.code"
+                              :options="periods" />
+                          </b-col>
                         </div>
-                      </template>
-                    </b-card-actions>
-                  </b-overlay>
-                </b-col>
-              </div>
-              <div class="d-flex justify-content-around w-90 position-sticky bottom">
-                <b-button
-                  v-if="!getRequestStatus"
-                  variant="success"
-                  type="submit"
-                  @click="newLimitsData">
-                  Сохранить
-                </b-button>
-                <!-- При сохранении формы следует перенаправлять пользователя в cards -->
-                <b-button
-                  v-if="!getRequestStatus"
-                  class="mr-1"
-                  variant="primary"
-                  @click="undoChange">
-                  Отмена
-                </b-button>
-              </div>
-            </b-tab>
-            <b-tab title="Транзакции">
-              <h4
-                v-if="totalRows<1"
-                class="text-center">
-                Транзакции по карте № {{ cardData.data.number }} за период c
-                {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
-              </h4>
-              <div v-if="totalRows>0">
-                <b-card>
-                  <div class="d-flex justify-content-between flex-wrap">
-                    <!-- filter -->
-                    <b-form-group
-                      label-align-sm="left"
-                      label-size="sm"
-                      label-for="filterInput"
-                      class="mb-0">
-                      <b-input-group size="sm">
-                        <b-form-input
-                          id="filterInput"
-                          v-model="filter"
-                          type="search"
-                          placeholder="Найти" />
-                        <b-input-group-append>
-                          <b-button
-                            :disabled="!filter"
-                            @click="filter = ''">
-                            Очистить
-                          </b-button>
-                        </b-input-group-append>
-                      </b-input-group>
-                    </b-form-group>
+                        <div class="mt-1">
+                          <label>Остаток: {{ newLimits.value }}  {{ unicodeLabel[newLimits.value] }} </label>
+                          <b-progress
+                            :value="newLimits.value"
+                            :max="newLimits.value" />
+                        </div>
+                      </b-card-actions>
+                    </template>
 
-                    <div>
-                      <export-excel
-                        class="btn btn-primary"
-                        :data="transactions.data.result"
-                        :fields="columns"
-                        type="xlsx"
-                        name="Транзакции.xlsx">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          fill="currentColor"
-                          class="bi bi-file-earmark-excel"
-                          viewBox="0 0 16 16">
-                          <path
-                            d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                          <path
-                            d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-                        </svg>
-                        Скачать
-                      </export-excel>
-                    </div>
-                  </div>
-                </b-card>
-                <h6 class="text-center mb-1 mt-1">
-                  Транзакции по карте №{{ route.value.params.card_number }} за период c
-                  <code>{{ firstDayOfMonth }}</code>по <code>{{ lastDay }}</code>:
-                </h6>
-                <b-table
-                  striped
-                  hover
-                  responsive
-                  class="position-relative"
-                  :per-page="perPage"
-                  :current-page="currentPage"
-                  :items="transactions.data.result"
-                  :fields="fields"
-                  :filter="filter">
-                  <template #cell(cardData)="row">
-                    {{ row.item.cardData | formatDate }}
-                  </template>
-                </b-table>
-
-                <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
-                  <!-- page length -->
+                    <!-- Добавить ещё один template для добавления 1-го лимита  -->
+                    <template
+                      v-for="(limit,index) in cardData.data.limits">
+                      <b-card-actions
+                        :key="limit.limit_id"
+                        no-body
+                        action-close
+                        :class="['border', 'pl-1', 'pr-1', {'pointer-events-none':getRequestStatus}]"
+                        @close="hide(index)">
+                        <validation-provider
+                          v-slot="{ errors }"
+                          name="Виды топлива"
+                          rules="required">
+                          <b-form-group
+                            label="Виды топлива:"
+                            label-for="labelServices">
+                            <!-- Добавление нового лимита при отсутствии первого невозможно
+                              в виду limit.limit_services - null,   v-if="limit.limit_services !== null" -->
+                            <v-select
+                              id="labelServices"
+                              v-model="limit.limit_services"
+                              :filter="fuseSearch"
+                              multiple
+                              label="full_name"
+                              :reduce="(services) => `${services.id}`"
+                              :options="services"
+                              :selectable="(option) => !getSelectedServices.flat(1).includes(option.id)" />
+                            <!-- Нужно отследить выбранные значения и фильтровать по ним services и затем передовать их options. Передавать computed свойство. -->
+                            <small
+                              class="text-danger">{{ errors[0] }}</small>
+                          </b-form-group>
+                        </validation-provider>
+                        <div :class="['d-flex', 'flex-wrap', 'mt-1', getWidth === 'xs'?'align-items-center': '', ]">
+                          <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1 align-items-center',{'w-100': getWidth === 'md'} ]">
+                            <h6 class="mr-1">
+                              Лимит
+                            </h6>
+                            <div class="mr-1 mw-25">
+                              <b-form-input
+                                v-model.number="limit.value" />
+                            </div>
+                            <b-col
+                              class="mw-75">
+                              <v-select
+                                v-model="limit.limit_unit_code"
+                                :class="[ {'mw-50':getWidth === 'xl'}]"
+                                :clearable="false"
+                                :reduce="(unit) => unit.code"
+                                :options="units" />
+                            </b-col>
+                          </div>
+                          <b-col :class="['flex-grow-1', {'ml-1': getWidth === 'sm'}]">
+                            <v-select
+                              v-model="limit.limit_period_code"
+                              :class="[{'mt-1 mb-1 ml-1':getWidth === 'xs'}, {'ml-1':getWidth === 'xl'},{'ml-1':getWidth === 'lg'}]"
+                              :clearable="false"
+                              :reduce="(period) => period.code"
+                              :options="periods" />
+                          </b-col>
+                        </div>
+                        <div class="mt-1">
+                          <label>Остаток: {{ limit.value - limit.consumption }}  {{ unicodeLabel[limit.limit_unit_code] }} </label>
+                          <b-progress
+                            :value="limit.value - limit.consumption"
+                            :max="limit.value" />
+                        </div>
+                      </b-card-actions>
+                    </template>
+                  </b-form>
+                </validation-observer>
+              </b-col>
+              <b-col
+                md="5"
+                class="border">
+                <b-overlay
+                  :show="!showLoading"
+                  variant="black"
+                  spinner-variant="primary"
+                  blur="0"
+                  opacity=".75"
+                  rounded="sm">
+                  <b-card-actions
+                    ref="limits"
+                    action-refresh
+                    show
+                    class="pl-1"
+                    @refresh="refreshLimits('limits')">
+                    <h4>Текущие лимиты по карте:</h4>
+                    <hr>
+                    <template
+                      v-for="(limit) in cardData.data.limits">
+                      <div :key="limit.ID">
+                        <h4>
+                          Вид топлива:
+                          {{ selectedService(limit.limit_services) }}
+                        </h4>
+                        <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
+                        <h4>
+                          Остаток: {{ limit.value - limit.consumption }} {{ unicodeLabel[limit.limit_unit_code] }}.
+                        </h4>
+                        <hr>
+                      </div>
+                    </template>
+                  </b-card-actions>
+                </b-overlay>
+              </b-col>
+            </div>
+            <div class="d-flex justify-content-around w-90 position-sticky bottom">
+              <b-button
+                v-if="!getRequestStatus"
+                variant="success"
+                type="submit"
+                @click="newLimitsData">
+                Сохранить
+              </b-button>
+              <!-- При сохранении формы следует перенаправлять пользователя в cards -->
+              <b-button
+                v-if="!getRequestStatus"
+                class="mr-1"
+                variant="primary"
+                @click="undoChange">
+                Отмена
+              </b-button>
+            </div>
+          </b-tab>
+          <b-tab title="Транзакции">
+            <h4
+              v-if="totalRows<1"
+              class="text-center">
+              Транзакции по карте № {{ cardData.data.number }} за период c
+              {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
+            </h4>
+            <div v-if="totalRows>0">
+              <b-card>
+                <div class="d-flex justify-content-between flex-wrap">
+                  <!-- filter -->
                   <b-form-group
-                    label="На странице"
-                    label-cols="6"
-                    label-align="left"
+                    label-align-sm="left"
                     label-size="sm"
-                    label-for="sortBySelect"
-                    class="text-nowrap mb-md-0 mr-2 pr-2">
-                    <b-form-select
-                      id="perPageSelect"
-                      v-model="perPage"
-                      size="sm"
-                      inline
-                      :options="pageOptions" />
+                    label-for="filterInput"
+                    class="mb-0">
+                    <b-input-group size="sm">
+                      <b-form-input
+                        id="filterInput"
+                        v-model="filter"
+                        type="search"
+                        placeholder="Найти" />
+                      <b-input-group-append>
+                        <b-button
+                          :disabled="!filter"
+                          @click="filter = ''">
+                          Очистить
+                        </b-button>
+                      </b-input-group-append>
+                    </b-input-group>
                   </b-form-group>
 
-                  <!-- pagination -->
                   <div>
-                    <b-pagination
-                      v-model="currentPage"
-                      :total-rows="totalRows"
-                      :per-page="perPage"
-                      first-number
-                      last-number
-                      prev-class="prev-item"
-                      next-class="next-item"
-                      class="mb-0">
-                      <template #prev-text>
-                        <feather-icon
-                          icon="ChevronLeftIcon"
-                          size="18" />
-                      </template>
-                      <template #next-text>
-                        <feather-icon
-                          icon="ChevronRightIcon"
-                          size="18" />
-                      </template>
-                    </b-pagination>
+                    <export-excel
+                      class="btn btn-primary"
+                      :data="transactions.data.result"
+                      :fields="columns"
+                      type="xlsx"
+                      name="Транзакции.xlsx">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        fill="currentColor"
+                        class="bi bi-file-earmark-excel"
+                        viewBox="0 0 16 16">
+                        <path
+                          d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                        <path
+                          d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                      </svg>
+                      Скачать
+                    </export-excel>
                   </div>
-                </b-card-body>
-              </div>
-            </b-tab>
-            <b-tab title="События" />
-            <b-tab title="Сообщить о проблеме" />
-          </b-tabs>
-        </b-card>
-      </div>
-      <div
-        v-else>
-        <div
-          v-if="limitsLength<1">
-          <b-card>
-            <b-card-header
-              class="d-flex justify-content-start">
-              <b-link :to="{ name: 'cards' }">
-                <feather-icon
-                  class="mr-1"
-                  icon="ArrowLeftCircleIcon"
-                  size="30" />
-              </b-link>
-              <h3>
-                Настройка карты № {{ number }}
-              </h3>
-            </b-card-header>
-            <div class="d-flex flex-wrap justify-content-between">
-              <div class="image">
-                <b-img
-                  class="card-img-top"
-                  :src="
-                    require(`../assets/images/cards-icon/${cardEmitentCode}.svg`)
-                  " />
-                <div class="item-wrapper">
-                  <h6 class="item-price">
-                    PIN: {{ cardData.data.pin }}
-                  </h6>
-                  <h5 class="item-price">
-                    {{ cardData.data.number }}
-                  </h5>
                 </div>
-                <div class="holder">
-                  <h6 class="ml-1">
-                    Держатель:
-                  </h6>
-                  <b-form-input :value="cardData.data.holder" />
-                </div>
-              </div>
-              <div
-                class="d-flex flex-column align-items-start justify-content-start heigth ml-1 mt-2">
-                <b-button
-                  variant="danger"
-                  class="btn mb-2"
-                  @click="handleCartActionClick(product)">
-                  Заблокировать карту
-                  <feather-icon
-                    icon="LockIcon"
-                    class="mr-50" />
-                </b-button>
-                <div class="mb-2">
-                  <h6>
-                    Выдана: {{ cardData.data.limits.CreatedAt | formatDate }}
-                  </h6>
-                </div>
-                <div class="mb-2">
-                  <h6>
-                    Действует до: {{ cardData.data.limits.CreatedAt | formatDate }}
-                  </h6>
-                </div>
-                <div class="mb-2">
-                  <h6>
-                    Последнее изменения:<br>
-                    {{ cardData.data.emitent.last_updated | formatDate }}
-                  </h6>
-                </div>
-              </div>
-            </div>
-            <b-tabs
-              content-class="pt-1 position-relative"
-              fill>
-              <b-tab
-                active
-                title="Лимиты">
-                <b-button
-                  v-if="!getRequestStatus"
-                  class="mr-1 mb-1"
-                  variant="success"
-                  :disabled="servicesLength"
-                  @click="addLimit">
-                  Добавить лимит
-                </b-button>
-                <div class="d-flex justify-content-around w-90 position-sticky bottom">
-                  <b-button
-                    variant="success"
-                    type="submit"
-                    @click="newLimitsData">
-                    Сохранить
-                  </b-button>
-                  <b-button
-                    class="mr-1"
-                    variant="primary"
-                    @click="undoChange">
-                    Отмена
-                  </b-button>
-                </div>
-              </b-tab>
-              <b-tab title="Транзакции">
-                <h4
-                  v-if="totalRows < 1"
-                  class="text-center">
-                  Транзакции по карте № {{ cardData.data.number }} за период c
-                  {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
-                </h4>
-                <div v-if="totalRows > 0">
-                  <b-card>
-                    <div class="d-flex justify-content-between flex-wrap">
-                      <!-- filter -->
-                      <b-form-group
-                        label-align-sm="left"
-                        label-size="sm"
-                        label-for="filterInput"
-                        class="mb-0">
-                        <b-input-group size="sm">
-                          <b-form-input
-                            id="filterInput"
-                            v-model="filter"
-                            type="search"
-                            placeholder="Найти" />
-                          <b-input-group-append>
-                            <b-button
-                              :disabled="!filter"
-                              @click="filter = ''">
-                              Очистить
-                            </b-button>
-                          </b-input-group-append>
-                        </b-input-group>
-                      </b-form-group>
+              </b-card>
+              <h6 class="text-center mb-1 mt-1">
+                Транзакции по карте №{{ route.value.params.card_number }} за период c
+                <code>{{ firstDayOfMonth }}</code>по <code>{{ lastDay }}</code>:
+              </h6>
+              <b-table
+                striped
+                hover
+                responsive
+                class="position-relative"
+                :per-page="perPage"
+                :current-page="currentPage"
+                :items="transactions.data.result"
+                :fields="fields"
+                :filter="filter">
+                <template #cell(cardData)="row">
+                  {{ row.item.cardData | formatDate }}
+                </template>
+              </b-table>
 
-                      <div>
-                        <export-excel
-                          class="btn btn-primary"
-                          :data="transactions.data.result"
-                          :fields="columns"
-                          type="xlsx"
-                          name="Транзакции.xlsx">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            fill="currentColor"
-                            class="bi bi-file-earmark-excel"
-                            viewBox="0 0 16 16">
-                            <path
-                              d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                            <path
-                              d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-                          </svg>
-                          Скачать
-                        </export-excel>
-                      </div>
-                    </div>
-                  </b-card>
-                  <h6 class="text-center mb-1 mt-1">
-                    Транзакции по карте №{{ route.value.params.card_number }} за период c
-                    <code>{{ firstDayOfMonth }}</code>по <code>{{ lastDay }}</code>:
-                  </h6>
-                  <b-table
-                    striped
-                    hover
-                    responsive
-                    class="position-relative"
+              <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
+                <!-- page length -->
+                <b-form-group
+                  label="На странице"
+                  label-cols="6"
+                  label-align="left"
+                  label-size="sm"
+                  label-for="sortBySelect"
+                  class="text-nowrap mb-md-0 mr-2 pr-2">
+                  <b-form-select
+                    id="perPageSelect"
+                    v-model="perPage"
+                    size="sm"
+                    inline
+                    :options="pageOptions" />
+                </b-form-group>
+
+                <!-- pagination -->
+                <div>
+                  <b-pagination
+                    v-model="currentPage"
+                    :total-rows="totalRows"
                     :per-page="perPage"
-                    :current-page="currentPage"
-                    :items="transactions.data.result"
-                    :fields="fields"
-                    :filter="filter">
-                    <template #cell(cardData)="row">
-                      {{ row.item.cardData | formatDate }}
+                    first-number
+                    last-number
+                    prev-class="prev-item"
+                    next-class="next-item"
+                    class="mb-0">
+                    <template #prev-text>
+                      <feather-icon
+                        icon="ChevronLeftIcon"
+                        size="18" />
                     </template>
-                  </b-table>
-
-                  <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
-                    <!-- page length -->
-                    <b-form-group
-                      label="На странице"
-                      label-cols="6"
-                      label-align="left"
-                      label-size="sm"
-                      label-for="sortBySelect"
-                      class="text-nowrap mb-md-0 mr-2 pr-2">
-                      <b-form-select
-                        id="perPageSelect"
-                        v-model="perPage"
-                        size="sm"
-                        inline
-                        :options="pageOptions" />
-                    </b-form-group>
-
-                    <!-- pagination -->
-                    <div>
-                      <b-pagination
-                        v-model="currentPage"
-                        :total-rows="totalRows"
-                        :per-page="perPage"
-                        first-number
-                        last-number
-                        prev-class="prev-item"
-                        next-class="next-item"
-                        class="mb-0">
-                        <template #prev-text>
-                          <feather-icon
-                            icon="ChevronLeftIcon"
-                            size="18" />
-                        </template>
-                        <template #next-text>
-                          <feather-icon
-                            icon="ChevronRightIcon"
-                            size="18" />
-                        </template>
-                      </b-pagination>
-                    </div>
-                  </b-card-body>
+                    <template #next-text>
+                      <feather-icon
+                        icon="ChevronRightIcon"
+                        size="18" />
+                    </template>
+                  </b-pagination>
                 </div>
-              </b-tab>
-              <b-tab title="События" />
-              <b-tab title="Сообщить о проблеме" />
-            </b-tabs>
-          </b-card>
+              </b-card-body>
+            </div>
+          </b-tab>
+          <b-tab title="События" />
+          <b-tab title="Сообщить о проблеме" />
+        </b-tabs>
+      </b-card>
+    </div>
+    <div
+      v-else>
+      <!-- <div
+          v-if="limitsLength<1"> -->
+      <b-card>
+        <b-card-header
+          class="d-flex justify-content-start">
+          <b-link :to="{ name: 'cards' }">
+            <feather-icon
+              class="mr-1"
+              icon="ArrowLeftCircleIcon"
+              size="30" />
+          </b-link>
+          <h3>
+            Настройка карты № {{ number }}
+          </h3>
+        </b-card-header>
+        <div class="d-flex flex-wrap justify-content-between">
+          <div class="image">
+            <b-img
+              class="card-img-top"
+              :src="
+                require(`../assets/images/cards-icon/${cardEmitentCode}.svg`)
+              " />
+            <div class="item-wrapper">
+              <h6 class="item-price">
+                PIN: {{ cardData.data.pin }}
+              </h6>
+              <h5 class="item-price">
+                {{ cardData.data.number }}
+              </h5>
+            </div>
+            <div class="holder">
+              <p>{{ cardData.data.limits }}</p>
+              <h6 class="ml-1">
+                Держатель:
+              </h6>
+              <b-form-input :value="cardData.data.holder" />
+            </div>
+          </div>
+          <div
+            class="d-flex flex-column align-items-start justify-content-start heigth ml-1 mt-2">
+            <b-button
+              variant="danger"
+              class="btn mb-2"
+              @click="handleCartActionClick(product)">
+              Заблокировать карту
+              <feather-icon
+                icon="LockIcon"
+                class="mr-50" />
+            </b-button>
+            <div class="mb-2">
+              <h6>
+                Выдана: {{ cardData.data.limits.CreatedAt | formatDate }}
+              </h6>
+            </div>
+            <div class="mb-2">
+              <h6>
+                Действует до: {{ cardData.data.limits.CreatedAt | formatDate }}
+              </h6>
+            </div>
+            <div class="mb-2">
+              <h6>
+                Последнее изменения:<br>
+                {{ cardData.data.emitent.last_updated | formatDate }}
+              </h6>
+            </div>
+          </div>
         </div>
-      </div>
+        <b-tabs
+          content-class="pt-1 position-relative"
+          fill>
+          <b-tab
+            active
+            title="Лимиты">
+            <b-button
+              v-if="!getRequestStatus"
+              class="mr-1 mb-1"
+              variant="success"
+              :disabled="servicesLength"
+              @click="addLimit">
+              Добавить лимит
+            </b-button>
+            <div class="d-flex justify-content-around w-90 position-sticky bottom">
+              <b-button
+                variant="success"
+                type="submit"
+                @click="newLimitsData">
+                Сохранить
+              </b-button>
+              <b-button
+                class="mr-1"
+                variant="primary"
+                @click="undoChange">
+                Отмена
+              </b-button>
+            </div>
+          </b-tab>
+          <b-tab title="Транзакции">
+            <h4
+              v-if="totalRows < 1"
+              class="text-center">
+              Транзакции по карте № {{ cardData.data.number }} за период c
+              {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
+            </h4>
+            <div v-if="totalRows > 0">
+              <b-card>
+                <div class="d-flex justify-content-between flex-wrap">
+                  <!-- filter -->
+                  <b-form-group
+                    label-align-sm="left"
+                    label-size="sm"
+                    label-for="filterInput"
+                    class="mb-0">
+                    <b-input-group size="sm">
+                      <b-form-input
+                        id="filterInput"
+                        v-model="filter"
+                        type="search"
+                        placeholder="Найти" />
+                      <b-input-group-append>
+                        <b-button
+                          :disabled="!filter"
+                          @click="filter = ''">
+                          Очистить
+                        </b-button>
+                      </b-input-group-append>
+                    </b-input-group>
+                  </b-form-group>
+
+                  <div>
+                    <export-excel
+                      class="btn btn-primary"
+                      :data="transactions.data.result"
+                      :fields="columns"
+                      type="xlsx"
+                      name="Транзакции.xlsx">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        fill="currentColor"
+                        class="bi bi-file-earmark-excel"
+                        viewBox="0 0 16 16">
+                        <path
+                          d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                        <path
+                          d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                      </svg>
+                      Скачать
+                    </export-excel>
+                  </div>
+                </div>
+              </b-card>
+              <h6 class="text-center mb-1 mt-1">
+                Транзакции по карте №{{ route.value.params.card_number }} за период c
+                <code>{{ firstDayOfMonth }}</code>по <code>{{ lastDay }}</code>:
+              </h6>
+              <b-table
+                striped
+                hover
+                responsive
+                class="position-relative"
+                :per-page="perPage"
+                :current-page="currentPage"
+                :items="transactions.data.result"
+                :fields="fields"
+                :filter="filter">
+                <template #cell(cardData)="row">
+                  {{ row.item.cardData | formatDate }}
+                </template>
+              </b-table>
+
+              <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
+                <!-- page length -->
+                <b-form-group
+                  label="На странице"
+                  label-cols="6"
+                  label-align="left"
+                  label-size="sm"
+                  label-for="sortBySelect"
+                  class="text-nowrap mb-md-0 mr-2 pr-2">
+                  <b-form-select
+                    id="perPageSelect"
+                    v-model="perPage"
+                    size="sm"
+                    inline
+                    :options="pageOptions" />
+                </b-form-group>
+
+                <!-- pagination -->
+                <div>
+                  <b-pagination
+                    v-model="currentPage"
+                    :total-rows="totalRows"
+                    :per-page="perPage"
+                    first-number
+                    last-number
+                    prev-class="prev-item"
+                    next-class="next-item"
+                    class="mb-0">
+                    <template #prev-text>
+                      <feather-icon
+                        icon="ChevronLeftIcon"
+                        size="18" />
+                    </template>
+                    <template #next-text>
+                      <feather-icon
+                        icon="ChevronRightIcon"
+                        size="18" />
+                    </template>
+                  </b-pagination>
+                </div>
+              </b-card-body>
+            </div>
+          </b-tab>
+          <b-tab title="События" />
+          <b-tab title="Сообщить о проблеме" />
+        </b-tabs>
+      </b-card>
+      <!-- </div> -->
+      <!-- </div> -->
     </div>
   </b-overlay>
 </template>
@@ -708,10 +774,12 @@ export default {
     const quantity = ref(null);
     const start = ref(null);
     const end = ref(null);
+    const selectUnits = ref(null);
     const contractId = ref(null);
     const source = ref({});
     const limitsLength = ref(null);
     const cardEmitentCode = ref('0');
+    const selected = ref(null);
     const number = ref(null);
     const fields = [
       {
@@ -823,6 +891,7 @@ export default {
       useJwt.getAllPeriods().then((response) => {
         if (response.data.status) {
           periods.value = response.data.data;
+          selected.value = periods.value[2].label;
         }
       });
     };
@@ -830,6 +899,7 @@ export default {
       useJwt.getAllUnits().then((response) => {
         if (response.data.status) {
           units.value = response.data.data;
+          selectUnits.value = units.value[0].label;
         }
       });
     };
@@ -856,6 +926,8 @@ export default {
     getAllUnits();
 
     return {
+      selectUnits,
+      selected,
       product,
       cardEmitentCode,
       optionService,
@@ -896,7 +968,19 @@ export default {
       required,
       saveChange: false,
       comparison: true,
-      newLimits: {},
+      newLimits: {
+        limit_period_code: 'MONTH',
+        // limit_unit_label: 'Месячный',
+        value: 0,
+        limit_unit_code: 'L',
+        limit_services: [],
+        limit_commons: [],
+        consumption: 0,
+        limit_id: this.getRandom(),
+      },
+      emptyLimitService: null, // при отстутствии первоначального лимита
+      emptyValue: 0,
+      emptyService: null,
 
     };
   },
@@ -932,6 +1016,7 @@ export default {
       }
     },
   },
+
   methods: {
     showToast() {
       this.$toast({
@@ -1029,16 +1114,18 @@ export default {
     addLimit() {
       this.newLimit = {
         limit_period_code: 'MONTH',
-        value: 0,
+        value: this.emptyValue,
         limit_unit_code: 'L',
         limit_services: [],
         limit_commons: [],
         consumption: 0,
         limit_id: this.getRandom(),
       };
+      console.log(this.newLimit);
+
       if (this.cardData.data.limits.length === 0) { // При отсутствии первоначального лимита
         this.cardData.data.limits.concat(this.newLimit);
-        console.log(this.cardData.data.limits);
+        console.log(this.cardData.data.limits.concat(this.newLimit));
       } else { this.cardData.data.limits.unshift(this.newLimit); }
     },
     hide(index) {

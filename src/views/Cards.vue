@@ -82,7 +82,7 @@
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
 
               <b-badge
-                v-if="getStatusRequests(product.request_status)"
+                v-if="!getStatusRequests(product.request_status)"
                 class="badge-glow position-absolute mar"
                 pill
                 variant="warning">
@@ -137,7 +137,7 @@
                 :to="{ name: 'card', params: { card_number: product.number } }">
                 <div class="d-flex flex-column align-items-center">
                   <b-badge
-                    v-if="getStatusRequests(product.request_status)"
+                    v-if="!getStatusRequests(product.request_status)"
                     pill
                     variant="warning"
                     class="badge-glow position-absolute list-badge">
@@ -237,7 +237,6 @@
                           :key="index"
                           variant="success"
                           show-value
-                          class="mt-1"
                           :value="product.limits[index+2].value - product.limits[index+2].consumption"
                           :max="product.limits[index+2].value" />
                       </template>
@@ -384,7 +383,7 @@
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
 
               <b-badge
-                v-if="getStatusRequests(product.request_status)"
+                v-if="!getStatusRequests(product.request_status)"
                 class="badge-glow position-absolute mar"
                 pill
                 variant="warning">
@@ -540,15 +539,6 @@ export default {
     } else {
       contractID.value = store.getters.CONTRACT_ID;
     }
-    // const cardData = ref({});
-    // const cardDate = (params) => useJwt.getCardData(params).then((response) => {
-    //   if (response.data.status) {
-    //     cardData.value = response.data;
-    //     // eslint-disable-next-line no-undef
-    //     // console.log(cardData.value.data.limits.map((el) => el.limit_services));
-    //     console.log(cardData.value.data.limits);
-    //   }
-    // });
     const showLoading = ref(true);
     const download = ref(false);
     const filters = ref('');
@@ -809,7 +799,7 @@ export default {
         });
     },
     getStatusRequests(item) {
-      if (item === 'PROCESSING' || item === 'CREATED' || item !== null) {
+      if (item === 'PROCESSING' || item === 'CREATED') {
         return true;
       } return false;
     },

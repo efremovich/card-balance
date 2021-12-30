@@ -203,8 +203,8 @@ export default {
       requsestsTypes: {
         ADD: 'Выдача топливных карт',
         EDIT: 'Смена лимита',
-        BLOCK: 'Блокировка карты',
-        UNBLOCK: 'Разблокировка карты',
+        LOCK: 'Блокировка карты',
+        UNLOCK: 'Разблокировка карты',
       },
       colorMap: {
         CREATED: 'primary',
