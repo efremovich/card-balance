@@ -125,7 +125,6 @@
               v-if="!getRequestStatus"
               class="mr-1 mb-1"
               variant="success"
-              :disabled="servicesLength"
               @click="addLimit">
               Добавить лимит
             </b-button>
@@ -146,72 +145,73 @@
                     <!-- Нужен template для отрисовки карты без заданнных при открытии карты лимитов, отрисовывать
                       шаблон лимита (newLimit), но не пустоту -->
                     <template v-if="limitsLength<1">
-                      <b-card-actions
-                        no-body
-                        action-close
-                        class="borderpl-1 pr-1">
-                        <validation-provider
-                          v-slot="{ errors }"
-                          name="Виды топлива"
-                          rules="required">
-                          <b-form-group
-                            label="Виды топлива:"
-                            label-for="labelServices">
-                            <!-- Добавление нового лимита при отсутствии первого невозможно
+                      <template
+                        v-for="(item,index) in count">
+                        <b-card-actions
+                          :key="item.limit_id"
+                          no-body
+                          action-close
+                          class="border pl-1 pr-1"
+                          @close="del(index)">
+                          <validation-provider
+                            v-slot="{ errors }"
+                            name="Виды топлива"
+                            rules="required">
+                            <b-form-group
+                              label="Виды топлива:"
+                              label-for="labelServices">
+                              <!-- Добавление нового лимита при отсутствии первого невозможно
                               в виду limit.limit_services - null,   v-if="limit.limit_services !== null" -->
-                            <v-select
-                              id="labelServices"
-                              v-model="newLimits.limit_services"
-                              :filter="fuseSearch"
-                              multiple
-                              label="full_name"
-                              :reduce="(services) => `${services.id}`"
-                              :options="services" />
-                            <!-- Нужно отследить выбранные значения и фильтровать по ним services и затем передовать их options. Передавать computed свойство. -->
-                            <small
-                              class="text-danger">{{ errors[0] }}</small>
-                          </b-form-group>
-                        </validation-provider>
-                        <div :class="['d-flex', 'flex-wrap', 'mt-1', getWidth === 'xs'?'align-items-center': '', ]">
-                          <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1 align-items-center',{'w-100': getWidth === 'md'} ]">
-                            <h6 class="mr-1">
-                              Лимит
-                            </h6>
-                            <div class="mr-1 mw-25">
-                              <b-form-input
-                                v-model.number="emptyValue" />
-                            </div>
-                            <b-col
-                              class="mw-75">
                               <v-select
-                                v-model="newLimits.limit_unit_code"
-                                :class="[ {'mw-50':getWidth === 'xl'}]"
+                                id="labelServices"
+                                v-model="count[index].limit_services"
+                                :filter="fuseSearch"
+                                multiple
+                                label="full_name"
+                                :reduce="(services) => `${services.id}`"
+                                :options="services"
+                                :selectable="(option) => !getSelectedServices.flat(1).includes(option.id)" />
+                              <!-- Нужно отследить выбранные значения и фильтровать по ним services и затем передовать их options. Передавать computed свойство. -->
+                              <small
+                                class="text-danger">{{ errors[0] }}</small>
+                            </b-form-group>
+                          </validation-provider>
+                          <div :class="['d-flex', 'flex-wrap', 'mt-1', getWidth === 'xs'?'align-items-center': '', ]">
+                            <div :class="[getWidth === 'xs'?'d-flex flex-nowrap align-items-center':'d-flex mb-1 align-items-center',{'w-100': getWidth === 'md'} ]">
+                              <h6 class="mr-1">
+                                Лимит
+                              </h6>
+                              <div class="mr-1 mw-25">
+                                <b-form-input
+                                  v-model.number="count[index].value" />
+                              </div>
+                              <b-col
+                                class="mw-75">
+                                <v-select
+                                  v-model="count[index].limit_unit_code"
+                                  :class="[ {'mw-50':getWidth === 'xl'}]"
+                                  :clearable="false"
+                                  :reduce="(unit) => unit.code"
+                                  :options="units" />
+                              </b-col>
+                            </div>
+                            <b-col :class="['flex-grow-1', {'ml-1': getWidth === 'sm'}]">
+                              <v-select
+                                v-model="count[index].limit_period_code"
+                                :class="[{'mt-1 mb-1 ml-1':getWidth === 'xs'}, {'ml-1':getWidth === 'xl'},{'ml-1':getWidth === 'lg'}]"
                                 :clearable="false"
-                                :reduce="(unit) => unit.code"
-                                :options="units" />
+                                :reduce="(period) => period.code"
+                                :options="periods" />
                             </b-col>
                           </div>
-                          <b-col :class="['flex-grow-1', {'ml-1': getWidth === 'sm'}]">
-                            <v-select
-                              v-model="selected"
-                              :class="[{'mt-1 mb-1 ml-1':getWidth === 'xs'}, {'ml-1':getWidth === 'xl'},{'ml-1':getWidth === 'lg'}]"
-                              :clearable="false"
-                              :reduce="(period) => period.code"
-                              :options="periods" />
-                          </b-col>
-                        </div>
-                        <div class="mt-1">
-                          <label>Остаток: {{ newLimits.value }}  {{ unicodeLabel[newLimits.value] }} </label>
-                          <b-progress
-                            :value="newLimits.value"
-                            :max="newLimits.value" />
-                        </div>
-                      </b-card-actions>
+                        </b-card-actions>
+                      </template>
                     </template>
 
                     <!-- Добавить ещё один template для добавления 1-го лимита  -->
                     <template
-                      v-for="(limit,index) in cardData.data.limits">
+                      v-for="(limit,index) in cardData.data.limits"
+                      v-else>
                       <b-card-actions
                         :key="limit.limit_id"
                         no-body
@@ -968,19 +968,20 @@ export default {
       required,
       saveChange: false,
       comparison: true,
-      newLimits: {
+      newServices: [],
+      newLimits: [{
         limit_period_code: 'MONTH',
-        // limit_unit_label: 'Месячный',
         value: 0,
         limit_unit_code: 'L',
-        limit_services: [],
+        limit_services: this.newServices,
         limit_commons: [],
         consumption: 0,
         limit_id: this.getRandom(),
-      },
+      }],
       emptyLimitService: null, // при отстутствии первоначального лимита
       emptyValue: 0,
       emptyService: null,
+      count: [],
 
     };
   },
@@ -1007,6 +1008,7 @@ export default {
         } else {
           this.comparison = false;
           this.newLimits = val;
+          console.log(this.newLimits);
         }
       },
     },
@@ -1014,6 +1016,9 @@ export default {
       if (this.saveChange === true) {
         this.sendRequest();
       }
+    },
+    newServices() {
+
     },
   },
 
@@ -1079,6 +1084,7 @@ export default {
       this.$refs.limitsForm.validate().then((success) => {
         if (success) {
           this.saveChange = true;
+          this.sendRequest();
           this.$router.push({ name: 'cards' });
           this.$toast({
             component: ToastificationContent,
@@ -1111,25 +1117,30 @@ export default {
     getRandom() {
       return Math.floor(Math.random() * 10000);
     },
+    // Передать в качестве значений объекта значения из v-model карточки
     addLimit() {
       this.newLimit = {
         limit_period_code: 'MONTH',
-        value: this.emptyValue,
+        value: 0,
         limit_unit_code: 'L',
+        // limit_services: this.newServices,
         limit_services: [],
         limit_commons: [],
         consumption: 0,
         limit_id: this.getRandom(),
       };
-      console.log(this.newLimit);
-
+      this.count.unshift(this.newLimit);
+      console.log(this.count);
       if (this.cardData.data.limits.length === 0) { // При отсутствии первоначального лимита
-        this.cardData.data.limits.concat(this.newLimit);
-        console.log(this.cardData.data.limits.concat(this.newLimit));
+        this.cardData.data.limits.push(this.newLimit);
+        this.newServices = null;
       } else { this.cardData.data.limits.unshift(this.newLimit); }
     },
     hide(index) {
       this.cardData.data.limits.splice(index, 1);
+    },
+    del(index) {
+      this.count.splice(index, 1);
     },
 
     selectedService(arrService) { // параметр функции у нас объект,
