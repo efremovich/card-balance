@@ -1,6 +1,6 @@
 .A4 {
-  width: 797px;
-  height: 1127px;
+  width: 1097px;
+  height: 1000px;
   background-color: white;
 }
 
@@ -19,8 +19,12 @@
 
 p {
   text-align: left;
-  padding-top: 10px;
+  // padding-top: 10px;
   padding-left: 10px;
+}
+.align {
+width:100%;
+justify-content: space-between;
 }
 
 .bb {
@@ -62,11 +66,15 @@ p {
 
 .l {
   text-align: left;
+  font-weight: bolder;
 }
 
 .padding {
-  padding-top: 5px !important;
-  padding-bottom: 2px !important;
+  // padding-top: 5px !important;
+  // padding-bottom: 2px !important;
+  // padding: 3px;
+  text-align: center;
+  padding:0 !important;
 }
 
 .prov {
@@ -126,6 +134,8 @@ p {
 
 .ew {
   grid-area: ew;
+  display: flex;
+align-items: center;
   /* border: 1px solid black; */
 }
 
@@ -139,11 +149,15 @@ p {
   border-top: 1px solid black;
   border-left: 1px solid black;
   border-right: 1px solid black;
+  display: flex;
+align-items: center;
 }
 
 .jhjh {
   grid-area: jhjh;
   border-top: 1px solid black;
+  display: flex;
+  align-items: center;
 }
 
 .mnmn {
@@ -168,7 +182,7 @@ p {
     "POL RAS-SCHET numberRS";
   border: 1px solid black;
   width: 90%;
-  height: 300px;
+  height: 230px;
   margin: 0 auto;
   position: relative;
   top: 50px;

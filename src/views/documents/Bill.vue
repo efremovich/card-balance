@@ -29,12 +29,7 @@
           class="btn btn-primary mt-1">
           Печать
         </b-button>
-        <!-- <b-button
 
-        class="btn btn-primary mt-1 ml-1"
-        @click="getVisible()">
-        {{ visible ? "Убрать счёт" : "Показать счёт" }}
-      </b-button> -->
         <div
           v-show="visible"
           id="check"
@@ -44,18 +39,19 @@
         background-color: white;">
           <div
             class="grid-container"
-            style="border: 1px solid black;
+            style="border: 2px solid black;
           width: 90%;
-          height: 300px;
+          height: 230px;
           margin: 0 auto;
           position: relative;
           top: 50px;">
             <div
               class="bank-pol"
-              style="border-right: 1px solid black;
-            border-bottom: 1px solid black;">
+              style="border-right: 2px solid black;
+            border-bottom: 2px solid black;">
               <p
                 style="text-align: left;
+              font-weight: bold;
               padding-left: 10px;padding-top: 10px;">
                 {{ getInfo.contract.pay_account.name }}
                 <br>
@@ -64,21 +60,23 @@
             </div>
             <div
               class="INNKPP"
-              style="border-bottom: 1px solid black;">
+              style="border-bottom: 2px solid black;">
               <div
                 class="KPP"
-                style="border-right: 1px solid black;">
+                style="border-right: 2px solid black;">
                 <p
                   style="text-align: left;
+                 font-weight: bold;
                   padding-left: 10px;padding-top: 10px;">
                   КПП {{ getInfo.contract.company.kpp }}
                 </p>
               </div>
               <div
                 class="INN"
-                style="border-right: 1px solid black;">
+                style="border-right: 2px solid black;">
                 <p
                   style="text-align: left;
+                font-weight: bold;
     padding-left: 10px;padding-top: 10px;">
                   ИНН {{ getInfo.contract.company.inn }}
                 </p>
@@ -86,9 +84,10 @@
             </div>
             <div
               class="POL"
-              style="border-right: 1px solid black;">
+              style="border-right: 2px solid black;">
               <p
                 style="text-align: left;
+              font-weight: bold;
     padding-left: 10px;padding-top: 10px;">
                 ЮГСМИ ООО р/с 40702810530090003040 в
                 40702810530090003040, в ЮЖНЫЙ ФИЛИАЛ АО
@@ -99,18 +98,20 @@
             <div class="bikKS">
               <div
                 class="KS"
-                style="border-bottom: 1px solid black;">
+                style="border-bottom: 2px solid black;">
                 <p
                   style="text-align: left;
+                 font-weight: bold;
     padding-left: 10px;padding-top: 10px;">
                   к/с. No
                 </p>
               </div>
               <div
                 class="BIK"
-                style="border-bottom: 1px solid black;">
+                style="border-bottom: 2px solid black;">
                 <p
                   style="text-align: left;
+                font-weight: bold;
     padding-left: 10px;padding-top: 10px;">
                   БИК
                 </p>
@@ -118,14 +119,16 @@
             </div>
             <div
               class="NUMBER"
-              style="border-bottom: 1px solid black;border-left: 1px solid black;">
+              style="border-bottom: 2px solid black;border-left: 2px solid black;">
               <p
                 style="text-align: left;
+               font-weight: bold;
     padding-left: 10px;padding-top: 10px;">
                 {{ getInfo.contract.pay_account.bik }}
               </p>
               <p
                 style="text-align: left;
+               font-weight: bold;
     padding-left: 10px;padding-top: 10px;">
                 {{ getInfo.contract.pay_account.cor_account }}
               </p>
@@ -133,16 +136,20 @@
             <div
               class="RAS-SCHET">
               <p
+                class="1"
                 style="text-align: left;
+                 font-weight: bold;
     padding-left: 10px;padding-top: 10px;">
                 р/с. No
               </p>
             </div>
             <div
               class="numberRS"
-              style="border-left: 1px solid black;">
+              style="border-left: 2px solid black;">
               <p
+                class="1"
                 style="text-align: left;
+                 font-weight: bold;
     padding-left: 10px;padding-top: 10px;">
                 {{ getInfo.contract.pay_account.checking_account }}
               </p>
@@ -203,9 +210,9 @@
               style="
           margin: 50px auto 0;
           width: 90%;
-  height: 120px;
-  margin-top: 50px;
-  border: 1px solid black;margin: 0 auto;">
+  height: 100px;
+  margin-top: 20px;
+  border: 2px solid black;margin: 0 auto;">
               <div class="qw">
                 <p
                   class="i"
@@ -236,12 +243,14 @@
               <div
                 class="rtrt"
                 style="border-top: 1px solid black;
-            border-rigth: 1px solid black;">
+            border-rigth: 1px solid black;display: flex;
+align-content: ;
+align-items: center;">
                 <p
                   class="padding"
                   style="
-  text-align: left;
-    padding-left: 10px;">
+  text-align: center;
+    ">
                   {{ selected }}№ {{ contract }}
                 </p>
               </div>
@@ -317,20 +326,27 @@
               Всего наименований 1 на сумму {{ getSumm }}.
             </p>
           </div>
+          <hr
+            class="solid"
+            style="width:90%;
+             border: 2px solid;">
           <div
             class="signature"
             style="display: flex;
   margin: 60px auto 0;
-  width: 94%;
+    justify-content: space-around;
+    width:90%;
+
   align-content: flex-start;">
-            <div class="col">
+            <div class="row align">
               <div
                 class="align-r"
                 style="display: flex;
+
   align-items: baseline;
   margin-top: 5px;">
                 <h4
-                  class="mr-1"
+
                   style="margin-right: 1rem !important;">
                   Руководитель
                 </h4>
@@ -338,23 +354,23 @@
                 <div
                   class="bb"
                   style="border-bottom: 1px solid black;
-  width: 250px;" />
+  width: 240px;" />
               </div>
               <div class="align-r">
                 <h4
-                  class="mr-1"
+                  class="ml-2"
                   style="margin-right: 1rem !important;">
                   Бухгалтер
                 </h4>
                 <div
                   class="bb bb_ml"
                   style=" border-bottom: 1px solid black;
-  width: 250px;margin-left: 38px;" />
+  width: 240px;margin-left: 38px;" />
               </div>
             </div>
-            <div class="col">
-              <h4>М.П.</h4>
-            </div>
+          </div>
+          <div class="col mt-2 ml-2">
+            <h4>М.П.</h4>
           </div>
         </div>
       </b-card>

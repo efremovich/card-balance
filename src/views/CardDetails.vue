@@ -978,9 +978,6 @@ export default {
         consumption: 0,
         limit_id: this.getRandom(),
       }],
-      emptyLimitService: null, // при отстутствии первоначального лимита
-      emptyValue: 0,
-      emptyService: null,
       count: [],
 
     };
@@ -1008,7 +1005,7 @@ export default {
         } else {
           this.comparison = false;
           this.newLimits = val;
-          console.log(this.newLimits);
+          // console.log(this.newLimits);
         }
       },
     },
@@ -1078,6 +1075,7 @@ export default {
         limits: this.newLimits,
 
       }];
+      // console.log(request);
       useJwt.refreshDataUserLimits(request);
     },
     newLimitsData() {
@@ -1130,10 +1128,9 @@ export default {
         limit_id: this.getRandom(),
       };
       this.count.unshift(this.newLimit);
-      console.log(this.count);
       if (this.cardData.data.limits.length === 0) { // При отсутствии первоначального лимита
         this.cardData.data.limits.push(this.newLimit);
-        this.newServices = null;
+        // this.newServices = null;
       } else { this.cardData.data.limits.unshift(this.newLimit); }
     },
     hide(index) {
@@ -1144,7 +1141,7 @@ export default {
     },
 
     selectedService(arrService) { // параметр функции у нас объект,
-      if (arrService === null) {
+      if (arrService === null || arrService === undefined) {
         return '';
       }
       let label = '';
