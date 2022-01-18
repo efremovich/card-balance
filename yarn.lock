@@ -9700,6 +9700,11 @@
   "resolved" "https://registry.npmjs.org/vue-demi/-/vue-demi-0.9.1.tgz"
   "version" "0.9.1"
 
+"vue-easy-printer@^1.0.6":
+  "integrity" "sha512-NPNiLm0HfSvrGwjifJPLOyKiCTQeqJWYGefNGZS0TB2Sm2xnhxDAMKQqSsgyMKdZkFD3Y6l5gnTPWdniuLIXjw=="
+  "resolved" "https://registry.npmjs.org/vue-easy-printer/-/vue-easy-printer-1.0.6.tgz"
+  "version" "1.0.6"
+
 "vue-echarts@5.0.0-beta.0":
   "integrity" "sha512-QZFKGXDAYFQo+F20REpzcdLx79nsl4kOorJRpN+08aYq4YiIlmtWss1Lxadm7Fo+NYyWm8nnT+h4xHv3uqWIDQ=="
   "resolved" "https://registry.npmjs.org/vue-echarts/-/vue-echarts-5.0.0-beta.0.tgz"
@@ -9820,10 +9825,10 @@
   "resolved" "https://registry.npmjs.org/vue-perfect-scrollbar/-/vue-perfect-scrollbar-0.2.1.tgz"
   "version" "0.2.1"
 
-"vue-print-nb@^1.6.0":
-  "integrity" "sha512-Z3wLg8xQN5uW8OXnM77ui/shPfU56T04UO2erLv8qCkud2ZcrV4rUodLBBuxsEGVzRlgOUuiJ0/l370GNTIKKg=="
-  "resolved" "https://registry.npmjs.org/vue-print-nb/-/vue-print-nb-1.7.4.tgz"
-  "version" "1.7.4"
+"vue-print-nb@^1.7.5":
+  "integrity" "sha512-iNbNyUVRWz0Ha1UTiCKxMPtHLUDGgNI8e8xmD3xqm9RlXIUeX9bT7DgNAfY8vPzqyFRHqGjxLI1rycKH366ziQ=="
+  "resolved" "https://registry.npmjs.org/vue-print-nb/-/vue-print-nb-1.7.5.tgz"
+  "version" "1.7.5"
   dependencies:
     "vue" "^2.6.11"
 

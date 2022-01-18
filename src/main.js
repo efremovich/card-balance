@@ -3,6 +3,7 @@ import { ToastPlugin, ModalPlugin } from 'bootstrap-vue';
 import VueCompositionAPI from '@vue/composition-api';
 import excel from 'vue-excel-export';
 import VueHtmlToPaper from 'vue-html-to-paper';
+
 import router from './router';
 import store from './store';
 import App from './App.vue';

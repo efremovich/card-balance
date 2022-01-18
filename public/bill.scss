@@ -65,10 +65,20 @@ justify-content: space-between;
     "buyer rekv2";
 }
 
+.main
+{
+  margin-top:90px;
+  // width: 60%;
+  margin: 0 auto;
+  font-size: 17px;
+  background-color: white;
+}
+
 .l {
   text-align: left;
   font-weight: bolder;
 }
+
 
 .padding {
   // padding-top: 5px !important;
@@ -100,7 +110,7 @@ justify-content: space-between;
 }
 
 .marg {
-  margin: 120px auto 0;
+  margin: 80px auto 0;
   width: 90%;
 }
 
