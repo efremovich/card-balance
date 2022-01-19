@@ -89,6 +89,7 @@
           hover
           :items="requests.data.result"
           responsive
+          :filter="filter"
           :per-page="perPage"
           :current-page="currentPage"
           class="position-relative table-hover text-center"
@@ -355,7 +356,7 @@ export default {
               this.$toast({
                 component: ToastificationContent,
                 props: {
-                  title: 'Отсутвуют транзакции за выбранный период',
+                  title: 'Отсутвуют заявки за выбранный период',
                   icon: 'AlertTriangleIcon',
                   variant: 'danger',
                 },
@@ -372,7 +373,7 @@ export default {
               this.$toast({
                 component: ToastificationContent,
                 props: {
-                  title: 'Отсутвуют транзакции по карте за выбранный период',
+                  title: 'Отсутвуют заявки по карте за выбранный период',
                   icon: 'AlertTriangleIcon',
                   variant: 'danger',
                 },

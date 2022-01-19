@@ -45,13 +45,13 @@
             <!--/ upload button -->
 
             <!-- reset -->
-            <b-button
+            <!-- <b-button
               variant="outline-secondary"
               size="sm"
               class="mb-75 mr-75"
               @click="resetPhoto">
               Сброс
-            </b-button>
+            </b-button> -->
             <!--/ reset -->
             <!-- <b-card-text>Добавьте изображение в формате JPG, GIF or PNG. Максимальный размер изображения - 800kB</b-card-text> -->
           </b-media-body>

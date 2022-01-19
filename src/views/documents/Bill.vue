@@ -164,7 +164,7 @@
 
             <table
               width="100%"
-              style="font-family: Arial;margin-top:10px;">
+              style=" border-collapse: separate;font-family: Arial;margin-top:10px; border-spacing: 0 5px;">
               <tr>
                 <td style="width: 30mm; vertical-align: top; margin-top:10px;">
                   <div style=" padding-left:2px;">
@@ -173,8 +173,8 @@
                 </td>
                 <td>
                   <div style="font-weight:bold;  padding-left:2px;">
-                    ИНН {{ getInfo.contract.company.inn }}, КПП {{ getInfo.contract.company.kpp }}, {{ getInfo.contract.company.full_name }}, <br>
-                    <span style="font-weight: normal;">{{ getInfo.contract.company.legal_address }}</span>
+                    ИНН {{ provider.data.inn }}, КПП {{ provider.data.kpp }}, {{ provider.data.full_name }}, <br>
+                    <span style="font-weight: normal;">{{ provider.data.legal_address }}</span>
                   </div>
                 </td>
               </tr>
@@ -335,7 +335,6 @@ import {
   BCard, BFormInput, BButton, BOverlay,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
-import print from 'vue-print-nb';
 import vSelect from 'vue-select';
 import { mapGetters } from 'vuex';
 import store from '@/store';
@@ -348,23 +347,19 @@ export default {
     BOverlay,
     vSelect,
   },
-  directives: {
-    print,
-  },
   data() {
     return {
       getInfo: null,
       option: ['Оплата за ГСМ согласно договора поставки ', 'Предоплата за ГСМ  согласно договора поставки ', 'Оплата за информационное обслуживание согласно договора поставки ', 'Оплата за утерянную топливную карту по договору '],
       today: null,
+      IdProvider: '446ab995-bd8e-11e3-b1f6-d43d7ef23a46', // Подставлять ли динамически?
       fullContract: null,
+      provider: null,
       selected: 'Оплата за ГСМ согласно договора поставки ',
       contractId: null,
       summ: '',
       visible: false,
       download: false,
-      printObj: {
-        id: 'check',
-      },
     };
   },
   computed: {
@@ -427,15 +422,25 @@ export default {
     //   const a = userData;
     //   this.contractId = a.contract.id;
     // }
+    this.download = false;
+    useJwt.getProvider(this.IdProvider)
+      .then((response) => {
+        if (response.status) {
+          this.provider = response.data;
+          // this.download = true;
+        }
+      });
+
     useJwt.changeContract(this.gotSelectedContract)
       .then((response) => {
         if (response.status) {
           this.getInfo = response.data;
-          this.download = true;
+
           this.dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
           this.fullContract = `${this.getInfo.contract.number} от ${this.dateContract}`;
         }
       });
+    this.download = true;
   },
   methods: {
     isToday() {

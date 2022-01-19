@@ -182,8 +182,6 @@ export default {
             })
             .then((response) => {
               if (response.data.status) {
-                // eslint-disable-next-line prefer-destructuring
-                // this.password = this.$store.state.password[1];
                 const userData = response.data;
                 userData.ability = initialAbility;
                 useJwt.setToken(userData.account.accessToken);

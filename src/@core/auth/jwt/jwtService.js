@@ -420,4 +420,16 @@ export default class JwtService {
     }
     return { data: { status: false } };
   }
+
+  // Отдать поставщика
+  async getProvider(id) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/organisation/${id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
 }

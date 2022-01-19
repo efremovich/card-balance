@@ -592,13 +592,10 @@ export default {
     return { data: { status: false } };
   },
   mounted() {
-    // this.download = false;
     if (this.gotSelectedContract === null) {
       useJwt.getBalance().then((response) => {
         if (response.data.status) {
           this.cardBalance = response.data;
-        // console.log('cardbalance:', this.cardBalance);
-        // this.download = true;
         }
       });
       // useJwt.getCurrentConsumption().then((response) => {
