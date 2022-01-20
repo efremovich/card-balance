@@ -452,8 +452,98 @@
               </b-card-body>
             </div>
           </b-tab>
-          <b-tab title="События" />
-          <b-tab title="Сообщить о проблеме" />
+          <b-tab title="События">
+            <h4
+              v-if="totalRequestRows < 1"
+              class="text-center">
+              События по карте № {{ cardData.data.number }} за период c
+              {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
+            </h4>
+            <b-table
+              v-else
+              hover
+              :items="requests.data.result"
+              responsive
+              :filter="filter"
+              :per-page="perPage"
+              :current-page="currentPage"
+              class="position-relative table-hover text-center"
+              :fields="fieldsRequests">
+              <template
+                #cell(UpdatedAt)="row">
+                <b-col>
+                  {{ row.item.UpdatedAt | formatDate }}
+                </b-col>
+              </template>
+              <template
+                #cell(request_status_code)="row">
+                <b-col>
+                  <p>
+                    {{ requsestsStatus[row.item.request_status_code] }}
+                  </p>
+                </b-col>
+              </template>
+              <template
+                #cell(request_type_code)="row">
+                <b-col>
+                  <p>
+                    {{ requsestsTypes[row.item.request_type_code] }}
+                  </p>
+                </b-col>
+              </template>
+            </b-table>
+          </b-tab>
+          <b-tab title="Сообщить о проблеме">
+            <b-form @submit.prevent>
+              <b-row class="align-items-center">
+                <b-col cols="8">
+                  <b-form-group
+                    label="Номер карты"
+                    label-for="h-first-name"
+                    label-cols-md="4">
+                    <b-form-input
+                      id="h-first-name"
+                      :placeholder="`${number}`"
+                      rules="required" />
+                  </b-form-group>
+                </b-col>
+                <b-col cols="8">
+                  <b-form-group
+                    label="Клиент"
+                    label-for="h-email"
+                    label-cols-md="4">
+                    <b-form-input
+                      id="h-email"
+                      type="email"
+                      placeholder=""
+                      rules="required" />
+                  </b-form-group>
+                </b-col>
+                <label for="textarea-default">Сообщение</label>
+                <b-form-textarea
+                  id="textarea-default"
+                  placeholder="Textarea"
+                  rows="3" />
+
+                <!-- submit and reset -->
+                <b-col offset-md="4">
+                  <b-button
+                    v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                    type="submit"
+                    variant="primary"
+                    class="mr-1">
+                    Отправить
+                  </b-button>
+                  <b-button
+                    v-ripple.400="'rgba(186, 191, 199, 0.15)'"
+                    type="reset"
+                    variant="outline-secondary">
+                    Сброс
+                  </b-button>
+                </b-col>
+              </b-row>
+            </b-form>
+          </b-tab>
         </b-tabs>
       </b-card>
     </div>
@@ -673,7 +763,47 @@
               </b-card-body>
             </div>
           </b-tab>
-          <b-tab title="События" />
+          <b-tab title="События">
+            <h4
+              v-if="totalRequestRows < 1"
+              class="text-center">
+              События по карте № {{ cardData.data.number }} за период c
+              {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
+            </h4>
+            <b-table
+              v-else
+              hover
+              :items="requests.data.result"
+              responsive
+              :filter="filter"
+              :per-page="perPage"
+              :current-page="currentPage"
+              class="position-relative table-hover text-center"
+              :fields="fieldsRequests">
+              <template
+                #cell(UpdatedAt)="row">
+                <b-col>
+                  {{ row.item.UpdatedAt | formatDate }}
+                </b-col>
+              </template>
+              <template
+                #cell(request_status_code)="row">
+                <b-col>
+                  <p>
+                    {{ requsestsStatus[row.item.request_status_code] }}
+                  </p>
+                </b-col>
+              </template>
+              <template
+                #cell(request_type_code)="row">
+                <b-col>
+                  <p>
+                    {{ requsestsTypes[row.item.request_type_code] }}
+                  </p>
+                </b-col>
+              </template>
+            </b-table>
+          </b-tab>
           <b-tab title="Сообщить о проблеме" />
         </b-tabs>
       </b-card>
@@ -704,6 +834,7 @@ import {
   BLink,
   BBadge,
   BCardHeader,
+  BFormTextarea,
   // VBTooltip,
   BInputGroupAppend,
 } from 'bootstrap-vue';
@@ -736,6 +867,7 @@ export default {
     BLink,
     vSelect,
     BOverlay,
+    BFormTextarea,
     // VueApexCharts,
     BCardActions,
     BFormGroup,
@@ -780,7 +912,9 @@ export default {
     const limitsLength = ref(null);
     const cardEmitentCode = ref('0');
     const selected = ref(null);
+    const totalRequestRows = ref(null);
     const number = ref(null);
+    const requests = ref(null);
     const fields = [
       {
         key: 'service.full_name',
@@ -836,6 +970,28 @@ export default {
         field: 'pos.address',
       },
     };
+    const fieldsRequests = [
+      {
+        key: 'UpdatedAt',
+        label: 'Дата заявки',
+        sortable: true,
+      },
+      {
+        key: 'request_status_code',
+        label: 'Статус заявки',
+        sortable: true,
+      },
+      {
+        key: 'request_type_code',
+        label: 'Тип заявки',
+        sortable: true,
+      },
+      {
+        key: 'card_number',
+        label: 'Номер карты',
+        sortable: true,
+      },
+    ];
     const isToday = () => {
       const today = new Date();
       return today.toLocaleDateString();
@@ -927,6 +1083,7 @@ export default {
 
     return {
       selectUnits,
+      fieldsRequests,
       selected,
       product,
       cardEmitentCode,
@@ -934,7 +1091,9 @@ export default {
       limitsLength,
       unicodeLabel,
       showLoading,
+      requests,
       unfulfilledRequest,
+      totalRequestRows,
       source,
       download,
       cardData,
