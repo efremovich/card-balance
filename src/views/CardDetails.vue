@@ -494,55 +494,80 @@
             </b-table>
           </b-tab>
           <b-tab title="Сообщить о проблеме">
-            <b-form @submit.prevent>
-              <b-row class="align-items-center">
-                <b-col cols="8">
-                  <b-form-group
-                    label="Номер карты"
-                    label-for="h-first-name"
-                    label-cols-md="4">
-                    <b-form-input
-                      id="h-first-name"
-                      :placeholder="`${number}`"
-                      rules="required" />
-                  </b-form-group>
-                </b-col>
-                <b-col cols="8">
-                  <b-form-group
-                    label="Клиент"
-                    label-for="h-email"
-                    label-cols-md="4">
-                    <b-form-input
-                      id="h-email"
-                      type="email"
-                      placeholder=""
-                      rules="required" />
-                  </b-form-group>
-                </b-col>
-                <label for="textarea-default">Сообщение</label>
-                <b-form-textarea
-                  id="textarea-default"
-                  placeholder="Textarea"
-                  rows="3" />
+            <validation-observer
+              ref="simpleRules">
+              <b-form
+                @submit.prevent="sendMessage">
+                <b-row class="justify-content-center">
+                  <b-col cols="8">
+                    <label
+                      for="card"
+                      class="w-100">Номер карты:
+                      <validation-provider
+                        v-slot="{ errors }"
+                        name="Номер карты"
+                        rules="integer|min:9">
+                        <b-form-input
+                          id="card"
+                          :value="number" />
+                        <small
+                          class="text-danger">{{ errors[0] }}</small>
+                      </validation-provider>
+                    </label>
+                    <br>
+                    <label
+                      for="org"
+                      class="w-100 mt-2 mb-2">Клиент:
+                      <validation-provider
+                        v-slot="{ errors }"
+                        name="Клиент">
+                        <b-form-input
+                          id="org"
+                          :value="name" />
+                        <small
+                          class="text-danger">{{ errors[0] }}</small>
+                      </validation-provider>
+                    </label>
+                    <br>
+                    <label for="error">Выберите причину обращения:</label>
+                    <v-select
+                      id="error"
+                      v-model="selectedError"
+                      :clearable="false"
+                      :options="optionError"
+                      class="w-100 mb-1" />
 
-                <!-- submit and reset -->
-                <b-col offset-md="4">
-                  <b-button
-                    v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-                    type="submit"
-                    variant="primary"
-                    class="mr-1">
-                    Отправить
-                  </b-button>
-                  <b-button
-                    v-ripple.400="'rgba(186, 191, 199, 0.15)'"
-                    type="reset"
-                    variant="outline-secondary">
-                    Сброс
-                  </b-button>
-                </b-col>
-              </b-row>
-            </b-form>
+                    <label
+                      for="textarea-default"
+                      class="mr-2">Или изложите его здесь:</label>
+                    <b-form-textarea
+                      id="textarea-default"
+                      ref="textarea"
+                      placeholder="Проблема состоит в следующем..."
+                      rows="2" />
+
+                    <!-- submit and reset -->
+                    <b-col
+                      class="mt-2"
+                      offset-md="4">
+                      <b-button
+                        v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                        type="submit"
+                        variant="primary"
+                        class="mr-1">
+                        Отправить
+                      </b-button>
+                      <b-button
+                        v-ripple.400="'rgba(186, 191, 199, 0.15)'"
+                        type="reset"
+                        variant="outline-secondary">
+                        Сброс
+                      </b-button>
+                    </b-col>
+                  </b-col>
+                </b-row>
+              </b-form>
+            </validation-observer>
           </b-tab>
         </b-tabs>
       </b-card>
@@ -816,6 +841,7 @@
 <script>
 import {
   BCard,
+  BRow,
   BImg,
   BTabs,
   BProgress,
@@ -868,6 +894,7 @@ export default {
     vSelect,
     BOverlay,
     BFormTextarea,
+    BRow,
     // VueApexCharts,
     BCardActions,
     BFormGroup,
@@ -1125,6 +1152,7 @@ export default {
     return {
       newLimit: {},
       required,
+      userData: null,
       saveChange: false,
       comparison: true,
       newServices: [],
@@ -1135,9 +1163,13 @@ export default {
         limit_services: this.newServices,
         limit_commons: [],
         consumption: 0,
+        name: null,
+        userData: null,
         limit_id: this.getRandom(),
       }],
       count: [],
+      selectedError: 'Карта заблокирована',
+      optionError: ['Карта заблокирована', 'Не могу заправиться определенным видом топлива', 'Не могу сменить лимит', 'Неверный баланс в личном кабинете', 'Другая причина'],
 
     };
   },
@@ -1173,11 +1205,22 @@ export default {
         this.sendRequest();
       }
     },
-    newServices() {
-
+    selectedError(val) {
+      if (val === 'Другая причина') {
+        this.$refs.textarea.focus();
+      }
     },
   },
-
+  beforeMount() {
+    useJwt.getCurrenUser().then((response) => {
+      if (response.data.status) {
+        this.$store.dispatch('user/getUserData', response.data).then(() => {
+          this.userData = response.data;
+          this.name = this.userData.company.name;
+        });
+      }
+    });
+  },
   methods: {
     showToast() {
       this.$toast({
@@ -1263,7 +1306,32 @@ export default {
         }
       });
     },
-
+    sendMessage() {
+      this.$refs.simpleRules.validate().then((success) => {
+        if (success) {
+          // this.saveChange = true;
+          // this.sendRequest();
+          // this.$router.push({ name: 'cards' });
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Обращение направлено',
+              icon: 'EditIcon',
+              variant: 'success',
+            },
+          });
+        } else {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Укажите обязательные данные',
+              icon: 'AlertTriangleIcon',
+              variant: 'danger',
+            },
+          });
+        }
+      });
+    },
     undoChange() {
       useJwt.getCardData(this.cardData.data.number).then((response) => {
         if (response.data.status) {
@@ -1304,6 +1372,9 @@ export default {
         return '';
       }
       let label = '';
+      if (Object.values(arrService).length < 2) {
+        console.log('2');
+      }
       // eslint-disable-next-line no-return-assign
       Object.values(arrService).forEach((el) => (label += `${this.labelService[el]}, `));
       return label.split('').slice(0, -2).join('');
