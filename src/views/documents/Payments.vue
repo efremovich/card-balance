@@ -9,7 +9,8 @@
     opacity=".75"
     rounded="md">
     <div v-if="loadDone">
-      <b-card title="Платежи">
+      <h3> Платежи за период с {{ getStartDate }} по {{ getEndDate }} составляют {{ requests.data.result.reduce((ac,el)=>ac+el.summ,0) }} рублей.</h3>
+      <b-card>
         <b-card-body>
           <div class="d-flex justify-content-between flex-wrap align-items-end">
             <b-form-group
@@ -60,25 +61,9 @@
           class="position-relative table-hover text-center"
           :fields="fields">
           <template
-            #cell(UpdatedAt)="row">
+            #cell(date)="row">
             <b-col>
-              {{ row.item.UpdatedAt | formatDate }}
-            </b-col>
-          </template>
-          <template
-            #cell(request_status_code)="row">
-            <b-col>
-              <p>
-                {{ requsestsStatus[row.item.request_status_code] }}
-              </p>
-            </b-col>
-          </template>
-          <template
-            #cell(request_type_code)="row">
-            <b-col>
-              <p>
-                {{ requsestsTypes[row.item.request_type_code] }}
-              </p>
+              {{ row.item.date | formatDateNoTime }}
             </b-col>
           </template>
         </b-table>
@@ -138,40 +123,26 @@ export default {
       },
       fields: [
         {
-          key: 'payment_details',
+          key: 'number',
+          label: 'Номер п/п',
+          sortable: true,
+        },
+        {
+          key: 'reason_for',
           label: 'Назначение платежа',
           sortable: true,
         },
         {
-          key: 'period',
+          key: 'date',
           label: 'Дата платежа',
           sortable: true,
         },
         {
-          key: 'sum',
+          key: 'summ',
           label: 'Сумма',
           sortable: true,
         },
       ],
-      requsestsStatus: {
-        CREATED: 'Создана',
-        PROCESSING: 'В обработке',
-        DONE: 'Исполнена',
-        CANCELED: 'Отменена',
-      },
-      requsestsTypes: {
-        ADD: 'Выдача топливных карт',
-        EDIT: 'Смена лимита',
-        LOCK: 'Блокировка карты',
-        UNLOCK: 'Разблокировка карты',
-      },
-      colorMap: {
-        CREATED: 'primary',
-        PROCESSING: 'warning',
-        CANCELED: 'danger',
-        DONE: 'succes',
-
-      },
       formatDate,
 
     };
@@ -180,49 +151,17 @@ export default {
     ...mapGetters({
       gotSelectedContract: 'CONTRACT_ID',
     }),
+    getStartDate() {
+      return this.start.slice(0, -8);
+    },
+    getEndDate() {
+      return this.end.slice(0, -8);
+    },
   },
   watch: {
     gotSelectedContract(val) {
       // this.getAllCards(val);
       this.contractId = val;
-    },
-    selected(val) {
-      this.loadDone = false;
-      this.getDate();
-      if (val !== null) {
-        useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${val}`).then((response) => {
-          if (response.data.status) {
-            this.requests = response.data;
-            if (this.requests.data.result < 1) {
-              this.$toast({
-                component: ToastificationContent,
-                props: {
-                  title: 'Отсутствуют заявки по карте за выбранный период',
-                  icon: 'AlertTriangleIcon',
-                  variant: 'danger',
-                },
-              });
-            }
-          }
-        });
-      } else {
-        useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
-          if (response.data.status) {
-            this.requests = response.data;
-            if (this.requests.data.result < 1) {
-              this.$toast({
-                component: ToastificationContent,
-                props: {
-                  title: 'Отсутствуют заявки за выбранный период',
-                  icon: 'AlertTriangleIcon',
-                  variant: 'danger',
-                },
-              });
-            }
-          }
-        });
-      }
-      this.loadDone = true;
     },
   },
 
@@ -237,7 +176,7 @@ export default {
     this.end = `${this.isToday()} 00:00:00`;
     this.rangeDate = [this.start, this.end];
     // this.getAllCards(this.contractId);
-    useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+    useJwt.getPayments(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
       if (response.data.status) {
         this.requests = response.data;
         if (this.requests.data.result < 1) {
@@ -283,7 +222,7 @@ export default {
       const { selected } = this;
       if (date.length > 22) {
         if (selected === null) {
-          useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+          useJwt.getPayments(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
             this.requests = response.data;
             this.totalRows = this.requests.data.total;
             if (this.rangeDate.length > 22) {

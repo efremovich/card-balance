@@ -254,6 +254,15 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  async getPayments(params) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(`/api/payments?${params}`);
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
   // Все виды топлива
   async getService() {
     const userData = JSON.parse(localStorage.getItem('userData'));

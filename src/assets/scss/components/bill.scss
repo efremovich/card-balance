@@ -1,15 +1,14 @@
 .A4 {
-  width: 1100px;
-  height: 1300px;
+  width: 797px;
+  height: 1127px;
   background-color: white;
 }
 
 .signature {
   display: flex;
   margin: 60px auto 0;
-  width: 100%;
+  width: 94%;
   align-content: flex-start;
-  justify-content: center;
 }
 
 .align-r {
@@ -20,12 +19,8 @@
 
 p {
   text-align: left;
-  // padding-top: 10px;
+  padding-top: 10px;
   padding-left: 10px;
-}
-.align {
-width:90%;
-justify-content: space-between;
 }
 
 .bb {
@@ -67,15 +62,11 @@ justify-content: space-between;
 
 .l {
   text-align: left;
-  font-weight: bolder;
 }
 
 .padding {
-  // padding-top: 5px !important;
-  // padding-bottom: 2px !important;
-  // padding: 3px;
-  text-align: center;
-  padding:0 !important;
+  padding-top: 5px !important;
+  padding-bottom: 2px !important;
 }
 
 .prov {
@@ -100,7 +91,7 @@ justify-content: space-between;
 }
 
 .marg {
-  margin: 120px auto 0;
+  margin: 80px auto 0;
   width: 90%;
 }
 
@@ -135,8 +126,6 @@ justify-content: space-between;
 
 .ew {
   grid-area: ew;
-  display: flex;
-align-items: center;
   /* border: 1px solid black; */
 }
 
@@ -150,15 +139,11 @@ align-items: center;
   border-top: 1px solid black;
   border-left: 1px solid black;
   border-right: 1px solid black;
-  display: flex;
-align-items: center;
 }
 
 .jhjh {
   grid-area: jhjh;
   border-top: 1px solid black;
-  display: flex;
-  align-items: center;
 }
 
 .mnmn {
@@ -183,7 +168,7 @@ align-items: center;
     "POL RAS-SCHET numberRS";
   border: 1px solid black;
   width: 90%;
-  height: 230px;
+  height: 300px;
   margin: 0 auto;
   position: relative;
   top: 50px;
