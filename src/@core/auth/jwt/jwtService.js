@@ -254,6 +254,7 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // Платежи
   async getPayments(params) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {

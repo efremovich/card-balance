@@ -536,13 +536,13 @@
                       :clearable="false"
                       :options="optionError"
                       class="w-100 mb-1" />
-
                     <label
                       for="textarea-default"
                       class="mr-2">Или изложите его здесь:</label>
                     <b-form-textarea
                       id="textarea-default"
-                      ref="textarea"
+                      v-model="text"
+                      :state="text.length >= 10"
                       placeholder="Проблема состоит в следующем..."
                       rows="2" />
 
@@ -1156,6 +1156,7 @@ export default {
       saveChange: false,
       comparison: true,
       newServices: [],
+      text: '...',
       newLimits: [{
         limit_period_code: 'MONTH',
         value: 0,
@@ -1172,6 +1173,11 @@ export default {
       optionError: ['Карта заблокирована', 'Не могу заправиться определенным видом топлива', 'Не могу сменить лимит', 'Неверный баланс в личном кабинете', 'Другая причина'],
 
     };
+  },
+  validations: {
+    selectedError: {
+      required,
+    },
   },
   computed: {
     servicesLength() {
@@ -1231,6 +1237,10 @@ export default {
           text: '🙄 Данные обновить не удалось. Попробуйте позже, а мы пока починим 👨‍🔧',
         },
       });
+    },
+    setError(value) {
+      this.selectedError = value;
+      this.$v.selectedError.$touch();
     },
     getStatusRequests(item) {
       if (item === 'PROCESSING' || item === 'CREATED') {
