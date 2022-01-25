@@ -64,7 +64,7 @@
           ref="userData">
           <b-form
             class="mt-2"
-            @input="validateForm">
+            @submit.prevent="validateForm">
             <b-row>
               <b-col sm="6">
                 <b-form-group

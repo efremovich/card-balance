@@ -56,6 +56,7 @@
           :items="requests.data.result"
           responsive
           :filter="filter"
+          :sort-by.sync="sortBy"
           :per-page="perPage"
           :current-page="currentPage"
           class="position-relative table-hover text-center"
@@ -110,6 +111,7 @@ export default {
       contract: null,
       contractId: null,
       selected: null,
+      sortBy: 'date',
       start: null,
       end: null,
       filter: null,
@@ -161,6 +163,7 @@ export default {
   watch: {
     gotSelectedContract(val) {
       this.contractId = val;
+      this.getPayments(val, this.start, this.end);
     },
   },
 
@@ -175,21 +178,22 @@ export default {
     this.end = `${this.isToday()} 00:00:00`;
     this.rangeDate = [this.start, this.end];
     // this.getAllCards(this.contractId);
-    useJwt.getPayments(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
-      if (response.data.status) {
-        this.requests = response.data;
-        if (this.requests.data.result < 1) {
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Отсутствуют платежи за выбранный период',
-              icon: 'AlertTriangleIcon',
-              variant: 'danger',
-            },
-          });
-        }
-      }
-    });
+    // useJwt.getPayments(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+    //   if (response.data.status) {
+    //     this.requests = response.data;
+    //     if (this.requests.data.result < 1) {
+    //       this.$toast({
+    //         component: ToastificationContent,
+    //         props: {
+    //           title: 'Отсутствуют платежи за выбранный период',
+    //           icon: 'AlertTriangleIcon',
+    //           variant: 'danger',
+    //         },
+    //       });
+    //     }
+    //   }
+    this.getPayments(this.contractId, this.start, this.end);
+    // });
     this.loadDone = true;
   },
   methods: {
@@ -207,6 +211,23 @@ export default {
       this.start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
       this.end = trim[1] + ' 00:00:00';
+    },
+    getPayments(contract, start, end) {
+      useJwt.getPayments(`contract_id=${contract}&startDate=${start}&endDate=${end}`).then((response) => {
+        if (response.data.status) {
+          this.requests = response.data;
+          if (this.requests.data.result < 1) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутствуют платежи за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
+        }
+      });
     },
 
     getFirstDay() {

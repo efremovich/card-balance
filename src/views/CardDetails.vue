@@ -497,6 +497,7 @@
             <validation-observer
               ref="simpleRules">
               <b-form
+                method="POST"
                 @submit.prevent="sendMessage">
                 <b-row class="justify-content-center">
                   <b-col cols="8">
@@ -505,11 +506,11 @@
                       class="w-100">Номер карты:
                       <validation-provider
                         v-slot="{ errors }"
-                        name="Номер карты"
-                        rules="integer|min:9">
+                        rules="integer|min:10"
+                        name="номер карты">
                         <b-form-input
                           id="card"
-                          :value="number" />
+                          v-model="number" />
                         <small
                           class="text-danger">{{ errors[0] }}</small>
                       </validation-provider>
@@ -520,10 +521,11 @@
                       class="w-100 mt-2 mb-2">Клиент:
                       <validation-provider
                         v-slot="{ errors }"
-                        name="Клиент">
+                        name="клиент"
+                        rules="required|min:5">
                         <b-form-input
                           id="org"
-                          :value="name" />
+                          v-model="name" />
                         <small
                           class="text-danger">{{ errors[0] }}</small>
                       </validation-provider>
@@ -536,15 +538,17 @@
                       :clearable="false"
                       :options="optionError"
                       class="w-100 mb-1" />
-                    <label
-                      for="textarea-default"
-                      class="mr-2">Или изложите его здесь:</label>
-                    <b-form-textarea
-                      id="textarea-default"
-                      v-model="text"
-                      :state="text.length >= 10"
-                      placeholder="Проблема состоит в следующем..."
-                      rows="2" />
+                    <template v-if="anotherReason">
+                      <label
+                        for="textarea-default"
+                        class="mr-2">Или изложите его здесь:</label>
+                      <b-form-textarea
+                        id="textarea-default"
+                        v-model="textArea"
+                        :state="textArea.length >= 10"
+                        placeholder="Проблема состоит в следующем..."
+                        rows="2" />
+                    </template>
 
                     <!-- submit and reset -->
                     <b-col
@@ -1156,7 +1160,6 @@ export default {
       saveChange: false,
       comparison: true,
       newServices: [],
-      text: '...',
       newLimits: [{
         limit_period_code: 'MONTH',
         value: 0,
@@ -1164,7 +1167,9 @@ export default {
         limit_services: this.newServices,
         limit_commons: [],
         consumption: 0,
-        name: null,
+        anotherReason: false,
+        name: '',
+        textArea: '',
         userData: null,
         limit_id: this.getRandom(),
       }],
@@ -1174,11 +1179,11 @@ export default {
 
     };
   },
-  validations: {
-    selectedError: {
-      required,
-    },
-  },
+  // validations: {
+  //   selectedError: {
+  //     required,
+  //   },
+  // },
   computed: {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
@@ -1213,8 +1218,9 @@ export default {
     },
     selectedError(val) {
       if (val === 'Другая причина') {
+        this.anotherReason = true;
         this.$refs.textarea.focus();
-      }
+      } else this.anotherReason = false;
     },
   },
   beforeMount() {
@@ -1222,7 +1228,7 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
-          this.name = this.userData.company.name;
+          // this.name = this.userData.company.name;
         });
       }
     });
@@ -1238,27 +1244,24 @@ export default {
         },
       });
     },
-    setError(value) {
-      this.selectedError = value;
-      this.$v.selectedError.$touch();
-    },
+
     getStatusRequests(item) {
       if (item === 'PROCESSING' || item === 'CREATED') {
         return true;
       } return false;
     },
-    getMessage(param) {
-      if (param) {
-        this.$toast({
-          component: ToastificationContent,
-          props: {
-            title: 'В обработке',
-            icon: 'EditIcon',
-            variant: 'success',
-          },
-        });
-      }
-    },
+    // getMessage(param) {
+    //   if (param) {
+    //     this.$toast({
+    //       component: ToastificationContent,
+    //       props: {
+    //         title: 'В обработке',
+    //         icon: 'EditIcon',
+    //         variant: 'success',
+    //       },
+    //     });
+    //   }
+    // },
     fuseSearch(options, search) {
       const fuse = new Fuse(options, {
         keys: ['full_name'],
