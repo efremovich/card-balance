@@ -498,6 +498,7 @@
               ref="simpleRules">
               <b-form
                 method="POST"
+                enctype="multipart/form-data"
                 @submit.prevent="sendMessage">
                 <b-row class="justify-content-center">
                   <b-col cols="8">
@@ -525,7 +526,7 @@
                         rules="required|min:5">
                         <b-form-input
                           id="org"
-                          v-model="name" />
+                          v-model="nameOrg" />
                         <small
                           class="text-danger">{{ errors[0] }}</small>
                       </validation-provider>
@@ -538,31 +539,29 @@
                       :clearable="false"
                       :options="optionError"
                       class="w-100 mb-1" />
-                    <template v-if="anotherReason">
-                      <label
-                        for="textarea-default"
-                        class="mr-2">Или изложите его здесь:</label>
-                      <b-form-textarea
-                        id="textarea-default"
-                        v-model="textArea"
-                        :state="textArea.length >= 10"
-                        placeholder="Проблема состоит в следующем..."
-                        rows="2" />
-                    </template>
+
+                    <label
+                      for="textarea-default"
+                      class="mr-2">Или изложите его здесь:</label>
+                    <b-form-textarea
+                      id="textarea-default"
+                      ref="message"
+                      v-model="text"
+                      :state="text.length >= 10"
+                      placeholder="Проблема состоит в следующем..."
+                      rows="2" />
 
                     <!-- submit and reset -->
                     <b-col
                       class="mt-2"
                       offset-md="4">
                       <b-button
-                        v-ripple.400="'rgba(255, 255, 255, 0.15)'"
                         type="submit"
                         variant="primary"
                         class="mr-1">
                         Отправить
                       </b-button>
                       <b-button
-                        v-ripple.400="'rgba(186, 191, 199, 0.15)'"
                         type="reset"
                         variant="outline-secondary">
                         Сброс
@@ -1167,23 +1166,22 @@ export default {
         limit_services: this.newServices,
         limit_commons: [],
         consumption: 0,
-        anotherReason: false,
-        name: '',
-        textArea: '',
         userData: null,
+        fullMessage: null,
         limit_id: this.getRandom(),
+        // Telegram
+        token: '5136675120:AAEKRZ1r_X1TGOct4vWGWhkBMB3Z1JyeXLI',
+        chatID: '280997089',
       }],
+      nameOrg: '',
+      text: '',
       count: [],
       selectedError: 'Карта заблокирована',
       optionError: ['Карта заблокирована', 'Не могу заправиться определенным видом топлива', 'Не могу сменить лимит', 'Неверный баланс в личном кабинете', 'Другая причина'],
 
     };
   },
-  // validations: {
-  //   selectedError: {
-  //     required,
-  //   },
-  // },
+
   computed: {
     servicesLength() {
       return this.cardData.data.limits.map((el) => el.limit_services).some((el) => el === null || el.length === 0);
@@ -1218,9 +1216,8 @@ export default {
     },
     selectedError(val) {
       if (val === 'Другая причина') {
-        this.anotherReason = true;
-        this.$refs.textarea.focus();
-      } else this.anotherReason = false;
+        this.$refs.message.focus();
+      }
     },
   },
   beforeMount() {
@@ -1333,6 +1330,12 @@ export default {
               variant: 'success',
             },
           });
+          const fullMessage = `Клиент:${this.nameOrg} (карта номер:${this.number}) жалуется на то,что ${this.selectedError}\n. Считает, что ${this.text}.`;
+          this.$http.post(`https://api.telegram.org/bot5136675120:AAEKRZ1r_X1TGOct4vWGWhkBMB3Z1JyeXLI/sendMessage?chat_id=280997089&text=${fullMessage}`)
+            .then((response) => {
+              this.fullMessage = response;
+              this.$router.push({ name: 'cards' });
+            });
         } else {
           this.$toast({
             component: ToastificationContent,
@@ -1385,9 +1388,9 @@ export default {
         return '';
       }
       let label = '';
-      if (Object.values(arrService).length < 2) {
-        console.log('2');
-      }
+      // if (Object.values(arrService).length < 2) {
+      //   console.log('2');
+      // }
       // eslint-disable-next-line no-return-assign
       Object.values(arrService).forEach((el) => (label += `${this.labelService[el]}, `));
       return label.split('').slice(0, -2).join('');

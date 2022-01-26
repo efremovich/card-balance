@@ -393,6 +393,18 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // ID организации для поулчения банковских реквизитов
+  async getOrgId(contractId) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/contract/${contractId}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
   // Инфо по картам (cards)
   async getCardsDate(params) {
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -430,6 +442,30 @@ export default class JwtService {
     }
     return { data: { status: false } };
   }
+
+  // Все поставщики
+  async getAllProviders() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        '/api/organisations',
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Все реквизиты
+  // async getAllpayAccounts() {
+  //   const userData = JSON.parse(localStorage.getItem('userData'));
+  //   if (userData) {
+  //     const response = await this.axiosIns.get(
+  //       '/api/payAccounts',
+  //     );
+  //     return response;
+  //   }
+  //   return { data: { status: false } };
+  // }
 
   // Отдать поставщика
   async getProvider(id) {

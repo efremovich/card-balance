@@ -3,6 +3,7 @@ import { ToastPlugin, ModalPlugin } from 'bootstrap-vue';
 import VueCompositionAPI from '@vue/composition-api';
 import excel from 'vue-excel-export';
 import VueHtmlToPaper from 'vue-html-to-paper';
+import VueResource from 'vue-resource';
 
 import router from './router';
 import store from './store';
@@ -36,6 +37,7 @@ const options = {
 };
 
 Vue.use(excel);
+Vue.use(VueResource);
 // BSV Plugin Registration
 Vue.use(ToastPlugin);
 Vue.use(ModalPlugin);

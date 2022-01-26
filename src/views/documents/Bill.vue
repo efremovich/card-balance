@@ -75,7 +75,7 @@
                     style="height: 13mm;">
                     <tr>
                       <td valign="top">
-                        <div> {{ getInfo.contract.pay_account.name }} </div>
+                        <div> {{ organisationId.data.pay_account.name }} </div>
                       </td>
                     </tr>
                     <tr>
@@ -96,9 +96,9 @@
                   rowspan="2"
                   style="vertical-align: top; width: 60mm;">
                   <div style=" height: 7mm; line-height: 7mm; vertical-align: middle;">
-                    {{ getInfo.contract.pay_account.bik }}
+                    {{ organisationId.data.pay_account.bik }}
                   </div>
-                  <div> {{ getInfo.contract.pay_account.cor_account }}</div>
+                  <div> {{ organisationId.data.pay_account.cor_account }}</div>
                 </td>
               </tr>
               <tr>
@@ -108,10 +108,10 @@
               </tr>
               <tr>
                 <td style="min-height:6mm; height:auto; width: 50mm;">
-                  <div>ИНН {{ getInfo.contract.company.inn }}</div>
+                  <div>ИНН {{ organisationId.data.company.inn }}</div>
                 </td>
                 <td style="min-height:6mm; height:auto; width: 55mm;">
-                  <div>КПП {{ getInfo.contract.company.kpp }}</div>
+                  <div>КПП {{ organisationId.data.company.kpp }}</div>
                 </td>
                 <td
                   rowspan="2"
@@ -121,7 +121,7 @@
                 <td
                   rowspan="2"
                   style="min-height:19mm; height:auto; vertical-align: top; width: 60mm;">
-                  <div>40702810306000008712</div>
+                  <div>{{ organisationId.data.pay_account.checking_account }}</div>
                 </td>
               </tr>
               <tr>
@@ -135,7 +135,7 @@
                     style="height: 13mm; width: 105mm;">
                     <tr>
                       <td valign="top">
-                        <div>Банковские реквзиты получателя </div>
+                        <div> {{ provider[0].name }} </div>
                       </td>
                     </tr>
                     <tr>
@@ -173,8 +173,8 @@
                 </td>
                 <td>
                   <div style="font-weight:bold;  padding-left:2px;">
-                    ИНН {{ provider.data.inn }}, КПП {{ provider.data.kpp }}, {{ provider.data.full_name }}, <br>
-                    <span style="font-weight: normal;">{{ provider.data.legal_address }}</span>
+                    ИНН {{ provider[0].inn }}, КПП {{ provider[0].kpp }}, {{ provider[0].name }}, <br>
+                    <span style="font-weight: normal;">{{ provider[0].legal_address }}</span>
                   </div>
                 </td>
               </tr>
@@ -352,19 +352,24 @@ export default {
       getInfo: null,
       option: ['Оплата за ГСМ согласно договора поставки ', 'Предоплата за ГСМ  согласно договора поставки ', 'Оплата за информационное обслуживание согласно договора поставки ', 'Оплата за утерянную топливную карту по договору '],
       today: null,
-      IdProvider: '446ab995-bd8e-11e3-b1f6-d43d7ef23a46', // Подставлять ли динамически?
       fullContract: null,
-      provider: null,
+      provider: '',
       selected: 'Оплата за ГСМ согласно договора поставки ',
       contractId: null,
+      allProviders: null,
+      yetContract: null,
+      organisationId: '',
+      allPayAccounts: null,
       summ: '',
+      payAccount: null,
       visible: false,
       download: false,
+      NDS: 20,
     };
   },
   computed: {
     getNDS() {
-      return ((this.summ * 20) / 100).toLocaleString('ru-RU', {
+      return ((this.summ * this.NDS) / 100).toLocaleString('ru-RU', {
         style: 'currency',
         currency: 'RUB',
       });
@@ -385,27 +390,53 @@ export default {
     getRandom() {
       return Math.floor(Math.random() * 10000);
     },
-    contract: {
-      get() {
-        return this.fullContract;
-      },
-      set() {
-        // useJwt.changeContract(value)
-        //   .then((response) => {
-        //     if (response.status) {
-        //       this.getInfo = response.data;
-        //       console.log(this.getInfo);
-        //       this.dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
-        //       this.fullContract = `${this.getInfo.contract.number} от ${this.dateContract}`;
-        //       console.log(this.fullContract);
-        //     }
-        //   });
-        // return this.fullContract;
-      },
+    contract() {
+      return this.fullContract;
     },
   },
   watch: {
     gotSelectedContract(val) {
+      this.getOrgID(val);
+      this.getChangeContract(val);
+    },
+  },
+  created() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+
+    if (userData && this.gotSelected === null) {
+      this.yetContract = userData;
+      this.contractId = this.yetContract.contract.id;
+    } else this.contractId = this.gotSelectedContract;
+
+    this.getOrgID(this.contractId);
+    this.getChangeContract(this.contractId);
+  },
+
+  mounted() {
+    this.download = true;
+  },
+  methods: {
+    isToday() {
+      const today = new Date();
+      return today.toLocaleDateString();
+    },
+    getOrgID(val) {
+      useJwt.getOrgId(val)
+        .then((response) => {
+          if (response.status) {
+            this.organisationId = response.data;
+            const filter = this.organisationId.data.organisation_id;
+            useJwt.getAllProviders(val)
+              .then((status) => {
+                if (status.status) {
+                  this.allProviders = status.data;
+                  this.provider = this.allProviders.data.filter((el) => el.id === filter);
+                }
+              });
+          }
+        });
+    },
+    getChangeContract(val) {
       useJwt.changeContract(val)
         .then((response) => {
           if (response.status) {
@@ -414,38 +445,6 @@ export default {
             this.fullContract = `${this.getInfo.contract.number} от ${this.dateContract}`;
           }
         });
-    },
-  },
-  beforeMount() {
-    // const userData = JSON.parse(localStorage.getItem('userData'));
-    // if (userData) {
-    //   const a = userData;
-    //   this.contractId = a.contract.id;
-    // }
-    this.download = false;
-    useJwt.getProvider(this.IdProvider)
-      .then((response) => {
-        if (response.status) {
-          this.provider = response.data;
-          // this.download = true;
-        }
-      });
-
-    useJwt.changeContract(this.gotSelectedContract)
-      .then((response) => {
-        if (response.status) {
-          this.getInfo = response.data;
-
-          this.dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
-          this.fullContract = `${this.getInfo.contract.number} от ${this.dateContract}`;
-        }
-      });
-    this.download = true;
-  },
-  methods: {
-    isToday() {
-      const today = new Date();
-      return today.toLocaleDateString();
     },
     getVisible() {
       if (this.summ.split('').length > 0) {

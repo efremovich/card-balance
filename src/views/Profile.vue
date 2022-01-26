@@ -410,6 +410,7 @@ export default {
       RetypePassword: '',
       required,
       confirmed,
+      emptyValue: null,
       password,
       length,
       valid: false,
@@ -442,7 +443,8 @@ export default {
       this.twin.avatar = this.image;
       // this.twin.name = 'Mark';
       useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
-        console.log('Запись аватара', response);
+        //  console.log('Запись аватара', response);
+        this.emptyValue = response;
         this.image = this.twin.avatar;
       });
       // console.log(this.twin.avatar);
@@ -491,7 +493,7 @@ export default {
     },
     resetPhoto() {
       useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
-        console.log('Сброс фото', response);
+        // console.log('Сброс фото', response);
         // this.image = this.twin.avatar;
         this.twin = response;
       });
@@ -551,10 +553,9 @@ export default {
             old_password: this.oldPassword,
             email: this.twin.email,
           };
-          // console.log(newPassword);
-          // console.log('Старый пароль', this.oldPassword);
           useJwt.changePassword(JSON.stringify(newPassword)).then((response) => {
-            console.log(response);
+            // console.log(response);
+            this.empty = response;
             // console.log(this.newPasswordValue);
             (this.$store.dispatch('getPassword', this.newPasswordValue));
             // this.$toast({

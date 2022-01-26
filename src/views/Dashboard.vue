@@ -411,7 +411,6 @@ export default {
       userData: null,
       userInfo: null,
       selectContract: null,
-      axiosIns: null,
       cardBalance: null,
       statisticsData: null,
       currentConsumption: null,
