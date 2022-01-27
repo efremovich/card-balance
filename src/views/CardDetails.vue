@@ -305,6 +305,7 @@
                           Вид топлива:
                           {{ selectedService(limit.limit_services) }}
                         </h4>
+                        <!-- Передать limit.limit_label -->
                         <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
                         <h4>
                           Остаток: {{ limit.value - limit.consumption }} {{ unicodeLabel[limit.limit_unit_code] }}.

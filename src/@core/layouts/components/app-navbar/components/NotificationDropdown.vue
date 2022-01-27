@@ -5,7 +5,7 @@
     right>
     <template #button-content>
       <feather-icon
-        badge="1"
+        badge="3"
         badge-classes="bg-danger"
         class="text-body"
         icon="BellIcon"

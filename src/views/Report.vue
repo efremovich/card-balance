@@ -1,79 +1,167 @@
 <template>
   <div>
-    <b-card title="Отчёты и графики" />
-    <e-charts
-      ref="line"
-      autoresize
-      :options="option"
-      theme="theme-color"
-      auto-resize />
+    <b-card
+      title="Отчёты и графики">
+      <b-form-group class="w-50">
+        <p class="mt-1">
+          Выберете период:
+        </p>
+        <flat-pickr
+          v-model="rangeDate"
+          size="sm"
+          class="form-control mb-0"
+          :config="config"
+          @on-change="selectDate" />
+      </b-form-group>
+      <div class="pie-text text-left">
+        <h2 class="font-weight-bolder" />
+        <span class="font-weight-bold"> Всего израсходованно за период: {{ transactions }} рублей.</span>
+      </div>
+
+      <!-- echart -->
+      <app-echart-doughnut
+        :series="series" />
+    </b-card>
   </div>
 </template>
 
 <script>
-import { BCard } from 'bootstrap-vue';
-import ECharts from 'vue-echarts';
-import 'echarts/lib/component/tooltip';
-import 'echarts/lib/component/legend';
-import 'echarts/lib/chart/line';
-import theme from '../theme.json';
-
-ECharts.registerTheme('theme-color', theme);
+import { BCard, BFormGroup } from 'bootstrap-vue';
+import AppEchartDoughnut from '@core/components/charts/echart/AppEchartDoughnut.vue';
+import { mapGetters } from 'vuex';
+import { Russian } from 'flatpickr/dist/l10n/ru';
+import flatPickr from 'vue-flatpickr-component'; // datapicker
+import useJwt from '../auth/jwt/useJwt';
 
 export default {
   components: {
     BCard,
-    ECharts,
+    AppEchartDoughnut,
+    flatPickr,
+    BFormGroup,
 
-  },
-  props: {
-    optionData: {
-      type: Object,
-      default: null,
-    },
   },
   data() {
     return {
-      option: {
-        title: {
-          text: 'Stacked area chart',
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross',
-            label: {
-              backgroundColor: '#6a7985',
-            },
-          },
-        },
-        legend: {
-          left: '0',
-        },
-        grid: {
-          width: '95%',
-          left: '40px',
-          right: '4%',
-          containLabel: false,
-        },
-        xAxis: [
-          {
-            type: 'category',
-            boundaryGap: false,
-            data: this.optionData.xAxisData,
-          },
-        ],
-        yAxis: [
-          {
-            type: 'value',
-            splitLine: { show: false },
-          },
-        ],
-        series: this.optionData.series,
+      contractId: null,
+      contract: null,
+      start: null,
+      end: null,
+      transactions: {},
+      rangeDate: null,
+      emptyArr: {},
+      costOfAllPurchases: null,
+      config: {
+        mode: 'range',
+        maxDate: 'today',
+        // defaultDate: ['01-03-2021', 'today'],
+        locale: Russian,
+        dateFormat: 'd.m.Y',
       },
+      series: [
+        {
+          name: 'Visit source',
+          type: 'pie',
+          radius: ['50%', '70%'],
+          avoidLabelOverlap: false,
+          label: {
+            show: false,
+          },
+          labelLine: {
+            show: false,
+          },
+          data: [
+            { value: 335, name: 'Point One' },
+            { value: 310, name: 'Point Two' },
+            { value: 234, name: 'Point Three' },
+            { value: 435, name: 'Point Four' },
+          ],
+        },
+      ],
     };
   },
+  computed: {
+    ...mapGetters({
+      gotSelectedContract: 'CONTRACT_ID',
+
+    }),
+  },
+  watch: {
+    gotSelectedContract(val) {
+      this.getTransactions(val);
+      this.contractId = val;
+    },
+  },
+
+  beforeMount() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData && this.gotSelectedContract === null) {
+      this.contract = userData;
+      this.contractId = this.contract.contract.id;
+    } else this.contractId = this.gotSelectedContract;
+    this.start = `${this.getFirstDay()} 00:00:00`;
+    this.end = `${this.isToday()} 00:00:00`;
+    // this.rangeDate = [this.start, this.end];
+    this.rangeDate = [this.start, this.end];
+    this.getTransactions(this.contractId);
+  },
+  methods: {
+    isToday() {
+      const today = new Date();
+      return today.toLocaleDateString();
+    },
+    getFirstDay() {
+      const date = new Date();
+      const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
+      return firstDay;
+    },
+    getTransactions(val) {
+      useJwt.getTransactions(`contract_id=${val}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+        if (response.data.status) {
+          this.emptyArr = response.data;
+          if (this.emptyArr.data.total > 0) {
+            this.transactions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.summ, 0).toFixed(2));
+            const allLabels = [];
+            allLabels.push(this.emptyArr.data.result.map((el) => el.service).map((el) => el.full_name));
+            const arr = allLabels[0];
+            const uniqueLabel = new Set(arr); // size != length
+            const arrLabel = Array.from(uniqueLabel);
+            let zero = 0;
+            this.emptyArr.data.result.forEach((el) => {
+              if (el.service.full_name === arrLabel[0]) {
+                zero += (el.summ);
+              }
+              return zero;
+            });
+            console.log(arrLabel, zero);
+          } else this.transactions = '0';
+        }
+      });
+    },
+    getDate() {
+      const date = this.rangeDate;
+      const newDate = Array.from(date).filter((n) => n !== '—');
+      const arr = newDate.join('').split('00:00:00');
+      const trim = arr.join('').split(' ').filter((n) => n !== '');
+      // eslint-disable-next-line prefer-template
+      this.start = trim[0] + ' 00:00:00';
+      // eslint-disable-next-line prefer-template
+      this.end = trim[1] + ' 00:00:00';
+    },
+
+    selectDate() {
+      const date = this.rangeDate;
+      this.getDate();
+      if (date.length > 22) {
+        this.getTransactions(this.contractId);
+      }
+    },
+  },
+
 };
+
 </script>
 
-<style></style>
+<style lang="scss">
+  @import "@core/scss/vue/libs/vue-flatpicker.scss";
+</style>

@@ -431,6 +431,7 @@ export default {
                 if (status.status) {
                   this.allProviders = status.data;
                   this.provider = this.allProviders.data.filter((el) => el.id === filter);
+                  // console.log(this.provider.map((el) => el));
                 }
               });
           }
