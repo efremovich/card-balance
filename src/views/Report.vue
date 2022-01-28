@@ -60,7 +60,7 @@ export default {
       },
       series: [
         {
-          name: 'Visit source',
+          name: 'Потребеление топлива',
           type: 'pie',
           radius: ['50%', '70%'],
           avoidLabelOverlap: false,
@@ -71,10 +71,10 @@ export default {
             show: false,
           },
           data: [
-            { value: 335, name: 'Point One' },
-            { value: 310, name: 'Point Two' },
-            { value: 234, name: 'Point Three' },
-            { value: 435, name: 'Point Four' },
+            // { value: 335, name: 'Point One' },
+            // { value: 310, name: 'Point Two' },
+            // { value: 234, name: 'Point Three' },
+            // { value: 435, name: 'Point Four' },
           ],
         },
       ],
@@ -101,7 +101,7 @@ export default {
     } else this.contractId = this.gotSelectedContract;
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 00:00:00`;
-    // this.rangeDate = [this.start, this.end];
+    this.rangeDate = [this.start, this.end];
     this.rangeDate = [this.start, this.end];
     this.getTransactions(this.contractId);
   },
@@ -126,14 +126,30 @@ export default {
             const arr = allLabels[0];
             const uniqueLabel = new Set(arr); // size != length
             const arrLabel = Array.from(uniqueLabel);
-            let zero = 0;
-            this.emptyArr.data.result.forEach((el) => {
-              if (el.service.full_name === arrLabel[0]) {
-                zero += (el.summ);
-              }
-              return zero;
-            });
-            console.log(arrLabel, zero);
+            const data = {};
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < arrLabel.length; i++) {
+              let zero = 0;
+              this.emptyArr.data.result.forEach((el) => { // необходимо создавать объект на каждое используемое значение вида топлива
+                if (el.service.full_name === arrLabel[i]) {
+                  zero += (el.summ);
+                  const name = arrLabel[i];
+                  const value = zero;
+                  data[name] = value;
+                }
+                return data;
+              });
+            }
+            this.series[0].data = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < Object.keys(data).length; i++) {
+              const label = Object.keys(data);
+              const value = Object.values(data);
+              const randomObject = {};
+              randomObject.value = value[i];
+              randomObject.name = label[i];
+              this.series[0].data.push(randomObject);
+            }
           } else this.transactions = '0';
         }
       });

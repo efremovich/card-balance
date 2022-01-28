@@ -91,29 +91,6 @@
               </h6>
             </div>
           </div>
-          <!-- <div class="appex">
-            <vue-apex-charts
-              type="radialBar"
-              height="325"
-              :options="productOrdersRadialBar.chartOptions"
-              :series="productOrdersRadialBar.series" /> -->
-
-          <!-- chart info -->
-          <!-- <div
-              v-for="(data,key,index) in cardData.data"
-              :key="key"
-              class="d-flex justify-content-between"
-              :class="index === Object.keys(chartInfo.chartInfo).length - 1 ? '':'mb-1'">
-              <div class="series-info d-flex align-items-center">
-                <feather-icon
-                  icon="CircleIcon"
-                  size="16"
-                  :class="key === 'finished' ? 'text-primary': key==='pending'?'text-warning':'text-danger'" />
-                <span class="font-weight-bold text-capitalize ml-75">{{ key }}</span>
-              </div>
-              <span>{{ data }}</span>
-            </div> -->
-          <!-- </div> -->
         </div>
         <b-tabs
           content-class="pt-1 position-relative"
