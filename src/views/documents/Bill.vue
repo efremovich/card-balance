@@ -135,7 +135,7 @@
                     style="height: 13mm; width: 105mm;">
                     <tr>
                       <td valign="top">
-                        <div> {{ provider[0].name }} </div>
+                        <div> {{ provider.data.name }} </div>
                       </td>
                     </tr>
                     <tr>
@@ -173,8 +173,8 @@
                 </td>
                 <td>
                   <div style="font-weight:bold;  padding-left:2px;">
-                    ИНН {{ provider[0].inn }}, КПП {{ provider[0].kpp }}, {{ provider[0].name }}, <br>
-                    <span style="font-weight: normal;">{{ provider[0].legal_address }}</span>
+                    ИНН {{ provider.data.inn }}, КПП {{ provider.data.kpp }}, {{ provider.data.name }}, <br>
+                    <span style="font-weight: normal;">{{ provider.data.legal_address }}</span>
                   </div>
                 </td>
               </tr>
@@ -307,20 +307,48 @@
               2. Оплата данного счета означает согласие с условиями изложенными в п.1
             </div> -->
 
-            <div style="background: url('<!--url печати в png сюда-->');  background-repeat: no-repeat; padding: 30px 10px; width: 400px; height: 250px;">
-              <div style="font-weight:bold;">
+            <div
+              style="background: url('<!--url печати в png сюда-->');  background-repeat: no-repeat; padding: 30px 10px; width: 700px; height: 250px;">
+              <div
+                class="d-flex"
+                style="font-weight:bold;">
                 Руководитель ___________________________
+                <h6 style="padding-left:10px">
+                  {{ provider.data.director }}
+                </h6>
+                <b-img
+                  class="position-relative"
+                  :src="provider.data.director_sign"
+                  style="right:280px;bottom:25px"
+                  height="40px"
+                  width="150px" />
               </div>
               <br>  <br><br>
 
-              <div style="font-weight:bold;">
+              <div
+                class="d-flex"
+                style="font-weight:bold;">
                 Главный бухгалтер ______________________
+                <h6 style="padding-left:10px">
+                  {{ provider.data.accountant }}
+                </h6>
+                <b-img
+                  class="position-relative"
+                  :src="provider.data.accountant_sign"
+                  style="right:260px;bottom:25px"
+                  height="40px"
+                  width="150px" />
               </div>
+
               <br>
 
-              <div style="width: 85mm;text-align:center;">
-                М.П.
-              </div>
+              <b-img
+                class="position-relative"
+                :src="provider.data.stamp"
+                style="left:440px;bottom:170px"
+                height="250px"
+                width="250px" />
+
               <br>
             </div>
           </div>
@@ -332,7 +360,7 @@
 
 <script>
 import {
-  BCard, BFormInput, BButton, BOverlay,
+  BCard, BFormInput, BButton, BOverlay, BImg,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
 import vSelect from 'vue-select';
@@ -346,6 +374,7 @@ export default {
     BButton,
     BOverlay,
     vSelect,
+    BImg,
   },
   data() {
     return {
@@ -353,10 +382,9 @@ export default {
       option: ['Оплата за ГСМ согласно договора поставки ', 'Предоплата за ГСМ  согласно договора поставки ', 'Оплата за информационное обслуживание согласно договора поставки ', 'Оплата за утерянную топливную карту по договору '],
       today: null,
       fullContract: null,
-      provider: '',
+      provider: null,
       selected: 'Оплата за ГСМ согласно договора поставки ',
       contractId: null,
-      allProviders: null,
       yetContract: null,
       organisationId: '',
       allPayAccounts: null,
@@ -365,6 +393,7 @@ export default {
       visible: false,
       download: false,
       NDS: 20,
+      directorSing: null,
     };
   },
   computed: {
@@ -402,12 +431,10 @@ export default {
   },
   created() {
     const userData = JSON.parse(localStorage.getItem('userData'));
-
     if (userData && this.gotSelected === null) {
       this.yetContract = userData;
       this.contractId = this.yetContract.contract.id;
     } else this.contractId = this.gotSelectedContract;
-
     this.getOrgID(this.contractId);
     this.getChangeContract(this.contractId);
   },
@@ -426,12 +453,12 @@ export default {
           if (response.status) {
             this.organisationId = response.data;
             const filter = this.organisationId.data.organisation_id;
-            useJwt.getAllProviders(val)
+            useJwt.getProvider(filter)
               .then((status) => {
                 if (status.status) {
-                  this.allProviders = status.data;
-                  this.provider = this.allProviders.data.filter((el) => el.id === filter);
-                  // console.log(this.provider.map((el) => el));
+                  this.provider = status.data;
+                  this.directorSing = this.provider.data.accountant_sign;
+                  console.log(this.provider);
                 }
               });
           }

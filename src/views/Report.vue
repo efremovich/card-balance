@@ -60,15 +60,15 @@ export default {
       },
       series: [
         {
-          name: 'Потребеление топлива',
+          name: 'Потребление топлива',
           type: 'pie',
           radius: ['50%', '70%'],
           avoidLabelOverlap: false,
           label: {
-            show: false,
+            show: true,
           },
           labelLine: {
-            show: false,
+            show: true,
           },
           data: [
             // { value: 335, name: 'Point One' },
