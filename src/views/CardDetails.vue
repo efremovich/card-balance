@@ -24,6 +24,9 @@
           <h3>
             Настройка карты № {{ number }}
           </h3>
+          <app-echart-doughnut
+            class="mt-2 w-100"
+            :series="series" />
         </b-card-header>
         <div class="d-flex flex-wrap justify-content-between">
           <div class="image">
@@ -593,6 +596,7 @@
               <b-form-input :value="cardData.data.holder" />
             </div>
           </div>
+
           <div
             class="d-flex flex-column align-items-start justify-content-start heigth ml-1 mt-2">
             <b-button
@@ -853,6 +857,7 @@ import { required } from '@validations';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 import { ref } from '@vue/composition-api';
 import Fuse from 'fuse.js';
+import AppEchartDoughnut from '@core/components/charts/echart/AppEchartDoughnut.vue';
 import { useRouter } from '../@core/utils/utils';
 import useJwt from '../auth/jwt/useJwt';
 
@@ -863,6 +868,7 @@ export default {
   components: {
     ValidationProvider,
     ValidationObserver,
+    AppEchartDoughnut,
     BCard,
     BImg,
     BForm,
@@ -876,7 +882,6 @@ export default {
     BOverlay,
     BFormTextarea,
     BRow,
-    // VueApexCharts,
     BCardActions,
     BFormGroup,
     BFormInput,
@@ -940,6 +945,28 @@ export default {
         sortable: true,
       },
     ];
+
+    const series = [
+      {
+        name: 'Потребление топлива',
+        type: 'pie',
+        radius: ['60%', '80%'],
+        avoidLabelOverlap: false,
+        label: {
+          show: true,
+        },
+        labelLine: {
+          show: true,
+        },
+        data: [
+          // { value: 335, name: 'Point One' },
+          // { value: 310, name: 'Point Two' },
+          // { value: 234, name: 'Point Three' },
+          // { value: 435, name: 'Point Four' },
+        ],
+      },
+    ];
+
     const unicodeLabel = {
       L: 'литров',
       RU: 'рублей',
@@ -1027,8 +1054,10 @@ export default {
         }
       });
     };
+    const transactionsSumm = ref(null);
+    const consumptionData = ref([]);
 
-    const getAllTransactions = () => {
+    const getAllTransactions = () => { // ДОРАБОТАТЬ
       firstDayOfMonth.value = getFirstDay();
       lastDay.value = isToday();
       const userData = JSON.parse(localStorage.getItem('userData'));
@@ -1036,7 +1065,7 @@ export default {
         const contract = userData;
         contractId.value = contract.contract.id;
         start.value = `${getFirstDay()} 00:00:00`;
-        end.value = `${isToday()} 00:00:00`;
+        end.value = `${isToday()} 23:59:59`;
         loadDone.value = true;
         useJwt
           .getTransactions(
@@ -1046,6 +1075,71 @@ export default {
             if (response.data.status) {
               transactions.value = response.data;
               totalRows.value = transactions.value.data.total;
+              if (transactions.value.data.total > 0) {
+                transactionsSumm.value = (transactions.value.data.result.reduce((ac, el) => ac + el.summ, 0).toFixed(2));
+                this.consumptions = (transactions.value.data.result.reduce((ac, el) => ac + el.quantity, 0).toFixed(2));
+                const allLabels = [];
+                allLabels.push(transactions.value.data.result.map((el) => el.service).map((el) => el.full_name));
+                // Для отчета
+                const example = [];
+                const allCards = [];
+                allCards.push(this.emptyArr.data.result.map((el) => el.card_number));
+                const arrCards = allCards[0];
+                const uniqueCards = new Set(arrCards);
+                const arrUniqueCards = Array.from(uniqueCards);
+                // eslint-disable-next-line no-plusplus
+                for (let i = 0; i < arrUniqueCards.length; i++) {
+                  // let zero = 0;
+                  this.emptyArr.data.result.forEach((el) => {
+                    if (el.card_number === arrUniqueCards[i]) {
+                      // zero += el.summ;
+                      example.push(el);
+                    }
+                  });
+                }
+                // Конец отчёта
+                const arr = allLabels[0];
+                const uniqueLabel = new Set(arr); // size != length
+                const arrLabel = Array.from(uniqueLabel);
+                const data = {};
+                const dataConumption = {};
+                // eslint-disable-next-line no-plusplus
+                for (let i = 0; i < arrLabel.length; i++) {
+                  let zero = 0;
+                  let consumption = 0;
+
+                  this.emptyArr.data.result.forEach((el) => { // необходимо создавать объект на каждое используемое значение вида топлива
+                    if (el.service.full_name === arrLabel[i]) {
+                      zero += (el.summ);
+                      consumption += el.quantity;
+                      const name = arrLabel[i];
+                      const valueService = zero;
+                      const valueConpumption = consumption;
+                      data[name] = valueService;
+                      dataConumption[name] = valueConpumption;
+                    }
+                    // return data;
+                    consumptionData.value = Array.from(Object.entries(dataConumption));
+
+                    // this.consumptionData.value = Object.values(dataConumption);
+                  });
+                }
+
+                series.value.[0].data = [];
+                // eslint-disable-next-line no-plusplus
+                for (let i = 0; i < Object.keys(data).length; i++) {
+                  const label = Object.keys(data);
+                  const values = Object.values(data);
+                  const randomObject = {};
+                  randomObject.value = values[i];
+                  randomObject.name = label[i];
+                  this.series[0].data.push(randomObject);
+                }
+              } else {
+                this.transactions = '0';
+                this.resultLength = false;
+                this.getToast();
+              }
             }
             loadDone.value = false;
           });
@@ -1090,7 +1184,10 @@ export default {
     getAllUnits();
 
     return {
+      consumptionData,
+      series,
       selectUnits,
+      transactionsSumm,
       fieldsRequests,
       selected,
       product,
@@ -1147,10 +1244,12 @@ export default {
         userData: null,
         fullMessage: null,
         limit_id: this.getRandom(),
-        // Telegram
-        token: '5136675120:AAEKRZ1r_X1TGOct4vWGWhkBMB3Z1JyeXLI',
-        chatID: '280997089',
       }],
+
+      // Telegram
+      token: '5136675120:AAEKRZ1r_X1TGOct4vWGWhkBMB3Z1JyeXLI',
+      chatID: '280997089',
+
       nameOrg: '',
       text: '',
       count: [],

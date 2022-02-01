@@ -511,7 +511,7 @@ export default {
     } else this.contractId = this.gotSelectedContract;
     this.getAllCards(this.contractId);
     this.start = `${this.getFirstDay()} 00:00:00`;
-    this.end = `${this.isToday()} 00:00:00`;
+    this.end = `${this.isToday()} 23:59:59`;
     this.rangeDate = [this.start, this.end];
 
     if (this.selected === null) {
@@ -591,7 +591,7 @@ export default {
       // eslint-disable-next-line prefer-template
       this.start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
-      this.end = trim[1] + ' 00:00:00';
+      this.end = trim[1] + ' 23:59:59';
     },
 
     onChange() {

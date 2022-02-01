@@ -58,7 +58,7 @@
                         @input="Change" />
                       <h4>Статус: {{ cardBalance.contract.status }} </h4>
                       <h4>
-                        От: {{ cardBalance.contract.date | formatDate }}
+                        От: {{ cardBalance.contract.date | formatOnlyDate }}
                       </h4>
                       <b-link :to="{ name: 'bill' }">
                         <b-button
@@ -595,6 +595,7 @@ export default {
       useJwt.getBalance().then((response) => {
         if (response.data.status) {
           this.cardBalance = response.data;
+          // console.log('Balance:', this.cardBalance);
         }
       });
       // useJwt.getCurrentConsumption().then((response) => {

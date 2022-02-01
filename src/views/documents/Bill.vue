@@ -431,7 +431,7 @@ export default {
   },
   created() {
     const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData && this.gotSelected === null) {
+    if (userData && this.gotSelectedContract === null) {
       this.yetContract = userData;
       this.contractId = this.yetContract.contract.id;
     } else this.contractId = this.gotSelectedContract;
@@ -458,7 +458,7 @@ export default {
                 if (status.status) {
                   this.provider = status.data;
                   this.directorSing = this.provider.data.accountant_sign;
-                  console.log(this.provider);
+                  // console.log(this.provider);
                 }
               });
           }

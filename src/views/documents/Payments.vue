@@ -175,7 +175,7 @@ export default {
     } else this.contractId = this.gotSelectedContract;
 
     this.start = `${this.getFirstDay()} 00:00:00`;
-    this.end = `${this.isToday()} 00:00:00`;
+    this.end = `${this.isToday()} 23:59:59`;
     this.rangeDate = [this.start, this.end];
     // this.getAllCards(this.contractId);
     // useJwt.getPayments(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
@@ -210,7 +210,7 @@ export default {
       // eslint-disable-next-line prefer-template
       this.start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
-      this.end = trim[1] + ' 00:00:00';
+      this.end = trim[1] + ' 23:59:59';
     },
     getPayments(contract, start, end) {
       useJwt.getPayments(`contract_id=${contract}&startDate=${start}&endDate=${end}`).then((response) => {
