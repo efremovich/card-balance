@@ -247,7 +247,7 @@
                           </b-col>
                         </div>
                         <div class="mt-1">
-                          <label>Остаток: {{ limit.value - limit.consumption }}  {{ unicodeLabel[limit.limit_unit_code] }} </label>
+                          <label>Остаток: {{ (limit.value - limit.consumption).toFixed(2) }}  {{ unicodeLabel[limit.limit_unit_code] }} </label>
                           <b-progress
                             :value="limit.value - limit.consumption"
                             :max="limit.value" />
@@ -285,7 +285,7 @@
                         <!-- Передать limit.limit_label -->
                         <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
                         <h4>
-                          Остаток: {{ limit.value - limit.consumption }} {{ unicodeLabel[limit.limit_unit_code] }}.
+                          Остаток: {{ (limit.value - limit.consumption).toFixed(2) }} {{ unicodeLabel[limit.limit_unit_code] }}.
                         </h4>
                         <hr>
                       </div>
