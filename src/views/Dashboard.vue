@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 <template>
   <b-overlay
     :show="showLoading"
@@ -137,7 +138,6 @@
                     @refresh="refreshCardStatistic('cardStatistic')">
                     <div class="mt-1">
                       <div
-
                         class="d-flex justify-content-between">
                         <h4>
                           Всего карт:
@@ -147,9 +147,17 @@
                         </h4>
                       </div>
                     </div>
-                    <div class="mt-1">
+                    <div
+                      v-for="(item,index) in cardStatisticsData"
+                      :key="index"
+                      class="d-flex justify-content-between">
+                      <h4>
+                        {{ item.name }}
+                      </h4>
+                      <h4> {{ item.value }}</h4>
+                    </div>
+                    <!-- <div class="mt-1">
                       <div
-
                         class="d-flex justify-content-between">
                         <h4>
                           Активно:
@@ -158,8 +166,8 @@
                           {{ getActiveCard }}
                         </h4>
                       </div>
-                    </div>
-                    <div class="mt-1">
+                    </div> -->
+                    <!-- <div class="mt-1">
                       <div
                         class="d-flex justify-content-between">
                         <h4>
@@ -169,7 +177,7 @@
                           {{ getNotActiveCard }}
                         </h4>
                       </div>
-                    </div>
+                    </div> -->
                   </b-card-actions>
                 </b-overlay>
               </b-col>
@@ -416,7 +424,9 @@ export default {
       currentConsumption: null,
       consumptionDinamic: null,
       currentConsumptionDynamic: null,
+      cardStatisticsData: [],
       option: [],
+      yetContract: null,
       ID: null,
       download: false,
       showLoading: false,
@@ -548,7 +558,7 @@ export default {
       return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
     },
     getCardsSumm() {
-      return this.cardBalance.card_statistic.length;
+      return this.statisticsData.cardStatistic.map((el) => el.total).reduce((el, summ) => el + summ, 0);
     },
     // gotSelected() {
     //   return this.$store.getters.CONTRACT_NUMBER;
@@ -561,9 +571,21 @@ export default {
     gotSelected() {
       this.onChange();
     },
+    gotSelectedContract(val) {
+      this.getCardStatistica(val);
+    },
   },
   beforeMount() {
-    // this.showLoading = true;
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData && this.gotSelectedContract === null) {
+      this.yetContract = userData;
+      console.log(this.yetContract);
+      // this.ID = this.yetContract.contract.id;
+    } else this.ID = this.gotSelectedContract;
+    // this.getOrgID(this.contractId);
+    // this.getChangeContract(this.contractId);
+    this.getCardStatistica(this.ID);
+
     // this.download = false;
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
@@ -598,24 +620,12 @@ export default {
           // console.log('Balance:', this.cardBalance);
         }
       });
-      // useJwt.getCurrentConsumption().then((response) => {
-      //   if (response.data.status) {
-      //     this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
-      //       this.currentConsumption = response.data;
-      //       console.log(this.currentConsumption.currentConsumption);
-      //     });
-      //   }
-      // });
+
       useJwt.getConsumptionDinamic().then((response) => {
         if (response.data.status) {
           this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
             this.currentConsumptionDynamic = response.data;
           });
-        }
-      });
-      useJwt.getCardStatistic().then((response) => {
-        if (response.data.status) {
-          this.statisticsData = response.data;
         }
       });
     } else {
@@ -715,6 +725,38 @@ export default {
           this.$refs[card].showLoading = false;
         } else {
           this.showToast();
+        }
+      });
+    },
+    getCardStatistica(val) {
+      useJwt.getCardStatisticFromID(val).then((response) => {
+        if (response.data.status) {
+          this.statisticsData = response.data;
+          const allLabel = this.statisticsData.cardStatistic.map((el) => el.emitent.full_name);
+          const uniqueLabel = new Set(allLabel);
+          const allUniquelabels = Array.from(uniqueLabel);
+          const emptyObject = [];
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < allUniquelabels.length; i++) {
+            const summ = this.statisticsData.cardStatistic.filter((el) => el.emitent.full_name === allUniquelabels[i]);
+            emptyObject.push(summ);
+          }
+
+          const totalSumm = [];
+          this.cardStatisticsData = [];
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < emptyObject.length; i++) {
+            const someSum = emptyObject[i].map((el) => el.total).reduce((el, acc) => el + acc, 0);
+
+            totalSumm.push(someSum);
+          }
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < allUniquelabels.length; i++) {
+            const anotherObject = {};
+            anotherObject.name = allUniquelabels[i];
+            anotherObject.value = totalSumm[i];
+            this.cardStatisticsData.push(anotherObject);
+          }
         }
       });
     },
