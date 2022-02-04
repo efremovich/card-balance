@@ -59,7 +59,7 @@
                         @input="Change" />
                       <h4>Статус: {{ cardBalance.contract.status }} </h4>
                       <h4>
-                        От: {{ cardBalance.contract.date | formatOnlyDate }}
+                        От: {{ getDate | formatDateNoTime }}
                       </h4>
                       <b-link :to="{ name: 'bill' }">
                         <b-button
@@ -102,7 +102,7 @@
                         }) }}</span>
                       </h5>
                       <h4>
-                        От: {{ cardBalance.contract.date | formatDate }}
+                        От: {{ getDate | formatDateNoTime }}
                       </h4>
                       <b-link :to="{ name: 'bill' }">
                         <b-button
@@ -147,37 +147,24 @@
                         </h4>
                       </div>
                     </div>
-                    <div
-                      v-for="(item,index) in cardStatisticsData"
-                      :key="index"
-                      class="d-flex justify-content-between">
-                      <h4>
-                        {{ item.name }}
-                      </h4>
-                      <h4> {{ item.value }}</h4>
-                    </div>
-                    <!-- <div class="mt-1">
+                    <template v-for="(el) in cardStatisticsData">
                       <div
+                        :key="el.id"
                         class="d-flex justify-content-between">
                         <h4>
-                          Активно:
+                          {{ el.name }}
                         </h4>
-                        <h4>
-                          {{ getActiveCard }}
-                        </h4>
+                        <h4> {{ el.value }}</h4>
+                        <br>
+                        <template v-for="(i) in el.cardStatus">
+                          <template v-for="(w,index) in i">
+                            <h4 :key="index">
+                              {{ mapStatus[w.name] }} {{ w.value }}
+                            </h4>
+                          </template>
+                        </template>
                       </div>
-                    </div> -->
-                    <!-- <div class="mt-1">
-                      <div
-                        class="d-flex justify-content-between">
-                        <h4>
-                          Заблокировано:
-                        </h4>
-                        <h4 class="text-danger">
-                          {{ getNotActiveCard }}
-                        </h4>
-                      </div>
-                    </div> -->
+                    </template>
                   </b-card-actions>
                 </b-overlay>
               </b-col>
@@ -210,7 +197,7 @@
                   <div class="d-flex justify-content-between align-items-end">
                     <h4>Последние изменения <br> по договору:</h4>
                     <h4 class="text-info">
-                      {{ userData.contract['updated'] | formatDate }}
+                      {{ getUpdate | formatDateNoTime }}
                     </h4>
                   </div>
                   <b-table
@@ -426,6 +413,23 @@ export default {
       currentConsumptionDynamic: null,
       cardStatisticsData: [],
       option: [],
+      mapStatus: {
+        ACTIVE: 'Активно',
+
+        BLOCK: 'Заблокировано',
+
+        BROKEN: 'Сломано',
+
+        DELETED: 'Удалено',
+
+        LOST: 'Утеряно',
+
+        Finance: 'Финансовая блокировка',
+
+        Return: 'Сдано',
+
+      },
+
       yetContract: null,
       ID: null,
       download: false,
@@ -563,6 +567,12 @@ export default {
     // gotSelected() {
     //   return this.$store.getters.CONTRACT_NUMBER;
     // },
+    getUpdate() {
+      return this.userData.contract.updated.split('').slice(0, 10).join('');
+    },
+    getDate() {
+      return this.cardBalance.contract.date.split('').slice(0, 10).join('');
+    },
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
@@ -579,7 +589,7 @@ export default {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData && this.gotSelectedContract === null) {
       this.yetContract = userData;
-      console.log(this.yetContract);
+      // console.log(this.yetContract);
       // this.ID = this.yetContract.contract.id;
     } else this.ID = this.gotSelectedContract;
     // this.getOrgID(this.contractId);
@@ -733,6 +743,11 @@ export default {
         if (response.data.status) {
           this.statisticsData = response.data;
           const allLabel = this.statisticsData.cardStatistic.map((el) => el.emitent.full_name);
+          const allStatus = this.statisticsData.cardStatistic.map((el) => el.card_status.code);
+          // console.log('Cтатус', allStatus);
+          const uniqueStatus = new Set(allStatus);
+          const allUniqueStatus = Array.from(uniqueStatus); // Статусы карт
+          // console.log(allUniqueStatus);
           const uniqueLabel = new Set(allLabel);
           const allUniquelabels = Array.from(uniqueLabel);
           const emptyObject = [];
@@ -742,20 +757,56 @@ export default {
             emptyObject.push(summ);
           }
 
+          // eslint-disable-next-line no-plusplus
+          // for (let i = 0; i < allUniquelabels.length; i++) {
+          //   console.log(this.statisticsData.cardStatistic.filter((el) => el.emitent.full_name === allUniquelabels[i]));
+          // }
+
           const totalSumm = [];
           this.cardStatisticsData = [];
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < emptyObject.length; i++) {
             const someSum = emptyObject[i].map((el) => el.total).reduce((el, acc) => el + acc, 0);
-
             totalSumm.push(someSum);
           }
+
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < allUniquelabels.length; i++) {
             const anotherObject = {};
+            // anotherObject.cards = [];
+            anotherObject.cardStatus = [];
+            anotherObject.id = this.getRandom();
+            const status = [];
+            const value = [];
+            // eslint-disable-next-line no-plusplus
+            for (let j = 0; j < allUniqueStatus.length; j++) {
+              status.push(allUniqueStatus[j]);
+              let quantity = this.statisticsData.cardStatistic.filter((el) => el.emitent.full_name === allUniquelabels[i]).filter((el) => el.card_status.code === allUniqueStatus[j]).map((el) => el.total);
+              quantity = Object.values(quantity).reduce((el, acc) => el + acc, 0);
+              // anotherObject[status] = quantity;
+              // console.log(status, quantity);
+              value.push(quantity);
+              // anotherObject.cards.value = value;
+              // anotherObject.cards.status = status;
+            }
+            // anotherObject.statusCard = anotherObject.status;
             anotherObject.name = allUniquelabels[i];
             anotherObject.value = totalSumm[i];
+            anotherObject.cardStatus.status = status;
+            anotherObject.cardStatus.value = value;
+            const e = [];
+            // eslint-disable-next-line no-plusplus
+            for (let w = 0; w < anotherObject.cardStatus.status.length; w++) {
+              const r = {};
+              r.name = anotherObject.cardStatus.status[w];
+              r.value = anotherObject.cardStatus.value[w];
+              console.log(r);
+              e.push(r);
+            }
+            anotherObject.cardStatus.push(e);
+            // console.log(e);
             this.cardStatisticsData.push(anotherObject);
+            console.log(this.cardStatisticsData);
           }
         }
       });
@@ -786,6 +837,9 @@ export default {
             this.showLoading = false;
           }
         });
+    },
+    getRandom() {
+      return Math.floor(Math.random() * 10000);
     },
   },
 };
