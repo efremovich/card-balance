@@ -56,7 +56,7 @@
                         label="number"
                         :options="option"
                         class="w-100 mt-1 mb-1"
-                        @input="Change" />
+                        @input="сhange" />
                       <h4>Статус: {{ cardBalance.contract.status }} </h4>
                       <h4>
                         От: {{ getDate | formatDateNoTime }}
@@ -147,22 +147,35 @@
                         </h4>
                       </div>
                     </div>
+                    <hr>
                     <template v-for="(el) in cardStatisticsData">
                       <div
                         :key="el.id"
-                        class="d-flex justify-content-between">
-                        <h4>
-                          {{ el.name }}
-                        </h4>
-                        <h4> {{ el.value }}</h4>
-                        <br>
-                        <template v-for="(i) in el.cardStatus">
-                          <template v-for="(w,index) in i">
-                            <h4 :key="index">
-                              {{ mapStatus[w.name] }} {{ w.value }}
-                            </h4>
+                        class="d-flex flex-column">
+                        <div class="d-flex justify-content-between">
+                          <h4>
+                            {{ el.name }}:
+                          </h4>
+                          <h4> {{ el.value }}</h4>
+                        </div>
+                        <div
+                          v-for="(i) in el.cardStatus"
+                          :key="i"
+                          class="d-flex flex-column">
+                          <template v-for="(w) in i">
+                            <div
+                              :key="w.id"
+                              class="d-flex justify-content-between">
+                              <h5>
+                                {{ mapStatus[w.name] }}
+                              </h5>
+                              <h5>
+                                {{ w.value }}
+                              </h5>
+                            </div>
                           </template>
-                        </template>
+                          <hr>
+                        </div>
                       </div>
                     </template>
                   </b-card-actions>
@@ -414,19 +427,19 @@ export default {
       cardStatisticsData: [],
       option: [],
       mapStatus: {
-        ACTIVE: 'Активно',
+        ACTIVE: 'Активно:',
 
-        BLOCK: 'Заблокировано',
+        BLOCK: 'Заблокировано:',
 
-        BROKEN: 'Сломано',
+        BROKEN: 'Сломано:',
 
-        DELETED: 'Удалено',
+        DELETED: 'Удалено:',
 
-        LOST: 'Утеряно',
+        LOST: 'Утеряно:',
 
-        Finance: 'Финансовая блокировка',
+        Finance: 'Финансовая блокировка:',
 
-        Return: 'Сдано',
+        Return: 'Сдано:',
 
       },
 
@@ -773,7 +786,7 @@ export default {
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < allUniquelabels.length; i++) {
             const anotherObject = {};
-            // anotherObject.cards = [];
+
             anotherObject.cardStatus = [];
             anotherObject.id = this.getRandom();
             const status = [];
@@ -783,30 +796,24 @@ export default {
               status.push(allUniqueStatus[j]);
               let quantity = this.statisticsData.cardStatistic.filter((el) => el.emitent.full_name === allUniquelabels[i]).filter((el) => el.card_status.code === allUniqueStatus[j]).map((el) => el.total);
               quantity = Object.values(quantity).reduce((el, acc) => el + acc, 0);
-              // anotherObject[status] = quantity;
-              // console.log(status, quantity);
               value.push(quantity);
-              // anotherObject.cards.value = value;
-              // anotherObject.cards.status = status;
             }
-            // anotherObject.statusCard = anotherObject.status;
+
             anotherObject.name = allUniquelabels[i];
             anotherObject.value = totalSumm[i];
             anotherObject.cardStatus.status = status;
             anotherObject.cardStatus.value = value;
-            const e = [];
+            const empty = [];
             // eslint-disable-next-line no-plusplus
             for (let w = 0; w < anotherObject.cardStatus.status.length; w++) {
-              const r = {};
-              r.name = anotherObject.cardStatus.status[w];
-              r.value = anotherObject.cardStatus.value[w];
-              console.log(r);
-              e.push(r);
+              const someArr = {};
+              someArr.name = anotherObject.cardStatus.status[w];
+              someArr.value = anotherObject.cardStatus.value[w];
+              someArr.id = this.getRandom();
+              empty.push(someArr);
             }
-            anotherObject.cardStatus.push(e);
-            // console.log(e);
+            anotherObject.cardStatus.push(empty);
             this.cardStatisticsData.push(anotherObject);
-            console.log(this.cardStatisticsData);
           }
         }
       });
@@ -823,7 +830,7 @@ export default {
           }
         });
     },
-    Change() {
+    сhange() {
       // this.$store.dispatch('getContractNumber', this.selected.number);
       // this.$store.dispatch('getContractId', this.selected.id);
       // console.log(this.$store.getters.CONTRACT_ID);

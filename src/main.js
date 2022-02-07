@@ -24,11 +24,11 @@ import '@/libs/tour';
 
 const options = {
   'name': '_blank',
-  // 'specs': [
-  //   'fullscreen=no',
-  //   'titlebar=yes',
-  //   'scrollbars=no',
-  // ],
+  'specs': [
+    'fullscreen=no',
+    'titlebar=yes',
+    'scrollbars=no',
+  ],
   'styles': [
     'https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css',
     '../src/assets/scss/components/checks.scss',

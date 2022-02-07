@@ -25,6 +25,7 @@
             Настройка карты № {{ number }}
           </h3>
           <app-echart-doughnut
+            v-if="totalRows>0"
             class="mt-2 w-100"
             :series="series" />
         </b-card-header>
@@ -1069,7 +1070,7 @@ export default {
         loadDone.value = true;
         useJwt
           .getTransactions(
-            `contract_id=${contractId.value}&startDate=${start.value}&endDate=${end.value}&card_number=${product.value}`,
+            `contract_id=${contractId.value}&startDate=${start.value}&endDate=${end.value}&card_number=${number.value}`,
           )
           .then((response) => {
             if (response.data.status) {
@@ -1324,18 +1325,7 @@ export default {
         return true;
       } return false;
     },
-    // getMessage(param) {
-    //   if (param) {
-    //     this.$toast({
-    //       component: ToastificationContent,
-    //       props: {
-    //         title: 'В обработке',
-    //         icon: 'EditIcon',
-    //         variant: 'success',
-    //       },
-    //     });
-    //   }
-    // },
+
     fuseSearch(options, search) {
       const fuse = new Fuse(options, {
         keys: ['full_name'],

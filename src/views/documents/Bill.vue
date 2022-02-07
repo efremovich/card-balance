@@ -186,8 +186,8 @@
                 </td>
                 <td>
                   <div style="font-weight:bold;padding-left:2px;">
-                    ИНН {{ getInfo.contract.company.inn }}, КПП {{ getInfo.contract.company.kpp }}, {{ getInfo.contract.company.full_name }}, <br>
-                    <span style="font-weight: normal;">{{ getInfo.contract.company.legal_address }}</span>
+                    ИНН {{ organisationId.data.organisation.inn }}, КПП {{ organisationId.data.organisation.kpp }}, {{ organisationId.data.organisation.full_name }}, <br>
+                    <span style="font-weight: normal;">{{ organisationId.data.organisation.legal_address }}</span>
                   </div>
                 </td>
               </tr>
@@ -199,7 +199,7 @@
                 </td>
                 <td>
                   <div style="font-weight:bold;  padding-left:2px;">
-                    Договор №{{ getInfo.contract.number }} от {{ getInfo.contract.date | formatDateNoTime }}
+                    Договор №{{ organisationId.data.number }} от {{ organisationId.data.date | formatDateNoTime }}
                   </div>
                 </td>
               </tr>
@@ -426,7 +426,7 @@ export default {
   watch: {
     gotSelectedContract(val) {
       this.getOrgID(val);
-      this.getChangeContract(val);
+      // this.getChangeContract(val);
     },
   },
   created() {
@@ -452,6 +452,8 @@ export default {
         .then((response) => {
           if (response.status) {
             this.organisationId = response.data;
+            this.dateContract = this.organisationId.data.date.split('').splice(0, 10).join('');
+            this.fullContract = `${this.organisationId.data.number} от ${this.dateContract}`;
             const filter = this.organisationId.data.organisation_id;
             useJwt.getProvider(filter)
               .then((status) => {
@@ -464,16 +466,17 @@ export default {
           }
         });
     },
-    getChangeContract(val) {
-      useJwt.changeContract(val)
-        .then((response) => {
-          if (response.status) {
-            this.getInfo = response.data;
-            this.dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
-            this.fullContract = `${this.getInfo.contract.number} от ${this.dateContract}`;
-          }
-        });
-    },
+    // getChangeContract(val) {
+    //   useJwt.changeContract(val)
+    //     .then((response) => {
+    //       if (response.status) {
+    //         this.getInfo = response.data;
+    //         // console.log(this.getInfo);
+    //         this.dateContract = this.getInfo.contract.date.split('').splice(0, 10).join('');
+    //         this.fullContract = `${this.getInfo.contract.number} от ${this.dateContract}`;
+    //       }
+    //     });
+    // },
     getVisible() {
       if (this.summ.split('').length > 0) {
         this.visible = true;

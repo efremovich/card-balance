@@ -671,7 +671,9 @@ export default {
           this.totalRows = this.products.data.total;
 
           if (val !== '') {
-            this.products.data.result = response.data.data.result.filter((product) => product.number.includes(val));
+            this.products = response.data;
+            this.products.data.result = this.products.data.result.filter((product) => product.number.includes(val));
+            console.log(this.products.data.result);
           }
         }
       });

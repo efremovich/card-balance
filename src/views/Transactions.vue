@@ -499,9 +499,6 @@ export default {
       }
     },
   },
-  // created() {
-  //   console.log('created', this.gotSelectedContract);
-  // },
   beforeMount() {
     this.loadDone = true;
     const userData = JSON.parse(localStorage.getItem('userData'));
