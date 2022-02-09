@@ -662,7 +662,7 @@ export default {
       });
     },
     filters(val) {
-      useJwt.getChangeCardsDate(this.gotSelected, `offset=0&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.gotSelected, 'offset=0&limit=-1').then((response) => {
         if (response.data.status) {
           this.products = response.data;
           this.showLoading = false;

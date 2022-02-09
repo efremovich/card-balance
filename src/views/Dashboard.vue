@@ -162,15 +162,15 @@
                           v-for="(i) in el.cardStatus"
                           :key="i"
                           class="d-flex flex-column">
-                          <template v-for="(w) in i">
+                          <template v-for="(status) in i">
                             <div
-                              :key="w.id"
+                              :key="status.id"
                               class="d-flex justify-content-between">
                               <h5>
-                                {{ mapStatus[w.name] }}
+                                {{ mapStatus[status.name] }}
                               </h5>
                               <h5>
-                                {{ w.value }}
+                                {{ status.value }}
                               </h5>
                             </div>
                           </template>

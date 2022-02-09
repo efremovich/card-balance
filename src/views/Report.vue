@@ -37,33 +37,49 @@
           </svg>
           Скачать
         </export-excel> -->
-      </div>
-      <div class="pie-text">
-        <div>
-          Всего израсходованно за период: <span class="font-weight-bold">{{ transactions }} </span> рублей.
-        </div>
-        <div
-          v-if="resultLength"
-          class="mt-1">
-          Всего потреблено топлива за период: <span class="font-weight-bold">{{ consumptions }}</span>  литров,
-          из них:
 
-          <ul>
-            <li
-              v-for="(item,index) in consumptionData"
-              :key="index">
-              {{ item[0] }} : {{ item[1].toFixed(2) }} л.;
-            </li>
-          </ul>
-        </div>
+        <!-- ПОВЕСИТЬ ПРЕЛОАДЕР -->
       </div>
+      <b-overlay
+        :show="download"
+        spinner-type="grow"
+        spinner-variant="primary"
+        spinner-medium
+        variant="transparent"
+        blur="5px"
+        opacity=".75"
+        rounded="md">
+        <div class="d-flex flex-wrap justify-content-between">
+          <div
+            class="pie-text">
+            <div v-if="!download">
+              <h5>Всего израсходованно за период: <code>{{ transactions }} </code> рублей.</h5>
+            </div>
+            <div
+              v-if="resultLength"
+              class="mt-1">
+              <h5>
+                Всего потреблено топлива за период: <code>{{ consumptions }}</code>  литров,
+                из них:
+              </h5>
 
+              <ul>
+                <li
+                  v-for="(item) in consumptionData"
+                  :key="item.name">
+                  <h5> {{ item.name }}: <code>{{ item.consumption.toFixed(2) }} л.</code>  на сумму <code>{{ item.value.toFixed(2) }} руб.;</code> </h5>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <app-echart-doughnut
+            v-if="resultLength"
+            :series="series" />
+        </div>
+      </b-overlay>
       <!-- echart -->
       <div v-if="resultLength">
-        <app-echart-doughnut
-          class="mt-2 w-100"
-          :series="series" />
-
         <label
           class="mt-2"
           for="labelServices">Выберите вид отчёта:</label>
@@ -113,16 +129,6 @@
               </b-col>
             </template>
           </b-table>
-          <!-- <div>
-            Всего:
-            <template v-for="(item,index) in consumptionData">
-              <div
-                :key="index">
-                {{
-                  item[0] }}: {{ item[1].toFixed(2) }}
-              </div>
-            </template>
-          </div> -->
           <b-pagination
             v-model="currentPage"
             :total-rows="totalRows"
@@ -154,7 +160,7 @@
 
 <script>
 import {
-  BCard, BFormGroup, BTable, BPagination, BCol,
+  BCard, BFormGroup, BTable, BPagination, BCol, BOverlay,
 } from 'bootstrap-vue';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import AppEchartDoughnut from '@core/components/charts/echart/AppEchartDoughnut.vue';
@@ -175,6 +181,7 @@ export default {
     BTable,
     BPagination,
     BCol,
+    BOverlay,
 
   },
   data() {
@@ -189,6 +196,7 @@ export default {
       filter: null,
       start: null,
       end: null,
+      download: false,
       totalRows: null,
       transactions: {},
       rangeDate: null,
@@ -200,7 +208,7 @@ export default {
       currentPage: 1,
       filterOn: [],
       emptyArr: {},
-      consumptionData: {},
+      consumptionData: [],
       config: {
         mode: 'range',
         maxDate: 'today',
@@ -271,7 +279,7 @@ export default {
       },
       series: [
         {
-          name: 'Потребление топлива',
+          // name: 'Потребление топлива',
           type: 'pie',
           radius: ['60%', '80%'],
           avoidLabelOverlap: false,
@@ -289,6 +297,7 @@ export default {
           ],
         },
       ],
+
     };
   },
 
@@ -337,6 +346,8 @@ export default {
       return firstDay;
     },
     getTransactions(val) {
+      this.consumptionData = [];
+      this.download = true;
       useJwt.getTransactions(`contract_id=${val}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
         if (response.data.status) {
           this.emptyArr = response.data;
@@ -364,6 +375,7 @@ export default {
                 }
               });
             }
+            this.download = false;
             // Конец отчёта
             const arr = allLabels[0];
             const uniqueLabel = new Set(arr); // size != length
@@ -381,14 +393,9 @@ export default {
                   consumption += el.quantity;
                   const name = arrLabel[i];
                   const value = zero;
-                  const valueConpumption = consumption;
                   data[name] = value;
-                  dataConumption[name] = valueConpumption;
+                  dataConumption[name] = consumption; // объект вида {Вид топлива-Сумма}
                 }
-                // return data;
-                this.consumptionData = Array.from(Object.entries(dataConumption));
-
-                // this.consumptionData.value = Object.values(dataConumption);
               });
             }
 
@@ -397,12 +404,19 @@ export default {
             for (let i = 0; i < Object.keys(data).length; i++) {
               const label = Object.keys(data);
               const value = Object.values(data);
+              const consumptionL = Object.values(dataConumption);
               const randomObject = {};
+              const anotherRandomObject = {};
+              anotherRandomObject.value = value[i];
+              anotherRandomObject.name = label[i];
+              anotherRandomObject.consumption = consumptionL[i];
               randomObject.value = value[i];
               randomObject.name = label[i];
               this.series[0].data.push(randomObject);
+              this.consumptionData.push(anotherRandomObject);
             }
           } else {
+            this.download = false;
             this.transactions = '0';
             this.resultLength = false;
             this.getToast();

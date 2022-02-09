@@ -24,10 +24,6 @@
           <h3>
             Настройка карты № {{ number }}
           </h3>
-          <app-echart-doughnut
-            v-if="totalRows>0"
-            class="mt-2 w-100"
-            :series="series" />
         </b-card-header>
         <div class="d-flex flex-wrap justify-content-between">
           <div class="image">
@@ -65,13 +61,28 @@
                 :value="cardData.data.holder" />
             </div>
           </div>
+          <app-echart-doughnut
+            v-if="totalRows>0"
+            class="bottom-1"
+            :series="series" />
           <div
-            class="d-flex flex-column align-items-start justify-content-start heigth ml-1 mt-2">
+            class="d-flex flex-column align-items-start justify-content-start heigth ml-1">
             <b-button
+              v-if="cardData.data.card_status_id==='ACTIVE'"
               variant="danger"
               class="btn mb-2"
-              @click="handleCartActionClick(product)">
+              @click="getLockCard()">
               Заблокировать карту
+              <feather-icon
+                icon="LockIcon"
+                class="mr-50" />
+            </b-button>
+            <b-button
+              v-if="cardData.data.card_status_id !=='ACTIVE'"
+              variant="success"
+              class="btn mb-2"
+              @click="getUnlockCard(product)">
+              Разблокировать карту
               <feather-icon
                 icon="LockIcon"
                 class="mr-50" />
@@ -95,6 +106,19 @@
               </h6>
             </div>
           </div>
+        </div>
+        <div
+          v-if="totalRows>0 "
+          class="ml-2 mb-2">
+          <h5>Всего за период с {{ firstDayOfMonth }} по {{ lastDay }} по карте  №<code>{{ number }}</code> потреблено топлива <code>{{ allConsumptionSumm.toFixed(2) }}</code> л. на сумму <code>{{ summAllTransactions.toFixed(2) }}</code> руб., из них:</h5>
+          <template
+            v-for="(item,index) in dataCharts">
+            <li
+              :key="index"
+              class="ml-2">
+              <h5> {{ item.name }} : {{ item.value }} руб. / {{ item.consumption.toFixed(2) }} л. ; </h5>
+            </li>
+          </template>
         </div>
         <b-tabs
           content-class="pt-1 position-relative"
@@ -373,7 +397,7 @@
                 </div>
               </b-card>
               <h6 class="text-center mb-1 mt-1">
-                Транзакции по карте №{{ route.value.params.card_number }} за период c
+                Транзакции по карте №{{ number }} за период c
                 <code>{{ firstDayOfMonth }}</code>по <code>{{ lastDay }}</code>:
               </h6>
               <b-table
@@ -384,10 +408,12 @@
                 :per-page="perPage"
                 :current-page="currentPage"
                 :items="transactions.data.result"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
                 :fields="fields"
                 :filter="filter">
-                <template #cell(cardData)="row">
-                  {{ row.item.cardData | formatDate }}
+                <template #cell(date)="row">
+                  {{ row.item.date | formatDate }}
                 </template>
               </b-table>
 
@@ -599,14 +625,25 @@
           </div>
 
           <div
-            class="d-flex flex-column align-items-start justify-content-start heigth ml-1 mt-2">
+            class="d-flex flex-column align-items-start justify-content-start heigth ml-1">
             <b-button
+              v-if="cardData.data.card_status_id==='ACTIVE'"
               variant="danger"
               class="btn mb-2"
-              @click="handleCartActionClick(product)">
+              @click="getLockCard()">
               Заблокировать карту
               <feather-icon
                 icon="LockIcon"
+                class="mr-50" />
+            </b-button>
+            <b-button
+              v-if="cardData.data.card_status_id !=='ACTIVE'"
+              variant="success"
+              class="btn mb-2"
+              @click="getUnlockCard()">
+              Разблокировать карту
+              <feather-icon
+                icon="unlock"
                 class="mr-50" />
             </b-button>
             <div class="mb-2">
@@ -713,7 +750,7 @@
                 </div>
               </b-card>
               <h6 class="text-center mb-1 mt-1">
-                Транзакции по карте №{{ route.value.params.card_number }} за период c
+                Транзакции по карте №{{ number }} за период c
                 <code>{{ firstDayOfMonth }}</code>по <code>{{ lastDay }}</code>:
               </h6>
               <b-table
@@ -723,11 +760,13 @@
                 class="position-relative"
                 :per-page="perPage"
                 :current-page="currentPage"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
                 :items="transactions.data.result"
                 :fields="fields"
                 :filter="filter">
-                <template #cell(cardData)="row">
-                  {{ row.item.cardData | formatDate }}
+                <template #cell(date)="row">
+                  {{ row.item.date | formatDate }}
                 </template>
               </b-table>
 
@@ -856,7 +895,7 @@ import vSelect from 'vue-select';
 import store from '@/store';
 import { required } from '@validations';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
-import { ref } from '@vue/composition-api';
+import { ref, computed } from '@vue/composition-api';
 import Fuse from 'fuse.js';
 import AppEchartDoughnut from '@core/components/charts/echart/AppEchartDoughnut.vue';
 import { useRouter } from '../@core/utils/utils';
@@ -897,7 +936,10 @@ export default {
   },
   setup() {
     const cardData = ref({});
-    const unfulfilledRequest = ref(null); // неисполненная заявка
+    const dataCharts = ref([]);
+    const summAllTransactions = ref(null);
+    const allConsumptionSumm = ref(null);
+    // const unfulfilledRequest = ref(null); // неисполненная заявка
     const product = ref(null);
     const value = ref(null);
     const totalRows = ref(null);
@@ -921,7 +963,6 @@ export default {
     const start = ref(null);
     const end = ref(null);
     const selectUnits = ref(null);
-    const contractId = ref(null);
     const source = ref({});
     const limitsLength = ref(null);
     const cardEmitentCode = ref('0');
@@ -936,8 +977,13 @@ export default {
         sortable: true,
       },
       {
-        key: 'cardData',
+        key: 'date',
         label: 'Дата',
+        sortable: true,
+      },
+      {
+        key: 'quantity',
+        label: 'Количество',
         sortable: true,
       },
       {
@@ -946,6 +992,7 @@ export default {
         sortable: true,
       },
     ];
+    const consumptionData = ref([]);
 
     const series = [
       {
@@ -960,10 +1007,6 @@ export default {
           show: true,
         },
         data: [
-          // { value: 335, name: 'Point One' },
-          // { value: 310, name: 'Point Two' },
-          // { value: 234, name: 'Point Three' },
-          // { value: 435, name: 'Point Four' },
         ],
       },
     ];
@@ -1056,96 +1099,75 @@ export default {
       });
     };
     const transactionsSumm = ref(null);
-    const consumptionData = ref([]);
-
-    const getAllTransactions = () => { // ДОРАБОТАТЬ
+    // const consumptionData = ref([]);
+    const gotSelectedContract = computed(() => store.state.contractId);
+    const contractID = ref(null);
+    const contract = ref(null);
+    const getAllTransactions = () => {
       firstDayOfMonth.value = getFirstDay();
       lastDay.value = isToday();
       const userData = JSON.parse(localStorage.getItem('userData'));
-      if (userData) {
-        const contract = userData;
-        contractId.value = contract.contract.id;
-        start.value = `${getFirstDay()} 00:00:00`;
-        end.value = `${isToday()} 23:59:59`;
-        loadDone.value = true;
-        useJwt
-          .getTransactions(
-            `contract_id=${contractId.value}&startDate=${start.value}&endDate=${end.value}&card_number=${number.value}`,
-          )
-          .then((response) => {
-            if (response.data.status) {
-              transactions.value = response.data;
-              totalRows.value = transactions.value.data.total;
-              if (transactions.value.data.total > 0) {
-                transactionsSumm.value = (transactions.value.data.result.reduce((ac, el) => ac + el.summ, 0).toFixed(2));
-                this.consumptions = (transactions.value.data.result.reduce((ac, el) => ac + el.quantity, 0).toFixed(2));
-                const allLabels = [];
-                allLabels.push(transactions.value.data.result.map((el) => el.service).map((el) => el.full_name));
-                // Для отчета
-                const example = [];
-                const allCards = [];
-                allCards.push(this.emptyArr.data.result.map((el) => el.card_number));
-                const arrCards = allCards[0];
-                const uniqueCards = new Set(arrCards);
-                const arrUniqueCards = Array.from(uniqueCards);
-                // eslint-disable-next-line no-plusplus
-                for (let i = 0; i < arrUniqueCards.length; i++) {
-                  // let zero = 0;
-                  this.emptyArr.data.result.forEach((el) => {
-                    if (el.card_number === arrUniqueCards[i]) {
-                      // zero += el.summ;
-                      example.push(el);
-                    }
-                  });
-                }
-                // Конец отчёта
-                const arr = allLabels[0];
-                const uniqueLabel = new Set(arr); // size != length
-                const arrLabel = Array.from(uniqueLabel);
-                const data = {};
-                const dataConumption = {};
-                // eslint-disable-next-line no-plusplus
-                for (let i = 0; i < arrLabel.length; i++) {
-                  let zero = 0;
-                  let consumption = 0;
+      if (userData && gotSelectedContract.value === null) {
+        contract.value = userData;
+        contractID.value = contract.value.contract.id;
+      } else contractID.value = gotSelectedContract.value;
+      start.value = `${getFirstDay()} 00:00:00`;
+      end.value = `${isToday()} 23:59:59`;
+      loadDone.value = true;
+      useJwt
+        .getTransactions(
+          `contract_id=${contractID.value}&startDate=${start.value}&endDate=${end.value}&card_number=${number.value}`,
+        )
+        .then((response) => {
+          if (response.data.status) {
+            transactions.value = response.data;
+            totalRows.value = transactions.value.data.total;
 
-                  this.emptyArr.data.result.forEach((el) => { // необходимо создавать объект на каждое используемое значение вида топлива
-                    if (el.service.full_name === arrLabel[i]) {
-                      zero += (el.summ);
-                      consumption += el.quantity;
-                      const name = arrLabel[i];
-                      const valueService = zero;
-                      const valueConpumption = consumption;
-                      data[name] = valueService;
-                      dataConumption[name] = valueConpumption;
-                    }
-                    // return data;
-                    consumptionData.value = Array.from(Object.entries(dataConumption));
+            const allLabels = [];
+            allLabels.push(transactions.value.data.result.map((el) => el.service).map((el) => el.full_name));
+            allConsumptionSumm.value = transactions.value.data.result.map((el) => el.quantity).reduce((el, acc) => el + acc, 0);
+            summAllTransactions.value = transactions.value.data.result.map((el) => el.summ).reduce((el, acc) => el + acc, 0);
+            const arr = allLabels[0];
+            const uniqueLabel = new Set(arr); // size != length
+            const arrLabel = Array.from(uniqueLabel);
+            const data = {};
+            const statData = {};
+            dataCharts.value = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < arrLabel.length; i++) {
+              let summ = 0;
+              let consumption = 0;
 
-                    // this.consumptionData.value = Object.values(dataConumption);
-                  });
+              series[0].data = [];
+              transactions.value.data.result.forEach((el) => { // необходимо создавать объект на каждое используемое значение вида топлива
+                if (el.service.full_name === arrLabel[i]) {
+                  summ += (el.summ);
+                  consumption += el.quantity;
+                  const name = arrLabel[i];
+                  const valueFuel = summ;
+                  statData[name] = consumption;
+                  data[name] = valueFuel;
                 }
-
-                series.value.[0].data = [];
-                // eslint-disable-next-line no-plusplus
-                for (let i = 0; i < Object.keys(data).length; i++) {
-                  const label = Object.keys(data);
-                  const values = Object.values(data);
-                  const randomObject = {};
-                  randomObject.value = values[i];
-                  randomObject.name = label[i];
-                  this.series[0].data.push(randomObject);
-                }
-              } else {
-                this.transactions = '0';
-                this.resultLength = false;
-                this.getToast();
-              }
+              });
             }
-            loadDone.value = false;
-          });
-      }
+
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < Object.keys(data).length; i++) {
+              const label = Object.keys(data);
+              const values = Object.values(data);
+              const consumptionL = Object.values(statData);
+              const randomObject = {};
+              randomObject.value = values[i];
+              randomObject.name = label[i];
+              randomObject.consumption = consumptionL[i];
+              series[0].data.push(randomObject);
+              dataCharts.value.push(randomObject);
+            }
+          }
+          loadDone.value = false;
+        });
     };
+
     const getAllPeriods = () => {
       useJwt.getAllPeriods().then((response) => {
         if (response.data.status) {
@@ -1186,9 +1208,15 @@ export default {
 
     return {
       consumptionData,
+      allConsumptionSumm,
+      summAllTransactions,
+      dataCharts,
+      contractID,
+      lastDay,
       series,
       selectUnits,
       transactionsSumm,
+      firstDayOfMonth,
       fieldsRequests,
       selected,
       product,
@@ -1198,7 +1226,7 @@ export default {
       unicodeLabel,
       showLoading,
       requests,
-      unfulfilledRequest,
+      // unfulfilledRequest,
       totalRequestRows,
       source,
       download,
@@ -1216,8 +1244,6 @@ export default {
       currentPage,
       filter,
       getFirstDay,
-      lastDay,
-      firstDayOfMonth,
       option,
       quantity,
       units,
@@ -1230,6 +1256,9 @@ export default {
   data() {
     return {
       newLimit: {},
+      sortBy: 'date',
+      sortDesc: false,
+      sortDirection: 'asc',
       required,
       userData: null,
       saveChange: false,
@@ -1455,12 +1484,93 @@ export default {
         return '';
       }
       let label = '';
-      // if (Object.values(arrService).length < 2) {
-      //   console.log('2');
-      // }
       // eslint-disable-next-line no-return-assign
       Object.values(arrService).forEach((el) => (label += `${this.labelService[el]}, `));
       return label.split('').slice(0, -2).join('');
+    },
+    // Смена статуса карты
+    getLockCard() {
+      this.$bvModal
+        .msgBoxConfirm(`Вы уверены что хотите заблокировать карту № ${this.cardData.data.number}?`, {
+          cancelVariant: 'outline-secondary',
+          okVariant: 'primary',
+          okTitle: 'Да',
+          cancelTitle: 'Нет',
+          centered: true,
+        })
+        .then((value) => {
+          if (value === true && this.cardData.data.card_status_id === 'ACTIVE') {
+            const status = [{
+              'card_number': this.cardData.data.number,
+              'request_type_code': 'LOCK',
+              'request_status_code': 'CREATED',
+              'contract_id': this.contractID,
+            }];
+            useJwt.refreshDataUserLimits(status).then((response) => {
+              if (response.data.status) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Направлена заявка на блокировку',
+                    icon: 'LockIcon',
+                    variant: 'success',
+                  },
+                });
+              } else {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: '🙄 Ошибка. Попробуйте позже, а мы пока починим 👨‍🔧',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'warning',
+                  },
+                });
+              }
+            });
+          }
+        });
+    },
+    getUnlockCard() {
+      console.log(this.contractID);
+      this.$bvModal
+        .msgBoxConfirm(`Вы уверены что хотите разблокировать карту № ${this.cardData.data.number}?`, {
+          cancelVariant: 'outline-secondary',
+          okVariant: 'success',
+          okTitle: 'Да',
+          cancelTitle: 'Нет',
+          centered: true,
+        })
+        .then((value) => {
+          if (value === true && this.cardData.data.card_status_id === 'BLOCK') {
+            const status = [{
+              'card_number': this.cardData.data.number,
+              'request_type_code': 'UNLOCK',
+              'request_status_code': 'CREATED',
+              'contract_id': this.contractID,
+            }];
+            useJwt.refreshDataUserLimits(status).then((response) => {
+              if (response.data.status) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Направлена заявка на разблокировку',
+                    icon: 'LockIcon',
+                    variant: 'success',
+                  },
+                });
+              } else {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: '🙄 Ошибка. Попробуйте позже, а мы пока починим 👨‍🔧',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'warning',
+                  },
+                });
+              }
+            });
+          }
+        });
     },
   },
 };
