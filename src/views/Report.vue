@@ -152,7 +152,81 @@
         </div>
       </div>
       <div v-if="selectable==='оперативный'">
-        <p>Оперативный</p>
+        <b-table
+          hover
+          responsive
+          class="position-relative table-hover text-center mt-1"
+          :per-page="perPage"
+          :current-page="currentPage"
+          :items="dataReport"
+          :fields="fieldsOper"
+          :sort-by.sync="sortBy"
+          :sort-desc.sync="sortDesc"
+          :sort-direction="sortDirection"
+          :filter="filter"
+          :filter-included-fields="filterOn">
+          <template #cell(Details)="row">
+            <b-button
+              class="ml-1"
+              pill
+              size="sm"
+              @click="row.toggleDetails">
+              Детали
+            </b-button>
+          </template>
+          <template #cell(quantity)="row">
+            <b-col @click="row.toggleDetails">
+              {{ row.item.quantity.toFixed(2) }}
+            </b-col>
+          </template>
+          <template #cell(AllSumm)="row">
+            <b-col @click="row.toggleDetails">
+              {{ row.item.AllSumm.toFixed(2) }}
+            </b-col>
+          </template>
+          <template #row-details="row">
+            <b-table
+              :items="row.item.details[0]"
+              :fields="fieldsDetails">
+              <template #cell(date)="cell">
+                <b-col @click="row.toggleDetails">
+                  {{ cell.item.date | formatDate }}
+                </b-col>
+              </template>
+            </b-table>
+          </template>
+          <!-- <template
+            #row-details="row"
+            @click="row.toggleDetails">
+            <template v-for="(item,index) in dataReport.details">
+              <b-table
+                :key="index"
+                :items="row.item[index]"
+                :fields="fieldsDetails" />
+            </template>
+          </template> -->
+        </b-table>
+
+        <b-pagination
+          v-model="currentPage"
+          :total-rows="arrUniqueCards"
+          :per-page="perPage"
+          first-number
+          last-number
+          prev-class="prev-item"
+          next-class="next-item"
+          class="mb-0 mt-1">
+          <template #prev-text>
+            <feather-icon
+              icon="ChevronLeftIcon"
+              size="18" />
+          </template>
+          <template #next-text>
+            <feather-icon
+              icon="ChevronRightIcon"
+              size="18" />
+          </template>
+        </b-pagination>
       </div>
     </b-card>
   </div>
@@ -160,7 +234,7 @@
 
 <script>
 import {
-  BCard, BFormGroup, BTable, BPagination, BCol, BOverlay,
+  BCard, BFormGroup, BTable, BPagination, BCol, BOverlay, BButton,
 } from 'bootstrap-vue';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import AppEchartDoughnut from '@core/components/charts/echart/AppEchartDoughnut.vue';
@@ -182,6 +256,7 @@ export default {
     BPagination,
     BCol,
     BOverlay,
+    BButton,
 
   },
   data() {
@@ -195,6 +270,7 @@ export default {
       contract: null,
       filter: null,
       start: null,
+      arrUniqueCards: null,
       end: null,
       download: false,
       totalRows: null,
@@ -202,9 +278,12 @@ export default {
       rangeDate: null,
       resultLength: true,
       consumptions: null,
+      operReport: {},
       perPage: 5,
+      dataDetails: [],
       pageOptions: [3, 5, 10],
       dataReport: [],
+      dataTable: [],
       currentPage: 1,
       filterOn: [],
       emptyArr: {},
@@ -216,6 +295,71 @@ export default {
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
+      fieldsOper: [
+
+        // {
+        //   key: 'date',
+        //   label: 'Дата',
+        //   sortable: true,
+        // },
+        {
+          key: 'number',
+          label: 'Номер карты',
+          sortable: true,
+        },
+        // {
+        //   key: 'service.label',
+        //   label: 'Тип топлива',
+        //   sortable: true,
+        // },
+        {
+          key: 'quantity',
+          label: 'Количество',
+          sortable: true,
+        },
+        {
+          key: 'AllSumm',
+          label: 'Сумма',
+          sortable: true,
+        },
+
+        {
+          key: 'Details',
+          label: '',
+        },
+
+      ],
+      fieldsDetails: [
+        {
+          key: 'date',
+          label: 'Дата',
+          sortable: true,
+        },
+
+        {
+          key: 'service.label',
+          label: 'Тип топлива',
+          sortable: true,
+        },
+        {
+          key: 'quantity',
+          label: 'Количество',
+          sortable: true,
+        },
+
+        {
+          key: 'summ',
+          label: 'Сумма',
+          sortable: true,
+        },
+
+        {
+          key: 'pos.address',
+          label: 'Адрес',
+          sortable: true,
+        },
+
+      ],
       fields: [
 
         {
@@ -279,10 +423,10 @@ export default {
       },
       series: [
         {
-          // name: 'Потребление топлива',
+          name: '',
           type: 'pie',
           radius: ['60%', '80%'],
-          avoidLabelOverlap: false,
+          avoidLabelOverlap: true,
           label: {
             show: true,
           },
@@ -320,6 +464,9 @@ export default {
         this.resultLength = false;
         this.getToast();
       }
+      // if (val === 'оперативный') {
+
+      // }
     },
   },
 
@@ -345,6 +492,10 @@ export default {
       const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
       return firstDay;
     },
+    // getOperReport() {
+
+    // },
+
     getTransactions(val) {
       this.consumptionData = [];
       this.download = true;
@@ -359,22 +510,27 @@ export default {
             const allLabels = [];
             allLabels.push(this.emptyArr.data.result.map((el) => el.service).map((el) => el.full_name));
             // Для отчета
-            const example = [];
+            // const example = [];
             const allCards = [];
             allCards.push(this.emptyArr.data.result.map((el) => el.card_number));
             const arrCards = allCards[0];
             const uniqueCards = new Set(arrCards);
             const arrUniqueCards = Array.from(uniqueCards);
+            this.dataTable = [];
+            this.arrUniqueCards = Array.from(uniqueCards).length;
+            // const objectOper = {};
             // eslint-disable-next-line no-plusplus
             for (let i = 0; i < arrUniqueCards.length; i++) {
-              // let zero = 0;
-              this.emptyArr.data.result.forEach((el) => {
-                if (el.card_number === arrUniqueCards[i]) {
-                  // zero += el.summ;
-                  example.push(el);
-                }
-              });
+              const numberObject = {};
+              numberObject.details = [];
+              numberObject.number = arrUniqueCards[i];
+              this.dataTable.push(this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]));
+              numberObject.AllSumm = this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]).map((el) => el.summ).reduce((el, acc) => el + acc, 0);
+              numberObject.quantity = this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]).map((el) => el.quantity).reduce((el, acc) => el + acc, 0);
+              numberObject.details.push(this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]));
+              this.dataReport.push(numberObject);
             }
+            // console.log(this.dataReport);
             this.download = false;
             // Конец отчёта
             const arr = allLabels[0];

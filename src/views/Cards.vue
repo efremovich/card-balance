@@ -667,13 +667,10 @@ export default {
           this.products = response.data;
           this.showLoading = false;
           this.download = true;
-
           this.totalRows = this.products.data.total;
-
           if (val !== '') {
             this.products = response.data;
             this.products.data.result = this.products.data.result.filter((product) => product.number.includes(val));
-            console.log(this.products.data.result);
           }
         }
       });

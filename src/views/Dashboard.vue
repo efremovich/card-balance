@@ -602,14 +602,10 @@ export default {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData && this.gotSelectedContract === null) {
       this.yetContract = userData;
-      // console.log(this.yetContract);
-      // this.ID = this.yetContract.contract.id;
     } else this.ID = this.gotSelectedContract;
-    // this.getOrgID(this.contractId);
-    // this.getChangeContract(this.contractId);
+
     this.getCardStatistica(this.ID);
 
-    // this.download = false;
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.download = true;
@@ -617,7 +613,6 @@ export default {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
           this.makeOptions();
-          // this.getSelected();
         });
       }
     });
@@ -628,11 +623,10 @@ export default {
         });
       }
     });
-    this.userData = JSON.parse(localStorage.getItem('userData'));
-    if (this.userData) {
-      this.getInfo = this.userData;
-      // return this.getInfo;
-    }
+    // this.userData = JSON.parse(localStorage.getItem('userData'));
+    // if (this.userData) {
+    //   this.getInfo = this.userData;
+    // }
     return { data: { status: false } };
   },
   mounted() {

@@ -86,6 +86,7 @@
         </b-card-body>
 
         <b-table
+          v-if="requests.data.total>0"
           hover
           :items="requests.data.result"
           responsive
