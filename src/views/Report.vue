@@ -58,7 +58,7 @@
             <div
               v-if="resultLength"
               class="mt-1">
-              <h5>
+              <h5 v-if="!download">
                 Всего потреблено топлива за период: <code>{{ consumptions }}</code>  литров,
                 из них:
               </h5>
@@ -79,36 +79,79 @@
         </div>
       </b-overlay>
       <!-- echart -->
-      <div v-if="resultLength">
+      <div
+        v-if="resultLength">
         <label
           class="mt-2"
           for="labelServices">Выберите вид отчёта:</label>
-        <div :class="[{'d-flex align-items-center justify-content-start':selectable==='транзакционный'}]">
-          <v-select
-            id="labelServices"
-            v-model="selectable"
-            :class="['w-50',{'w-100': getWidth === 'xs'}]"
-            :options="arrReport" />
-          <export-excel
-            v-if="selectable==='транзакционный'"
-            class="ml-1 btn btn-primary"
-            :data="emptyArr.data.result"
-            :fields="columns"
-            type="xlsx"
-            name="Отчёт.xlsx">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="currentColor"
-              class="bi bi-file-earmark-excel"
-              viewBox="0 0 16 16">
-              <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-            </svg>
-            Скачать
-          </export-excel>
+        <div class="d-flex w-100 justify-content-between">
+          <div :class="['w-75',{'d-flex w-75 align-items-center justify-content-start':selectable!==null},]">
+            <v-select
+              id="labelServices"
+              v-model="selectable"
+              :class="['w-50',{'w-100': getWidth === 'xs'}]"
+              :options="arrReport" />
+            <export-excel
+              v-if="selectable==='транзакционный'"
+              class="ml-1 btn btn-primary"
+              :data="emptyArr.data.result"
+              :fields="columns"
+              type="xls"
+              name="Отчёт.xls">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="currentColor"
+                class="bi bi-file-earmark-excel"
+                viewBox="0 0 16 16">
+                <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+              </svg>
+              Скачать
+            </export-excel>
+            <export-excel
+              v-if="selectable==='оперативный'"
+              class="ml-1 btn btn-primary"
+              :data="dataReport"
+              :fields="columnsReport"
+              type="xls"
+              name="Отчёт.xls">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="currentColor"
+                class="bi bi-file-earmark-excel"
+                viewBox="0 0 16 16">
+                <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+              </svg>
+              Скачать
+            </export-excel>
+          </div>
+          <b-form-group
+            v-if="selectable!==null"
+            class="mb-0 w-25 ">
+            <b-input-group
+              class="d-flex"
+              size="sm">
+              <b-form-input
+                id="filterInput"
+                v-model="filter"
+                placeholder="Найти"
+                type="search" />
+              <b-input-group-append>
+                <b-button
+                  :disabled="!filter"
+                  @click="filter = ''">
+                  Очистить
+                </b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </b-form-group>
         </div>
+
         <div v-if="selectable==='транзакционный'">
           <b-table
             hover
@@ -167,7 +210,7 @@
           :filter-included-fields="filterOn">
           <template #cell(Details)="row">
             <b-button
-              class="ml-1"
+              variant="gradient-primary"
               pill
               size="sm"
               @click="row.toggleDetails">
@@ -177,6 +220,11 @@
           <template #cell(quantity)="row">
             <b-col @click="row.toggleDetails">
               {{ row.item.quantity.toFixed(2) }}
+            </b-col>
+          </template>
+          <template #cell(holder)="row">
+            <b-col @click="row.toggleDetails">
+              {{ row.item.holder }}
             </b-col>
           </template>
           <template #cell(AllSumm)="row">
@@ -193,18 +241,25 @@
                   {{ cell.item.date | formatDate }}
                 </b-col>
               </template>
+              <b-button
+                class="ml-1"
+                pill
+                size="sm"
+                @click="row.toggleDetails">
+                Детали
+              </b-button>
             </b-table>
+            <export-excel
+              class="mt-1 btn btn-primary"
+              :data="row.item.details[0]"
+              :fields="fieldsPrint"
+              type="xls"
+              :name="`Отчёт по карте № ${row.item.details[0][0].card_number} за период с ${getStartDate} по ${getEndDate}.xls`">
+              <h5 class="text-white">
+                Скачать отчёт по карте № {{ row.item.details[0][0].card_number }}
+              </h5>
+            </export-excel>
           </template>
-          <!-- <template
-            #row-details="row"
-            @click="row.toggleDetails">
-            <template v-for="(item,index) in dataReport.details">
-              <b-table
-                :key="index"
-                :items="row.item[index]"
-                :fields="fieldsDetails" />
-            </template>
-          </template> -->
         </b-table>
 
         <b-pagination
@@ -234,7 +289,7 @@
 
 <script>
 import {
-  BCard, BFormGroup, BTable, BPagination, BCol, BOverlay, BButton,
+  BCard, BFormGroup, BTable, BPagination, BCol, BOverlay, BButton, BFormInput, BInputGroupAppend, BInputGroup,
 } from 'bootstrap-vue';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import AppEchartDoughnut from '@core/components/charts/echart/AppEchartDoughnut.vue';
@@ -248,7 +303,9 @@ import useJwt from '../auth/jwt/useJwt';
 export default {
   components: {
     BCard,
+    BFormInput,
     AppEchartDoughnut,
+    BInputGroupAppend,
     flatPickr,
     BFormGroup,
     vSelect,
@@ -257,6 +314,7 @@ export default {
     BCol,
     BOverlay,
     BButton,
+    BInputGroup,
 
   },
   data() {
@@ -307,11 +365,11 @@ export default {
           label: 'Номер карты',
           sortable: true,
         },
-        // {
-        //   key: 'service.label',
-        //   label: 'Тип топлива',
-        //   sortable: true,
-        // },
+        {
+          key: 'holder',
+          label: 'Держатель',
+          sortable: true,
+        },
         {
           key: 'quantity',
           label: 'Количество',
@@ -395,18 +453,48 @@ export default {
         },
 
       ],
-      columns: {
-        'Товар/услуга': {
-          field: 'service.full_name',
+
+      fieldsPrint: {
+
+        'Номер карты': {
+          field: 'card_number',
+        },
+        'Держатель': {
+          field: 'card_holder',
+        },
+        'Номер договора': {
+          field: 'contract.number',
         },
         'Дата': {
           field: 'date',
+        },
+        'Вид топлива': {
+          field: 'service.full_name',
+        },
+        'Количество': {
+          field: 'quantity',
+        },
+        'Сумма': {
+          field: 'summ',
+        },
+
+      },
+      columns: {
+
+        'Дата': {
+          field: 'date',
+        },
+        'Товар/услуга': {
+          field: 'service.full_name',
+        },
+        'Количество литров': {
+          field: 'quantity',
         },
         'Сумма': {
           field: 'summ',
         },
         'Держатель': {
-          field: 'holder',
+          field: 'card_holder',
         },
         'Номер договора': {
           field: 'contract.number',
@@ -421,6 +509,32 @@ export default {
           field: 'pos.address',
         },
       },
+      columnsReport: {
+        'Номер карты': {
+          field: 'number',
+        },
+        'Количество литров': {
+          field: 'quantity',
+        },
+        'Сумма': {
+          field: 'AllSumm',
+        },
+        'Держатель': {
+          field: 'holder',
+        },
+
+      },
+
+      // 'Дата': {
+      //   field: 'date',
+      // },
+      // 'Тип топлива': {
+      //   field: 'service.full_name',
+      // },
+      // 'Количество литров': {
+      //   field: 'quantity',
+      // },
+
       series: [
         {
           name: '',
@@ -453,6 +567,12 @@ export default {
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
+    getStartDate() {
+      return this.start.slice(0, -8);
+    },
+    getEndDate() {
+      return this.end.slice(0, -8);
+    },
   },
   watch: {
     gotSelectedContract(val) {
@@ -477,9 +597,9 @@ export default {
       this.contractId = this.contract.contract.id;
     } else this.contractId = this.gotSelectedContract;
     this.start = `${this.getFirstDay()} 00:00:00`;
-    this.end = `${this.isToday()} 00:00:00`;
+    this.end = `${this.isToday()} 23:59:59`;
     this.rangeDate = [this.start, this.end];
-    this.rangeDate = [this.start, this.end];
+    // this.rangeDate = [this.start, this.end];
     this.getTransactions(this.contractId);
   },
   methods: {
@@ -492,25 +612,24 @@ export default {
       const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString();
       return firstDay;
     },
-    // getOperReport() {
-
-    // },
 
     getTransactions(val) {
+      // this.rangeDate = [this.start, this.end];
       this.consumptionData = [];
       this.download = true;
+      this.dataReport = [];
+      this.emptyArr = {};
       useJwt.getTransactions(`contract_id=${val}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
         if (response.data.status) {
           this.emptyArr = response.data;
           this.totalRows = this.emptyArr.data.total;
-          if (this.emptyArr.data.total > 0) {
+          if (this.totalRows > 0) {
             this.resultLength = true;
             this.transactions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.summ, 0).toFixed(2));
             this.consumptions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.quantity, 0).toFixed(2));
             const allLabels = [];
             allLabels.push(this.emptyArr.data.result.map((el) => el.service).map((el) => el.full_name));
             // Для отчета
-            // const example = [];
             const allCards = [];
             allCards.push(this.emptyArr.data.result.map((el) => el.card_number));
             const arrCards = allCards[0];
@@ -523,10 +642,12 @@ export default {
             for (let i = 0; i < arrUniqueCards.length; i++) {
               const numberObject = {};
               numberObject.details = [];
-              numberObject.number = arrUniqueCards[i];
+              numberObject.number = Number(arrUniqueCards[i]);
               this.dataTable.push(this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]));
               numberObject.AllSumm = this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]).map((el) => el.summ).reduce((el, acc) => el + acc, 0);
               numberObject.quantity = this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]).map((el) => el.quantity).reduce((el, acc) => el + acc, 0);
+              // eslint-disable-next-line prefer-destructuring
+              numberObject.holder = this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]).map((el) => el.card_holder)[0];
               numberObject.details.push(this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]));
               this.dataReport.push(numberObject);
             }
@@ -588,7 +709,7 @@ export default {
       // eslint-disable-next-line prefer-template
       this.start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
-      this.end = trim[1] + ' 00:00:00';
+      this.end = trim[1] + ' 23:59:59';
     },
     getToast() {
       this.$toast({

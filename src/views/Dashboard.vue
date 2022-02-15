@@ -668,9 +668,6 @@ export default {
         month: 'long',
       });
     },
-    // getSelected() {
-    //   this.selected = this.$store.getters.CONTRACT_NUMBER;
-    // },
     makeOptions() {
       this.userData.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });

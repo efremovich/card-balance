@@ -435,17 +435,21 @@ export default {
         },
       ],
       columns: {
+
+        'Дата': {
+          field: 'date',
+        },
         'Товар/услуга': {
           field: 'service.full_name',
         },
-        'Дата': {
-          field: 'date',
+        'Количество': {
+          field: 'quantity',
         },
         'Сумма': {
           field: 'summ',
         },
         'Держатель': {
-          field: 'holder',
+          field: 'card_holder',
         },
         'Номер договора': {
           field: 'contract.number',
