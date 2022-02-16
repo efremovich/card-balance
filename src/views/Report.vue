@@ -1,23 +1,32 @@
 <template>
-  <div>
-    <b-card
-      title="Отчёты и графики">
-      <div class="w-100">
-        <b-form-group
-          :class="['w-75',{'w-100': getWidth === 'xs'}]">
-          <label
-            for="flatPicker"
-            class="mt-1">
-            Выберете период:
-          </label>
-          <flat-pickr
-            id="flatPicker"
-            v-model="rangeDate"
-            size="sm"
-            :class="['form-control','mb-0',{'w-100': getWidth === 'xs'}]"
-            :config="config"
-            @on-change="selectDate" />
-        </b-form-group>
+  <b-overlay
+    :show="download"
+    spinner-type="grow"
+    spinner-variant="primary"
+    spinner-medium
+    variant="transparent"
+    blur="5px"
+    opacity=".75"
+    rounded="md">
+    <div v-if="!download">
+      <b-card
+        title="Отчёты и графики">
+        <div class="w-100">
+          <b-form-group
+            :class="['w-75',{'w-100': getWidth === 'xs'}]">
+            <label
+              for="flatPicker"
+              class="mt-1">
+              Выберете период:
+            </label>
+            <flat-pickr
+              id="flatPicker"
+              v-model="rangeDate"
+              size="sm"
+              :class="['form-control','mb-0',{'w-100': getWidth === 'xs'}]"
+              :config="config"
+              @on-change="selectDate" />
+          </b-form-group>
 
         <!-- <export-excel
           class="mt-1 btn btn-primary"
@@ -39,142 +48,244 @@
         </export-excel> -->
 
         <!-- ПОВЕСИТЬ ПРЕЛОАДЕР -->
-      </div>
-      <b-overlay
-        :show="download"
-        spinner-type="grow"
-        spinner-variant="primary"
-        spinner-medium
-        variant="transparent"
-        blur="5px"
-        opacity=".75"
-        rounded="md">
-        <div class="d-flex flex-wrap justify-content-between">
-          <div
-            class="pie-text">
-            <div v-if="!download">
-              <h5>Всего израсходованно за период: <code>{{ transactions }} </code> рублей.</h5>
-            </div>
+        </div>
+        <b-overlay
+          :show="download"
+          spinner-type="grow"
+          spinner-variant="primary"
+          spinner-medium
+          variant="transparent"
+          blur="5px"
+          opacity=".75"
+          rounded="md">
+          <div class="d-flex flex-wrap justify-content-between">
             <div
-              v-if="resultLength"
-              class="mt-1">
-              <h5 v-if="!download">
-                Всего потреблено топлива за период: <code>{{ consumptions }}</code>  литров,
-                из них:
-              </h5>
+              class="pie-text">
+              <div v-if="!download">
+                <h5 v-if="!download">
+                  Всего израсходованно за период: <code>{{ transactions }}</code> рублей.
+                </h5>
+              </div>
+              <div
+                v-if="resultLength"
+                class="mt-1">
+                <h5 v-if="!download">
+                  Всего потреблено топлива за период: <code>{{ consumptions }}</code>  литров,
+                  из них:
+                </h5>
 
-              <ul>
-                <li
-                  v-for="(item) in consumptionData"
-                  :key="item.name">
-                  <h5> {{ item.name }}: <code>{{ item.consumption.toFixed(2) }} л.</code>  на сумму <code>{{ item.value.toFixed(2) }} руб.;</code> </h5>
-                </li>
-              </ul>
+                <ul v-if="getWidth !=='xs'">
+                  <li
+                    v-for="(item) in consumptionData"
+                    :key="item.name">
+                    <h5> {{ item.name }}: <code>{{ item.consumption.toFixed(2) }} л.</code>  на сумму <code>{{ item.value.toFixed(2) }} руб.;</code> </h5>
+                  </li>
+                </ul>
+                <div v-if="getWidth ==='xs'">
+                  <div
+                    v-for="(item) in consumptionData"
+                    :key="item.name">
+                    <h6>
+                      {{ item.name }}: <code>{{ item.consumption.toFixed(2) }} л.</code>  на сумму <code>{{ item.value.toFixed(2) }} руб.;</code>
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-if="getWidth !=='xs'">
+              <app-echart-doughnut
+                v-if="resultLength"
+                :series="series" />
             </div>
           </div>
-
-          <app-echart-doughnut
-            v-if="resultLength"
-            :series="series" />
-        </div>
-      </b-overlay>
-      <!-- echart -->
-      <div
-        v-if="resultLength">
-        <label
-          class="mt-2"
-          for="labelServices">Выберите вид отчёта:</label>
-        <div class="d-flex w-100 justify-content-between">
-          <div :class="['w-75',{'d-flex w-75 align-items-center justify-content-start':selectable!==null},]">
-            <v-select
-              id="labelServices"
-              v-model="selectable"
-              :class="['w-50',{'w-100': getWidth === 'xs'}]"
-              :options="arrReport" />
-            <export-excel
-              v-if="selectable==='транзакционный'"
-              class="ml-1 btn btn-primary"
-              :data="emptyArr.data.result"
-              :fields="columns"
-              type="xls"
-              name="Отчёт.xls">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                fill="currentColor"
-                class="bi bi-file-earmark-excel"
-                viewBox="0 0 16 16">
-                <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-              </svg>
-              Скачать
-            </export-excel>
-            <export-excel
-              v-if="selectable==='оперативный'"
-              class="ml-1 btn btn-primary"
-              :data="dataReport"
-              :fields="columnsReport"
-              type="xls"
-              name="Отчёт.xls">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                fill="currentColor"
-                class="bi bi-file-earmark-excel"
-                viewBox="0 0 16 16">
-                <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-              </svg>
-              Скачать
-            </export-excel>
+        </b-overlay>
+        <!-- echart -->
+        <div
+          v-if="resultLength && getWidth !=='xs'">
+          <label
+            class="mt-2"
+            for="labelServices">Выберите вид отчёта:</label>
+          <div class="d-flex w-100 justify-content-between">
+            <div :class="['w-75',{'d-flex w-75 align-items-center justify-content-start':selectable!==null},]">
+              <v-select
+                id="labelServices"
+                v-model="selectable"
+                :class="['w-50',{'w-100': getWidth === 'xs'}]"
+                :options="arrReport" />
+              <export-excel
+                v-if="selectable==='транзакционный'"
+                class="ml-1 btn btn-primary"
+                :data="emptyArr.data.result"
+                :fields="columns"
+                type="xls"
+                :name="`Транзакционный отчёт за период с ${getStartDate} по ${getEndDate}.xls`">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  class="bi bi-file-earmark-excel"
+                  viewBox="0 0 16 16">
+                  <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                  <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                </svg>
+                Скачать
+              </export-excel>
+              <export-excel
+                v-if="selectable==='оперативный'"
+                class="ml-1 btn btn-primary"
+                :data="dataReport"
+                :fields="columnsReport"
+                type="xls"
+                :name="`Отчёт за период с ${getStartDate} по ${getEndDate}.xls`">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  class="bi bi-file-earmark-excel"
+                  viewBox="0 0 16 16">
+                  <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                  <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                </svg>
+                Скачать
+              </export-excel>
+            </div>
+            <b-form-group
+              v-if="selectable!==null"
+              class="mb-0 w-25 ">
+              <b-input-group
+                class="d-flex"
+                size="sm">
+                <b-form-input
+                  id="filterInput"
+                  v-model="filter"
+                  placeholder="Найти"
+                  type="search" />
+                <b-input-group-append>
+                  <b-button
+                    :disabled="!filter"
+                    @click="filter = ''">
+                    Очистить
+                  </b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </b-form-group>
           </div>
-          <b-form-group
-            v-if="selectable!==null"
-            class="mb-0 w-25 ">
-            <b-input-group
-              class="d-flex"
-              size="sm">
-              <b-form-input
-                id="filterInput"
-                v-model="filter"
-                placeholder="Найти"
-                type="search" />
-              <b-input-group-append>
-                <b-button
-                  :disabled="!filter"
-                  @click="filter = ''">
-                  Очистить
-                </b-button>
-              </b-input-group-append>
-            </b-input-group>
-          </b-form-group>
-        </div>
 
-        <div v-if="selectable==='транзакционный'">
+          <div v-if="selectable==='транзакционный'">
+            <b-table
+              hover
+              responsive
+              class="position-relative table-hover text-center mt-1"
+              :per-page="perPage"
+              :current-page="currentPage"
+              :items="emptyArr.data.result"
+              :fields="fields"
+              :sort-by.sync="sortBy"
+              :sort-desc.sync="sortDesc"
+              :sort-direction="sortDirection"
+              :filter="filter"
+              :filter-included-fields="filterOn">
+              <template #cell(date)="row">
+                <b-col>
+                  {{ row.item.date | formatDate }}
+                </b-col>
+              </template>
+            </b-table>
+            <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              first-number
+              last-number
+              prev-class="prev-item"
+              next-class="next-item"
+              class="mb-0 mt-1">
+              <template #prev-text>
+                <feather-icon
+                  icon="ChevronLeftIcon"
+                  size="18" />
+              </template>
+              <template #next-text>
+                <feather-icon
+                  icon="ChevronRightIcon"
+                  size="18" />
+              </template>
+            </b-pagination>
+          </div>
+        </div>
+        <div v-if="selectable==='оперативный'">
           <b-table
             hover
             responsive
             class="position-relative table-hover text-center mt-1"
             :per-page="perPage"
             :current-page="currentPage"
-            :items="emptyArr.data.result"
-            :fields="fields"
+            :items="dataReport"
+            :fields="fieldsOper"
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             :sort-direction="sortDirection"
             :filter="filter"
             :filter-included-fields="filterOn">
-            <template #cell(date)="row">
-              <b-col>
-                {{ row.item.date | formatDate }}
+            <template #cell(Details)="row">
+              <b-button
+                variant="gradient-primary"
+                pill
+                size="sm"
+                @click="row.toggleDetails">
+                Детали
+              </b-button>
+            </template>
+            <template #cell(quantity)="row">
+              <b-col @click="row.toggleDetails">
+                {{ row.item.quantity.toFixed(2) }}
               </b-col>
             </template>
+            <template #cell(holder)="row">
+              <b-col @click="row.toggleDetails">
+                {{ row.item.holder }}
+              </b-col>
+            </template>
+            <template #cell(AllSumm)="row">
+              <b-col @click="row.toggleDetails">
+                {{ row.item.AllSumm.toFixed(2) }}
+              </b-col>
+            </template>
+            <template #row-details="row">
+              <b-table
+                :items="row.item.details[0]"
+                :fields="fieldsDetails">
+                <template #cell(date)="cell">
+                  <b-col @click="row.toggleDetails">
+                    {{ cell.item.date | formatDate }}
+                  </b-col>
+                </template>
+                <b-button
+                  class="ml-1"
+                  pill
+                  size="sm"
+                  @click="row.toggleDetails">
+                  Детали
+                </b-button>
+              </b-table>
+              <export-excel
+                class="mt-1 btn btn-primary"
+                :data="row.item.details[0]"
+                :fields="fieldsPrint"
+                type="xls"
+                :name="`Отчёт по карте № ${row.item.details[0][0].card_number} за период с ${getStartDate} по ${getEndDate}.xls`">
+                <h5 class="text-white">
+                  Скачать отчёт по карте № {{ row.item.details[0][0].card_number }}
+                </h5>
+              </export-excel>
+            </template>
           </b-table>
+
           <b-pagination
             v-model="currentPage"
-            :total-rows="totalRows"
+            :total-rows="arrUniqueCards"
             :per-page="perPage"
             first-number
             last-number
@@ -193,98 +304,20 @@
             </template>
           </b-pagination>
         </div>
+      </b-card>
+    </div>
+    <template #overlay>
+      <div class="text-center">
+        <feather-icon
+          icon="LoaderIcon"
+          size="56"
+          class="cursor-pointer" />
+        <p>
+          Идёт загрузка...
+        </p>
       </div>
-      <div v-if="selectable==='оперативный'">
-        <b-table
-          hover
-          responsive
-          class="position-relative table-hover text-center mt-1"
-          :per-page="perPage"
-          :current-page="currentPage"
-          :items="dataReport"
-          :fields="fieldsOper"
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="sortDesc"
-          :sort-direction="sortDirection"
-          :filter="filter"
-          :filter-included-fields="filterOn">
-          <template #cell(Details)="row">
-            <b-button
-              variant="gradient-primary"
-              pill
-              size="sm"
-              @click="row.toggleDetails">
-              Детали
-            </b-button>
-          </template>
-          <template #cell(quantity)="row">
-            <b-col @click="row.toggleDetails">
-              {{ row.item.quantity.toFixed(2) }}
-            </b-col>
-          </template>
-          <template #cell(holder)="row">
-            <b-col @click="row.toggleDetails">
-              {{ row.item.holder }}
-            </b-col>
-          </template>
-          <template #cell(AllSumm)="row">
-            <b-col @click="row.toggleDetails">
-              {{ row.item.AllSumm.toFixed(2) }}
-            </b-col>
-          </template>
-          <template #row-details="row">
-            <b-table
-              :items="row.item.details[0]"
-              :fields="fieldsDetails">
-              <template #cell(date)="cell">
-                <b-col @click="row.toggleDetails">
-                  {{ cell.item.date | formatDate }}
-                </b-col>
-              </template>
-              <b-button
-                class="ml-1"
-                pill
-                size="sm"
-                @click="row.toggleDetails">
-                Детали
-              </b-button>
-            </b-table>
-            <export-excel
-              class="mt-1 btn btn-primary"
-              :data="row.item.details[0]"
-              :fields="fieldsPrint"
-              type="xls"
-              :name="`Отчёт по карте № ${row.item.details[0][0].card_number} за период с ${getStartDate} по ${getEndDate}.xls`">
-              <h5 class="text-white">
-                Скачать отчёт по карте № {{ row.item.details[0][0].card_number }}
-              </h5>
-            </export-excel>
-          </template>
-        </b-table>
-
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="arrUniqueCards"
-          :per-page="perPage"
-          first-number
-          last-number
-          prev-class="prev-item"
-          next-class="next-item"
-          class="mb-0 mt-1">
-          <template #prev-text>
-            <feather-icon
-              icon="ChevronLeftIcon"
-              size="18" />
-          </template>
-          <template #next-text>
-            <feather-icon
-              icon="ChevronRightIcon"
-              size="18" />
-          </template>
-        </b-pagination>
-      </div>
-    </b-card>
-  </div>
+    </template>
+  </b-overlay>
 </template>
 
 <script>
@@ -599,7 +632,6 @@ export default {
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 23:59:59`;
     this.rangeDate = [this.start, this.end];
-    // this.rangeDate = [this.start, this.end];
     this.getTransactions(this.contractId);
   },
   methods: {
@@ -614,7 +646,7 @@ export default {
     },
 
     getTransactions(val) {
-      // this.rangeDate = [this.start, this.end];
+      this.rangeDate = [this.start, this.end];
       this.consumptionData = [];
       this.download = true;
       this.dataReport = [];
@@ -687,7 +719,7 @@ export default {
               anotherRandomObject.value = value[i];
               anotherRandomObject.name = label[i];
               anotherRandomObject.consumption = consumptionL[i];
-              randomObject.value = value[i];
+              randomObject.value = Number(value[i]).toFixed(2);
               randomObject.name = label[i];
               this.series[0].data.push(randomObject);
               this.consumptionData.push(anotherRandomObject);
@@ -710,6 +742,8 @@ export default {
       this.start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
       this.end = trim[1] + ' 23:59:59';
+      // this.rangeDate = [this.start, this.end];
+      // console.log(this.rangeDate);
     },
     getToast() {
       this.$toast({
@@ -723,9 +757,21 @@ export default {
     },
 
     selectDate() {
-      const date = this.rangeDate;
+      //  const date = this.rangeDate;
       this.getDate();
-      if (date.length > 22) {
+      // console.log(this.rangeDate);
+      // if (date.length > 22) {
+      //   this.getTransactions(this.contractId);
+      // }
+      if (this.rangeDate.length > 22) {
+        const date = this.rangeDate;
+        const newDate = Array.from(date).filter((n) => n !== '—');
+        const arr = newDate.join('').split('00:00:00');
+        const trim = arr.join('').split(' ').filter((n) => n !== '');
+        // eslint-disable-next-line prefer-template
+        this.start = trim[0] + ' 00:00:00';
+        // eslint-disable-next-line prefer-template
+        this.end = trim[1] + ' 23:59:59';
         this.getTransactions(this.contractId);
       }
     },

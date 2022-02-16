@@ -42,7 +42,6 @@
                       <h5 v-if="cardBalance.contract.deposit !== 0">
                         Допустимая задолженность:
                         <span class="text-danger h5">  {{ cardBalance.contract.deposit.toLocaleString('ru-RU', {
-
                           style: 'currency',
                           currency: 'RUB'
                         }) }}</span>
@@ -61,6 +60,12 @@
                       <h4>
                         От: {{ getDate | formatDateNoTime }}
                       </h4>
+                      <div class="d-flex justify-content-between align-items-end">
+                        <h4>Последние изменения по договору:</h4>
+                        <h4 class="text-info">
+                          {{ getUpdate | formatDateNoTime }}
+                        </h4>
+                      </div>
                       <b-link :to="{ name: 'bill' }">
                         <b-button
                           variant="warning"
@@ -104,6 +109,12 @@
                       <h4>
                         От: {{ getDate | formatDateNoTime }}
                       </h4>
+                      <div class="d-flex justify-content-between align-items-end">
+                        <h4>Последние изменения по договору:</h4>
+                        <h4 class="text-info">
+                          {{ getUpdate | formatDateNoTime }}
+                        </h4>
+                      </div>
                       <b-link :to="{ name: 'bill' }">
                         <b-button
                           variant="warning"
@@ -166,12 +177,12 @@
                             <div
                               :key="status.id"
                               class="d-flex justify-content-between">
-                              <h5>
+                              <h4>
                                 {{ mapStatus[status.name] }}
-                              </h5>
-                              <h5>
+                              </h4>
+                              <h4>
                                 {{ status.value }}
-                              </h5>
+                              </h4>
                             </div>
                           </template>
                           <hr>
@@ -207,12 +218,7 @@
                       }) }}
                     </h4>
                   </div>
-                  <div class="d-flex justify-content-between align-items-end">
-                    <h4>Последние изменения <br> по договору:</h4>
-                    <h4 class="text-info">
-                      {{ getUpdate | formatDateNoTime }}
-                    </h4>
-                  </div>
+
                   <b-table
                     v-if="currentConsumption !==null && (currentConsumption.currentConsumption.length !== null && currentConsumption.currentConsumption.length>0)"
                     hover
@@ -415,15 +421,17 @@ export default {
   },
   data() {
     return {
-      getInfo: null,
-      userData: null,
-      userInfo: null,
+      // getInfo: null,
+      userData: {},
+      // userInfo: null,
       selectContract: null,
-      cardBalance: null,
+      cardBalance: {},
       statisticsData: null,
       currentConsumption: null,
       consumptionDinamic: null,
       currentConsumptionDynamic: null,
+      dateUpdate: null,
+      date: null,
       cardStatisticsData: [],
       option: [],
       mapStatus: {
@@ -568,12 +576,12 @@ export default {
         this.$store.dispatch('getContractId', value.id);
       },
     },
-    getActiveCard() {
-      return this.cardBalance.card_statistic.filter((status) => status.card_status.code === 'ACTIVE').length;
-    },
-    getNotActiveCard() {
-      return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
-    },
+    // getActiveCard() {
+    //   return this.cardBalance.card_statistic.filter((status) => status.card_status.code === 'ACTIVE').length;
+    // },
+    // getNotActiveCard() {
+    //   return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
+    // },
     getCardsSumm() {
       return this.statisticsData.cardStatistic.map((el) => el.total).reduce((el, summ) => el + summ, 0);
     },
@@ -581,41 +589,25 @@ export default {
     //   return this.$store.getters.CONTRACT_NUMBER;
     // },
     getUpdate() {
-      return this.userData.contract.updated.split('').slice(0, 10).join('');
+      return this.dateUpdate.split('').slice(0, 10).join('');
     },
     getDate() {
-      return this.cardBalance.contract.date.split('').slice(0, 10).join('');
+      return this.date.split('').slice(0, 10).join('');
     },
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
   },
   watch: {
-    gotSelected() {
-      this.onChange();
-    },
+    // gotSelected(val) {
+    //   this.onChange(val);
+    // },
     gotSelectedContract(val) {
       this.getCardStatistica(val);
+      this.onChange(val);
     },
   },
   beforeMount() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData && this.gotSelectedContract === null) {
-      this.yetContract = userData;
-    } else this.ID = this.gotSelectedContract;
-
-    this.getCardStatistica(this.ID);
-
-    useJwt.getCurrenUser().then((response) => {
-      if (response.data.status) {
-        this.download = true;
-        this.showLoading = false;
-        this.$store.dispatch('user/getUserData', response.data).then(() => {
-          this.userData = response.data;
-          this.makeOptions();
-        });
-      }
-    });
     useJwt.getCurrentConsumption().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
@@ -623,10 +615,41 @@ export default {
         });
       }
     });
-    // this.userData = JSON.parse(localStorage.getItem('userData'));
-    // if (this.userData) {
-    //   this.getInfo = this.userData;
-    // }
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData && this.gotSelectedContract === null) {
+      this.yetContract = userData;
+      console.log(this.yetContract);
+      this.ID = this.yetContract.account.contract_id;
+      // console.log(this.ID);
+      this.getCardStatistica(this.ID);
+      this.onChange(this.ID);
+      // this.userData = this.yetContract;
+    } else {
+      useJwt.getCurrenUser().then((response) => {
+        if (response.data.status) {
+          this.download = true;
+          this.showLoading = true;
+          this.$store.dispatch('user/getUserData', response.data).then(() => {
+            const result = response.data;
+            this.yetContract = result;
+            console.log(this.yetContract);
+            this.makeOptions(result);
+            this.showLoading = false;
+
+            useJwt.getBalance().then((res) => {
+              if (res.data.status) {
+                this.cardBalance = response.data;
+                // this.onChange(this.cardBalance.contract.id);
+              }
+            });
+          });
+        }
+        // return this.userData;
+      });
+      this.ID = this.gotSelectedContract;
+      this.getCardStatistica(this.ID);
+    }
+
     return { data: { status: false } };
   },
   mounted() {
@@ -634,20 +657,20 @@ export default {
       useJwt.getBalance().then((response) => {
         if (response.data.status) {
           this.cardBalance = response.data;
-          // console.log('Balance:', this.cardBalance);
-        }
-      });
-
-      useJwt.getConsumptionDinamic().then((response) => {
-        if (response.data.status) {
-          this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
-            this.currentConsumptionDynamic = response.data;
-          });
+          console.log('mounted', this.cardBalance);
         }
       });
     } else {
-      this.onChange();
+      console.log(this.gotSelectedContract);
+      this.onChange(this.gotSelectedContract);
     }
+    useJwt.getConsumptionDinamic().then((response) => {
+      if (response.data.status) {
+        this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
+          this.currentConsumptionDynamic = response.data;
+        });
+      }
+    });
   },
   methods: {
     showToast() {
@@ -668,10 +691,11 @@ export default {
         month: 'long',
       });
     },
-    makeOptions() {
-      this.userData.contracts.forEach((el) => {
+    makeOptions(val) {
+      val.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });
       });
+      // console.log(val, this.option);
     },
     // stop refreshing card in 3 sec
     refreshCardStatistic(card) {
@@ -743,15 +767,14 @@ export default {
       });
     },
     getCardStatistica(val) {
+      // console.log(val);
       useJwt.getCardStatisticFromID(val).then((response) => {
         if (response.data.status) {
           this.statisticsData = response.data;
           const allLabel = this.statisticsData.cardStatistic.map((el) => el.emitent.full_name);
           const allStatus = this.statisticsData.cardStatistic.map((el) => el.card_status.code);
-          // console.log('Cтатус', allStatus);
           const uniqueStatus = new Set(allStatus);
           const allUniqueStatus = Array.from(uniqueStatus); // Статусы карт
-          // console.log(allUniqueStatus);
           const uniqueLabel = new Set(allLabel);
           const allUniquelabels = Array.from(uniqueLabel);
           const emptyObject = [];
@@ -760,11 +783,6 @@ export default {
             const summ = this.statisticsData.cardStatistic.filter((el) => el.emitent.full_name === allUniquelabels[i]);
             emptyObject.push(summ);
           }
-
-          // eslint-disable-next-line no-plusplus
-          // for (let i = 0; i < allUniquelabels.length; i++) {
-          //   console.log(this.statisticsData.cardStatistic.filter((el) => el.emitent.full_name === allUniquelabels[i]));
-          // }
 
           const totalSumm = [];
           this.cardStatisticsData = [];
@@ -809,14 +827,17 @@ export default {
         }
       });
     },
-    onChange() {
+    onChange(val) {
       this.showLoading = true;
-      useJwt.changeContract(this.$store.getters.CONTRACT_ID)
+      useJwt.changeContract(val)
         .then((response) => {
           if (response.status) {
             this.cardBalance = response.data;
-            this.refreshConsumptions(this.$store.getters.CONTRACT_ID);
-            this.refreshData(this.$store.getters.CONTRACT_ID);
+            this.dateUpdate = this.cardBalance.contract.updated;
+            this.date = this.cardBalance.contract.date;
+            // console.log('onChange', this.date, this.dateUpdate);
+            this.refreshConsumptions(val);
+            this.refreshData(val);
             this.showLoading = false;
           }
         });
@@ -830,6 +851,9 @@ export default {
         .then((response) => {
           if (response.status) {
             this.cardBalance = response.data;
+            this.dateUpdate = this.cardBalance.contract.updated;
+            this.date = this.cardBalance.contract.date;
+            // console.log(this.dateUpdate);
             this.refreshConsumptions(this.$store.getters.CONTRACT_ID);
             this.refreshData(this.$store.getters.CONTRACT_ID);
             this.showLoading = false;

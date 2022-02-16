@@ -109,7 +109,7 @@
         </div>
         <div
           v-if="totalRows>0 "
-          class="ml-2 mb-2">
+          class="ml-2 mb-2 mt-2">
           <h5>Всего за период с {{ firstDayOfMonth }} по {{ lastDay }} по карте  №<code>{{ number }}</code> потреблено топлива <code>{{ allConsumptionSumm.toFixed(2) }}</code> л. на сумму <code>{{ summAllTransactions.toFixed(2) }}</code> руб., из них:</h5>
           <template
             v-for="(item,index) in dataCharts">
@@ -1531,7 +1531,7 @@ export default {
         });
     },
     getUnlockCard() {
-      console.log(this.contractID);
+      // console.log(this.contractID);
       this.$bvModal
         .msgBoxConfirm(`Вы уверены что хотите разблокировать карту № ${this.cardData.data.number}?`, {
           cancelVariant: 'outline-secondary',

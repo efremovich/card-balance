@@ -45,7 +45,7 @@
               <div class="d-flex justify-content-between">
                 <label for="password">Пароль</label>
                 <b-link :to="{ name: 'auth-forgot-password' }">
-                  <small>Забыли пароль?</small>
+                  <!-- <small>Забыли пароль?</small> -->
                 </b-link>
               </div>
               <validation-provider
