@@ -1,4 +1,3 @@
-/* eslint-disable no-plusplus */
 <template>
   <b-overlay
     :show="showLoading"
@@ -9,7 +8,7 @@
     blur="5px"
     opacity=".75"
     rounded="md">
-    <div v-if="download">
+    <div>
       <div>
         <div class="column">
           <div class="row">
@@ -58,12 +57,12 @@
                         @input="сhange" />
                       <h4>Статус: {{ cardBalance.contract.status }} </h4>
                       <h4>
-                        От: {{ getDate | formatDateNoTime }}
+                        От: {{ cardBalance.contract.date | formatDateNoTime }}
                       </h4>
                       <div class="d-flex justify-content-between align-items-end">
                         <h4>Последние изменения по договору:</h4>
                         <h4 class="text-info">
-                          {{ getUpdate | formatDateNoTime }}
+                          {{ cardBalance.contract.updated | formatDateNoTime }}
                         </h4>
                       </div>
                       <b-link :to="{ name: 'bill' }">
@@ -107,12 +106,12 @@
                         }) }}</span>
                       </h5>
                       <h4>
-                        От: {{ getDate | formatDateNoTime }}
+                        От: {{ cardBalance.contract.updated | formatDateNoTime }}
                       </h4>
                       <div class="d-flex justify-content-between align-items-end">
                         <h4>Последние изменения по договору:</h4>
                         <h4 class="text-info">
-                          {{ getUpdate | formatDateNoTime }}
+                          {{ cardBalance.contract.updated | formatDateNoTime }}
                         </h4>
                       </div>
                       <b-link :to="{ name: 'bill' }">
@@ -253,7 +252,7 @@
                   <div class="d-flex justify-content-between align-items-end">
                     <h4>Последние изменения <br> по договору:</h4>
                     <h4 class="text-info">
-                      {{ userData.contract['updated'] | formatDate }}
+                      {{ cardBalance.contract.updated | formatDateNoTime }}
                     </h4>
                   </div>
                 </b-card-actions>
@@ -618,7 +617,7 @@ export default {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData && this.gotSelectedContract === null) {
       this.yetContract = userData;
-      console.log(this.yetContract);
+      // console.log(this.yetContract);
       this.ID = this.yetContract.account.contract_id;
       // console.log(this.ID);
       this.getCardStatistica(this.ID);
@@ -649,7 +648,7 @@ export default {
       this.ID = this.gotSelectedContract;
       this.getCardStatistica(this.ID);
     }
-
+    console.log(this.date, this.dateUpdate);
     return { data: { status: false } };
   },
   mounted() {
@@ -657,7 +656,7 @@ export default {
       useJwt.getBalance().then((response) => {
         if (response.data.status) {
           this.cardBalance = response.data;
-          console.log('mounted', this.cardBalance);
+          // console.log('mounted', this.cardBalance);
         }
       });
     } else {
@@ -835,7 +834,6 @@ export default {
             this.cardBalance = response.data;
             this.dateUpdate = this.cardBalance.contract.updated;
             this.date = this.cardBalance.contract.date;
-            // console.log('onChange', this.date, this.dateUpdate);
             this.refreshConsumptions(val);
             this.refreshData(val);
             this.showLoading = false;
