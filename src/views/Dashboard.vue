@@ -1,5 +1,6 @@
 <template>
   <b-overlay
+    class="mt-5"
     :show="showLoading"
     spinner-type="grow"
     spinner-variant="primary"
@@ -19,8 +20,8 @@
                 spinner-variant="primary"
                 spinner-medium
                 variant="transparent"
-                blur="5px"
-                opacity=".75"
+                :opacity="opacity"
+                :blur="blur"
                 rounded="md">
                 <b-card-actions
                   v-if="getWidth === 'xs'"
@@ -277,50 +278,60 @@
             action-collapse
             title="Динамика потребления"
             @refresh="refreshConsumption('consumption')">
-            <b-card-body class="pb-0">
-              <div class="d-flex flex-column mb-3 mix">
-                <div class="mr-2 mt-1">
-                  <b-card-text class="mb-50">
-                    В этом месяце:
-                  </b-card-text>
-                  <h3 class="font-weight-bolder">
-                    <span class="text-primary">{{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
-                      style: 'currency',
-                      currency: 'RUB'
-                    }) }}  </span>
-                  </h3>
+            <b-overlay
+              :show="showLoading"
+              spinner-variant="primary"
+              spinner-type="grow"
+              spinner-medium
+              variant="transparent"
+              blur="5px"
+              opacity=".75"
+              rounded="md">
+              <b-card-body class="pb-0">
+                <div class="d-flex flex-column mb-3 mix">
+                  <div class="mr-2 mt-1">
+                    <b-card-text class="mb-50">
+                      В этом месяце:
+                    </b-card-text>
+                    <h3 class="font-weight-bolder">
+                      <span class="text-primary">{{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
+                        style: 'currency',
+                        currency: 'RUB'
+                      }) }}  </span>
+                    </h3>
+                  </div>
+                  <div class="mr-2 mt-1">
+                    <b-card-text class="mb-50">
+                      В прошлом месяце:
+                    </b-card-text>
+                    <h3 class="font-weight-bolder">
+                      <span>{{ currentConsumptionDynamic.consumptionData.last_month.toLocaleString('ru-RU', {
+                        style: 'currency',
+                        currency: 'RUB'
+                      }) }}</span>
+                    </h3>
+                  </div>
+                  <div class="mr-2 mt-1">
+                    <b-card-text class="mb-50">
+                      Два месяца назад :
+                    </b-card-text>
+                    <h3 class="font-weight-bolder">
+                      <span>{{ currentConsumptionDynamic.consumptionData.other_month.toLocaleString('ru-RU', {
+                        style: 'currency',
+                        currency: 'RUB'
+                      }) }}</span>
+                    </h3>
+                  </div>
                 </div>
-                <div class="mr-2 mt-1">
-                  <b-card-text class="mb-50">
-                    В прошлом месяце:
-                  </b-card-text>
-                  <h3 class="font-weight-bolder">
-                    <span>{{ currentConsumptionDynamic.consumptionData.last_month.toLocaleString('ru-RU', {
-                      style: 'currency',
-                      currency: 'RUB'
-                    }) }}</span>
-                  </h3>
-                </div>
-                <div class="mr-2 mt-1">
-                  <b-card-text class="mb-50">
-                    Два месяца назад :
-                  </b-card-text>
-                  <h3 class="font-weight-bolder">
-                    <span>{{ currentConsumptionDynamic.consumptionData.other_month.toLocaleString('ru-RU', {
-                      style: 'currency',
-                      currency: 'RUB'
-                    }) }}</span>
-                  </h3>
-                </div>
-              </div>
 
-              <!-- apex chart -->
-              <vue-apex-charts
-                type="line"
-                height="240"
-                :options="revenueComparisonLine.chartOptions"
-                :series="currentConsumptionDynamic.consumptionSeries" />
-            </b-card-body>
+                <!-- apex chart -->
+                <vue-apex-charts
+                  type="line"
+                  height="240"
+                  :options="revenueComparisonLine.chartOptions"
+                  :series="currentConsumptionDynamic.consumptionSeries" />
+              </b-card-body>
+            </b-overlay>
           </b-card-actions>
           <b-card-actions
             v-else
@@ -420,6 +431,8 @@ export default {
     return {
       // getInfo: null,
       userData: {},
+      blur: '5px',
+      opacity: 0.85,
       // userInfo: null,
       selectContract: null,
       cardBalance: {},
@@ -605,13 +618,6 @@ export default {
     },
   },
   beforeMount() {
-    useJwt.getCurrentConsumption().then((response) => {
-      if (response.data.status) {
-        this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
-          this.currentConsumption = response.data;
-        });
-      }
-    });
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData && this.gotSelectedContract === null) {
       this.yetContract = userData;
@@ -630,11 +636,11 @@ export default {
             console.log(this.yetContract);
             this.makeOptions(result);
 
-            useJwt.getBalance().then((res) => {
-              if (res.data.status) {
-                this.cardBalance = response.data;
-              }
-            });
+            // useJwt.getBalance().then((res) => {
+            //   if (res.data.status) {
+            //     this.cardBalance = response.data;
+            //   }
+            // });
           });
         }
         // return this.userData;
@@ -647,16 +653,23 @@ export default {
     return { data: { status: false } };
   },
   mounted() {
-    if (this.gotSelectedContract === null) {
-      useJwt.getBalance().then((response) => {
-        if (response.data.status) {
-          this.cardBalance = response.data;
-          // console.log('mounted', this.cardBalance);
-        }
-      });
-    } else {
+    if (this.gotSelectedContract !== null) {
+      // useJwt.getBalance().then((response) => {
+      //   if (response.data.status) {
+      //     this.cardBalance = response.data;
+
+      //   }
+      // });
       this.onChange(this.gotSelectedContract);
     }
+
+    useJwt.getCurrentConsumption().then((response) => {
+      if (response.data.status) {
+        this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
+          this.currentConsumption = response.data;
+        });
+      }
+    });
     useJwt.getConsumptionDinamic().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getConsumptionDinamic', response.data).then(() => {
