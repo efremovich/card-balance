@@ -8,344 +8,343 @@
     blur="5px"
     opacity=".75"
     rounded="md">
-    <div>
-      <div>
-        <div class="column">
-          <div class="row">
-            <div class="col-md-6">
-              <b-col>
-                <b-overlay
-                  :show="showLoading"
-                  spinner-type="grow"
-                  spinner-variant="primary"
-                  spinner-medium
-                  variant="transparent"
-                  blur="5px"
-                  opacity=".75"
-                  rounded="md">
-                  <b-card-actions
-                    v-if="getWidth === 'xs'"
-                    ref="userDate"
-                    title="Информация по договору:"
-                    action-refresh
-                    @refresh="refreshMainCard('userDate')">
-                    <b-card-text fluid>
-                      <h3>
-                        Баланс: <span> {{
-                          cardBalance.contract.balance.toLocaleString('ru-RU', {
-                            style: 'currency',
-                            currency: 'RUB'
-                          })
-                        }} </span>
-                      </h3>
-                      <h5 v-if="cardBalance.contract.deposit !== 0">
-                        Допустимая задолженность:
-                        <span class="text-danger h5">  {{ cardBalance.contract.deposit.toLocaleString('ru-RU', {
-                          style: 'currency',
-                          currency: 'RUB'
-                        }) }}</span>
-                      </h5>
-                      <h3 class="mr-1">
-                        Договор № :
-                      </h3>
-                      <v-select
-                        v-model="selected"
-                        :clearable="false"
-                        label="number"
-                        :options="option"
-                        class="w-100 mt-1 mb-1"
-                        @input="сhange" />
-                      <h4>Статус: {{ cardBalance.contract.status }} </h4>
-                      <h4>
-                        От: {{ cardBalance.contract.date | formatDateNoTime }}
-                      </h4>
-                      <div class="d-flex justify-content-between align-items-end">
-                        <h4>Последние изменения по договору:</h4>
-                        <h4 class="text-info">
-                          {{ cardBalance.contract.updated | formatDateNoTime }}
-                        </h4>
-                      </div>
-                      <b-link :to="{ name: 'bill' }">
-                        <b-button
-                          variant="warning"
-                          class="d-flex align-items-center margin">
-                          <feather-icon
-                            size="2x"
-                            icon="PlusIcon"
-                            class="mr-50" />
-                          <span class="align-baseline">Пополнить баланс</span>
-                        </b-button>
-                      </b-link>
-                    </b-card-text>
-                  </b-card-actions>
-                  <b-card-actions
-                    v-else
-                    ref="userDate"
-                    class="shadow-none"
-                    title="Информация по договору:"
-                    action-refresh
-                    @refresh="refreshMainCard('userDate')">
-                    <b-card-text fluid>
-                      <h3>
-                        Договор №: {{ gotSelected }}
-                      </h3>
-                      <h4>Статус: {{ cardBalance.contract.status }} </h4>
-                      <h3>
-                        Баланс: <span> {{
-                          cardBalance.contract.balance.toLocaleString('ru-RU', {
-                            style: 'currency',
-                            currency: 'RUB'
-                          })
-                        }} </span>
-                      </h3>
-                      <h5 v-if="cardBalance.contract.deposit !== 0">
-                        Допустимая задолженность:
-                        <span class="text-danger h5">  {{ cardBalance.contract.deposit.toLocaleString('ru-RU', {
-                          style: 'currency',
-                          currency: 'RUB'
-                        }) }}</span>
-                      </h5>
-                      <h4>
-                        От: {{ cardBalance.contract.updated | formatDateNoTime }}
-                      </h4>
-                      <div class="d-flex justify-content-between align-items-end">
-                        <h4>Последние изменения по договору:</h4>
-                        <h4 class="text-info">
-                          {{ cardBalance.contract.updated | formatDateNoTime }}
-                        </h4>
-                      </div>
-                      <b-link :to="{ name: 'bill' }">
-                        <b-button
-                          variant="warning"
-                          class="d-flex align-items-center margin">
-                          <feather-icon
-                            size="2x"
-                            icon="PlusIcon"
-                            class="mr-50" />
-                          <span class="align-baseline">Пополнить баланс</span>
-                        </b-button>
-                      </b-link>
-                    </b-card-text>
-                  </b-card-actions>
-                </b-overlay>
-              </b-col>
-
-              <b-col>
-                <b-overlay
-                  :show="showLoading"
-                  spinner-variant="primary"
-                  spinner-type="grow"
-                  spinner-medium
-                  variant="transparent"
-                  blur="5px"
-                  opacity=".75"
-                  rounded="md">
-                  <b-card-actions
-                    ref="cardStatistic"
-                    title="Статистика по картам:"
-                    class="p-0"
-                    action-refresh
-                    @refresh="refreshCardStatistic('cardStatistic')">
-                    <div class="mt-1">
-                      <div
-                        class="d-flex justify-content-between">
-                        <h4>
-                          Всего карт:
-                        </h4>
-                        <h4>
-                          {{ getCardsSumm }}
-                        </h4>
-                      </div>
-                    </div>
-                    <hr>
-                    <template v-for="(el) in cardStatisticsData">
-                      <div
-                        :key="el.id"
-                        class="d-flex flex-column">
-                        <div class="d-flex justify-content-between">
-                          <h4>
-                            {{ el.name }}:
-                          </h4>
-                          <h4> {{ el.value }}</h4>
-                        </div>
-                        <div
-                          v-for="(i) in el.cardStatus"
-                          :key="i"
-                          class="d-flex flex-column">
-                          <template v-for="(status) in i">
-                            <div
-                              :key="status.id"
-                              class="d-flex justify-content-between">
-                              <h4>
-                                {{ mapStatus[status.name] }}
-                              </h4>
-                              <h4>
-                                {{ status.value }}
-                              </h4>
-                            </div>
-                          </template>
-                          <hr>
-                        </div>
-                      </div>
-                    </template>
-                  </b-card-actions>
-                </b-overlay>
-              </b-col>
-            </div>
-            <b-col
-              v-if="currentConsumption.currentConsumption.length !== null">
+    <div v-if="download">
+      <div class="column">
+        <div class="row">
+          <div class="col-md-6">
+            <b-col>
               <b-overlay
                 :show="showLoading"
-                spinner-variant="primary"
                 spinner-type="grow"
+                spinner-variant="primary"
                 spinner-medium
                 variant="transparent"
                 blur="5px"
                 opacity=".75"
                 rounded="md">
                 <b-card-actions
-                  ref="expenses"
-                  title="Расход за текущий месяц:"
+                  v-if="getWidth === 'xs'"
+                  ref="userDate"
+                  title="Информация по договору:"
                   action-refresh
-                  @refresh="refreshExpenses('expenses')">
-                  <div class="d-flex justify-content-between">
-                    <h4>{{ getMonthName(-1) | title }}:</h4>
-                    <h4 class="text-danger">
-                      {{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
+                  @refresh="refreshMainCard('userDate')">
+                  <b-card-text fluid>
+                    <h3>
+                      Баланс: <span> {{
+                        cardBalance.contract.balance.toLocaleString('ru-RU', {
+                          style: 'currency',
+                          currency: 'RUB'
+                        })
+                      }} </span>
+                    </h3>
+                    <h5 v-if="cardBalance.contract.deposit !== 0">
+                      Допустимая задолженность:
+                      <span class="text-danger h5">  {{ cardBalance.contract.deposit.toLocaleString('ru-RU', {
                         style: 'currency',
                         currency: 'RUB'
-                      }) }}
+                      }) }}</span>
+                    </h5>
+                    <h3 class="mr-1">
+                      Договор № :
+                    </h3>
+                    <v-select
+                      v-model="selected"
+                      :clearable="false"
+                      label="number"
+                      :options="option"
+                      class="w-100 mt-1 mb-1"
+                      @input="сhange" />
+                    <h4>Статус: {{ cardBalance.contract.status }} </h4>
+                    <h4>
+                      От: {{ date | formatDateNoTime }}
                     </h4>
-                  </div>
-
-                  <b-table
-                    v-if="currentConsumption !==null && (currentConsumption.currentConsumption.length !== null && currentConsumption.currentConsumption.length>0)"
-                    hover
-                    responsive
-                    :items="currentConsumption.currentConsumption"
-                    :fields="fields" />
+                    <div class="d-flex justify-content-between align-items-end">
+                      <h4>Последние изменения по договору:</h4>
+                      <h4 class="text-info">
+                        {{ dateUpdate | formatDateNoTime }}
+                      </h4>
+                    </div>
+                    <b-link :to="{ name: 'bill' }">
+                      <b-button
+                        variant="warning"
+                        class="d-flex align-items-center margin">
+                        <feather-icon
+                          size="2x"
+                          icon="PlusIcon"
+                          class="mr-50" />
+                        <span class="align-baseline">Пополнить баланс</span>
+                      </b-button>
+                    </b-link>
+                  </b-card-text>
+                </b-card-actions>
+                <b-card-actions
+                  v-else
+                  ref="userDate"
+                  class="shadow-none"
+                  title="Информация по договору:"
+                  action-refresh
+                  @refresh="refreshMainCard('userDate')">
+                  <b-card-text fluid>
+                    <h3>
+                      Договор №: {{ gotSelected }}
+                    </h3>
+                    <h4>Статус: {{ cardBalance.contract.status }} </h4>
+                    <h3>
+                      Баланс: <span> {{
+                        cardBalance.contract.balance.toLocaleString('ru-RU', {
+                          style: 'currency',
+                          currency: 'RUB'
+                        })
+                      }} </span>
+                    </h3>
+                    <h5 v-if="cardBalance.contract.deposit !== 0">
+                      Допустимая задолженность:
+                      <span class="text-danger">  {{ cardBalance.contract.deposit.toLocaleString('ru-RU', {
+                        style: 'currency',
+                        currency: 'RUB'
+                      }) }}</span>
+                    </h5>
+                    <h4>
+                      От: {{ date | formatDateNoTime }}
+                    </h4>
+                    <div class="d-flex justify-content-between align-items-end">
+                      <h4>Последние изменения по договору:</h4>
+                      <h4 class="text-info">
+                        {{ dateUpdate | formatDateNoTime }}
+                      </h4>
+                    </div>
+                    <b-link :to="{ name: 'bill' }">
+                      <b-button
+                        variant="warning"
+                        class="d-flex align-items-center margin">
+                        <feather-icon
+                          size="2x"
+                          icon="PlusIcon"
+                          class="mr-50" />
+                        <span class="align-baseline">Пополнить баланс</span>
+                      </b-button>
+                    </b-link>
+                  </b-card-text>
                 </b-card-actions>
               </b-overlay>
             </b-col>
-            <b-col
-              v-else>
+
+            <b-col>
               <b-overlay
                 :show="showLoading"
-                spinner-type="grow"
                 spinner-variant="primary"
+                spinner-type="grow"
                 spinner-medium
                 variant="transparent"
                 blur="5px"
                 opacity=".75"
                 rounded="md">
                 <b-card-actions
-                  ref="expenses"
-                  action-refresh
+                  ref="cardStatistic"
+                  title="Статистика по картам:"
                   class="p-0"
-                  @refresh="refreshExpenses('expenses')">
-                  <div class="d-flex justify-content-between">
-                    <h4> Расходы за {{ getMonthName(-1) }}:</h4>
-                    <h4>
-                      отсутствуют
-                    </h4>
+                  action-refresh
+                  @refresh="refreshCardStatistic('cardStatistic')">
+                  <div class="mt-1">
+                    <div
+                      class="d-flex justify-content-between">
+                      <h4>
+                        Всего карт:
+                      </h4>
+                      <h4>
+                        {{ getCardsSumm }}
+                      </h4>
+                    </div>
                   </div>
-                  <div class="d-flex justify-content-between align-items-end">
-                    <h4>Последние изменения <br> по договору:</h4>
-                    <h4 class="text-info">
-                      {{ cardBalance.contract.updated | formatDateNoTime }}
-                    </h4>
-                  </div>
+                  <hr>
+                  <template v-for="(el) in cardStatisticsData">
+                    <div
+                      :key="el.id"
+                      class="d-flex flex-column">
+                      <div class="d-flex justify-content-between">
+                        <h4>
+                          {{ el.name }}:
+                        </h4>
+                        <h4> {{ el.value }}</h4>
+                      </div>
+                      <div
+                        v-for="(i) in el.cardStatus"
+                        :key="i.id"
+                        class="d-flex flex-column">
+                        <template v-for="(status) in i">
+                          <div
+                            :key="status.id"
+                            class="d-flex justify-content-between">
+                            <h4>
+                              {{ mapStatus[status.name] }}
+                            </h4>
+                            <h4>
+                              {{ status.value }}
+                            </h4>
+                          </div>
+                        </template>
+                        <hr>
+                      </div>
+                    </div>
+                  </template>
                 </b-card-actions>
               </b-overlay>
             </b-col>
           </div>
-
-          <!--Statistics -->
-          <b-overlay
-            :show="showLoading"
-            spinner-variant="primary"
-            spinner-type="grow"
-            spinner-medium
-            variant="transparent"
-            blur="5px"
-            opacity=".75"
-            rounded="md">
-            <b-card-actions
-              v-if="currentConsumptionDynamic !== null"
-              ref="consumption"
-              action-close
-              action-refresh
-              action-collapse
-              title="Динамика потребления"
-              @refresh="refreshConsumption('consumption')">
-              <b-card-body class="pb-0">
-                <div class="d-flex flex-column mb-3 mix">
-                  <div class="mr-2 mt-1">
-                    <b-card-text class="mb-50">
-                      В этом месяце:
-                    </b-card-text>
-                    <h3 class="font-weight-bolder">
-                      <span class="text-primary">{{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
-                        style: 'currency',
-                        currency: 'RUB'
-                      }) }}  </span>
-                    </h3>
-                  </div>
-                  <div class="mr-2 mt-1">
-                    <b-card-text class="mb-50">
-                      В прошлом месяце:
-                    </b-card-text>
-                    <h3 class="font-weight-bolder">
-                      <span>{{ currentConsumptionDynamic.consumptionData.last_month.toLocaleString('ru-RU', {
-                        style: 'currency',
-                        currency: 'RUB'
-                      }) }}</span>
-                    </h3>
-                  </div>
-                  <div class="mr-2 mt-1">
-                    <b-card-text class="mb-50">
-                      Два месяца назад :
-                    </b-card-text>
-                    <h3 class="font-weight-bolder">
-                      <span>{{ currentConsumptionDynamic.consumptionData.other_month.toLocaleString('ru-RU', {
-                        style: 'currency',
-                        currency: 'RUB'
-                      }) }}</span>
-                    </h3>
-                  </div>
+          <b-col
+            v-if="currentConsumption.currentConsumption.length !== null">
+            <b-overlay
+              :show="showLoading"
+              spinner-variant="primary"
+              spinner-type="grow"
+              spinner-medium
+              variant="transparent"
+              blur="5px"
+              opacity=".75"
+              rounded="md">
+              <b-card-actions
+                ref="expenses"
+                title="Расход за текущий месяц:"
+                action-refresh
+                @refresh="refreshExpenses('expenses')">
+                <div class="d-flex justify-content-between">
+                  <h4>{{ getMonthName(-1) | title }}:</h4>
+                  <h4 class="text-danger">
+                    {{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
+                      style: 'currency',
+                      currency: 'RUB'
+                    }) }}
+                  </h4>
                 </div>
 
-                <!-- apex chart -->
-                <vue-apex-charts
-                  type="line"
-                  height="240"
-                  :options="revenueComparisonLine.chartOptions"
-                  :series="currentConsumptionDynamic.consumptionSeries" />
-              </b-card-body>
-            </b-card-actions>
-            <b-card-actions
-              v-else
-              ref="consumption"
-              action-close
-              action-refresh
-              action-collapse
-              title="Динамика потребления"
-              @refresh="refreshConsumption('consumption')">
-              <b-card-body class="pb-0">
-                <!-- apex chart -->
-                <vue-apex-charts
-                  type="line"
-                  height="240"
-                  :options="revenueComparisonLine.chartOptions"
-                  :series="currentConsumptionDynamic.consumptionSeries" />
-              </b-card-body>
-            </b-card-actions>
-          </b-overlay>
-        <!--end statistic -->
+                <b-table
+                  v-if="currentConsumption !==null && (currentConsumption.currentConsumption.length !== null && currentConsumption.currentConsumption.length>0)"
+                  hover
+                  responsive
+                  :items="currentConsumption.currentConsumption"
+                  :fields="fields" />
+              </b-card-actions>
+            </b-overlay>
+          </b-col>
+          <b-col
+            v-else>
+            <b-overlay
+              :show="showLoading"
+              spinner-type="grow"
+              spinner-variant="primary"
+              spinner-medium
+              variant="transparent"
+              blur="5px"
+              opacity=".75"
+              rounded="md">
+              <b-card-actions
+                ref="expenses"
+                action-refresh
+                class="p-0"
+                @refresh="refreshExpenses('expenses')">
+                <div class="d-flex justify-content-between">
+                  <h4> Расходы за {{ getMonthName(-1) }}:</h4>
+                  <h4>
+                    отсутствуют
+                  </h4>
+                </div>
+                <div class="d-flex justify-content-between align-items-end">
+                  <h4>Последние изменения <br> по договору:</h4>
+                  <h4 class="text-info">
+                    {{ cardBalance.contract.updated | formatDateNoTime }}
+                  </h4>
+                </div>
+              </b-card-actions>
+            </b-overlay>
+          </b-col>
         </div>
 
-        <!-- GEO-->
-        <!-- <b-overlay
+        <!--Statistics -->
+        <b-overlay
+          :show="showLoading"
+          spinner-variant="primary"
+          spinner-type="grow"
+          spinner-medium
+          variant="transparent"
+          blur="5px"
+          opacity=".75"
+          rounded="md">
+          <b-card-actions
+            v-if="currentConsumptionDynamic !== null"
+            ref="consumption"
+            action-close
+            action-refresh
+            action-collapse
+            title="Динамика потребления"
+            @refresh="refreshConsumption('consumption')">
+            <b-card-body class="pb-0">
+              <div class="d-flex flex-column mb-3 mix">
+                <div class="mr-2 mt-1">
+                  <b-card-text class="mb-50">
+                    В этом месяце:
+                  </b-card-text>
+                  <h3 class="font-weight-bolder">
+                    <span class="text-primary">{{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
+                      style: 'currency',
+                      currency: 'RUB'
+                    }) }}  </span>
+                  </h3>
+                </div>
+                <div class="mr-2 mt-1">
+                  <b-card-text class="mb-50">
+                    В прошлом месяце:
+                  </b-card-text>
+                  <h3 class="font-weight-bolder">
+                    <span>{{ currentConsumptionDynamic.consumptionData.last_month.toLocaleString('ru-RU', {
+                      style: 'currency',
+                      currency: 'RUB'
+                    }) }}</span>
+                  </h3>
+                </div>
+                <div class="mr-2 mt-1">
+                  <b-card-text class="mb-50">
+                    Два месяца назад :
+                  </b-card-text>
+                  <h3 class="font-weight-bolder">
+                    <span>{{ currentConsumptionDynamic.consumptionData.other_month.toLocaleString('ru-RU', {
+                      style: 'currency',
+                      currency: 'RUB'
+                    }) }}</span>
+                  </h3>
+                </div>
+              </div>
+
+              <!-- apex chart -->
+              <vue-apex-charts
+                type="line"
+                height="240"
+                :options="revenueComparisonLine.chartOptions"
+                :series="currentConsumptionDynamic.consumptionSeries" />
+            </b-card-body>
+          </b-card-actions>
+          <b-card-actions
+            v-else
+            ref="consumption"
+            action-close
+            action-refresh
+            action-collapse
+            title="Динамика потребления"
+            @refresh="refreshConsumption('consumption')">
+            <b-card-body class="pb-0">
+              <!-- apex chart -->
+              <vue-apex-charts
+                type="line"
+                height="240"
+                :options="revenueComparisonLine.chartOptions"
+                :series="currentConsumptionDynamic.consumptionSeries" />
+            </b-card-body>
+          </b-card-actions>
+        </b-overlay>
+        <!--end statistic -->
+      </div>
+
+      <!-- GEO-->
+      <!-- <b-overlay
           :show="showLoading"
           spinner-variant="primary"
           spinner-type="grow"
@@ -376,9 +375,8 @@
           </b-card-actions>
         </b-overlay> -->
       <!--GEO-->
-      </div>
-    <!-- </b-overlay> -->
     </div>
+    <!-- </b-overlay> -->
   </b-overlay>
 </template>
 
@@ -453,7 +451,7 @@ export default {
       yetContract: null,
       ID: null,
       download: false,
-      showLoading: false,
+      showLoading: true,
       fields: [
         {
           key: 'service.full_name',
@@ -617,38 +615,35 @@ export default {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData && this.gotSelectedContract === null) {
       this.yetContract = userData;
-      // console.log(this.yetContract);
       this.ID = this.yetContract.account.contract_id;
-      // console.log(this.ID);
       this.getCardStatistica(this.ID);
       this.onChange(this.ID);
-      // this.userData = this.yetContract;
+      this.download = true;
     } else {
       useJwt.getCurrenUser().then((response) => {
         if (response.data.status) {
           this.download = true;
-          this.showLoading = true;
+
           this.$store.dispatch('user/getUserData', response.data).then(() => {
             const result = response.data;
             this.yetContract = result;
             console.log(this.yetContract);
             this.makeOptions(result);
-            this.showLoading = false;
 
             useJwt.getBalance().then((res) => {
               if (res.data.status) {
                 this.cardBalance = response.data;
-                // this.onChange(this.cardBalance.contract.id);
               }
             });
           });
         }
         // return this.userData;
+        this.showLoading = false;
       });
       this.ID = this.gotSelectedContract;
       this.getCardStatistica(this.ID);
     }
-    console.log(this.date, this.dateUpdate);
+    // this.showLoading = false;
     return { data: { status: false } };
   },
   mounted() {
@@ -660,7 +655,6 @@ export default {
         }
       });
     } else {
-      console.log(this.gotSelectedContract);
       this.onChange(this.gotSelectedContract);
     }
     useJwt.getConsumptionDinamic().then((response) => {
@@ -832,6 +826,7 @@ export default {
         .then((response) => {
           if (response.status) {
             this.cardBalance = response.data;
+            console.log(this.cardBalance);
             this.dateUpdate = this.cardBalance.contract.updated;
             this.date = this.cardBalance.contract.date;
             this.refreshConsumptions(val);
