@@ -647,21 +647,16 @@ export default {
         this.showLoading = false;
       });
       this.ID = this.gotSelectedContract;
+      this.onChange(this.ID);
       this.getCardStatistica(this.ID);
     }
     // this.showLoading = false;
     return { data: { status: false } };
   },
   mounted() {
-    if (this.gotSelectedContract !== null) {
-      // useJwt.getBalance().then((response) => {
-      //   if (response.data.status) {
-      //     this.cardBalance = response.data;
-
-      //   }
-      // });
-      this.onChange(this.gotSelectedContract);
-    }
+    // if (this.gotSelectedContract !== null) {
+    //   this.onChange(this.gotSelectedContract);
+    // }
 
     useJwt.getCurrentConsumption().then((response) => {
       if (response.data.status) {
