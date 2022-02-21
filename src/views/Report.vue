@@ -348,7 +348,6 @@ export default {
     BOverlay,
     BButton,
     BInputGroup,
-
   },
   data() {
     return {
@@ -386,6 +385,15 @@ export default {
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
+      defaultColDef: {
+        // sortable: true,
+        // filter: true,
+        resizable: true,
+        minWidth: 100,
+        flex: 1,
+      },
+      // gridApi: null,
+      columnApi: null,
       fieldsOper: [
 
         // {
@@ -774,6 +782,9 @@ export default {
         this.end = trim[1] + ' 23:59:59';
         this.getTransactions(this.contractId);
       }
+    },
+    onBtExport() {
+      this.fefs().exportDataAsExcel();
     },
   },
 

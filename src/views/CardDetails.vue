@@ -970,6 +970,7 @@ export default {
     const totalRequestRows = ref(null);
     const number = ref(null);
     const requests = ref(null);
+    const allLabelService = ref(null);
     const fields = [
       {
         key: 'service.full_name',
@@ -1090,14 +1091,20 @@ export default {
         if (response.data.status) {
           services.value = response.data.data;
           const id = services.value.map((el) => el.id);
-          const label = services.value.map((el) => el.label);
+          const idService = Array.from(id);
+          const label = Array.from(services.value.map((el) => el.label));
           // eslint-disable-next-line no-plusplus
-          for (let i = 0; i < id.length; i++) {
-            labelService.value[id[i]] = label[i];
+          for (let i = 0; i < idService.length; i++) {
+            // labelService.value.name = label[i];
+            // labelService.value.id = idService[i];
+
+            labelService.value[idService[i]] = label[i];
           }
+          allLabelService.value = Object.entries(labelService.value); // приведение к массиву
         }
       });
     };
+
     const transactionsSumm = ref(null);
     // const consumptionData = ref([]);
     const gotSelectedContract = computed(() => store.state.contractId);
@@ -1208,6 +1215,7 @@ export default {
 
     return {
       consumptionData,
+      allLabelService,
       allConsumptionSumm,
       summAllTransactions,
       dataCharts,
@@ -1312,7 +1320,6 @@ export default {
         } else {
           this.comparison = false;
           this.newLimits = val;
-          // console.log(this.newLimits);
         }
       },
     },
@@ -1383,7 +1390,6 @@ export default {
         limits: this.newLimits,
 
       }];
-      // console.log(request);
       useJwt.refreshDataUserLimits(request);
     },
     newLimitsData() {
@@ -1486,6 +1492,12 @@ export default {
       let label = '';
       // eslint-disable-next-line no-return-assign
       Object.values(arrService).forEach((el) => (label += `${this.labelService[el]}, `));
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < Object.values(arrService).length; i++) {
+        // console.log(Object.values(arrService)[i]);
+        console.log(this.allLabelService);
+        // label += `${this.labelService[Object.values(arrService)[i]]}, `;
+      }
       return label.split('').slice(0, -2).join('');
     },
     // Смена статуса карты
@@ -1531,7 +1543,6 @@ export default {
         });
     },
     getUnlockCard() {
-      // console.log(this.contractID);
       this.$bvModal
         .msgBoxConfirm(`Вы уверены что хотите разблокировать карту № ${this.cardData.data.number}?`, {
           cancelVariant: 'outline-secondary',
