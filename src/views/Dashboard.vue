@@ -633,7 +633,6 @@ export default {
           this.$store.dispatch('user/getUserData', response.data).then(() => {
             const result = response.data;
             this.yetContract = result;
-            console.log(this.yetContract);
             this.makeOptions(result);
 
             // useJwt.getBalance().then((res) => {
@@ -696,7 +695,6 @@ export default {
       val.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });
       });
-      // console.log(val, this.option);
     },
     // stop refreshing card in 3 sec
     refreshCardStatistic(card) {
@@ -768,7 +766,6 @@ export default {
       });
     },
     getCardStatistica(val) {
-      // console.log(val);
       useJwt.getCardStatisticFromID(val).then((response) => {
         if (response.data.status) {
           this.statisticsData = response.data;
@@ -834,7 +831,6 @@ export default {
         .then((response) => {
           if (response.status) {
             this.cardBalance = response.data;
-            console.log(this.cardBalance);
             this.dateUpdate = this.cardBalance.contract.updated;
             this.date = this.cardBalance.contract.date;
             this.refreshConsumptions(val);
@@ -854,7 +850,6 @@ export default {
             this.cardBalance = response.data;
             this.dateUpdate = this.cardBalance.contract.updated;
             this.date = this.cardBalance.contract.date;
-            // console.log(this.dateUpdate);
             this.refreshConsumptions(this.$store.getters.CONTRACT_ID);
             this.refreshData(this.$store.getters.CONTRACT_ID);
             this.showLoading = false;

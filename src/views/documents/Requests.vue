@@ -426,6 +426,46 @@ export default {
           });
         }
       }
+      if (this.rangeDate.length > 9 && this.rangeDate.length < 11) { // Указание одной и той же даты при выборе
+        // eslint-disable-next-line prefer-template
+        this.start = date + ' 00:00:00';
+        // eslint-disable-next-line prefer-template
+        this.end = date + ' 23:59:59';
+        if (selected === null) {
+          useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+            this.requests = response.data;
+            this.totalRows = this.requests.data.total;
+
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют заявки за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          });
+        } else {
+          useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}`).then((response) => {
+            if (response.data.status) {
+              this.requests = response.data;
+              this.totalRows = this.requests.data.total;
+              if (this.totalRows < 1) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Отсутвуют заявки по карте за выбранный период',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'danger',
+                  },
+                });
+              }
+            }
+          });
+        }
+      }
     },
   },
 

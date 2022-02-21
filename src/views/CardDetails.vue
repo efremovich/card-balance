@@ -1493,10 +1493,9 @@ export default {
       // eslint-disable-next-line no-return-assign
       Object.values(arrService).forEach((el) => (label += `${this.labelService[el]}, `));
       // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < Object.values(arrService).length; i++) {
-        // console.log(Object.values(arrService)[i]);
-        console.log(this.allLabelService);
-        // label += `${this.labelService[Object.values(arrService)[i]]}, `;
+      for (let i = 0; i < Object.values(arrService).length; i++) { // Здесь творится магия
+        // eslint-disable-next-line no-unused-expressions
+        this.allLabelService;
       }
       return label.split('').slice(0, -2).join('');
     },

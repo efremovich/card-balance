@@ -693,6 +693,47 @@ export default {
           });
         }
       }
+      if (this.rangeDate.length > 9 && this.rangeDate.length < 11) { // Указание одной и той же даты при выборе
+        // eslint-disable-next-line prefer-template
+        this.start = date + ' 00:00:00';
+        // eslint-disable-next-line prefer-template
+        this.end = date + ' 23:59:59';
+        if (selected === null) {
+          useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+            this.transactions = response.data;
+            this.totalRows = this.transactions.data.total;
+            if (this.rangeDate.length > 22) {
+              if (this.totalRows < 1) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Отсутвуют транзакции за выбранный период',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'danger',
+                  },
+                });
+              }
+            }
+          });
+        } else {
+          useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}`).then((response) => {
+            if (response.data.status) {
+              this.transactions = response.data;
+              this.totalRows = this.transactions.data.total;
+              if (this.totalRows < 1) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Отсутвуют транзакции по карте за выбранный период',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'danger',
+                  },
+                });
+              }
+            }
+          });
+        }
+      }
     },
     onFiltered(filteredItems) {
       this.loadDone = true;

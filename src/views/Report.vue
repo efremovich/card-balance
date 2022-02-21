@@ -77,16 +77,16 @@
                 <ul v-if="getWidth !=='xs'">
                   <li
                     v-for="(item) in consumptionData"
-                    :key="item.name">
-                    <h5> {{ item.name }}: <code>{{ item.consumption.toFixed(2) }} л.</code>  на сумму <code>{{ item.value.toFixed(2) }} руб.;</code> </h5>
+                    :key="item.id">
+                    <h5> {{ item.name }}: <code>{{ item.consumption.toLocaleString() }} л.</code>  на сумму <code>{{ item.value.toLocaleString() }} руб.;</code> </h5>
                   </li>
                 </ul>
                 <div v-if="getWidth ==='xs'">
                   <div
                     v-for="(item) in consumptionData"
-                    :key="item.name">
+                    :key="item.id">
                     <h6>
-                      {{ item.name }}: <code>{{ item.consumption.toFixed(2) }} л.</code>  на сумму <code>{{ item.value.toFixed(2) }} руб.;</code>
+                      {{ item.name }}: <code>{{ item.consumption.toLocaleString() }} л.</code>  на сумму <code>{{ item.value.toLocaleString() }} руб.;</code>
                     </h6>
                   </div>
                 </div>
@@ -274,6 +274,7 @@
                 class="mt-1 btn btn-primary"
                 :data="row.item.details[0]"
                 :fields="fieldsPrint"
+                :title="`Транзакции по карте по карте № ${row.item.details[0][0].card_number}`"
                 type="xls"
                 :name="`Отчёт по карте № ${row.item.details[0][0].card_number} за период с ${getStartDate} по ${getEndDate}.xls`">
                 <h5 class="text-white">
@@ -381,7 +382,6 @@ export default {
       config: {
         mode: 'range',
         maxDate: 'today',
-        // defaultDate: ['01-03-2021', 'today'],
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
@@ -395,12 +395,6 @@ export default {
       // gridApi: null,
       columnApi: null,
       fieldsOper: [
-
-        // {
-        //   key: 'date',
-        //   label: 'Дата',
-        //   sortable: true,
-        // },
         {
           key: 'number',
           label: 'Номер карты',
@@ -460,7 +454,6 @@ export default {
 
       ],
       fields: [
-
         {
           key: 'date',
           label: 'Дата',
@@ -566,16 +559,6 @@ export default {
 
       },
 
-      // 'Дата': {
-      //   field: 'date',
-      // },
-      // 'Тип топлива': {
-      //   field: 'service.full_name',
-      // },
-      // 'Количество литров': {
-      //   field: 'quantity',
-      // },
-
       series: [
         {
           name: '',
@@ -655,7 +638,7 @@ export default {
 
     getTransactions(val) {
       this.rangeDate = [this.start, this.end];
-      this.consumptionData = [];
+
       this.download = true;
       this.dataReport = [];
       this.emptyArr = {};
@@ -665,8 +648,8 @@ export default {
           this.totalRows = this.emptyArr.data.total;
           if (this.totalRows > 0) {
             this.resultLength = true;
-            this.transactions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.summ, 0).toFixed(2));
-            this.consumptions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.quantity, 0).toFixed(2));
+            this.transactions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.summ, 0).toLocaleString());
+            this.consumptions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.quantity, 0).toLocaleString());
             const allLabels = [];
             allLabels.push(this.emptyArr.data.result.map((el) => el.service).map((el) => el.full_name));
             // Для отчета
@@ -715,7 +698,7 @@ export default {
                 }
               });
             }
-
+            this.consumptionData = [];
             this.series[0].data = [];
             // eslint-disable-next-line no-plusplus
             for (let i = 0; i < Object.keys(data).length; i++) {
@@ -726,6 +709,7 @@ export default {
               const anotherRandomObject = {};
               anotherRandomObject.value = value[i];
               anotherRandomObject.name = label[i];
+              anotherRandomObject.id = this.getRandom();
               anotherRandomObject.consumption = consumptionL[i];
               randomObject.value = Number(value[i]).toFixed(2);
               randomObject.name = label[i];
@@ -743,15 +727,22 @@ export default {
     },
     getDate() {
       const date = this.rangeDate;
-      const newDate = Array.from(date).filter((n) => n !== '—');
-      const arr = newDate.join('').split('00:00:00');
-      const trim = arr.join('').split(' ').filter((n) => n !== '');
-      // eslint-disable-next-line prefer-template
-      this.start = trim[0] + ' 00:00:00';
-      // eslint-disable-next-line prefer-template
-      this.end = trim[1] + ' 23:59:59';
+      if (date.length === 10) {
+        this.start = `${date} 00:00:00`;
+        // eslint-disable-next-line prefer-template
+        this.end = date + ' 23:59:59';
+        console.log(this.end);
+      } else {
+        const newDate = Array.from(date).filter((n) => n !== '—');
+        const arr = newDate.join('').split('00:00:00');
+        const trim = arr.join('').split(' ').filter((n) => n !== '');
+        // eslint-disable-next-line prefer-template
+        this.start = trim[0] + ' 00:00:00';
+        // eslint-disable-next-line prefer-template
+        this.end = trim[1] + ' 23:59:59';
       // this.rangeDate = [this.start, this.end];
       // console.log(this.rangeDate);
+      }
     },
     getToast() {
       this.$toast({
@@ -767,7 +758,6 @@ export default {
     selectDate() {
       //  const date = this.rangeDate;
       this.getDate();
-      // console.log(this.rangeDate);
       // if (date.length > 22) {
       //   this.getTransactions(this.contractId);
       // }
@@ -782,9 +772,17 @@ export default {
         this.end = trim[1] + ' 23:59:59';
         this.getTransactions(this.contractId);
       }
+      if (this.rangeDate.length > 9 && this.rangeDate.length < 11) { // Указание одной и той же даты при выборе
+        const date = this.rangeDate;
+        // eslint-disable-next-line prefer-template
+        this.start = date + ' 00:00:00';
+        // eslint-disable-next-line prefer-template
+        this.end = date + ' 23:59:59';
+        this.getTransactions(this.contractId);
+      }
     },
-    onBtExport() {
-      this.fefs().exportDataAsExcel();
+    getRandom() {
+      return Math.floor(Math.random() * 10000);
     },
   },
 
