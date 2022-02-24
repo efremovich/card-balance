@@ -14,19 +14,19 @@
       <b-card
         :class="[getWidth === 'xs'?'max-w': '']">
         <b-card-header
-          class="d-flex justify-content-start">
+          class="d-flex justify-content-start align-items-baseline">
           <b-link :to="{ name: 'cards' }">
             <feather-icon
               class="mr-1"
               icon="ArrowLeftCircleIcon"
               size="30" />
           </b-link>
-          <h3>
+          <h3 class="w-75">
             Настройка карты № {{ number }}
           </h3>
         </b-card-header>
         <div class="d-flex flex-wrap justify-content-between">
-          <div class="image">
+          <div :class="['image', {'max-h330':getWidth ==='xs'}]">
             <b-img
               :class="['card-img-top', getWidth === 'xs'? 'min-w270':'']"
               :src="
@@ -61,16 +61,18 @@
                 :value="cardData.data.holder" />
             </div>
           </div>
-          <app-echart-doughnut
-            v-if="totalRows>0"
-            class="bottom-1"
-            :series="series" />
+          <div v-if="getWidth !== 'xs'">
+            <app-echart-doughnut
+              v-if="totalRows>0"
+              class="bottom-1"
+              :series="series" />
+          </div>
           <div
-            class="d-flex flex-column align-items-start justify-content-start heigth ml-1">
+            :class="['d-flex', {'flex-column':getWidth !== 'xs'}, 'align-items-start', 'justify-content-start', {'heigth':getWidth !== 'xs'}, 'ml-1']">
             <b-button
               v-if="cardData.data.card_status_id==='ACTIVE'"
               variant="danger"
-              class="btn mb-2"
+              :class="['btn' ,{'mb-2':getWidth !== 'xs'}]"
               @click="getLockCard()">
               Заблокировать карту
               <feather-icon
@@ -80,7 +82,7 @@
             <b-button
               v-if="cardData.data.card_status_id !=='ACTIVE'"
               variant="success"
-              class="btn mb-2"
+              :class="['btn' ,{'mb-2':getWidth !== 'xs'}]"
               @click="getUnlockCard(product)">
               Разблокировать карту
               <feather-icon
@@ -88,19 +90,19 @@
                 class="mr-50" />
             </b-button>
             <div class="mb-2">
-              <h6>
+              <h6 v-if="getWidth !== 'xs'">
                 Выдана: {{ cardData.data.expiry_date | formatOnlyDate }}
                 <!-- указать дату выдачи карты не в лимитах, а выше, иначе при удалении всех лимитов
                   невозможно создать новый лимит -->
               </h6>
             </div>
             <div class="mb-2">
-              <h6>
+              <h6 v-if="getWidth !== 'xs'">
                 Действует до: {{ cardData.data.expiry_date | formatDateNoTime }}
               </h6>
             </div>
             <div class="mb-2">
-              <h6>
+              <h6 v-if="getWidth !== 'xs'">
                 Последнее изменения:<br>
                 {{ cardData.data.emitent.last_updated | formatDate }}
               </h6>
@@ -203,7 +205,7 @@
                             <b-col :class="['flex-grow-1', {'ml-1': getWidth === 'sm'}]">
                               <v-select
                                 v-model="count[index].limit_period_code"
-                                :class="[{'mt-1 mb-1 ml-1':getWidth === 'xs'}, {'ml-1':getWidth === 'xl'},{'ml-1':getWidth === 'lg'}]"
+                                :class="[{'mt-1 mb-1':getWidth === 'xs'}, {'ml-1':getWidth === 'xl'},{'ml-1':getWidth === 'lg'}]"
                                 :clearable="false"
                                 :reduce="(period) => period.code"
                                 :options="periods" />
@@ -268,7 +270,7 @@
                           <b-col :class="['flex-grow-1', {'ml-1': getWidth === 'sm'}]">
                             <v-select
                               v-model="limit.limit_period_code"
-                              :class="[{'mt-1 mb-1 ml-1':getWidth === 'xs'}, {'ml-1':getWidth === 'xl'},{'ml-1':getWidth === 'lg'}]"
+                              :class="[{'mt-1 mb-1':getWidth === 'xs'}, {'ml-1':getWidth === 'xl'},{'ml-1':getWidth === 'lg'}]"
                               :clearable="false"
                               :reduce="(period) => period.code"
                               :options="periods" />
@@ -299,7 +301,7 @@
                     ref="limits"
                     action-refresh
                     show
-                    class="pl-1"
+                    :class="[{'pl-1':getWidth !=='xs'}]"
                     @refresh="refreshLimits('limits')">
                     <h4>Текущие лимиты по карте:</h4>
                     <hr>
@@ -348,74 +350,103 @@
               {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
             </h4>
             <div v-if="totalRows>0">
-              <b-card>
-                <div class="d-flex justify-content-between flex-wrap">
-                  <!-- filter -->
-                  <b-form-group
-                    label-align-sm="left"
-                    label-size="sm"
-                    label-for="filterInput"
-                    class="mb-0">
-                    <b-input-group size="sm">
-                      <b-form-input
-                        id="filterInput"
-                        v-model="filter"
-                        type="search"
-                        placeholder="Найти" />
-                      <b-input-group-append>
-                        <b-button
-                          :disabled="!filter"
-                          @click="filter = ''">
-                          Очистить
-                        </b-button>
-                      </b-input-group-append>
-                    </b-input-group>
-                  </b-form-group>
-
-                  <div>
-                    <export-excel
-                      class="btn btn-primary"
-                      :data="transactions.data.result"
-                      :fields="columns"
-                      type="xlsx"
-                      name="Транзакции.xlsx">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="currentColor"
-                        class="bi bi-file-earmark-excel"
-                        viewBox="0 0 16 16">
-                        <path
-                          d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                        <path
-                          d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-                      </svg>
-                      Скачать
-                    </export-excel>
-                  </div>
-                </div>
-              </b-card>
               <h6 class="text-center mb-1 mt-1">
                 Транзакции по карте №{{ number }} за период c
                 <code>{{ firstDayOfMonth }}</code>по <code>{{ lastDay }}</code>:
               </h6>
-              <b-table
-                striped
-                hover
-                responsive
-                class="position-relative"
-                :per-page="perPage"
-                :current-page="currentPage"
-                :items="transactions.data.result"
-                :sort-by.sync="sortBy"
-                :sort-desc.sync="sortDesc"
-                :fields="fields"
-                :filter="filter">
-                <template #cell(date)="row">
-                  {{ row.item.date | formatDate }}
-                </template>
-              </b-table>
+              <div v-if="getWidth!=='xs'">
+                <b-table
+                  striped
+                  hover
+                  responsive
+                  class="position-relative"
+                  :per-page="perPage"
+                  :current-page="currentPage"
+                  :items="transactions.data.result"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :fields="fields"
+                  :filter="filter">
+                  <template #cell(date)="row">
+                    {{ row.item.date | formatDate }}
+                  </template>
+                </b-table>
+              </div>
+              <div v-else>
+                <b-table
+                  striped
+                  hover
+                  responsive
+                  class="position-relative"
+                  :per-page="perPage"
+                  :current-page="currentPage"
+                  :items="transactions.data.result"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc"
+                  :fields="fieldsSM"
+                  :filter="filter">
+                  <template #cell(date)="row">
+                    {{ row.item.date | formatDate }}
+                  </template>
+                  <template #cell(summ)="row">
+                    <b-col @click="row.toggleDetails">
+                      <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseInt(row.item.summ).toLocaleString('ru-RU', {
+                        style: 'currency',
+                        currency: 'RUB'
+                      }) }}</span><br>
+
+                      <b-button
+                        class="mt-1"
+                        pill
+                        size="sm"
+                        @click="row.detailsShowing">
+                        Детали
+                      </b-button>
+                    </b-col>
+                  </template>
+
+                  <template #row-details="row">
+                    <b-card
+                      @click="row.toggleDetails">
+                      <b-row class="mb-2">
+                        <b-col
+                          md="4"
+                          class="mb-1">
+                          <strong>Дата/время : </strong>{{ row.item.date | formatDate }}
+                        </b-col>
+                        <b-col
+                          md="4"
+                          class="mb-1">
+                          <strong>Количество : </strong>{{ row.item.quantity }}
+                        </b-col>
+                        <b-col
+                          md="4"
+                          class="mb-1">
+                          <strong>Услуга : </strong>{{ row.item.service.full_name }}
+                        </b-col>
+                        <b-col
+                          md="4"
+                          class="mb-1">
+                          <strong>Адрес операции: </strong>{{ row.item.pos.address }}
+                        </b-col>
+                      </b-row>
+
+                      <b-button
+                        size="sm"
+                        variant="outline-secondary"
+                        @click="row.toggleDetails">
+                        Скрыть детали
+                      </b-button>
+                    </b-card>
+                  </template>
+
+                  <template #cell(period)="row">
+                    <b-col @click="row.toggleDetails">
+                      {{ row.item.date | formatDate }}
+                    </b-col>
+                  </template>
+                </b-table>
+              </div>
 
               <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
                 <!-- page length -->
@@ -509,7 +540,7 @@
                 enctype="multipart/form-data"
                 @submit.prevent="sendMessage">
                 <b-row class="justify-content-center">
-                  <b-col cols="8">
+                  <b-col :cols="[getWidth === 'xs'?'12': '8']">
                     <label
                       for="card"
                       class="w-100">Номер карты:
@@ -601,7 +632,7 @@
           </h3>
         </b-card-header>
         <div class="d-flex flex-wrap justify-content-between">
-          <div class="image">
+          <div :class="['image', {'max-h330':getWidth ==='xs'}]">
             <b-img
               class="card-img-top"
               :src="
@@ -704,49 +735,6 @@
               <b-card>
                 <div class="d-flex justify-content-between flex-wrap">
                   <!-- filter -->
-                  <b-form-group
-                    label-align-sm="left"
-                    label-size="sm"
-                    label-for="filterInput"
-                    class="mb-0">
-                    <b-input-group size="sm">
-                      <b-form-input
-                        id="filterInput"
-                        v-model="filter"
-                        type="search"
-                        placeholder="Найти" />
-                      <b-input-group-append>
-                        <b-button
-                          :disabled="!filter"
-                          @click="filter = ''">
-                          Очистить
-                        </b-button>
-                      </b-input-group-append>
-                    </b-input-group>
-                  </b-form-group>
-
-                  <div>
-                    <export-excel
-                      class="btn btn-primary"
-                      :data="transactions.data.result"
-                      :fields="columns"
-                      type="xlsx"
-                      name="Транзакции.xlsx">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="currentColor"
-                        class="bi bi-file-earmark-excel"
-                        viewBox="0 0 16 16">
-                        <path
-                          d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                        <path
-                          d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-                      </svg>
-                      Скачать
-                    </export-excel>
-                  </div>
                 </div>
               </b-card>
               <h6 class="text-center mb-1 mt-1">
@@ -881,13 +869,13 @@ import {
   BForm,
   BFormGroup,
   BFormSelect,
-  BInputGroup,
+  // BInputGroup,
   BLink,
   BBadge,
   BCardHeader,
   BFormTextarea,
   // VBTooltip,
-  BInputGroupAppend,
+  // BInputGroupAppend,
 } from 'bootstrap-vue';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
@@ -928,9 +916,9 @@ export default {
     BTable,
     BFormSelect,
     BPagination,
-    BInputGroup,
+    // BInputGroup,
     BProgress,
-    BInputGroupAppend,
+    // BInputGroupAppend,
     BCardHeader,
     BBadge,
   },
@@ -1283,6 +1271,18 @@ export default {
         fullMessage: null,
         limit_id: this.getRandom(),
       }],
+      fieldsSM: [
+        {
+          key: 'date',
+          label: 'Дата',
+          sortable: true,
+        },
+        {
+          key: 'summ',
+          label: 'Сумма',
+          sortable: true,
+        },
+      ],
 
       // Telegram
       token: '5136675120:AAEKRZ1r_X1TGOct4vWGWhkBMB3Z1JyeXLI',

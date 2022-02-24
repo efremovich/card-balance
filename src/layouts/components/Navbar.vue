@@ -99,7 +99,7 @@ import {
 } from 'bootstrap-vue';
 
 import DarkToggler from '@core/layouts/components/app-navbar/components/DarkToggler.vue';
-import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+// import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import useJwt from '../../auth/jwt/useJwt';
 
 export default {
@@ -121,26 +121,26 @@ export default {
     },
   },
   created() {
-    useJwt.getCurrenUser().then((response) => {
-      console.log('На форме:', response);
-      if (response.data.status) {
-        this.$store.dispatch('user/getUserData', response.data).then(() => {
-          this.userData = response.data;
-        });
-      } else {
-        this.$toast({
-          component: ToastificationContent,
-          position: 'top-right',
-          props: {
-            title: 'Oшибка',
-            icon: 'alertoctagonicon',
-            variant: 'danger',
-            text: 'Ошибка авторизации',
-          },
-        });
-        this.$router.push({ name: 'auth-login' });
-      }
-    });
+    // useJwt.getCurrenUser().then((response) => {
+    //   console.log('На форме:', response);
+    //   if (response.data.status) {
+    //     this.$store.dispatch('user/getUserData', response.data).then(() => {
+    //       this.userData = response.data;
+    //     });
+    //   } else {
+    //     this.$toast({
+    //       component: ToastificationContent,
+    //       position: 'top-right',
+    //       props: {
+    //         title: 'Oшибка',
+    //         icon: 'alertoctagonicon',
+    //         variant: 'danger',
+    //         text: 'Ошибка авторизации',
+    //       },
+    //     });
+    //     this.$router.push({ name: 'auth-login' });
+    //   }
+    // });
   },
   methods: {
     logout() {

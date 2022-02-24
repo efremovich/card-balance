@@ -468,11 +468,11 @@ export default class JwtService {
   // }
 
   // Отдать поставщика
-  async getProvider(id) {
+  async getProvider(id, param) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/organisation/${id}`,
+        `/api/organisation/${id}?${param}`,
       );
       return response;
     }

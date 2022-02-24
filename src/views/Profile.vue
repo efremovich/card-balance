@@ -491,14 +491,14 @@ export default {
     onClose() {
       this.popoverShow = false;
     },
-    resetPhoto() {
-      useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
-        // console.log('Сброс фото', response);
-        // this.image = this.twin.avatar;
-        this.twin = response;
-      });
-      // return this.twin;
-    },
+    // resetPhoto() {
+    //   useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
+    //     // console.log('Сброс фото', response);
+    //     // this.image = this.twin.avatar;
+    //     this.twin = response;
+    //   });
+    //   // return this.twin;
+    // },
     onOk() {
       this.onClose();
     },

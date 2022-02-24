@@ -77,25 +77,25 @@ export default {
       visible: false,
     };
   },
-  beforeCreate() {
-    useJwt.getCurrenUser().then((response) => {
-      if (!response.status) {
-        this.$ability.update(initialAbility);
-        // Redirect to login page
-        this.$router.push({ name: 'auth-login' });
-      }
-    });
-  },
-  beforeMount() {
-    useJwt.getCurrenUser().then((response) => {
-      if (response.data.status) {
-        this.$store.dispatch('user/getUserData', response.data).then(() => {
-          this.userData = response.data;
-          // console.log(this.userData);
-        });
-      }
-    });
-  },
+  // beforeCreate() {
+  //   useJwt.getCurrenUser().then((response) => {
+  //     if (!response.status) {
+  //       this.$ability.update(initialAbility);
+  //       // Redirect to login page
+  //       this.$router.push({ name: 'auth-login' });
+  //     }
+  //   });
+  // },
+  // beforeMount() {
+  //   useJwt.getCurrenUser().then((response) => {
+  //     if (response.data.status) {
+  //       this.$store.dispatch('user/getUserData', response.data).then(() => {
+  //         this.userData = response.data;
+  //         // console.log(this.userData);
+  //       });
+  //     }
+  //   });
+  // },
 
   methods: {
     change() {

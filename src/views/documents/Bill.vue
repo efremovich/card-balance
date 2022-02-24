@@ -393,7 +393,8 @@ export default {
       visible: false,
       download: false,
       NDS: 20,
-      directorSing: null,
+      // directorSing: null,
+      getStamp: null,
     };
   },
   computed: {
@@ -436,7 +437,7 @@ export default {
       this.contractId = this.yetContract.contract.id;
     } else this.contractId = this.gotSelectedContract;
     this.getOrgID(this.contractId);
-    this.getChangeContract(this.contractId);
+    // this.getChangeContract(this.contractId);
   },
 
   mounted() {
@@ -448,21 +449,30 @@ export default {
       return today.toLocaleDateString();
     },
     getOrgID(val) {
+      console.log('getOrgID');
       useJwt.getOrgId(val)
         .then((response) => {
           if (response.status) {
             this.organisationId = response.data;
+            this.getStamp = this.organisationId.data.organisation.stamp.split().length;
             this.dateContract = this.organisationId.data.date.split('').splice(0, 10).join('');
             this.fullContract = `${this.organisationId.data.number} от ${this.dateContract}`;
             const filter = this.organisationId.data.organisation_id;
-            useJwt.getProvider(filter)
-              .then((status) => {
-                if (status.status) {
-                  this.provider = status.data;
-                  this.directorSing = this.provider.data.accountant_sign;
-                  // console.log(this.provider);
-                }
-              });
+            if (this.getStamp > 1 || this.getStamp !== null || this.getStamp !== undefined) {
+              useJwt.getProvider(filter, `with_stamp=${this.getStamp}`)
+                .then((status) => {
+                  if (status.status) {
+                    this.provider = status.data;
+                  }
+                });
+            } else {
+              useJwt.getProvider(filter)
+                .then((status) => {
+                  if (status.status) {
+                    this.provider = status.data;
+                  }
+                });
+            }
           }
         });
     },

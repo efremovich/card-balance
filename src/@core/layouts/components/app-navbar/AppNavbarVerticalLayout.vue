@@ -79,7 +79,7 @@ export default {
     return {
       userData: null,
       option: [],
-      getInfo: null,
+      // getInfo: null,
       contract: null,
     };
   },
@@ -124,10 +124,10 @@ export default {
         });
       }
     });
-    this.userData = JSON.parse(localStorage.getItem('userData'));
-    if (this.userData) {
-      this.getInfo = this.userData;
-    }
+    // this.userData = JSON.parse(localStorage.getItem('userData'));
+    // if (this.userData) {
+    //   this.getInfo = this.userData;
+    // }
     return { data: { status: false } };
   },
   methods: {

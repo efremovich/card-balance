@@ -12,7 +12,7 @@
     <div v-if="download">
       <div class="column">
         <div class="row">
-          <div class="col-md-6">
+          <div :class="[{'col-md-6':getWidth !== 'xs'}]">
             <b-col>
               <b-overlay
                 :show="showLoading"
@@ -586,12 +586,7 @@ export default {
         this.$store.dispatch('getContractId', value.id);
       },
     },
-    // getActiveCard() {
-    //   return this.cardBalance.card_statistic.filter((status) => status.card_status.code === 'ACTIVE').length;
-    // },
-    // getNotActiveCard() {
-    //   return this.cardBalance.card_statistic.filter((status) => status.card_status.code !== 'ACTIVE').length;
-    // },
+
     getCardsSumm() {
       return this.statisticsData.cardStatistic.map((el) => el.total).reduce((el, summ) => el + summ, 0);
     },
@@ -609,9 +604,6 @@ export default {
     },
   },
   watch: {
-    // gotSelected(val) {
-    //   this.onChange(val);
-    // },
     gotSelectedContract(val) {
       this.getCardStatistica(val);
       this.onChange(val);
@@ -634,12 +626,6 @@ export default {
             const result = response.data;
             this.yetContract = result;
             this.makeOptions(result);
-
-            // useJwt.getBalance().then((res) => {
-            //   if (res.data.status) {
-            //     this.cardBalance = response.data;
-            //   }
-            // });
           });
         }
         // return this.userData;
@@ -649,6 +635,7 @@ export default {
       this.onChange(this.ID);
       this.getCardStatistica(this.ID);
     }
+
     // this.showLoading = false;
     return { data: { status: false } };
   },
@@ -842,7 +829,6 @@ export default {
     сhange() {
       // this.$store.dispatch('getContractNumber', this.selected.number);
       // this.$store.dispatch('getContractId', this.selected.id);
-      // console.log(this.$store.getters.CONTRACT_ID);
       this.showLoading = true;
       useJwt.changeContract(this.$store.getters.CONTRACT_ID)
         .then((response) => {
