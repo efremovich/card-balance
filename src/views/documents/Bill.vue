@@ -449,7 +449,6 @@ export default {
       return today.toLocaleDateString();
     },
     getOrgID(val) {
-      console.log('getOrgID');
       useJwt.getOrgId(val)
         .then((response) => {
           if (response.status) {

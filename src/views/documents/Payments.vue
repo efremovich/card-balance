@@ -10,7 +10,7 @@
     rounded="md">
     <div v-if="loadDone">
       <b-card>
-        <h3> Платежи за период с {{ getStartDate }} по {{ getEndDate }} составляют  <span class="text-success">{{ requests.data.result.reduce((ac,el)=>ac+el.summ,0) }}</span> рублей.</h3>
+        <h3> Платежи за период с {{ getStartDate }} по {{ getEndDate }} составляют  <span class="text-success">{{ (requests.data.result.reduce((ac,el)=>ac+el.summ,0)).toLocaleString() }}</span> рублей.</h3>
         <b-card-body>
           <div class="d-flex justify-content-between flex-wrap align-items-end">
             <b-form-group

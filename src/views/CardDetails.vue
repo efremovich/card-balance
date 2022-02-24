@@ -112,14 +112,21 @@
         <div
           v-if="totalRows>0 "
           class="ml-2 mb-2 mt-2">
-          <h5>Всего за период с {{ firstDayOfMonth }} по {{ lastDay }} по карте  №<code>{{ number }}</code> потреблено топлива <code>{{ allConsumptionSumm.toFixed(2) }}</code> л. на сумму <code>{{ summAllTransactions.toFixed(2) }}</code> руб., из них:</h5>
+          <h5>Всего за период с {{ firstDayOfMonth }} по {{ lastDay }} по карте  №<code>{{ number }}</code> потреблено топлива <code>{{ allConsumptionSumm.toLocaleString() }}</code> л. на сумму <code>{{ summAllTransactions.toLocaleString() }}</code> руб., из них:</h5>
           <template
             v-for="(item,index) in dataCharts">
             <li
+              v-if="getWidth !=='xs'"
               :key="index"
               class="ml-2">
-              <h5> {{ item.name }} : {{ item.value }} руб. / {{ item.consumption.toFixed(2) }} л. ; </h5>
+              <h5> {{ item.name }} : {{ item.value.toLocaleString() }} руб. / {{ item.consumption.toFixed(2) }} л. ; </h5>
             </li>
+
+            <h5
+              :key="index"
+              v-esle>
+              {{ item.name }} : {{ item.value.toLocaleString() }} руб. / {{ item.consumption.toFixed(2) }} л. ;
+            </h5>
           </template>
         </div>
         <b-tabs
@@ -431,12 +438,12 @@
                         </b-col>
                       </b-row>
 
-                      <b-button
+                      <!-- <b-button
                         size="sm"
                         variant="outline-secondary"
                         @click="row.toggleDetails">
                         Скрыть детали
-                      </b-button>
+                      </b-button> -->
                     </b-card>
                   </template>
 

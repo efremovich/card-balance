@@ -176,12 +176,12 @@
                     </b-col>
                   </b-row>
 
-                  <b-button
+                  <!-- <b-button
                     size="sm"
                     variant="outline-secondary"
                     @click="row.toggleDetails">
                     Скрыть детали
-                  </b-button>
+                  </b-button> -->
                 </b-card>
               </template>
 
@@ -242,6 +242,11 @@
                     <b-col
                       md="4"
                       class="mb-1">
+                      <strong>Номер карты : </strong>{{ row.item.card_number }}
+                    </b-col>
+                    <b-col
+                      md="4"
+                      class="mb-1">
                       <strong>Количество : </strong>{{ row.item.quantity }}
                     </b-col>
                     <b-col
@@ -256,12 +261,12 @@
                     </b-col>
                   </b-row>
 
-                  <b-button
+                  <!-- <b-button
                     size="sm"
                     variant="outline-secondary"
                     @click="row.toggleDetails">
                     Скрыть детали
-                  </b-button>
+                  </b-button> -->
                 </b-card>
               </template>
 

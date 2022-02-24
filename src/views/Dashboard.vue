@@ -275,7 +275,6 @@
             ref="consumption"
             action-close
             action-refresh
-            action-collapse
             title="Динамика потребления"
             @refresh="refreshConsumption('consumption')">
             <b-overlay
@@ -326,6 +325,7 @@
 
                 <!-- apex chart -->
                 <vue-apex-charts
+                  v-if="getWidth !== 'xs'"
                   type="line"
                   height="240"
                   :options="revenueComparisonLine.chartOptions"
@@ -338,7 +338,6 @@
             ref="consumption"
             action-close
             action-refresh
-            action-collapse
             title="Динамика потребления"
             @refresh="refreshConsumption('consumption')">
             <b-card-body class="pb-0">
