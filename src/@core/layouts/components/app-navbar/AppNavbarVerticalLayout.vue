@@ -33,7 +33,8 @@
           label="number"
           :options="option"
           :clearable="false"
-          class="w-50" />
+          class="w-75"
+          style="max-heigth:30px;" />
       </div>
       <b-navbar-nav class="nav flex-nowrap align-items-center justify-content-end ml-auto w-25">
         <dark-Toggler class="d-none d-lg-block" />

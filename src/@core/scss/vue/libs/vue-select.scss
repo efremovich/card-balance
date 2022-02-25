@@ -41,6 +41,8 @@ $vs-dropdown-box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.1);
   .vs--single & {
     padding-left: 6px;
   }
+  overflow: clip; // высота селекта при выборе и усечение
+  max-height: 35px;
 }
 
 
@@ -172,6 +174,7 @@ $vs-dropdown-box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.1);
   border-bottom-left-radius: $vs-border-radius;
   border-bottom-right-radius: $vs-border-radius;
   box-shadow: $input-focus-box-shadow;
+  // max-height: 40px;
 }
 
 // Tag styling

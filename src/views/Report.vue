@@ -256,7 +256,9 @@
             <template #row-details="row">
               <b-table
                 :items="row.item.details[0]"
-                :fields="fieldsDetails">
+                :fields="fieldsDetails"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc">
                 <template #cell(date)="cell">
                   <b-col @click="row.toggleDetails">
                     {{ cell.item.date | formatDate }}

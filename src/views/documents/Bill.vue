@@ -10,7 +10,7 @@
     <div
       v-if="download">
       <b-card>
-        <p>Создать счёт по договору №  {{ contract }}</p>
+        <p>Создать счёт по договору № {{ organisationId.data.number }} от {{ organisationId.data.date | formatDateNoTime }}</p>
         <v-select
           v-model="selected"
           :clearable="false"
@@ -186,8 +186,8 @@
                 </td>
                 <td>
                   <div style="font-weight:bold;padding-left:2px;">
-                    ИНН {{ organisationId.data.organisation.inn }}, КПП {{ organisationId.data.organisation.kpp }}, {{ organisationId.data.organisation.full_name }}, <br>
-                    <span style="font-weight: normal;">{{ organisationId.data.organisation.legal_address }}</span>
+                    ИНН {{ organisationId.data.company.inn }}, КПП {{ organisationId.data.company.kpp }}, {{ organisationId.data.company.full_name }}, <br>
+                    <span style="font-weight: normal;">{{ organisationId.data.company.legal_address }}</span>
                   </div>
                 </td>
               </tr>
@@ -420,9 +420,9 @@ export default {
     getRandom() {
       return Math.floor(Math.random() * 10000);
     },
-    contract() {
-      return this.fullContract;
-    },
+    // contract() {
+    //   return this.fullContract;
+    // },
   },
   watch: {
     gotSelectedContract(val) {
@@ -455,13 +455,14 @@ export default {
             this.organisationId = response.data;
             this.getStamp = this.organisationId.data.organisation.stamp.split().length;
             this.dateContract = this.organisationId.data.date.split('').splice(0, 10).join('');
-            this.fullContract = `${this.organisationId.data.number} от ${this.dateContract}`;
-            const filter = this.organisationId.data.organisation_id;
+            // this.fullContract = `${this.organisationId.data.number} от ${this.dateContract}`;
+            const filter = this.organisationId.data.organisation.id;
             if (this.getStamp > 1 || this.getStamp !== null || this.getStamp !== undefined) {
               useJwt.getProvider(filter, `with_stamp=${this.getStamp}`)
                 .then((status) => {
                   if (status.status) {
                     this.provider = status.data;
+                    console.log(this.provider);
                   }
                 });
             } else {

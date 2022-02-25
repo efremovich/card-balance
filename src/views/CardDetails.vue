@@ -459,7 +459,7 @@
                 <!-- page length -->
                 <b-form-group
                   label="На странице"
-                  label-cols="6"
+                  label-cols="7"
                   label-align="left"
                   label-size="sm"
                   label-for="sortBySelect"
