@@ -204,8 +204,32 @@
               opacity=".75"
               rounded="md">
               <b-card-actions
+                v-if="!isBudget"
                 ref="expenses"
                 title="Расход за текущий месяц:"
+                action-refresh
+                @refresh="refreshExpenses('expenses')">
+                <div class="d-flex justify-content-between">
+                  <h4>{{ getMonthName(-1) | title }}:</h4>
+                  <h4 class="text-danger">
+                    {{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
+                      style: 'currency',
+                      currency: 'RUB'
+                    }) }}
+                  </h4>
+                </div>
+
+                <b-table
+                  v-if="currentConsumption !==null && (currentConsumption.currentConsumption.length !== null && currentConsumption.currentConsumption.length>0)"
+                  hover
+                  responsive
+                  :items="currentConsumption.currentConsumption"
+                  :fields="fields" />
+              </b-card-actions>
+              <b-card-actions
+                v-if="isBudget"
+                ref="expenses"
+                title="Остатки по контрактам:"
                 action-refresh
                 @refresh="refreshExpenses('expenses')">
                 <div class="d-flex justify-content-between">
@@ -430,17 +454,21 @@ export default {
     return {
       // getInfo: null,
       userData: {},
+      consumer: null,
       blur: '5px',
       opacity: 0.85,
       // userInfo: null,
       selectContract: null,
       cardBalance: {},
+      organisationId: null,
       statisticsData: null,
       currentConsumption: null,
       consumptionDinamic: null,
       currentConsumptionDynamic: null,
       dateUpdate: null,
       date: null,
+      budgetConsumption: null,
+      isBudget: this.$store.state.status,
       cardStatisticsData: [],
       option: [],
       mapStatus: {
@@ -633,10 +661,32 @@ export default {
       this.ID = this.gotSelectedContract;
       this.onChange(this.ID);
       this.getCardStatistica(this.ID);
-    }
+
+      useJwt.getOrgId(this.ID)
+        .then((response) => {
+          if (response.status) {
+            this.organisationId = response.data;
+            const filterID = this.organisationId.data.company_id;
+            useJwt.getConsumer(filterID)
+              .then((status) => {
+                if (status.status) {
+                  this.consumer = status.data;
+                  this.isBudget = this.consumer.data.contracts.map((el) => el).some((el) => el.is_budget);
+                  this.$store.commit('setStatus', this.isBudget);
+                }
+              });
+            useJwt.getValueServices(this.ID)
+              .then((status) => {
+                if (status.status) {
+                  this.budgetConsumption = status.data;
+                  console.log('бюджет', this.budgetConsumption);
+                }
+              });
+          }
+        });
 
     // this.showLoading = false;
-    return { data: { status: false } };
+    } // return { data: { status: false } };
   },
   mounted() {
     // if (this.gotSelectedContract !== null) {
@@ -826,8 +876,8 @@ export default {
         });
     },
     сhange() {
-      // this.$store.dispatch('getContractNumber', this.selected.number);
-      // this.$store.dispatch('getContractId', this.selected.id);
+      this.$store.dispatch('getContractNumber', this.selected.number);
+      this.$store.dispatch('getContractId', this.selected.id);
       this.showLoading = true;
       useJwt.changeContract(this.$store.getters.CONTRACT_ID)
         .then((response) => {

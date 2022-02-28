@@ -16,6 +16,7 @@ export default new Vuex.Store({
     visible: false,
     contractNumber: null,
     contractId: null,
+    status: null,
     cardsView: '',
     selectedPage: 1,
     cardNumber: null,
@@ -39,6 +40,9 @@ export default new Vuex.Store({
     getCardsView({ commit }, payload) {
       commit('setCardsView', payload);
     },
+    getStatus({ commit }, payload) {
+      commit('setStatus', payload);
+    },
 
   },
   mutations: {
@@ -57,6 +61,9 @@ export default new Vuex.Store({
     setCardsView(state, cardsView) {
       state.cardsView = cardsView;
     },
+    setStatus(state, status) {
+      state.status = status;
+    },
     selectCardNumber(state, payload) {
       state.cardNumber = payload;
     },
@@ -67,6 +74,7 @@ export default new Vuex.Store({
     CONTRACT_NUMBER: (state) => state.contractNumber,
     CARDS_VIEW: (state) => state.cardsView,
     CARD_NUMBER: (state) => state.cardNumber,
+    STATUS_ORG: (state) => state.status,
   },
   modules: {
     app,

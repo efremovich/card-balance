@@ -81,7 +81,7 @@
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
 
               <b-badge
-                v-if="!getStatusRequests(product.request_status)"
+                v-if="getStatusRequests(product.request_status)"
                 class="badge-glow position-absolute mar"
                 pill
                 variant="warning">
@@ -136,7 +136,7 @@
                 :to="{ name: 'card', params: { card_number: product.number } }">
                 <div class="d-flex flex-column align-items-center">
                   <b-badge
-                    v-if="!getStatusRequests(product.request_status)"
+                    v-if="getStatusRequests(product.request_status)"
                     pill
                     variant="warning"
                     class="badge-glow position-absolute list-badge">
@@ -382,7 +382,7 @@
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
 
               <b-badge
-                v-if="!getStatusRequests(product.request_status)"
+                v-if="getStatusRequests(product.request_status)"
                 class="badge-glow position-absolute mar"
                 pill
                 variant="warning">

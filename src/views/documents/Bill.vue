@@ -75,7 +75,7 @@
                     style="height: 13mm;">
                     <tr>
                       <td valign="top">
-                        <div> {{ organisationId.data.pay_account.name }} </div>
+                        <div> {{ providerPay.data.name }} </div>
                       </td>
                     </tr>
                     <tr>
@@ -96,9 +96,9 @@
                   rowspan="2"
                   style="vertical-align: top; width: 60mm;">
                   <div style=" height: 7mm; line-height: 7mm; vertical-align: middle;">
-                    {{ organisationId.data.pay_account.bik }}
+                    {{ providerPay.data.bik }}
                   </div>
-                  <div> {{ organisationId.data.pay_account.cor_account }}</div>
+                  <div> {{ providerPay.data.cor_account }}</div>
                 </td>
               </tr>
               <tr>
@@ -108,10 +108,10 @@
               </tr>
               <tr>
                 <td style="min-height:6mm; height:auto; width: 50mm;">
-                  <div>ИНН {{ organisationId.data.company.inn }}</div>
+                  <div>ИНН: {{ provider.data.inn }}</div>
                 </td>
                 <td style="min-height:6mm; height:auto; width: 55mm;">
-                  <div>КПП {{ organisationId.data.company.kpp }}</div>
+                  <div>КПП: {{ provider.data.kpp }}</div>
                 </td>
                 <td
                   rowspan="2"
@@ -121,7 +121,7 @@
                 <td
                   rowspan="2"
                   style="min-height:19mm; height:auto; vertical-align: top; width: 60mm;">
-                  <div>{{ organisationId.data.pay_account.checking_account }}</div>
+                  <div>{{ providerPay.data.checking_account }}</div>
                 </td>
               </tr>
               <tr>
@@ -186,8 +186,8 @@
                 </td>
                 <td>
                   <div style="font-weight:bold;padding-left:2px;">
-                    ИНН {{ organisationId.data.company.inn }}, КПП {{ organisationId.data.company.kpp }}, {{ organisationId.data.company.full_name }}, <br>
-                    <span style="font-weight: normal;">{{ organisationId.data.company.legal_address }}</span>
+                    ИНН {{ consumer.data.inn }}, КПП {{ consumer.data.kpp }}, {{ consumer.data.full_name }}, <br>
+                    <span style="font-weight: normal;">{{ consumer.data.legal_address }}</span>
                   </div>
                 </td>
               </tr>
@@ -317,6 +317,7 @@
                   {{ provider.data.director }}
                 </h6>
                 <b-img
+                  v-if="getStamp"
                   class="position-relative"
                   :src="provider.data.director_sign"
                   style="right:280px;bottom:25px"
@@ -333,6 +334,7 @@
                   {{ provider.data.accountant }}
                 </h6>
                 <b-img
+                  v-if="getStamp"
                   class="position-relative"
                   :src="provider.data.accountant_sign"
                   style="right:260px;bottom:25px"
@@ -343,6 +345,7 @@
               <br>
 
               <b-img
+                v-if="getStamp"
                 class="position-relative"
                 :src="provider.data.stamp"
                 style="left:440px;bottom:170px"
@@ -386,15 +389,17 @@ export default {
       selected: 'Оплата за ГСМ согласно договора поставки ',
       contractId: null,
       yetContract: null,
-      organisationId: '',
+      organisationId: {},
       allPayAccounts: null,
       summ: '',
       payAccount: null,
       visible: false,
       download: false,
       NDS: 20,
-      // directorSing: null,
-      getStamp: null,
+      providerPay: null,
+      getStamp: false,
+      consumer: null,
+      isBudget: false,
     };
   },
   computed: {
@@ -453,26 +458,32 @@ export default {
         .then((response) => {
           if (response.status) {
             this.organisationId = response.data;
-            this.getStamp = this.organisationId.data.organisation.stamp.split().length;
-            this.dateContract = this.organisationId.data.date.split('').splice(0, 10).join('');
-            // this.fullContract = `${this.organisationId.data.number} от ${this.dateContract}`;
-            const filter = this.organisationId.data.organisation.id;
-            if (this.getStamp > 1 || this.getStamp !== null || this.getStamp !== undefined) {
-              useJwt.getProvider(filter, `with_stamp=${this.getStamp}`)
-                .then((status) => {
-                  if (status.status) {
-                    this.provider = status.data;
-                    console.log(this.provider);
+            const filterID = this.organisationId.data.company_id;
+            const id = this.organisationId.data.organisation_id;
+            const filter = this.organisationId.data.pay_account_id; // Здесь получаю ID,номер и дату договора для заголовка и основания  платежа
+            useJwt.getAllpayAccountsFrom(filter)
+              .then((status) => {
+                if (status.status) {
+                  this.providerPay = status.data;
+                }
+              });
+
+            useJwt.getProvider(id, 'with_stamp=1')
+              .then((status) => {
+                if (status.status) {
+                  this.provider = status.data;
+                  if (this.provider.data.accountant_sign.slice('').length > 20) {
+                    this.getStamp = true;
                   }
-                });
-            } else {
-              useJwt.getProvider(filter)
-                .then((status) => {
-                  if (status.status) {
-                    this.provider = status.data;
-                  }
-                });
-            }
+                }
+              });
+
+            useJwt.getConsumer(filterID)
+              .then((status) => {
+                if (status.status) {
+                  this.consumer = status.data;
+                }
+              });
           }
         });
     },

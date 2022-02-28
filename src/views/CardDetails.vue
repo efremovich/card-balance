@@ -119,13 +119,13 @@
               v-if="getWidth !=='xs'"
               :key="index"
               class="ml-2">
-              <h5> {{ item.name }} : {{ item.value.toLocaleString() }} руб. / {{ item.consumption.toFixed(2) }} л. ; </h5>
+              <h5> {{ item.name }} :   <span v-if="gotStatus !== 'true'">{{ item.value.toLocaleString() }} руб. / </span> {{ item.consumption.toFixed(2) }} л.  ; </h5>
             </li>
 
             <h5
-              :key="index"
-              v-esle>
-              {{ item.name }} : {{ item.value.toLocaleString() }} руб. / {{ item.consumption.toFixed(2) }} л. ;
+              v-else
+              :key="index">
+              {{ item.name }} :  <span v-if="gotStatus !== 'true'">{{ item.value.toLocaleString() }} руб. / </span> {{ item.consumption.toFixed(2) }} л. ;
             </h5>
           </template>
         </div>
@@ -893,6 +893,7 @@ import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 import { ref, computed } from '@vue/composition-api';
 import Fuse from 'fuse.js';
 import AppEchartDoughnut from '@core/components/charts/echart/AppEchartDoughnut.vue';
+import { mapGetters } from 'vuex';
 import { useRouter } from '../@core/utils/utils';
 import useJwt from '../auth/jwt/useJwt';
 
@@ -1263,7 +1264,7 @@ export default {
       sortDesc: false,
       sortDirection: 'asc',
       required,
-      userData: null,
+      // userData: null,
       saveChange: false,
       comparison: true,
       newServices: [],
@@ -1317,6 +1318,9 @@ export default {
     getRequestStatus() {
       return this.getStatusRequests(this.cardData.data.request_status);
     },
+    ...mapGetters({
+      gotStatus: 'STATUS_ORG',
+    }),
   },
   watch: {
     'cardData.data.limits': {
