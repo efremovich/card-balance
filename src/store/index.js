@@ -40,7 +40,7 @@ export default new Vuex.Store({
     getCardsView({ commit }, payload) {
       commit('setCardsView', payload);
     },
-    getStatus({ commit }, payload) {
+    getStatus({ commit }, payload) { // Надо определять статус организации: коммерц. или бюджет
       commit('setStatus', payload);
     },
 
@@ -61,8 +61,8 @@ export default new Vuex.Store({
     setCardsView(state, cardsView) {
       state.cardsView = cardsView;
     },
-    setStatus(state, status) {
-      state.status = status;
+    setStatus(state, payload) {
+      state.status = payload;
     },
     selectCardNumber(state, payload) {
       state.cardNumber = payload;

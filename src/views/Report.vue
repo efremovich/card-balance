@@ -62,7 +62,7 @@
             <div
               class="pie-text">
               <div v-if="!download">
-                <h5 v-if="!download">
+                <h5 v-if="!isBudget">
                   Всего израсходованно за период: <code>{{ transactions }}</code> рублей.
                 </h5>
               </div>
@@ -78,7 +78,10 @@
                   <li
                     v-for="(item) in consumptionData"
                     :key="item.id">
-                    <h5> {{ item.name }}: <code>{{ item.consumption.toLocaleString() }} л.</code>  на сумму <code>{{ item.value.toLocaleString() }} руб.;</code> </h5>
+                    <h5>
+                      {{ item.name }}: <code>{{ item.consumption.toLocaleString() }} л.</code>  <span
+                        v-if="!isBudget">на сумму <code>{{ item.value.toLocaleString() }} руб.;</code> </span>
+                    </h5>
                   </li>
                 </ul>
                 <div v-if="getWidth ==='xs'">
@@ -104,34 +107,36 @@
           v-if="resultLength && getWidth !=='xs'">
           <label
             class="mt-2"
-            for="labelServices">Выберите вид отчёта:</label>
-          <div class="d-flex w-100 justify-content-between">
-            <div :class="['w-75',{'d-flex w-75 align-items-center justify-content-start':selectable!==null},]">
-              <v-select
-                id="labelServices"
-                v-model="selectable"
-                :class="['w-50',{'w-100': getWidth === 'xs'}]"
-                :options="arrReport" />
-              <export-excel
-                v-if="selectable==='транзакционный'"
-                class="ml-1 btn btn-primary"
-                :data="emptyArr.data.result"
-                :fields="columns"
-                type="xls"
-                :name="`Транзакционный отчёт за период с ${getStartDate} по ${getEndDate}.xls`">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="currentColor"
-                  class="bi bi-file-earmark-excel"
-                  viewBox="0 0 16 16">
-                  <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                  <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-                </svg>
-                Скачать
-              </export-excel>
-              <export-excel
+            for="labelServices">Выберете вид отчёта:</label>
+          <div class="flex-column">
+            <div class="d-flex w-100 justify-content-between">
+              <div :class="['w-75',{'d-flex w-75 align-items-center justify-content-start':selectable!==null},]">
+                <v-select
+                  id="labelServices"
+                  v-model="selectable"
+                  :class="['w-50',{'w-100': getWidth === 'xs'}]"
+                  :options="arrReport" />
+                <export-excel
+                  v-if="selectable==='транзакционный'"
+                  class="ml-1 btn btn-primary"
+                  :data="emptyArr.data.result"
+                  :fields="columns"
+                  :escape-csv="true"
+                  type="xls"
+                  :name="`Транзакционный отчёт за период с ${getStartDate} по ${getEndDate}.xls`">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    fill="currentColor"
+                    class="bi bi-file-earmark-excel"
+                    viewBox="0 0 16 16">
+                    <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
+                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                  </svg>
+                  Скачать
+                </export-excel>
+                <!-- <export-excel
                 v-if="selectable==='оперативный'"
                 class="ml-1 btn btn-primary"
                 :data="dataReport"
@@ -149,53 +154,179 @@
                   <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
                 </svg>
                 Скачать
-              </export-excel>
+              </export-excel> -->
+                <b-button
+                  v-if="selectable==='оперативный'"
+                  variant="primary"
+                  class="ml-2"
+                  @click="downloadOperReport">
+                  <!-- <feather-icon
+                  icon="ArrowDownCircleIcon" /> -->
+                  <span class="align-middle">Скачать</span>
+                </b-button>
+              </div>
+              <b-form-group
+                v-if="selectable!==null"
+                class="mb-0 w-25 ">
+                <b-input-group
+                  class="d-flex"
+                  size="sm">
+                  <b-form-input
+                    id="filterInput"
+                    v-model="filter"
+                    placeholder="Найти"
+                    type="search" />
+                  <b-input-group-append>
+                    <b-button
+                      :disabled="!filter"
+                      @click="filter = ''">
+                      Очистить
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form-group>
             </div>
-            <b-form-group
-              v-if="selectable!==null"
-              class="mb-0 w-25 ">
-              <b-input-group
-                class="d-flex"
-                size="sm">
-                <b-form-input
-                  id="filterInput"
-                  v-model="filter"
-                  placeholder="Найти"
-                  type="search" />
-                <b-input-group-append>
-                  <b-button
-                    :disabled="!filter"
-                    @click="filter = ''">
-                    Очистить
-                  </b-button>
-                </b-input-group-append>
-              </b-input-group>
-            </b-form-group>
-          </div>
+            <div v-if="selectable!==null">
+              <div class="w-100">
+                <label
+                  class="mt-2"
+                  for="selectCard">Выберете карту:</label>
+                <v-select
+                  id="selectCard"
+                  v-model="selected"
+                  :disabled="selectedHolder !== null"
+                  multiple
+                  :options="option"
+                  class="w-25" />
+                <label
+                  class="mt-2"
+                  for="selectCard">Выберете держателя:</label>
+                <v-select
+                  id="selectCard"
+                  v-model="selectedHolder"
+                  :disabled="selected !== null"
+                  multiple
+                  :options="holders"
+                  class="w-25" />
+              </div>
+            </div>
 
-          <div v-if="selectable==='транзакционный'">
+            <div v-if="selectable==='транзакционный'">
+              <b-table
+                hover
+                responsive
+                class="position-relative table-hover text-center mt-1"
+                :per-page="perPage"
+                :current-page="currentPage"
+                :items="emptyArr.data.result"
+                :fields="fields"
+                :sort-by.sync="sortBy"
+                :sort-desc.sync="sortDesc"
+                :sort-direction="sortDirection"
+                :filter="filter"
+                :filter-included-fields="filterOn">
+                <template #cell(date)="row">
+                  <b-col>
+                    {{ row.item.date | formatDate }}
+                  </b-col>
+                </template>
+              </b-table>
+              <b-pagination
+                v-model="currentPage"
+                :total-rows="totalRows"
+                :per-page="perPage"
+                first-number
+                last-number
+                prev-class="prev-item"
+                next-class="next-item"
+                class="mb-0 mt-1">
+                <template #prev-text>
+                  <feather-icon
+                    icon="ChevronLeftIcon"
+                    size="18" />
+                </template>
+                <template #next-text>
+                  <feather-icon
+                    icon="ChevronRightIcon"
+                    size="18" />
+                </template>
+              </b-pagination>
+            </div>
+          </div>
+          <div v-if="selectable==='оперативный'">
             <b-table
               hover
               responsive
               class="position-relative table-hover text-center mt-1"
               :per-page="perPage"
               :current-page="currentPage"
-              :items="emptyArr.data.result"
-              :fields="fields"
+              :items="dataReport"
+              :fields="fieldsOper"
               :sort-by.sync="sortBy"
               :sort-desc.sync="sortDesc"
               :sort-direction="sortDirection"
               :filter="filter"
               :filter-included-fields="filterOn">
-              <template #cell(date)="row">
-                <b-col>
-                  {{ row.item.date | formatDate }}
+              <template #cell(Details)="row">
+                <b-button
+                  variant="gradient-primary"
+                  pill
+                  size="sm"
+                  @click="row.toggleDetails">
+                  Детали
+                </b-button>
+              </template>
+              <template #cell(quantity)="row">
+                <b-col @click="row.toggleDetails">
+                  {{ row.item.quantity.toFixed(2) }}
                 </b-col>
               </template>
+              <template #cell(holder)="row">
+                <b-col @click="row.toggleDetails">
+                  {{ row.item.holder }}
+                </b-col>
+              </template>
+              <template #cell(AllSumm)="row">
+                <b-col @click="row.toggleDetails">
+                  {{ row.item.AllSumm.toFixed(2) }}
+                </b-col>
+              </template>
+              <template #row-details="row">
+                <b-table
+                  :items="row.item.details[0]"
+                  :fields="fieldsDetails"
+                  :sort-by.sync="sortBy"
+                  :sort-desc.sync="sortDesc">
+                  <template #cell(date)="cell">
+                    <b-col @click="row.toggleDetails">
+                      {{ cell.item.date | formatDate }}
+                    </b-col>
+                  </template>
+                  <b-button
+                    class="ml-1"
+                    pill
+                    size="sm"
+                    @click="row.toggleDetails">
+                    Детали
+                  </b-button>
+                </b-table>
+                <export-excel
+                  class="mt-1 btn btn-primary"
+                  :data="row.item.details[0]"
+                  :fields="fieldsPrint"
+                  :title="`Транзакции по карте по карте № ${row.item.details[0][0].card_number}`"
+                  type="xls"
+                  :name="`Отчёт по карте № ${row.item.details[0][0].card_number} за период с ${getStartDate} по ${getEndDate}.xls`">
+                  <h5 class="text-white">
+                    Скачать отчёт по карте № {{ row.item.details[0][0].card_number }}
+                  </h5>
+                </export-excel>
+              </template>
             </b-table>
+
             <b-pagination
               v-model="currentPage"
-              :total-rows="totalRows"
+              :total-rows="arrUniqueCards"
               :per-page="perPage"
               first-number
               last-number
@@ -214,98 +345,6 @@
               </template>
             </b-pagination>
           </div>
-        </div>
-        <div v-if="selectable==='оперативный'">
-          <b-table
-            hover
-            responsive
-            class="position-relative table-hover text-center mt-1"
-            :per-page="perPage"
-            :current-page="currentPage"
-            :items="dataReport"
-            :fields="fieldsOper"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="sortDesc"
-            :sort-direction="sortDirection"
-            :filter="filter"
-            :filter-included-fields="filterOn">
-            <template #cell(Details)="row">
-              <b-button
-                variant="gradient-primary"
-                pill
-                size="sm"
-                @click="row.toggleDetails">
-                Детали
-              </b-button>
-            </template>
-            <template #cell(quantity)="row">
-              <b-col @click="row.toggleDetails">
-                {{ row.item.quantity.toFixed(2) }}
-              </b-col>
-            </template>
-            <template #cell(holder)="row">
-              <b-col @click="row.toggleDetails">
-                {{ row.item.holder }}
-              </b-col>
-            </template>
-            <template #cell(AllSumm)="row">
-              <b-col @click="row.toggleDetails">
-                {{ row.item.AllSumm.toFixed(2) }}
-              </b-col>
-            </template>
-            <template #row-details="row">
-              <b-table
-                :items="row.item.details[0]"
-                :fields="fieldsDetails"
-                :sort-by.sync="sortBy"
-                :sort-desc.sync="sortDesc">
-                <template #cell(date)="cell">
-                  <b-col @click="row.toggleDetails">
-                    {{ cell.item.date | formatDate }}
-                  </b-col>
-                </template>
-                <b-button
-                  class="ml-1"
-                  pill
-                  size="sm"
-                  @click="row.toggleDetails">
-                  Детали
-                </b-button>
-              </b-table>
-              <export-excel
-                class="mt-1 btn btn-primary"
-                :data="row.item.details[0]"
-                :fields="fieldsPrint"
-                :title="`Транзакции по карте по карте № ${row.item.details[0][0].card_number}`"
-                type="xls"
-                :name="`Отчёт по карте № ${row.item.details[0][0].card_number} за период с ${getStartDate} по ${getEndDate}.xls`">
-                <h5 class="text-white">
-                  Скачать отчёт по карте № {{ row.item.details[0][0].card_number }}
-                </h5>
-              </export-excel>
-            </template>
-          </b-table>
-
-          <b-pagination
-            v-model="currentPage"
-            :total-rows="arrUniqueCards"
-            :per-page="perPage"
-            first-number
-            last-number
-            prev-class="prev-item"
-            next-class="next-item"
-            class="mb-0 mt-1">
-            <template #prev-text>
-              <feather-icon
-                icon="ChevronLeftIcon"
-                size="18" />
-            </template>
-            <template #next-text>
-              <feather-icon
-                icon="ChevronRightIcon"
-                size="18" />
-            </template>
-          </b-pagination>
         </div>
       </b-card>
     </div>
@@ -334,6 +373,7 @@ import { Russian } from 'flatpickr/dist/l10n/ru';
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import vSelect from 'vue-select';
 import store from '@/store';
+// import axios from '@axios';
 import useJwt from '../auth/jwt/useJwt';
 
 export default {
@@ -365,13 +405,18 @@ export default {
       start: null,
       arrUniqueCards: null,
       end: null,
+      selected: null,
+      selectedHolder: null,
       download: false,
       totalRows: null,
       transactions: {},
       rangeDate: null,
       resultLength: true,
       consumptions: null,
-      operReport: {},
+      operReport: '',
+      isBudget: this.$store.state.status,
+      option: [],
+      holders: [],
       perPage: 5,
       dataDetails: [],
       pageOptions: [3, 5, 10],
@@ -379,6 +424,7 @@ export default {
       dataTable: [],
       currentPage: 1,
       filterOn: [],
+      response: null,
       emptyArr: {},
       consumptionData: [],
       config: {
@@ -588,6 +634,7 @@ export default {
   computed: {
     ...mapGetters({
       gotSelectedContract: 'CONTRACT_ID',
+      gotStatus: 'STATUS_ORG',
 
     }),
     getWidth() {
@@ -603,6 +650,7 @@ export default {
   watch: {
     gotSelectedContract(val) {
       this.getTransactions(val);
+      this.getAllCards(val);
       this.contractId = val;
     },
     selectable(val) {
@@ -626,6 +674,7 @@ export default {
     this.end = `${this.isToday()} 23:59:59`;
     this.rangeDate = [this.start, this.end];
     this.getTransactions(this.contractId);
+    this.getAllCards(this.contractId);
   },
   methods: {
     isToday() {
@@ -676,7 +725,6 @@ export default {
               numberObject.details.push(this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]));
               this.dataReport.push(numberObject);
             }
-            // console.log(this.dataReport);
             this.download = false;
             // Конец отчёта
             const arr = allLabels[0];
@@ -733,7 +781,6 @@ export default {
         this.start = `${date} 00:00:00`;
         // eslint-disable-next-line prefer-template
         this.end = date + ' 23:59:59';
-        console.log(this.end);
       } else {
         const newDate = Array.from(date).filter((n) => n !== '—');
         const arr = newDate.join('').split('00:00:00');
@@ -742,8 +789,6 @@ export default {
         this.start = trim[0] + ' 00:00:00';
         // eslint-disable-next-line prefer-template
         this.end = trim[1] + ' 23:59:59';
-      // this.rangeDate = [this.start, this.end];
-      // console.log(this.rangeDate);
       }
     },
     getToast() {
@@ -785,6 +830,36 @@ export default {
     },
     getRandom() {
       return Math.floor(Math.random() * 10000);
+    },
+
+    getAllCards(val) {
+      this.option = [];
+      this.holders = [];
+      useJwt.getCards(val).then((response) => {
+        if (response.data.status) {
+          this.response = response.data;
+          this.response.cards.forEach((el) => {
+            this.option.push(el.number);
+            this.holders.push(el.holder);
+          });
+        }
+      });
+    },
+    downloadOperReport() {
+      const date = this.rangeDate;
+      const newDate = Array.from(date).filter((n) => n !== '—');
+      const arr = newDate.join('').split('00:00:00');
+      const trim = arr.join('').split(' ').filter((n) => n !== '');
+      // eslint-disable-next-line prefer-template
+      this.start = trim[0] + ' 00:00:00';
+      // eslint-disable-next-line prefer-template
+      this.end = trim[1] + ' 23:59:59';
+      useJwt.getOperReport('contract_id=0b0a454e-c684-11ea-9130-d017c2c9f767&startDate=01.04.2021 00:00:00&endDate=30.04.2021 00:00:00&card_number=7005830014599575,7005830014599336').then((response) => {
+        if (response.data.status) {
+          console.log(response.data.status);
+          // this.operReport = response.data;
+        }
+      });
     },
   },
 

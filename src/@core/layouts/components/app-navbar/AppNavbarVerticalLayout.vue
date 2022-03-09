@@ -107,14 +107,7 @@ export default {
       return this.getWidth;
     },
   },
-  // created() {
-  //   const storage = JSON.parse(localStorage.getItem('userData'));
-  //   if (storage) {
-  //     this.contract = storage;
-  //     // this.selected = this.contract.contract.number;
-  //     console.log(this.contract);
-  //   }
-  // },
+
   beforeMount() {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {

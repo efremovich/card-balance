@@ -1091,9 +1091,6 @@ export default {
           const label = Array.from(services.value.map((el) => el.label));
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < idService.length; i++) {
-            // labelService.value.name = label[i];
-            // labelService.value.id = idService[i];
-
             labelService.value[idService[i]] = label[i];
           }
           allLabelService.value = Object.entries(labelService.value); // приведение к массиву
@@ -1264,6 +1261,7 @@ export default {
       sortDesc: false,
       sortDirection: 'asc',
       required,
+      operReport: null,
       // userData: null,
       saveChange: false,
       comparison: true,

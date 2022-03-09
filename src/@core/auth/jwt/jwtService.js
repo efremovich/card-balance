@@ -491,12 +491,27 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
-  // Значения для бюджетных организаций (потребление за месяц)
-  async getValueServices(id) {
+  // Отчёт (оперативный)
+  async getOperReport(id) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/contractsSettings/${id}`,
+        `/api/getOperReport/${id}`,
+        {
+          responseType: 'arraybuffer',
+        },
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Значения для бюджетных организаций (потребление за месяц)
+  async getValueServices() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        '/api/contractsSettings',
       );
       return response;
     }

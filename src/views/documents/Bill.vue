@@ -369,6 +369,7 @@ import useJwt from '@/auth/jwt/useJwt';
 import vSelect from 'vue-select';
 import { mapGetters } from 'vuex';
 import store from '@/store';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 
 export default {
   components: {
@@ -378,6 +379,7 @@ export default {
     BOverlay,
     vSelect,
     BImg,
+    // ToastificationContent,
   },
   data() {
     return {
@@ -461,10 +463,26 @@ export default {
             const filterID = this.organisationId.data.company_id;
             const id = this.organisationId.data.organisation_id;
             const filter = this.organisationId.data.pay_account_id; // Здесь получаю ID,номер и дату договора для заголовка и основания  платежа
+            console.log('Filter', filter);
             useJwt.getAllpayAccountsFrom(filter)
               .then((status) => {
                 if (status.status) {
                   this.providerPay = status.data;
+                  // console.log('providerPay', this.providerPay);
+                  if (this.providerPay.data === null) {
+                    this.$toast({
+                      component: ToastificationContent,
+                      props: {
+                        title: '🙄 Ошибка. Попробуйте позже, а мы пока починим 👨‍🔧',
+                        icon: 'AlertTriangleIcon',
+                        variant: 'warning',
+                      },
+                    });
+
+                    setTimeout(() => {
+                      this.route();
+                    }, 1500);
+                  }
                 }
               });
 
@@ -502,6 +520,9 @@ export default {
       if (this.summ.split('').length > 0) {
         this.visible = true;
       } else this.visible = false;
+    },
+    route() {
+      this.$router.push({ name: 'dashboard' });
     },
     getPrint() {
       this.$htmlToPaper('check');

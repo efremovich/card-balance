@@ -563,7 +563,6 @@ export default {
         }
       });
     };
-    // cardDate(512809229);
     fetchShopProducts();
 
     // watch([filters], () => {

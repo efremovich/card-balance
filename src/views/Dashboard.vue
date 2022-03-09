@@ -228,26 +228,18 @@
               </b-card-actions>
               <b-card-actions
                 v-if="isBudget"
-                ref="expenses"
+                ref="expensesBD"
                 title="Остатки по контрактам:"
                 action-refresh
-                @refresh="refreshExpenses('expenses')">
-                <div class="d-flex justify-content-between">
+                @refresh="refreshExpensesBD('expensesBD')">
+                <!-- <div class="d-flex justify-content-between">
                   <h4>{{ getMonthName(-1) | title }}:</h4>
-                  <h4 class="text-danger">
-                    {{ currentConsumptionDynamic.consumptionData.this_month.toLocaleString('ru-RU', {
-                      style: 'currency',
-                      currency: 'RUB'
-                    }) }}
-                  </h4>
-                </div>
-
+                </div> -->
                 <b-table
-                  v-if="currentConsumption !==null && (currentConsumption.currentConsumption.length !== null && currentConsumption.currentConsumption.length>0)"
                   hover
                   responsive
-                  :items="currentConsumption.currentConsumption"
-                  :fields="fields" />
+                  :items="tableBD"
+                  :fields="fieldsBudget" />
               </b-card-actions>
             </b-overlay>
           </b-col>
@@ -467,6 +459,8 @@ export default {
       currentConsumptionDynamic: null,
       dateUpdate: null,
       date: null,
+      tableBD: [],
+      allService: null,
       budgetConsumption: null,
       isBudget: this.$store.state.status,
       cardStatisticsData: [],
@@ -504,6 +498,20 @@ export default {
         {
           key: 'summ',
           label: 'Сумма',
+        },
+      ],
+      fieldsBudget: [
+        {
+          key: 'remainz',
+          label: 'Вид топлива',
+        },
+        {
+          key: 'initialtValue',
+          label: 'Начальное значение',
+        },
+        {
+          key: 'currentValue',
+          label: 'Остаток',
         },
       ],
       // GEO
@@ -603,6 +611,7 @@ export default {
     ...mapGetters({
       gotSelected: 'CONTRACT_NUMBER',
       gotSelectedContract: 'CONTRACT_ID',
+      gotStatus: 'STATUS_ORG',
     }),
     selected: {
       get() {
@@ -662,6 +671,14 @@ export default {
       this.onChange(this.ID);
       this.getCardStatistica(this.ID);
 
+      useJwt.getServiceFromEmitent()
+        .then((response) => {
+          if (response.data.status) {
+            this.allService = response.data.data;
+            // console.log('services', this.allService);
+          }
+        });
+
       useJwt.getOrgId(this.ID)
         .then((response) => {
           if (response.status) {
@@ -672,14 +689,26 @@ export default {
                 if (status.status) {
                   this.consumer = status.data;
                   this.isBudget = this.consumer.data.contracts.map((el) => el).some((el) => el.is_budget);
-                  this.$store.commit('setStatus', this.isBudget);
+                  // console.log('created', this.isBudget);
+                  this.$store.dispatch('getStatus', this.isBudget);
                 }
               });
-            useJwt.getValueServices(this.ID)
+            useJwt.getValueServices()
               .then((status) => {
                 if (status.status) {
                   this.budgetConsumption = status.data;
-                  console.log('бюджет', this.budgetConsumption);
+                  this.tableBD = [];
+                  if (this.budgetConsumption.data.length > 0) {
+                    // eslint-disable-next-line no-plusplus
+                    for (let i = 0; i < this.budgetConsumption.data.length; i++) {
+                      const objectConsumption = {};
+                      objectConsumption.currentValue = this.budgetConsumption.data[i].current_value;
+                      objectConsumption.initialtValue = this.budgetConsumption.data[i].initial_value;
+                      // eslint-disable-next-line prefer-destructuring
+                      objectConsumption.remainz = this.allService.filter((el) => el.id === this.budgetConsumption.data[i].service_id).map((el) => el.full_name)[0];
+                      this.tableBD.push(objectConsumption);
+                    }
+                  }
                 }
               });
           }
@@ -689,10 +718,6 @@ export default {
     } // return { data: { status: false } };
   },
   mounted() {
-    // if (this.gotSelectedContract !== null) {
-    //   this.onChange(this.gotSelectedContract);
-    // }
-
     useJwt.getCurrentConsumption().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getCurrentConsumption', response.data).then(() => {
@@ -732,7 +757,6 @@ export default {
         this.option.push({ 'number': el.number, 'id': el.id });
       });
     },
-    // stop refreshing card in 3 sec
     refreshCardStatistic(card) {
       useJwt.getCardStatistic().then((response) => {
         if (response.data.status) {
@@ -763,6 +787,29 @@ export default {
         }
       });
     },
+
+    refreshExpensesBD(card) {
+      useJwt.getValueServices()
+        .then((status) => {
+          if (status.status) {
+            this.budgetConsumption = status.data;
+            this.tableBD = [];
+            if (this.budgetConsumption.data.length > 0) {
+              // eslint-disable-next-line no-plusplus
+              for (let i = 0; i < this.budgetConsumption.data.length; i++) {
+                const objectConsumption = {};
+                objectConsumption.currentValue = this.budgetConsumption.data[i].current_value;
+                objectConsumption.initialtValue = this.budgetConsumption.data[i].initial_value;
+                // eslint-disable-next-line prefer-destructuring
+                objectConsumption.remainz = this.allService.filter((el) => el.id === this.budgetConsumption.data[i].service_id).map((el) => el.full_name)[0];
+                this.tableBD.push(objectConsumption);
+              }
+              this.$refs[card].showLoading = false;
+            }
+          }
+        });
+    },
+
     refreshInformation(card) {
       useJwt.getCurrenUser().then((response) => {
         if (response.data.status) {
