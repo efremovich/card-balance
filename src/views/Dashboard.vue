@@ -204,7 +204,7 @@
               opacity=".75"
               rounded="md">
               <b-card-actions
-                v-if="!isBudget"
+                v-if="!gotStatus"
                 ref="expenses"
                 title="Расход за текущий месяц:"
                 action-refresh
@@ -227,7 +227,7 @@
                   :fields="fields" />
               </b-card-actions>
               <b-card-actions
-                v-if="isBudget"
+                v-if="gotStatus"
                 ref="expensesBD"
                 title="Остатки по контрактам:"
                 action-refresh
@@ -462,7 +462,7 @@ export default {
       tableBD: [],
       allService: null,
       budgetConsumption: null,
-      isBudget: this.$store.state.status,
+      isBudget: null,
       cardStatisticsData: [],
       option: [],
       mapStatus: {
@@ -479,7 +479,6 @@ export default {
         Finance: 'Финансовая блокировка:',
 
         Return: 'Сдано:',
-
       },
 
       yetContract: null,
@@ -514,17 +513,6 @@ export default {
           label: 'Остаток',
         },
       ],
-      // GEO
-      // url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      // zoom: 10,
-      // center: [45.0352566, 38.9764814],
-      // markerLatLng: [45.0352566, 38.9764814],
-      // circle: {
-      //   center: [45.0352566, 38.9764814],
-      //   radius: 150,
-      //   color: '#EA5455',
-      // },
-      // end GEO
       revenue: {},
       revenueComparisonLine: {
         chartOptions: {
@@ -626,9 +614,6 @@ export default {
     getCardsSumm() {
       return this.statisticsData.cardStatistic.map((el) => el.total).reduce((el, summ) => el + summ, 0);
     },
-    // gotSelected() {
-    //   return this.$store.getters.CONTRACT_NUMBER;
-    // },
     getUpdate() {
       return this.dateUpdate.split('').slice(0, 10).join('');
     },
@@ -675,7 +660,6 @@ export default {
         .then((response) => {
           if (response.data.status) {
             this.allService = response.data.data;
-            // console.log('services', this.allService);
           }
         });
 
@@ -689,7 +673,6 @@ export default {
                 if (status.status) {
                   this.consumer = status.data;
                   this.isBudget = this.consumer.data.contracts.map((el) => el).some((el) => el.is_budget);
-                  // console.log('created', this.isBudget);
                   this.$store.dispatch('getStatus', this.isBudget);
                 }
               });
@@ -708,6 +691,9 @@ export default {
                       objectConsumption.remainz = this.allService.filter((el) => el.id === this.budgetConsumption.data[i].service_id).map((el) => el.full_name)[0];
                       this.tableBD.push(objectConsumption);
                     }
+                  } else {
+                    console.log(this.ID);
+                    console.log(this.tableBD.length);
                   }
                 }
               });
@@ -789,6 +775,7 @@ export default {
     },
 
     refreshExpensesBD(card) {
+      this.$refs[card].showLoading = true;
       useJwt.getValueServices()
         .then((status) => {
           if (status.status) {
@@ -804,9 +791,9 @@ export default {
                 objectConsumption.remainz = this.allService.filter((el) => el.id === this.budgetConsumption.data[i].service_id).map((el) => el.full_name)[0];
                 this.tableBD.push(objectConsumption);
               }
-              this.$refs[card].showLoading = false;
             }
           }
+          this.$refs[card].showLoading = false;
         });
     },
 

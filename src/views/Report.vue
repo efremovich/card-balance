@@ -8,7 +8,8 @@
     blur="5px"
     opacity=".75"
     rounded="md">
-    <div v-if="!download">
+    <div
+      v-if="!download">
       <b-card
         title="Отчёты и графики">
         <div class="w-100">
@@ -23,7 +24,7 @@
               id="flatPicker"
               v-model="rangeDate"
               size="sm"
-              :class="['form-control','mb-0',{'w-100': getWidth === 'xs'}]"
+              :class="['form-control','w-50','mb-0',{'w-100': getWidth === 'xs'}]"
               :config="config"
               @on-change="selectDate" />
           </b-form-group>
@@ -161,7 +162,7 @@
                   class="ml-2"
                   @click="downloadOperReport">
                   <!-- <feather-icon
-                  icon="ArrowDownCircleIcon" /> -->
+                    icon="DownloadCloudIcon" /> -->
                   <span class="align-middle">Скачать</span>
                 </b-button>
               </div>
@@ -373,7 +374,7 @@ import { Russian } from 'flatpickr/dist/l10n/ru';
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import vSelect from 'vue-select';
 import store from '@/store';
-// import axios from '@axios';
+import axios from '@axios';
 import useJwt from '../auth/jwt/useJwt';
 
 export default {
@@ -413,7 +414,7 @@ export default {
       rangeDate: null,
       resultLength: true,
       consumptions: null,
-      operReport: '',
+      operReport: null,
       isBudget: this.$store.state.status,
       option: [],
       holders: [],
@@ -711,7 +712,6 @@ export default {
             const arrUniqueCards = Array.from(uniqueCards);
             this.dataTable = [];
             this.arrUniqueCards = Array.from(uniqueCards).length;
-            // const objectOper = {};
             // eslint-disable-next-line no-plusplus
             for (let i = 0; i < arrUniqueCards.length; i++) {
               const numberObject = {};
@@ -854,15 +854,22 @@ export default {
       this.start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
       this.end = trim[1] + ' 23:59:59';
-      useJwt.getOperReport('contract_id=0b0a454e-c684-11ea-9130-d017c2c9f767&startDate=01.04.2021 00:00:00&endDate=30.04.2021 00:00:00&card_number=7005830014599575,7005830014599336').then((response) => {
-        if (response.data.status) {
-          console.log(response.data.status);
-          // this.operReport = response.data;
-        }
+      console.log('ID', this.contractId);
+      axios.get(`/api/getOperReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=7005830014599575,7005830014599336`, {
+        responseType: 'blob',
+      }).then((response) => {
+        const url = URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute(
+          'download',
+          `Отчёт от ${new Date().toLocaleDateString()}.xlsx`,
+        );
+        document.body.appendChild(link);
+        link.click();
       });
     },
   },
-
 };
 
 </script>

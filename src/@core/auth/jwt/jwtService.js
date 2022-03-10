@@ -496,10 +496,10 @@ export default class JwtService {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
-        `/api/getOperReport/${id}`,
-        {
-          responseType: 'arraybuffer',
-        },
+        `/api/getOperReport?${id}`,
+        // {
+        //   responseType: 'arraybuffer',
+        // },
       );
       return response;
     }
