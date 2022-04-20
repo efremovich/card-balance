@@ -117,26 +117,15 @@
                   v-model="selectable"
                   :class="['w-50',{'w-100': getWidth === 'xs'}]"
                   :options="arrReport" />
-                <export-excel
+                <b-button
                   v-if="selectable==='транзакционный'"
-                  class="ml-1 btn btn-primary"
-                  :data="emptyArr.data.result"
-                  :fields="columns"
-                  :escape-csv="true"
-                  type="xls"
-                  :name="`Транзакционный отчёт за период с ${getStartDate} по ${getEndDate}.xls`">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    fill="currentColor"
-                    class="bi bi-file-earmark-excel"
-                    viewBox="0 0 16 16">
-                    <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-                  </svg>
-                  Скачать
-                </export-excel>
+                  variant="primary"
+                  class="ml-2"
+                  @click="downloadTransReport">
+                  <!-- <feather-icon
+                    icon="DownloadCloudIcon" /> -->
+                  <span class="align-middle">Скачать</span>
+                </b-button>
                 <!-- <export-excel
                 v-if="selectable==='оперативный'"
                 class="ml-1 btn btn-primary"
@@ -198,7 +187,7 @@
                   :disabled="selectedHolder !== null"
                   multiple
                   :options="option"
-                  class="w-25" />
+                  class="w-50" />
                 <label
                   class="mt-2"
                   for="selectCard">Выберете держателя:</label>
@@ -208,7 +197,7 @@
                   :disabled="selected !== null"
                   multiple
                   :options="holders"
-                  class="w-25" />
+                  class="w-50" />
               </div>
             </div>
 
@@ -663,6 +652,17 @@ export default {
 
       // }
     },
+    selectedHolder(val) {
+      if (val.length < 1) {
+        this.selectedHolder = null;
+      }
+    },
+    selected(val) {
+      if (val.length < 1) {
+        this.selected = null;
+      }
+    },
+
   },
 
   beforeMount() {
@@ -840,6 +840,8 @@ export default {
           this.response = response.data;
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
+          });
+          this.response.holders.forEach((el) => {
             this.holders.push(el.holder);
           });
         }
@@ -854,20 +856,74 @@ export default {
       this.start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
       this.end = trim[1] + ' 23:59:59';
-      console.log('ID', this.contractId);
-      axios.get(`/api/getOperReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=7005830014599575,7005830014599336`, {
-        responseType: 'blob',
-      }).then((response) => {
-        const url = URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute(
-          'download',
-          `Отчёт от ${new Date().toLocaleDateString()}.xlsx`,
-        );
-        document.body.appendChild(link);
-        link.click();
-      });
+      if (this.selected === null) {
+        axios.get(`/api/getOperReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`, {
+          responseType: 'blob',
+        }).then((response) => {
+          const url = URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute(
+            'download',
+            `Оперативный отчёт от ${new Date().toLocaleDateString()}.xlsx`,
+          );
+          document.body.appendChild(link);
+          link.click();
+        });
+      } else {
+        axios.get(`/api/getOperReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`, {
+          responseType: 'blob',
+        }).then((response) => {
+          const url = URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute(
+            'download',
+            `Оперативный отчёт от ${new Date().toLocaleDateString()}.xlsx`,
+          );
+          document.body.appendChild(link);
+          link.click();
+        });
+      }
+    },
+    downloadTransReport() {
+      const date = this.rangeDate;
+      const newDate = Array.from(date).filter((n) => n !== '—');
+      const arr = newDate.join('').split('00:00:00');
+      const trim = arr.join('').split(' ').filter((n) => n !== '');
+      // eslint-disable-next-line prefer-template
+      this.start = trim[0] + ' 00:00:00';
+      // eslint-disable-next-line prefer-template
+      this.end = trim[1] + ' 23:59:59';
+      if (this.selected !== null) {
+        axios.get(`api/getTransReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`, {
+          responseType: 'blob',
+        }).then((response) => {
+          const url = URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute(
+            'download',
+            `Транзакционный отчёт от ${new Date().toLocaleDateString()}.xlsx`,
+          );
+          document.body.appendChild(link);
+          link.click();
+        });
+      } else {
+        axios.get(`/api/getTransReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`, {
+          responseType: 'blob',
+        }).then((response) => {
+          const url = URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute(
+            'download',
+            `Транзакционный отчёт от ${new Date().toLocaleDateString()}.xlsx`,
+          );
+          document.body.appendChild(link);
+          link.click();
+        });
+      }
     },
   },
 };

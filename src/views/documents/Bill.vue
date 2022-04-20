@@ -463,7 +463,6 @@ export default {
             const filterID = this.organisationId.data.company_id;
             const id = this.organisationId.data.organisation_id;
             const filter = this.organisationId.data.pay_account_id; // Здесь получаю ID,номер и дату договора для заголовка и основания  платежа
-            console.log('Filter', filter);
             useJwt.getAllpayAccountsFrom(filter)
               .then((status) => {
                 if (status.status) {
