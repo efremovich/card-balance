@@ -693,7 +693,7 @@ export default {
                     }
                   } else {
                     console.log(this.ID);
-                    console.log(this.tableBD.length);
+                    console.log(this.tableBD);
                   }
                 }
               });

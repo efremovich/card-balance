@@ -835,9 +835,11 @@ export default {
     getAllCards(val) {
       this.option = [];
       this.holders = [];
+      console.log(val);
       useJwt.getCards(val).then((response) => {
         if (response.data.status) {
           this.response = response.data;
+          console.log('response:', this.response);
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
           });
