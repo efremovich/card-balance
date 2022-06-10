@@ -6,11 +6,11 @@ import axios from 'axios';
 const axiosIns = axios.create({
   // You can add your headers here
   // ================================
-  baseURL: 'https://api.cargo.re-base.ru:8000',
+  baseURL: 'https://re-base.ru/',
   timeout: 10000,
+  // headers: { 'Access-Control-Allow-Origin': '*' },
   // headers: {'X-Custom-Header': 'foobar'}
 });
-
 Vue.prototype.$http = axiosIns;
 
 export default axiosIns;
