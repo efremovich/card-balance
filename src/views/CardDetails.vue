@@ -58,7 +58,7 @@
                 Держатель:
               </h6>
               <b-form-input
-                :value="cardData.data.holder" />
+                v-model="Holder" />
             </div>
           </div>
           <div v-if="getWidth !== 'xs'">
@@ -82,6 +82,7 @@
             <b-button
               v-if="cardData.data.card_status_id !=='ACTIVE'"
               variant="success"
+              :disabled="cardData.data.card_status_id ==='FINANCE'"
               :class="['btn' ,{'mb-2':getWidth !== 'xs'}]"
               @click="getUnlockCard(product)">
               Разблокировать карту
@@ -658,7 +659,8 @@
               <h6 class="ml-1">
                 Держатель:
               </h6>
-              <b-form-input :value="cardData.data.holder" />
+              <b-form-input
+                v-model="cardHolder" />
             </div>
           </div>
 
@@ -678,8 +680,9 @@
               v-if="cardData.data.card_status_id !=='ACTIVE'"
               variant="success"
               class="btn mb-2"
+              :disable="cardData.data.card_status_id ==='FINANSE'"
               @click="getUnlockCard()">
-              Разблокировать карту
+              {{ cardData.data.card_status_id }}
               <feather-icon
                 icon="unlock"
                 class="mr-50" />
@@ -967,6 +970,8 @@ export default {
     const number = ref(null);
     const requests = ref(null);
     const allLabelService = ref(null);
+    const cardHolder = ref(null);
+    const cardHolderSource = ref(null);
     const fields = [
       {
         key: 'service.full_name',
@@ -1190,6 +1195,9 @@ export default {
         cardEmitentCode.value = cardData.value.data.emitent.code;
         limitsLength.value = cardData.value.data.limits.length;
         source.value = JSON.parse(JSON.stringify(cardData.value.data.limits));
+        cardHolderSource.value = JSON.parse(JSON.stringify(cardData.value.data.holder));
+        cardHolder.value = cardData.value.data.holder;
+        // для изменения имени держателя
         getService(cardEmitentCode.value);
       }
     });
@@ -1252,6 +1260,8 @@ export default {
       services,
       periodLabel,
       number,
+      cardHolder,
+      cardHolderSource,
     };
   },
   data() {
@@ -1262,6 +1272,7 @@ export default {
       sortDirection: 'asc',
       required,
       operReport: null,
+      Holder: this.cardHolder,
       // userData: null,
       saveChange: false,
       comparison: true,
@@ -1325,13 +1336,32 @@ export default {
       deep: true,
       handler(val) {
         if (JSON.stringify(val) === JSON.stringify(this.source)) {
-          this.comparison = true;
+          const type = true;
+          if (type === true && this.comparison === false) {
+            this.comparison = false;
+          } if (type === true && this.comparison === true) {
+            this.comparison = true;
+          }
         } else {
           this.comparison = false;
           this.newLimits = val;
         }
       },
     },
+    Holder(val) {
+      if (JSON.stringify(val) === JSON.stringify(this.cardHolderSource)) {
+        const type = true;
+        if (type === true && this.comparison === false) {
+          this.comparison = false;
+        } if (type === true && this.comparison === true) {
+          this.comparison = true;
+        }
+      } else {
+        this.comparison = false;
+        this.Holder = val;
+      }
+    },
+
     saveChange() {
       if (this.saveChange === true) {
         this.sendRequest();
@@ -1397,6 +1427,7 @@ export default {
         request_status_code: 'CREATED',
         contract_id: this.cardData.data.contract_id,
         limits: this.newLimits,
+        holder: this.Holder,
 
       }];
       useJwt.refreshDataUserLimits(request);
@@ -1441,7 +1472,7 @@ export default {
               variant: 'success',
             },
           });
-          const fullMessage = `Клиент:${this.nameOrg} (карта номер:${this.number}) жалуется на то,что ${this.selectedError}\n. Считает, что ${this.text}.`;
+          const fullMessage = `Клиент:${this.nameOrg} (карта номер:${this.number}) жалуется на то,что ${this.selectedError}./n Считает, что ${this.text}.`;
           this.$http.post(`https://api.telegram.org/bot5136675120:AAEKRZ1r_X1TGOct4vWGWhkBMB3Z1JyeXLI/sendMessage?chat_id=280997089&text=${fullMessage}`)
             .then((response) => {
               this.fullMessage = response;

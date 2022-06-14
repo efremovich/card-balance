@@ -226,7 +226,8 @@
                       class="mh"
                       title="Ещё">
                       <template
-                        v-for="(item,index) in (getLabelServicesLength(product.limits)-2)">
+                        v-for="(item,index) in (getLabelServicesLength(product.limits)-2)"
+                        class="p-0">
                         <h5
                           :key="index"
                           class="text-center pt-1 pr-1 pl-1">

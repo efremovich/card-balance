@@ -476,9 +476,9 @@ export default {
 
         LOST: 'Утеряно:',
 
-        Finance: 'Финансовая блокировка:',
+        FINANCE: 'Финансовая блокировка:',
 
-        Return: 'Сдано:',
+        RETURN: 'Сдано:',
       },
 
       yetContract: null,
