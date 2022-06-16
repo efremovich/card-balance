@@ -197,7 +197,8 @@
                 :sort-desc.sync="sortDesc"
                 :sort-direction="sortDirection"
                 :filter="filter"
-                :filter-included-fields="filterOn">
+                :filter-included-fields="filterOn"
+                @filtered="onFiltered">
                 <template #cell(date)="row">
                   <b-col>
                     {{ row.item.date | formatDate }}
@@ -239,7 +240,8 @@
               :sort-desc.sync="sortDesc"
               :sort-direction="sortDirection"
               :filter="filter"
-              :filter-included-fields="filterOn">
+              :filter-included-fields="filterOn"
+              @filtered="onFiltered">
               <template #cell(Details)="row">
                 <b-button
                   variant="gradient-primary"
@@ -784,7 +786,13 @@ export default {
         },
       });
     },
-
+    onFiltered(filteredItems) {
+      this.download = true;
+      // Trigger pagination to update the number of buttons/pages due to filtering
+      this.totalRows = filteredItems.length;
+      this.currentPage = 1;
+      this.download = false;
+    },
     selectDate() {
       //  const date = this.rangeDate;
       this.getDate();
@@ -892,7 +900,6 @@ export default {
       useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_holder=${this.selectedHolder}`).then((response) => {
         if (response.data.status) {
           this.emptyArr = response.data;
-          console.log(this.emptyArr);
           this.totalRows = this.emptyArr.data.total;
           if (this.totalRows < 1) {
             this.$toast({
