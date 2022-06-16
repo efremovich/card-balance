@@ -82,13 +82,13 @@
       <!-- SECTION: Menu -->
       <div class="customizer-section">
         <!-- Layout Type -->
-        <b-form-group
+        <!-- <b-form-group
           label="Расположение меню">
           <b-form-radio-group
             v-model="layoutType"
             name="layout-type"
             :options="layoutTypeOptions" />
-        </b-form-group>
+        </b-form-group> -->
 
         <!-- Collapsible -->
         <div

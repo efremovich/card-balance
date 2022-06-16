@@ -118,9 +118,8 @@
             v-for="(item,index) in dataCharts">
             <li
               v-if="getWidth !=='xs'"
-              :key="index"
-              class="ml-2">
-              <h5> {{ item.name }} :   <span v-if="gotStatus !== 'true'">{{ item.value.toLocaleString() }} руб. / </span> {{ item.consumption.toFixed(2) }} л.  ; </h5>
+              :key="index">
+              <code>{{ item.name }}</code> : {{ item.consumption.toFixed(2) }} л. на  <span v-if="gotStatus !== 'true'">{{ item.value.toLocaleString() }} руб.; </span>
             </li>
 
             <h5

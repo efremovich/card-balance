@@ -51,9 +51,9 @@ export default [
       },
     ],
   },
-  // {
-  //   title: 'Локатор',
-  //   route: 'locator',
-  //   icon: 'CompassIcon',
-  // },
+  {
+    title: 'Контакты',
+    route: 'locator',
+    icon: 'PhoneCallIcon',
+  },
 ];
