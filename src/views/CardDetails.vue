@@ -58,7 +58,8 @@
                 Держатель:
               </h6>
               <b-form-input
-                v-model="Holder" />
+                v-model="Holder"
+                @change="changeHolder(old,val)" />
             </div>
           </div>
           <div v-if="getWidth !== 'xs'">
@@ -1275,6 +1276,7 @@ export default {
       // userData: null,
       saveChange: false,
       comparison: true,
+      holderComparison: true,
       newServices: [],
       newLimits: [{
         limit_period_code: 'MONTH',
@@ -1335,28 +1337,19 @@ export default {
       deep: true,
       handler(val) {
         if (JSON.stringify(val) === JSON.stringify(this.source)) {
-          const type = true;
-          if (type === true && this.comparison === false) {
-            this.comparison = false;
-          } if (type === true && this.comparison === true) {
-            this.comparison = true;
-          }
+          this.comparison = true;
         } else {
           this.comparison = false;
           this.newLimits = val;
         }
       },
     },
-    Holder(val) {
+    Holder(old, val) {
       if (JSON.stringify(val) === JSON.stringify(this.cardHolderSource)) {
-        const type = true;
-        if (type === true && this.comparison === false) {
-          this.comparison = false;
-        } if (type === true && this.comparison === true) {
-          this.comparison = true;
-        }
+        console.log(old, val);
+        this.holderComparison = true;
       } else {
-        this.comparison = false;
+        this.holderComparison = false;
         this.Holder = val;
       }
     },
@@ -1418,6 +1411,9 @@ export default {
           this.showToast();
         }
       });
+    },
+    changeHolder(old, val) {
+      console.log(old, val);
     },
     sendRequest() {
       const request = [{

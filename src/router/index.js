@@ -71,7 +71,7 @@ Vue.mixin({
 
     //   });
     // }
-    if ((from.name === 'card' && this.comparison === false && this.saveChange === false)
+    if ((from.name === 'card' && (this.comparison === false || this.holderComparison === false) && this.saveChange === false)
     || (from.name === 'profile' && this.comparison === true && this.saveChange !== true)) {
       this.$bvModal
         .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {

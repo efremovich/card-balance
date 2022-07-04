@@ -73,6 +73,18 @@
       <vertical-nav-menu-items
         :items="navMenuItems"
         class="navigation navigation-main" />
+      <div
+        class="d-flex flex-column align-items-center w-100">
+        <h6 class="mt-1 mr-1">
+          Клиент:
+        </h6>
+        <v-select
+          v-model="selected"
+          label="number"
+          :options="option"
+          :clearable="false"
+          class="w-75" />
+      </div>
     </vue-perfect-scrollbar>
     <!-- /main menu content-->
   </div>
@@ -85,6 +97,7 @@ import { BLink, BImg } from 'bootstrap-vue';
 import { provide, computed, ref } from '@vue/composition-api';
 import useAppConfig from '@core/app-config/useAppConfig';
 import { $themeConfig } from '@themeConfig';
+import vSelect from 'vue-select';
 import VerticalNavMenuItems from './components/vertical-nav-menu-items/VerticalNavMenuItems.vue';
 import useVerticalNavMenu from './useVerticalNavMenu';
 
@@ -94,6 +107,8 @@ export default {
     VerticalNavMenuItems,
     BLink,
     BImg,
+    vSelect,
+
   },
   props: {
     isVerticalMenuActive: {
@@ -127,7 +142,7 @@ export default {
     };
 
     const collapseTogglerIconFeather = computed(() => (collapseTogglerIcon.value === 'unpinned' ? 'CircleIcon' : 'DiscIcon'));
-
+    const selected = 'ООО Рога и Копыта';
     // App Name
     const { appName, appLogoImage } = $themeConfig.app;
 
@@ -146,6 +161,7 @@ export default {
 
       // Skin
       skin,
+      selected,
 
       // App Name
       appName,
