@@ -453,7 +453,7 @@ export default {
         },
 
         {
-          key: 'service.label',
+          key: 'service.full_name',
           label: 'Тип топлива',
           sortable: true,
         },
@@ -488,7 +488,7 @@ export default {
           sortable: true,
         },
         {
-          key: 'service.label',
+          key: 'service.full_name',
           label: 'Тип топлива',
           sortable: true,
         },
