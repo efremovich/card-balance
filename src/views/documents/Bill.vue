@@ -480,7 +480,7 @@ export default {
 
                     setTimeout(() => {
                       this.route();
-                    }, 1500);
+                    }, 1000);
                   }
                 }
               });

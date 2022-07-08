@@ -98,6 +98,8 @@ import { provide, computed, ref } from '@vue/composition-api';
 import useAppConfig from '@core/app-config/useAppConfig';
 import { $themeConfig } from '@themeConfig';
 import vSelect from 'vue-select';
+import store from '@/store';
+// import { mapGetters } from 'vuex';
 import VerticalNavMenuItems from './components/vertical-nav-menu-items/VerticalNavMenuItems.vue';
 import useVerticalNavMenu from './useVerticalNavMenu';
 
@@ -130,6 +132,7 @@ export default {
     } = useVerticalNavMenu(props);
 
     const { skin } = useAppConfig();
+    const option = ref([]);
 
     // Shadow bottom is UI specific and can be removed by user => It's not in `useVerticalNavMenu`
     const shallShadowBottom = ref(false);
@@ -143,6 +146,13 @@ export default {
 
     const collapseTogglerIconFeather = computed(() => (collapseTogglerIcon.value === 'unpinned' ? 'CircleIcon' : 'DiscIcon'));
     const selected = 'ООО Рога и Копыта';
+    // const selected = computed(() => store.state.selectedCompany);
+    const someA = computed(() => store.getters.ALL_COMPANIES);
+    // option.value = someData.value;
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < someA.value.length; i++) {
+      option.value.push(someA.value[i]);
+    }
     // App Name
     const { appName, appLogoImage } = $themeConfig.app;
 
@@ -162,6 +172,7 @@ export default {
       // Skin
       skin,
       selected,
+      option,
 
       // App Name
       appName,

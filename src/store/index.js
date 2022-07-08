@@ -20,6 +20,8 @@ export default new Vuex.Store({
     cardsView: '',
     selectedPage: 1,
     cardNumber: null,
+    companies: null,
+    selectedCompany: null,
   },
   actions: {
     getVisible({ commit }) {
@@ -42,6 +44,12 @@ export default new Vuex.Store({
     },
     getStatus({ commit }, payload) { // Надо определять статус организации: коммерц. или бюджет
       commit('setStatus', payload);
+    },
+    getAllCompanies({ commit }, payload) {
+      commit('setAllCompanies', payload);
+    },
+    getCompany({ commit }, payload) {
+      commit('setCompany', payload);
     },
 
   },
@@ -67,6 +75,12 @@ export default new Vuex.Store({
     selectCardNumber(state, payload) {
       state.cardNumber = payload;
     },
+    setAllCompanies(state, payload) {
+      state.companies = payload;
+    },
+    setCompany(state, payload) {
+      state.selectedCompany = payload;
+    },
 
   },
   getters: {
@@ -75,6 +89,8 @@ export default new Vuex.Store({
     CARDS_VIEW: (state) => state.cardsView,
     CARD_NUMBER: (state) => state.cardNumber,
     STATUS_ORG: (state) => state.status,
+    ALL_COMPANIES: (state) => state.companies,
+    COMPANY: (state) => state.selectedCompany,
   },
   modules: {
     app,

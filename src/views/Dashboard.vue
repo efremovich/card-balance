@@ -459,6 +459,7 @@ export default {
       currentConsumptionDynamic: null,
       dateUpdate: null,
       date: null,
+      allCompanies: null,
       tableBD: [],
       allService: null,
       budgetConsumption: null,
@@ -691,9 +692,6 @@ export default {
                       objectConsumption.remainz = this.allService.filter((el) => el.id === this.budgetConsumption.data[i].service_id).map((el) => el.full_name)[0];
                       this.tableBD.push(objectConsumption);
                     }
-                  } else {
-                    console.log(this.ID);
-                    console.log(this.tableBD);
                   }
                 }
               });
@@ -718,6 +716,7 @@ export default {
         });
       }
     });
+    this.getAllComp();
   },
   methods: {
     showToast() {
@@ -927,6 +926,18 @@ export default {
     },
     getRandom() {
       return Math.floor(Math.random() * 10000);
+    },
+    getAllComp() {
+      useJwt.getAllCompanies().then((response) => {
+        if (response.data.status) {
+          this.allCompanies = response.data;
+          const companies = this.allCompanies.data.map((el) => el.name);
+          this.$store.dispatch('getAllCompanies', companies);
+          // console.log(companies);
+        } else {
+          this.showToast();
+        }
+      });
     },
   },
 };

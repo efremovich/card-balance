@@ -159,7 +159,7 @@
                     @submit.prevent="newLimitsData">
                     <!-- Нужен template для отрисовки карты без заданнных при открытии карты лимитов, отрисовывать
                       шаблон лимита (newLimit), но не пустоту -->
-                    <template v-if="limitsLength<1">
+                    <template v-if="limitsLength<1 || limitsLength !==null">
                       <template
                         v-for="(item,index) in count">
                         <b-card-actions
@@ -949,7 +949,7 @@ export default {
     const firstDayOfMonth = ref(null);
     const labelService = ref({});
     const perPage = 5;
-    const optionService = ref(null);
+    // const optionService = ref(null);
     const pageOptions = [3, 5, 10];
     const currentPage = 1;
     const filter = ref(null);
@@ -1185,6 +1185,7 @@ export default {
       useJwt.getAllUnits().then((response) => {
         if (response.data.status) {
           units.value = response.data.data;
+
           selectUnits.value = units.value[0].label;
         }
       });
@@ -1230,7 +1231,7 @@ export default {
       selected,
       product,
       cardEmitentCode,
-      optionService,
+      // optionService,
       limitsLength,
       unicodeLabel,
       showLoading,

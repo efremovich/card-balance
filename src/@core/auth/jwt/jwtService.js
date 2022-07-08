@@ -165,7 +165,7 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
-  // Смена контракта
+  // Смена пароля
   async changePassword(payload) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
@@ -194,6 +194,17 @@ export default class JwtService {
     if (userData) {
       const response = await this.axiosIns.get(
         `/api/user/${userData.account.uid}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getAllCompanies() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        '/api/companies',
       );
       return response;
     }
