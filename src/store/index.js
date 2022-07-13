@@ -22,6 +22,7 @@ export default new Vuex.Store({
     cardNumber: null,
     companies: null,
     selectedCompany: null,
+    companyId: null,
   },
   actions: {
     getVisible({ commit }) {
@@ -50,6 +51,9 @@ export default new Vuex.Store({
     },
     getCompany({ commit }, payload) {
       commit('setCompany', payload);
+    },
+    getCompanyId({ commit }, payload) {
+      commit('setCompanyId', payload);
     },
 
   },
@@ -81,6 +85,9 @@ export default new Vuex.Store({
     setCompany(state, payload) {
       state.selectedCompany = payload;
     },
+    setCompanyId(state, payload) {
+      state.companyId = payload;
+    },
 
   },
   getters: {
@@ -91,6 +98,7 @@ export default new Vuex.Store({
     STATUS_ORG: (state) => state.status,
     ALL_COMPANIES: (state) => state.companies,
     COMPANY: (state) => state.selectedCompany,
+    COMPANY_ID: (state) => state.companyId,
   },
   modules: {
     app,

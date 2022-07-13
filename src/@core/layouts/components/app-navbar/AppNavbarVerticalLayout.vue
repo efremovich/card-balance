@@ -91,6 +91,7 @@ export default {
     ...mapGetters({
       gotSelected: 'CONTRACT_NUMBER',
       gotSelectedContract: 'CONTRACT_ID',
+      gotOrgId: 'COMPANY_ID',
     }),
     selected: {
       get() {
@@ -106,6 +107,19 @@ export default {
     getWidth() {
       return this.getWidth;
     },
+    gotOrgId(val) {
+      useJwt.getConsumer(val)
+        .then((status) => {
+          if (status.status) {
+            this.consumer = status.data;
+            // console.log(this.consumer);
+            this.option = [];
+            this.makeOptions(this.consumer.data);
+            // eslint-disable-next-line prefer-destructuring
+            this.selected = this.option[0];
+          }
+        });
+    },
   },
 
   beforeMount() {
@@ -113,7 +127,7 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
-          this.makeOptions();
+          this.makeOptions(this.userData);
           this.getSelected();
         });
       }
@@ -128,11 +142,12 @@ export default {
     getSelected() {
       this.selected = this.userData.contract;
     },
-    makeOptions() {
-      this.userData.contracts.forEach((el) => {
+    makeOptions(val) {
+      val.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });
       });
     },
+
     // onChange() {
     //   this.$store.commit('changeContractId', this.selected.id);
     //   this.$store.commit('changeContractNumber', this.selected.number);

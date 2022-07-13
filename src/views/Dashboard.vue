@@ -460,6 +460,7 @@ export default {
       dateUpdate: null,
       date: null,
       allCompanies: null,
+      allContracts: null,
       tableBD: [],
       allService: null,
       budgetConsumption: null,
@@ -656,7 +657,7 @@ export default {
       this.ID = this.gotSelectedContract;
       this.onChange(this.ID);
       this.getCardStatistica(this.ID);
-
+      this.getAllContracts();
       useJwt.getServiceFromEmitent()
         .then((response) => {
           if (response.data.status) {
@@ -931,9 +932,8 @@ export default {
       useJwt.getAllCompanies().then((response) => {
         if (response.data.status) {
           this.allCompanies = response.data;
-          const companies = this.allCompanies.data.map((el) => el.name);
+          const companies = this.allCompanies.data;
           this.$store.dispatch('getAllCompanies', companies);
-          // console.log(companies);
         } else {
           this.showToast();
         }

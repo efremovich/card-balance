@@ -189,6 +189,18 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // Смена пользователя
+  // async changeUser(payload) {
+  //   const userData = JSON.parse(localStorage.getItem('userData'));
+  //   if (userData) {
+  //     const response = await this.axiosIns.post(
+  //       `/api/user/${userData.account.uid}`, payload,
+  //     );
+  //     return response;
+  //   }
+  //   return { data: { status: false } };
+  // }
+
   async getCurrenUser() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
@@ -460,6 +472,18 @@ export default class JwtService {
     if (userData) {
       const response = await this.axiosIns.get(
         '/api/organisations',
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Получить договоры пользователя
+  async getAllContracts() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        '/api/contracts',
       );
       return response;
     }

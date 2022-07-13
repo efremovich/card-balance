@@ -554,18 +554,7 @@ export default {
             email: this.twin.email,
           };
           useJwt.changePassword(JSON.stringify(newPassword)).then((response) => {
-            // console.log(response);
             this.empty = response;
-            // console.log(this.newPasswordValue);
-            (this.$store.dispatch('getPassword', this.newPasswordValue));
-            // this.$toast({
-            //   component: ToastificationContent,
-            //   props: {
-            //     title: 'Данные сохранены',
-            //     icon: 'EditIcon',
-            //     variant: 'success',
-            //   },
-            // });
             this.$swal({
               position: 'center',
               icon: 'success',
