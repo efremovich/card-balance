@@ -83,6 +83,7 @@
           label="name"
           :options="option"
           :clearable="false"
+          :filter="filter"
           class="w-75"
           @input="getContractName" />
       </div>
@@ -100,6 +101,7 @@ import useAppConfig from '@core/app-config/useAppConfig';
 import { $themeConfig } from '@themeConfig';
 import vSelect from 'vue-select';
 import store from '@/store';
+import Fuse from 'fuse.js';
 // import { mapGetters } from 'vuex';
 import VerticalNavMenuItems from './components/vertical-nav-menu-items/VerticalNavMenuItems.vue';
 import useVerticalNavMenu from './useVerticalNavMenu';
@@ -147,6 +149,15 @@ export default {
 
     const collapseTogglerIconFeather = computed(() => (collapseTogglerIcon.value === 'unpinned' ? 'CircleIcon' : 'DiscIcon'));
     const selected = ref(store.getters.COMPANY);
+    const filter = (options, search) => {
+      const fuse = new Fuse(options, {
+        keys: ['name'],
+        shouldSort: true,
+      });
+      return search.length
+        ? fuse.search(search).map(({ item }) => item)
+        : fuse.list;
+    };
     const someA = computed(() => store.getters.ALL_COMPANIES);
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < someA.value.length; i++) {
@@ -184,10 +195,9 @@ export default {
 
       // Shadow Bottom
       shallShadowBottom,
-
+      filter,
       // Skin
       skin,
-      // eslint-disable-next-line no-undef
       selected,
       option,
       getContractName,

@@ -878,7 +878,7 @@ export default {
       }
     },
     onChange() {
-      console.log(this.selected);
+      // console.log(this.selected);
       useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`).then((response) => {
         if (response.data.status) {
           this.emptyArr = response.data;

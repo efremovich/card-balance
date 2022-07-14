@@ -112,7 +112,6 @@ export default {
         .then((status) => {
           if (status.status) {
             this.consumer = status.data;
-            // console.log(this.consumer);
             this.option = [];
             this.makeOptions(this.consumer.data);
             // eslint-disable-next-line prefer-destructuring
