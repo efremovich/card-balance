@@ -478,18 +478,6 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
-  // Получить договоры пользователя
-  async getAllContracts() {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      const response = await this.axiosIns.get(
-        '/api/contracts',
-      );
-      return response;
-    }
-    return { data: { status: false } };
-  }
-
   // Все реквизиты по ID
   async getAllpayAccountsFrom(id) {
     const userData = JSON.parse(localStorage.getItem('userData'));

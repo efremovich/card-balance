@@ -657,7 +657,7 @@ export default {
       this.ID = this.gotSelectedContract;
       this.onChange(this.ID);
       this.getCardStatistica(this.ID);
-      this.getAllContracts();
+      // this.getAllContracts();
       useJwt.getServiceFromEmitent()
         .then((response) => {
           if (response.data.status) {
