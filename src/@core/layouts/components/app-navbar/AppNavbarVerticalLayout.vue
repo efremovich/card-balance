@@ -126,6 +126,7 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
+          this.$store.dispatch('getEmail', this.userData.account.email);
           this.makeOptions(this.userData);
           this.getSelected();
         });

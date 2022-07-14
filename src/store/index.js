@@ -23,6 +23,7 @@ export default new Vuex.Store({
     companies: null,
     selectedCompany: null,
     companyId: null,
+    email: null,
   },
   actions: {
     getVisible({ commit }) {
@@ -54,6 +55,9 @@ export default new Vuex.Store({
     },
     getCompanyId({ commit }, payload) {
       commit('setCompanyId', payload);
+    },
+    getEmail({ commit }, payload) {
+      commit('setEmail', payload);
     },
 
   },
@@ -88,6 +92,9 @@ export default new Vuex.Store({
     setCompanyId(state, payload) {
       state.companyId = payload;
     },
+    setEmail(state, payload) {
+      state.email = payload;
+    },
 
   },
   getters: {
@@ -99,6 +106,7 @@ export default new Vuex.Store({
     ALL_COMPANIES: (state) => state.companies,
     COMPANY: (state) => state.selectedCompany,
     COMPANY_ID: (state) => state.companyId,
+    EMAIL: (state) => state.email,
   },
   modules: {
     app,

@@ -148,6 +148,11 @@ export default {
     };
 
     const collapseTogglerIconFeather = computed(() => (collapseTogglerIcon.value === 'unpinned' ? 'CircleIcon' : 'DiscIcon'));
+    const someA = computed(() => store.getters.ALL_COMPANIES);
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < someA.value.length; i++) {
+      option.value.push(someA.value[i]);
+    }
     const selected = ref(store.getters.COMPANY);
     const filter = (options, search) => {
       const fuse = new Fuse(options, {
@@ -158,11 +163,7 @@ export default {
         ? fuse.search(search).map(({ item }) => item)
         : fuse.list;
     };
-    const someA = computed(() => store.getters.ALL_COMPANIES);
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < someA.value.length; i++) {
-      option.value.push(someA.value[i]);
-    }
+
     // App Name
     const { appName, appLogoImage } = $themeConfig.app;
     const getContractName = () => {
