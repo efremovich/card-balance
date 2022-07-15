@@ -80,7 +80,6 @@ export default {
     return {
       userData: null,
       option: [],
-      // getInfo: null,
       contract: null,
     };
   },

@@ -142,7 +142,7 @@ export default {
       // validation
       required,
       getInfo: null,
-
+      empty: null,
       // Toggle Password
       password1FieldType: 'password',
       password2FieldType: 'password',
@@ -187,17 +187,6 @@ export default {
           };
           useJwt.changePassword(JSON.stringify(newPassword)).then((response) => {
             this.empty = response;
-            // this.$swal({
-            //   position: 'center',
-            //   icon: 'success',
-            //   title: 'Пароль изменён',
-            //   showConfirmButton: false,
-            //   timer: 1000,
-            //   customClass: {
-            //     confirmButton: 'btn btn-primary',
-            //   },
-            //   buttonsStyling: false,
-            // });
             this.$toast({
               component: ToastificationContent,
               props: {
