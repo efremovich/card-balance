@@ -81,7 +81,7 @@
         <v-select
           v-model="selected"
           label="name"
-          :options="getOPtion"
+          :options="allCompany"
           :clearable="false"
           :filter="filter"
           class="w-75"
@@ -196,7 +196,7 @@ export default {
   data() {
     return {
       selected: null,
-      option: [],
+      // option: [],
       allCompany: null,
 
     };
@@ -204,11 +204,11 @@ export default {
   // ...mapGetters({
   //   allCompany: 'ALL_COMPANIES',
   // }),
-  computed: {
-    getOPtion() {
-      return this.allCompany.map((el) => el);
-    },
-  },
+  // computed: {
+  //   getOPtion() {
+  //     return this.allCompany.map((el) => el);
+  //   },
+  // },
   beforeMount() {
     this.allCompany = this.$store.getters.ALL_COMPANIES;
   },
