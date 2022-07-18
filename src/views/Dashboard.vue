@@ -177,7 +177,7 @@
                             :key="status.id"
                             class="d-flex justify-content-between">
                             <h4>
-                              {{ mapStatus[status.name] }}
+                              {{ mapStatus[status.label] }}
                             </h4>
                             <h4>
                               {{ status.value }}
@@ -938,6 +938,7 @@ export default {
           this.showToast();
         }
       });
+      // console.log('dash', this.$store.state.companies);
     },
   },
 };

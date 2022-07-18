@@ -71,7 +71,7 @@
         }
       ">
       <vertical-nav-menu-items
-        :items="index"
+        :items="navMenuItems"
         class="navigation navigation-main" />
       <div
         class="d-flex flex-column align-items-center w-100">
@@ -81,7 +81,7 @@
         <v-select
           v-model="selected"
           label="name"
-          :options="option"
+          :options="getOPtion"
           :clearable="false"
           :filter="filter"
           class="w-75"
@@ -100,10 +100,11 @@ import { provide, computed, ref } from '@vue/composition-api';
 import useAppConfig from '@core/app-config/useAppConfig';
 import { $themeConfig } from '@themeConfig';
 import vSelect from 'vue-select';
-import store from '@/store';
+// import store from '@/store';
 import Fuse from 'fuse.js';
+// import { mapGetters } from 'vuex';
 // eslint-disable-next-line import/extensions
-// import navMenuItems from '../../../../../navigation/vertical/index.js';
+import navMenuItems from '../../../../../navigation/vertical/index.js';
 import useVerticalNavMenu from './useVerticalNavMenu';
 import VerticalNavMenuItems from './components/vertical-nav-menu-items/VerticalNavMenuItems.vue';
 
@@ -136,7 +137,7 @@ export default {
     } = useVerticalNavMenu(props);
 
     const { skin } = useAppConfig();
-    const option = ref([]);
+    // const option = ref([]);
 
     // Shadow bottom is UI specific and can be removed by user => It's not in `useVerticalNavMenu`
     const shallShadowBottom = ref(false);
@@ -147,73 +148,9 @@ export default {
       maxScrollbarLength: 60,
       wheelPropagation: false,
     };
-    const index = [
-      {
-        title: 'Главная',
-        route: 'dashboard',
-        icon: 'HomeIcon',
-      },
-      {
-        title: 'Топливные карты',
-        route: 'cards',
-        icon: 'FileIcon',
-      },
-      {
-        title: 'Транзакции',
-        route: 'transactions',
-        icon: 'ListIcon',
-      },
-      {
-        title: 'Отчёты и графики',
-        route: 'report',
-        icon: 'TrendingUpIcon',
-      },
-
-      {
-        title: 'Документы',
-        route: 'documents',
-        icon: 'ArchiveIcon',
-        children: [
-          {
-            url: '/requests',
-            title: 'Заявки',
-            route: 'requests',
-            icon: 'CheckSquareIcon',
-          },
-          {
-            url: '/documents/bill',
-            title: 'Заказать счет',
-            route: 'bill',
-            icon: 'CheckSquareIcon',
-          },
-          {
-            url: '/documents/checks',
-            title: 'Электронные чеки',
-            route: 'checks',
-            icon: 'CheckSquareIcon',
-          },
-          {
-            url: '/documents/payments',
-            title: 'Платежи',
-            route: 'payments',
-            icon: 'CheckSquareIcon',
-          },
-        ],
-      },
-      {
-        title: 'Контакты',
-        route: 'locator',
-        icon: 'MapPinIcon',
-      },
-    ];
 
     const collapseTogglerIconFeather = computed(() => (collapseTogglerIcon.value === 'unpinned' ? 'CircleIcon' : 'DiscIcon'));
-    const someA = computed(() => store.getters.ALL_COMPANIES);
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < someA.value.length; i++) {
-      option.value.push(someA.value[i]);
-    }
-    const selected = ref(store.getters.COMPANY);
+
     const filter = (options, search) => {
       const fuse = new Fuse(options, {
         keys: ['name'],
@@ -226,12 +163,12 @@ export default {
 
     // App Name
     const { appName, appLogoImage } = $themeConfig.app;
-    const getContractName = () => {
-      store.dispatch('getCompany', selected.value.name);
-      store.dispatch('getCompanyId', selected.value.id);
-    };
+    // const getContractName = () => {
+    //   store.dispatch('getCompany', selected.value.name);
+    //   store.dispatch('getCompanyId', selected.value.id);
+    // };
     return {
-      // navMenuItems,
+      navMenuItems,
       perfectScrollbarSettings,
       isVerticalMenuCollapsed,
       collapseTogglerIcon,
@@ -239,21 +176,47 @@ export default {
       isMouseHovered,
       updateMouseHovered,
       collapseTogglerIconFeather,
-      index,
+      // index,
 
       // Shadow Bottom
       shallShadowBottom,
       filter,
       // Skin
       skin,
-      selected,
-      option,
-      getContractName,
+      // selected,
+      // option,
+      // getContractName,
 
       // App Name
       appName,
       appLogoImage,
     };
+  },
+
+  data() {
+    return {
+      selected: null,
+      option: [],
+      allCompany: null,
+
+    };
+  },
+  // ...mapGetters({
+  //   allCompany: 'ALL_COMPANIES',
+  // }),
+  computed: {
+    getOPtion() {
+      return this.allCompany.map((el) => el);
+    },
+  },
+  beforeMount() {
+    this.allCompany = this.$store.getters.ALL_COMPANIES;
+  },
+  methods: {
+    getContractName() {
+      this.$store.dispatch('getCompany', this.selected.name);
+      this.$store.dispatch('getCompanyId', this.selected.id);
+    },
   },
 };
 </script>
