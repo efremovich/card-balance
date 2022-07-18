@@ -211,6 +211,9 @@ export default {
   // },
   beforeMount() {
     this.allCompany = this.$store.getters.ALL_COMPANIES;
+    if (this.$store.state.selectedCompany !== null) {
+      this.selected = this.$store.getters.COMPANY;
+    }
   },
   methods: {
     getContractName() {

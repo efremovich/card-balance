@@ -417,7 +417,7 @@ import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 // end GEO
 import vSelect from 'vue-select';
 import VueApexCharts from 'vue-apexcharts';
-import { ru } from 'apexcharts/dist/locales/ru.json';
+// import { ru } from 'apexcharts/dist/locales/ru.json';
 import { $themeColors } from '@themeConfig';
 // import { Icon } from 'leaflet';
 import { mapGetters } from 'vuex';
@@ -426,6 +426,7 @@ import {
   BCardText, BCol, BButton, BTable, BCardBody, BOverlay, BLink,
 } from 'bootstrap-vue';
 import useJwt from '@/auth/jwt/useJwt';
+import { ru } from '../../node_modules/apexcharts/dist/locales/ru.json';
 
 export default {
   components: {
@@ -518,24 +519,25 @@ export default {
       revenue: {},
       revenueComparisonLine: {
         chartOptions: {
-          locales: [ru],
-          defaultLocale: 'ru',
-          chart: {
-            toolbar: { show: false },
-            zoom: { enabled: false },
-            type: 'line',
-            offsetX: -10,
+          'locales': { ru },
+          'defaultLocale': 'ru',
+
+          'chart': {
+            'toolbar': { show: false },
+            'zoom': { enabled: false },
+            'type': 'line',
+            'offsetX': -10,
           },
-          stroke: {
+          'stroke': {
             curve: 'smooth',
             dashArray: [0, 12],
             width: [4, 3],
           },
-          legend: {
+          'legend': {
             show: false,
           },
-          colors: ['#d0ccff', '#ebe9f1'],
-          fill: {
+          'colors': ['#d0ccff', '#ebe9f1'],
+          'fill': {
             type: 'gradient',
             gradient: {
               shade: 'dark',
@@ -548,13 +550,13 @@ export default {
               stops: [0, 100, 100, 100],
             },
           },
-          markers: {
+          'markers': {
             size: 0,
             hover: {
               size: 5,
             },
           },
-          xaxis: {
+          'xaxis': {
             labels: {
               style: {
                 colors: '#b9b9c3',
@@ -570,7 +572,7 @@ export default {
             },
             tickPlacement: 'on',
           },
-          yaxis: {
+          'yaxis': {
             tickAmount: 5,
             labels: {
               style: {
@@ -582,7 +584,7 @@ export default {
               },
             },
           },
-          grid: {
+          'grid': {
             borderColor: '#e7eef7',
             padding: {
               top: -20,
@@ -590,7 +592,7 @@ export default {
               left: 20,
             },
           },
-          tooltip: {
+          'tooltip': {
             x: { show: false },
           },
         },
