@@ -74,6 +74,7 @@
         :items="navMenuItems"
         class="navigation navigation-main" />
       <div
+        v-if="loadDone"
         class="d-flex flex-column align-items-center w-100">
         <h6 class="mt-1 mr-1">
           Клиент:
@@ -81,7 +82,7 @@
         <v-select
           v-model="selected"
           label="name"
-          :options="allCompany"
+          :options="allCompanies"
           :clearable="false"
           :filter="filter"
           class="w-75"
@@ -103,6 +104,7 @@ import vSelect from 'vue-select';
 // import store from '@/store';
 import Fuse from 'fuse.js';
 // import { mapGetters } from 'vuex';
+import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line import/extensions
 import navMenuItems from '../../../../../navigation/vertical/index.js';
 import useVerticalNavMenu from './useVerticalNavMenu';
@@ -197,7 +199,8 @@ export default {
     return {
       selected: null,
       // option: [],
-      allCompany: null,
+      allCompanies: [],
+      loadDone: false,
 
     };
   },
@@ -210,15 +213,35 @@ export default {
   //   },
   // },
   beforeMount() {
-    this.allCompany = this.$store.getters.ALL_COMPANIES;
+    // this.allCompanies = this.$store.getters.ALL_COMPANIES;
     if (this.$store.state.selectedCompany !== null) {
       this.selected = this.$store.getters.COMPANY;
+      this.loadDone = true;
     }
+
+    if (this.$store.state.companies == null) {
+      this.loadDone = true;
+    } else {
+      this.loadDone = true;
+    }
+    this.getAllComp();
+    // console.log('BM', ((this.$store.state.companies)));
   },
   methods: {
     getContractName() {
       this.$store.dispatch('getCompany', this.selected.name);
       this.$store.dispatch('getCompanyId', this.selected.id);
+    },
+    getAllComp() {
+      useJwt.getAllCompanies().then((response) => {
+        if (response.data.status) {
+          this.allCompanies = response.data;
+          const companies = this.allCompanies.data;
+          this.allCompanies = companies;
+          // console.log('ALL', companies.length, companies);
+          this.$store.dispatch('getAllCompanies', companies);
+        }
+      });
     },
   },
 };

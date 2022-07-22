@@ -519,7 +519,17 @@ export default {
       revenue: {},
       revenueComparisonLine: {
         chartOptions: {
-          'locales': { ru },
+          // 'locales': { ru },
+          'locales': [{
+            'name': { ru },
+            'options': {
+              'months': ['January', 'February', 'March', 'April', 'May', 'Июнь', 'Июнь', 'Июнь', 'September', 'October', 'November', 'December'],
+              'shortMonths': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Июнь', 'Июнь', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+              'days': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+              'shortDays': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+
+            },
+          }],
           'defaultLocale': 'ru',
 
           'chart': {
@@ -700,7 +710,7 @@ export default {
               });
           }
         });
-
+      this.getAllComp();
     // this.showLoading = false;
     } // return { data: { status: false } };
   },
@@ -719,7 +729,7 @@ export default {
         });
       }
     });
-    this.getAllComp();
+    // this.getAllComp();
   },
   methods: {
     showToast() {
@@ -930,18 +940,17 @@ export default {
     getRandom() {
       return Math.floor(Math.random() * 10000);
     },
-    getAllComp() {
-      useJwt.getAllCompanies().then((response) => {
-        if (response.data.status) {
-          this.allCompanies = response.data;
-          const companies = this.allCompanies.data;
-          this.$store.dispatch('getAllCompanies', companies);
-        } else {
-          this.showToast();
-        }
-      });
-      // console.log('dash', this.$store.state.companies);
-    },
+    // getAllComp() {
+    //   useJwt.getAllCompanies().then((response) => {
+    //     if (response.data.status) {
+    //       this.allCompanies = response.data;
+    //       const companies = this.allCompanies.data;
+    //       this.$store.dispatch('getAllCompanies', companies);
+    //     } else {
+    //       this.showToast();
+    //     }
+    //   });
+    // },
   },
 };
 </script>
