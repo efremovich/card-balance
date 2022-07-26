@@ -127,10 +127,10 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import VuexyLogo from '@core/layouts/components/Logo.vue';
 import { required, email } from '@validations';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import store from '@/store';
 import useJwt from '../../auth/jwt/useJwt';
 import { togglePasswordVisibility } from '../../@core/mixins/ui/forms';
 import { getHomeRouteForLoggedInUser } from '../../auth/utils';
-
 import { initialAbility } from '../../libs/acl/config';
 
 export default {
@@ -176,7 +176,6 @@ export default {
     login() {
       this.$refs.loginForm.validate().then((success) => {
         if (success) {
-          // console.log(this.$store.state.password);
           useJwt
             .login({
               email: this.userEmail,
@@ -185,15 +184,12 @@ export default {
             .then((response) => {
               if (response.data.status) {
                 const userData = response.data;
+                store.dispatch('getAdmin', userData.account.role);
                 userData.ability = initialAbility;
                 useJwt.setToken(userData.account.accessToken);
                 useJwt.setRefreshToken(userData.account.refreshToken);
                 localStorage.setItem('userData', JSON.stringify(userData));
-
                 this.$ability.update(userData.ability);
-
-                /* this.$store.dispatch('user/getUserData', response.data) */
-                /* this.userData = getUserData() */
                 this.$router
                   .replace(getHomeRouteForLoggedInUser(userData.account.role))
                   .then(() => {

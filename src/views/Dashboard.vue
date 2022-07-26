@@ -710,7 +710,7 @@ export default {
               });
           }
         });
-      this.getAllComp();
+      // this.getAllComp();
     // this.showLoading = false;
     } // return { data: { status: false } };
   },
@@ -729,7 +729,6 @@ export default {
         });
       }
     });
-    // this.getAllComp();
   },
   methods: {
     showToast() {

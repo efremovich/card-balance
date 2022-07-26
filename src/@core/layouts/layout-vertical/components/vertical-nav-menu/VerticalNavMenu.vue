@@ -74,7 +74,7 @@
         :items="navMenuItems"
         class="navigation navigation-main" />
       <div
-        v-if="loadDone"
+        v-if="admin === 'admin'"
         class="d-flex flex-column align-items-center w-100">
         <h6 class="mt-1 mr-1">
           Клиент:
@@ -101,9 +101,9 @@ import { provide, computed, ref } from '@vue/composition-api';
 import useAppConfig from '@core/app-config/useAppConfig';
 import { $themeConfig } from '@themeConfig';
 import vSelect from 'vue-select';
-// import store from '@/store';
+import store from '@/store';
 import Fuse from 'fuse.js';
-// import { mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line import/extensions
 import navMenuItems from '../../../../../navigation/vertical/index.js';
@@ -165,10 +165,7 @@ export default {
 
     // App Name
     const { appName, appLogoImage } = $themeConfig.app;
-    // const getContractName = () => {
-    //   store.dispatch('getCompany', selected.value.name);
-    //   store.dispatch('getCompanyId', selected.value.id);
-    // };
+
     return {
       navMenuItems,
       perfectScrollbarSettings,
@@ -198,15 +195,14 @@ export default {
   data() {
     return {
       selected: null,
-      // option: [],
       allCompanies: [],
       loadDone: false,
-
+      admin: store.getters.ADMIN,
     };
   },
-  // ...mapGetters({
-  //   allCompany: 'ALL_COMPANIES',
-  // }),
+  ...mapGetters({
+    admin: 'ADMIN',
+  }),
   // computed: {
   //   getOPtion() {
   //     return this.allCompany.map((el) => el);
@@ -225,7 +221,7 @@ export default {
       this.loadDone = true;
     }
     this.getAllComp();
-    // console.log('BM', ((this.$store.state.companies)));
+    // console.log('ADMINNN', ((this.admin)));
   },
   methods: {
     getContractName() {

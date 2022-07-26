@@ -24,6 +24,7 @@ export default new Vuex.Store({
     selectedCompany: null,
     companyId: null,
     email: null,
+    isAdmin: null,
   },
   actions: {
     getVisible({ commit }) {
@@ -58,6 +59,9 @@ export default new Vuex.Store({
     },
     getEmail({ commit }, payload) {
       commit('setEmail', payload);
+    },
+    getAdmin({ commit }, payload) {
+      commit('setAdmin', payload);
     },
 
   },
@@ -95,6 +99,9 @@ export default new Vuex.Store({
     setEmail(state, payload) {
       state.email = payload;
     },
+    setAdmin(state, payload) {
+      state.isAdmin = payload;
+    },
 
   },
   getters: {
@@ -107,6 +114,7 @@ export default new Vuex.Store({
     COMPANY: (state) => state.selectedCompany,
     COMPANY_ID: (state) => state.companyId,
     EMAIL: (state) => state.email,
+    ADMIN: (state) => state.isAdmin,
   },
   modules: {
     app,

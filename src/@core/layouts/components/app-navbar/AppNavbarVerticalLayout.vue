@@ -52,6 +52,7 @@ import { mapGetters } from 'vuex';
 import vSelect from 'vue-select';
 import useJwt from '@/auth/jwt/useJwt';
 import store from '@/store';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import Bookmarks from './components/Bookmarks.vue';
 import SearchBar from './components/SearchBar.vue';
 import DarkToggler from './components/DarkToggler.vue';
@@ -142,6 +143,9 @@ export default {
       this.selected = this.userData.contract;
     },
     makeOptions(val) {
+      if (typeof (val.contracts) !== 'object') {
+        this.showToast();
+      }
       val.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });
       });
@@ -151,6 +155,16 @@ export default {
     //   this.$store.commit('changeContractId', this.selected.id);
     //   this.$store.commit('changeContractNumber', this.selected.number);
     // },
+    showToast() {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: 'Уведомление',
+          icon: 'BellIcon',
+          text: 'Договор с контрагентом отсутствует',
+        },
+      });
+    },
   },
 };
 </script>
