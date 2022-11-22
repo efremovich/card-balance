@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 
 module.exports = {
   publicPath: '/',
@@ -47,4 +48,6 @@ module.exports = {
       });
   },
   transpileDependencies: ['vue-echarts', 'resize-detector'],
+  devServer: {
+  },
 };

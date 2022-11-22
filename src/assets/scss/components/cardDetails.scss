@@ -32,8 +32,17 @@
     border: 1px solid black;
     border-radius: 5px;
   }
-  .mw-20 {
-    max-width: 20%;
+  .mw-25 {
+    max-width: 25%;
+  }
+ 
+
+  .mw-30 {
+    max-width: 30% !important;
+  }
+
+  .w-60 {
+    width: 60% !important;
   }
   .icon {
     max-width: 30px;
@@ -43,6 +52,7 @@
   .card-header {
     padding: 1.5rem 0 !important;
   }
+
   .card-title {
     margin-bottom: 0.5rem !important;
   }
@@ -64,14 +74,49 @@
     max-width: 390px;
     min-width: 350px;
   }
+.margin{
+  top: 110px;
+  left: 220px;
+}
+.xs-margin {
+  top: 11%;
+  left: 150px;
+}
+.md-margin {
+  top: 12%;
+  left: 220px;
+}
+.sm-margin {
+ top: 9rem;
+left: 15rem;
+}
+.lg-margin {
+  top: 8rem;
+  left: 15rem;
+}
+.xl-margin {
+  top: 8rem;
+  left: 16rem;
+}
 
+.pointer-events-none {
+  pointer-events: none;
+}
    .min-w270 {
-    min-width: 270px !important;
+    min-width: 310px !important;
   }
 
   .max-w {
     max-width: 100%;
   }
+
+  .max-h330 {
+    max-height: 300px;
+  }
+
+  .vs__dropdown-option--disabled {
+    display: none;
+}
   // .card-body {
   //   border: 1px solid;
   //   border-radius: 4px;
@@ -87,6 +132,15 @@
     position: relative;
     bottom: 110px;
     left: 20px;
+  }
+
+  .b-xs {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    left: 20px;
+    bottom: 100px;
   }
   .item-options {
     display: flex;

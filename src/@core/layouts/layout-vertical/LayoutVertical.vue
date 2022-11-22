@@ -90,6 +90,7 @@ import { BNavbar } from 'bootstrap-vue';
 import LayoutContentRendererDefault from '@core/layouts/components/layout-content-renderer/LayoutContentRendererDefault.vue';
 import LayoutContentRendererLeft from '@core/layouts/components/layout-content-renderer/LayoutContentRendererLeft.vue';
 import LayoutContentRendererLeftDetached from '@core/layouts/components/layout-content-renderer/LayoutContentRendererLeftDetached.vue';
+// import store from '@/store';
 import VerticalNavMenu from './components/vertical-nav-menu/VerticalNavMenu.vue';
 import useVerticalLayout from './useVerticalLayout';
 import mixinVerticalLayout from './mixinVerticalLayout';
@@ -133,12 +134,25 @@ export default {
       navbarTypeClass,
       footerTypeClass,
     } = useVerticalLayout(navbarType, footerType);
-
+    // const getAllComp = () => {
+    //   console.log('layout');
+    //   useJwt.getAllCompanies().then((response) => {
+    //     if (response.data.status) {
+    //       const allCompanies = response.data;
+    //       /// const companies = allCompanies.value.data;
+    //       console.log('layout', allCompanies);
+    //       // this.$store.dispatch('getAllCompanies', companies);
+    //     }
+    //   });
+    //   console.log('555');
+    // };
     // Resize handler
     resizeHandler();
     window.addEventListener('resize', resizeHandler);
+
     onUnmounted(() => {
       window.removeEventListener('resize', resizeHandler);
+      // getAllComp();
     });
 
     return {
@@ -149,13 +163,13 @@ export default {
       layoutClasses,
       navbarTypeClass,
       footerTypeClass,
-
       // App Config
       routerTransition,
       navbarBackgroundColor,
       isNavMenuHidden,
     };
   },
+
 };
 </script>
 

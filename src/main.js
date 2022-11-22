@@ -3,12 +3,14 @@ import { ToastPlugin, ModalPlugin } from 'bootstrap-vue';
 import VueCompositionAPI from '@vue/composition-api';
 import excel from 'vue-excel-export';
 import VueHtmlToPaper from 'vue-html-to-paper';
+import VueResource from 'vue-resource';
+
 import router from './router';
 import store from './store';
 import App from './App.vue';
 
 // Global Components
-import './global-components';
+import './libs/global-components';
 
 // 3rd party plugins
 import '@axios';
@@ -22,11 +24,11 @@ import '@/libs/tour';
 
 const options = {
   'name': '_blank',
-  // 'specs': [
-  //   'fullscreen=no',
-  //   'titlebar=yes',
-  //   'scrollbars=no',
-  // ],
+  'specs': [
+    'fullscreen=no',
+    'titlebar=yes',
+    'scrollbars=no',
+  ],
   'styles': [
     'https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css',
     '../src/assets/scss/components/checks.scss',
@@ -35,6 +37,7 @@ const options = {
 };
 
 Vue.use(excel);
+Vue.use(VueResource);
 // BSV Plugin Registration
 Vue.use(ToastPlugin);
 Vue.use(ModalPlugin);

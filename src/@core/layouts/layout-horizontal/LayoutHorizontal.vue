@@ -19,7 +19,9 @@
         <app-navbar-horizontal-layout-brand />
         <app-navbar-horizontal-layout :toggle-vertical-menu-active="toggleVerticalMenuActive" />
       </slot>
-      <h3 class="mr-1">
+      <h3
+        v-if="currentBreakPoint !== 'xs'"
+        class="mr-1">
         Договор № :
       </h3>
       <v-select
@@ -104,20 +106,20 @@ import { BNavbar } from 'bootstrap-vue';
 // eslint-disable-next-line import/extensions
 import { useScrollListener } from '@core/comp-functions/misc/event-listeners';
 
-import { onUnmounted } from '@vue/composition-api';
+import { onUnmounted, computed } from '@vue/composition-api';
 
 // Content Renderer
 import LayoutContentRendererDefault from '@core/layouts/components/layout-content-renderer/LayoutContentRendererDefault.vue';
 import LayoutContentRendererLeft from '@core/layouts/components/layout-content-renderer/LayoutContentRendererLeft.vue';
 import LayoutContentRendererLeftDetached from '@core/layouts/components/layout-content-renderer/LayoutContentRendererLeftDetached.vue';
-import useLayoutHorizontal from './useLayoutHorizontal';
-import HorizontalNavMenu from './components/horizontal-nav-menu/HorizontalNavMenu.vue';
-
+import store from '@/store';
 // Vertical Menu
 /* eslint-disable import/order */
 import VerticalNavMenu from '@core/layouts/layout-vertical/components/vertical-nav-menu/VerticalNavMenu.vue';
 // eslint-disable-next-line import/extensions
 import useVerticalLayout from '@core/layouts/layout-vertical/useVerticalLayout';
+import HorizontalNavMenu from './components/horizontal-nav-menu/HorizontalNavMenu.vue';
+import useLayoutHorizontal from './useLayoutHorizontal';
 import mixinLayoutHorizontal from './mixinLayoutHorizontal';
 /* eslint-enable import/order */
 
@@ -157,6 +159,7 @@ export default {
       isNavMenuHidden,
     } = useAppConfig();
 
+    const currentBreakPoint = computed(() => store.getters['app/currentBreakPoint']);
     // Vertical Menu
     const {
       isVerticalMenuActive, toggleVerticalMenuActive, overlayClasses, resizeHandler,
@@ -205,6 +208,7 @@ export default {
       isVerticalMenuActive,
       toggleVerticalMenuActive,
       overlayClasses,
+      currentBreakPoint,
     };
   },
 

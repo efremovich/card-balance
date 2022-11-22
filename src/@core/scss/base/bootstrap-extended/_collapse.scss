@@ -2,12 +2,15 @@
 
 // For collapse-title
 [class*='collapse-'] {
+ 
   .collapse-title {
     font-weight: 500;
     font-size: 1.1rem;
+    margin-right: 1.3rem;
   }
   .card {
     margin-bottom: 0;
+   
     &:last-of-type {
       margin-bottom: 0;
     }
@@ -19,10 +22,19 @@
       padding: 1rem 2.8rem 1rem 1rem;
     }
     .card-body {
-      padding: 1rem;
+      // padding: 1rem;
+
+      // min-width: 160px;
+      // max-width: 40rem;
       line-height: 1.5;
+      padding-left: 0;
+      padding-right: 0;
       padding-top: 0.42rem;
+      // width: 22vw;
     }
+  }
+  .show {
+    width: 100%;
   }
 }
 

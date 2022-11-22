@@ -45,13 +45,13 @@
             <!--/ upload button -->
 
             <!-- reset -->
-            <b-button
+            <!-- <b-button
               variant="outline-secondary"
               size="sm"
               class="mb-75 mr-75"
               @click="resetPhoto">
               Сброс
-            </b-button>
+            </b-button> -->
             <!--/ reset -->
             <!-- <b-card-text>Добавьте изображение в формате JPG, GIF or PNG. Максимальный размер изображения - 800kB</b-card-text> -->
           </b-media-body>
@@ -64,7 +64,7 @@
           ref="userData">
           <b-form
             class="mt-2"
-            @input="validateForm">
+            @submit.prevent="validateForm">
             <b-row>
               <b-col sm="6">
                 <b-form-group
@@ -410,6 +410,7 @@ export default {
       RetypePassword: '',
       required,
       confirmed,
+      emptyValue: null,
       password,
       length,
       valid: false,
@@ -442,7 +443,8 @@ export default {
       this.twin.avatar = this.image;
       // this.twin.name = 'Mark';
       useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
-        console.log('Запись аватара', response);
+        //  console.log('Запись аватара', response);
+        this.emptyValue = response;
         this.image = this.twin.avatar;
       });
       // console.log(this.twin.avatar);
@@ -489,14 +491,14 @@ export default {
     onClose() {
       this.popoverShow = false;
     },
-    resetPhoto() {
-      useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
-        console.log('Сброс фото', response);
-        // this.image = this.twin.avatar;
-        this.twin = response;
-      });
-      // return this.twin;
-    },
+    // resetPhoto() {
+    //   useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
+    //     // console.log('Сброс фото', response);
+    //     // this.image = this.twin.avatar;
+    //     this.twin = response;
+    //   });
+    //   // return this.twin;
+    // },
     onOk() {
       this.onClose();
     },
@@ -551,20 +553,8 @@ export default {
             old_password: this.oldPassword,
             email: this.twin.email,
           };
-          // console.log(newPassword);
-          // console.log('Старый пароль', this.oldPassword);
           useJwt.changePassword(JSON.stringify(newPassword)).then((response) => {
-            console.log(response);
-            // console.log(this.newPasswordValue);
-            (this.$store.dispatch('getPassword', this.newPasswordValue));
-            // this.$toast({
-            //   component: ToastificationContent,
-            //   props: {
-            //     title: 'Данные сохранены',
-            //     icon: 'EditIcon',
-            //     variant: 'success',
-            //   },
-            // });
+            this.empty = response;
             this.$swal({
               position: 'center',
               icon: 'success',

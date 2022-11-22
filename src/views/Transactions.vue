@@ -176,12 +176,12 @@
                     </b-col>
                   </b-row>
 
-                  <b-button
+                  <!-- <b-button
                     size="sm"
                     variant="outline-secondary"
                     @click="row.toggleDetails">
                     Скрыть детали
-                  </b-button>
+                  </b-button> -->
                 </b-card>
               </template>
 
@@ -242,6 +242,11 @@
                     <b-col
                       md="4"
                       class="mb-1">
+                      <strong>Номер карты : </strong>{{ row.item.card_number }}
+                    </b-col>
+                    <b-col
+                      md="4"
+                      class="mb-1">
                       <strong>Количество : </strong>{{ row.item.quantity }}
                     </b-col>
                     <b-col
@@ -256,12 +261,12 @@
                     </b-col>
                   </b-row>
 
-                  <b-button
+                  <!-- <b-button
                     size="sm"
                     variant="outline-secondary"
                     @click="row.toggleDetails">
                     Скрыть детали
-                  </b-button>
+                  </b-button> -->
                 </b-card>
               </template>
 
@@ -390,7 +395,7 @@ export default {
       filterOn: [],
       required,
       option: [],
-      selected: null,
+      // selected: store.getters.CARD_NUMBER,
       transactions: {},
       rangeDate: null, // датапикер
       config: {
@@ -435,17 +440,21 @@ export default {
         },
       ],
       columns: {
+
+        'Дата': {
+          field: 'date',
+        },
         'Товар/услуга': {
           field: 'service.full_name',
         },
-        'Дата': {
-          field: 'date',
+        'Количество': {
+          field: 'quantity',
         },
         'Сумма': {
           field: 'summ',
         },
         'Держатель': {
-          field: 'holder',
+          field: 'card_holder',
         },
         'Номер договора': {
           field: 'contract.number',
@@ -471,6 +480,7 @@ export default {
   computed: {
     ...mapGetters({
       gotSelectedContract: 'CONTRACT_ID',
+      gotCardNumber: 'CARD_NUMBER',
     }),
     sortOptions() {
       return this.fields
@@ -479,6 +489,14 @@ export default {
     },
     getWidth() {
       return store.getters['app/currentBreakPoint'];
+    },
+    selected: {
+      get() {
+        return this.gotCardNumber;
+      },
+      set(value) {
+        this.$store.dispatch('getCardNumber', value);
+      },
     },
   },
   watch: {
@@ -490,9 +508,6 @@ export default {
       }
     },
   },
-  // created() {
-  //   console.log('created', this.gotSelectedContract);
-  // },
   beforeMount() {
     this.loadDone = true;
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -502,24 +517,44 @@ export default {
     } else this.contractId = this.gotSelectedContract;
     this.getAllCards(this.contractId);
     this.start = `${this.getFirstDay()} 00:00:00`;
-    this.end = `${this.isToday()} 00:00:00`;
+    this.end = `${this.isToday()} 23:59:59`;
     this.rangeDate = [this.start, this.end];
-    useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
-      if (response.data.status) {
-        this.transactions = response.data;
-        this.totalRows = this.transactions.data.total;
-        if (this.totalRows < 1) {
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Отсутвуют транзакции за выбранный период',
-              icon: 'AlertTriangleIcon',
-              variant: 'danger',
-            },
-          });
+
+    if (this.selected === null) {
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+        if (response.data.status) {
+          this.transactions = response.data;
+          this.totalRows = this.transactions.data.total;
+          if (this.totalRows < 1) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют транзакции за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
         }
-      }
-    });
+      });
+    } else {
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`).then((response) => {
+        if (response.data.status) {
+          this.transactions = response.data;
+          this.totalRows = this.transactions.data.total;
+          if (this.totalRows < 1) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутвуют транзакции по карте за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
+        }
+      });
+    }
   },
   mounted() {
     this.loadDone = false;
@@ -546,6 +581,7 @@ export default {
       useJwt.getCards(val).then((response) => {
         if (response.data.status) {
           this.response = response.data;
+          // console.log('trans:', this.response);
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
           });
@@ -562,21 +598,12 @@ export default {
       // eslint-disable-next-line prefer-template
       this.start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
-      this.end = trim[1] + ' 00:00:00';
+      this.end = trim[1] + ' 23:59:59';
     },
 
     onChange() {
       const { selected } = this;
       this.getDate();
-      // const date = this.rangeDate;
-      // const newDate = Array.from(date).filter((n) => n !== '—');
-      // const arr = newDate.join('').split('00:00:00');
-      // const trim = arr.join('').split(' ').filter((n) => n !== '');
-      // // eslint-disable-next-line prefer-template
-      // const start = trim[0] + ' 00:00:00';
-      // // eslint-disable-next-line prefer-template
-      // const end = trim[1] + ' 00:00:00';
-      // // const [start, end] = date;
       if (selected === null) {
         useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
           if (response.data.status) {
@@ -624,19 +651,50 @@ export default {
     },
     selectDate() {
       const date = this.rangeDate;
-      // const newDate = Array.from(date).filter((n) => n !== '—');
-      // const prot = (newDate.join('').split('00:00:00'));
-      // const arr = prot.join('').split(' ').filter((n) => n !== '');
-
-      // // eslint-disable-next-line prefer-template
-      // const start = `${arr[0]} 00:00:00`;
-      // // eslint-disable-next-line prefer-template
-      // const end = `${arr[1]} 00:00:00`;
-      // const [start, end] = date;
       this.getDate();
-      console.log(this.start, this.end);
       const { selected } = this;
       if (date.length > 22) {
+        if (selected === null) {
+          useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+            this.transactions = response.data;
+            this.totalRows = this.transactions.data.total;
+            if (this.rangeDate.length > 22) {
+              if (this.totalRows < 1) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Отсутвуют транзакции за выбранный период',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'danger',
+                  },
+                });
+              }
+            }
+          });
+        } else {
+          useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}`).then((response) => {
+            if (response.data.status) {
+              this.transactions = response.data;
+              this.totalRows = this.transactions.data.total;
+              if (this.totalRows < 1) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Отсутвуют транзакции по карте за выбранный период',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'danger',
+                  },
+                });
+              }
+            }
+          });
+        }
+      }
+      if (this.rangeDate.length > 9 && this.rangeDate.length < 11) { // Указание одной и той же даты при выборе
+        // eslint-disable-next-line prefer-template
+        this.start = date + ' 00:00:00';
+        // eslint-disable-next-line prefer-template
+        this.end = date + ' 23:59:59';
         if (selected === null) {
           useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
             this.transactions = response.data;
@@ -681,10 +739,10 @@ export default {
       this.currentPage = 1;
       this.loadDone = false;
     },
-    back() {
-      this.items.status_card = '';
-      this.items.transactions = [];
-    },
+    // back() {
+    //   this.items.status_card = '';
+    //   this.items.transactions = [];
+    // },
   },
 };
 </script>

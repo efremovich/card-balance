@@ -44,7 +44,7 @@
             <b-form-group>
               <div class="d-flex justify-content-between">
                 <label for="password">Пароль</label>
-                <b-link :to="{ name: 'auth-forgot-password' }">
+                <b-link :to="{ name: 'auth-reset-password' }">
                   <small>Забыли пароль?</small>
                 </b-link>
               </div>
@@ -76,14 +76,14 @@
             </b-form-group>
 
             <!-- checkbox -->
-            <b-form-group>
+            <!-- <b-form-group>
               <b-form-checkbox
                 id="remember-me"
                 v-model="status"
                 name="checkbox-1">
                 Запомнить меня
               </b-form-checkbox>
-            </b-form-group>
+            </b-form-group> -->
 
             <!-- submit button -->
             <b-button
@@ -121,16 +121,16 @@ import {
   BCardText,
   BInputGroup,
   BInputGroupAppend,
-  BFormCheckbox,
+  // BFormCheckbox,
 } from 'bootstrap-vue';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import VuexyLogo from '@core/layouts/components/Logo.vue';
 import { required, email } from '@validations';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import store from '@/store';
 import useJwt from '../../auth/jwt/useJwt';
 import { togglePasswordVisibility } from '../../@core/mixins/ui/forms';
 import { getHomeRouteForLoggedInUser } from '../../auth/utils';
-
 import { initialAbility } from '../../libs/acl/config';
 
 export default {
@@ -147,7 +147,7 @@ export default {
     BCardText,
     BInputGroup,
     BInputGroupAppend,
-    BFormCheckbox,
+    // BFormCheckbox,
     ValidationProvider,
     ValidationObserver,
   },
@@ -155,8 +155,10 @@ export default {
 
   data() {
     return {
-      userEmail: 'admin@fc.ru',
-      password: 'PrivetSite55',
+      // userEmail: 'admin@fc.ru',
+      // password: 'PrivetSite55',
+      userEmail: '',
+      password: '',
       // password: this.$store.state.password[1],
       status: '',
       // validation rules
@@ -174,7 +176,6 @@ export default {
     login() {
       this.$refs.loginForm.validate().then((success) => {
         if (success) {
-          // console.log(this.$store.state.password);
           useJwt
             .login({
               email: this.userEmail,
@@ -182,18 +183,13 @@ export default {
             })
             .then((response) => {
               if (response.data.status) {
-                // eslint-disable-next-line prefer-destructuring
-                // this.password = this.$store.state.password[1];
                 const userData = response.data;
+                store.dispatch('getAdmin', userData.account.role);
                 userData.ability = initialAbility;
                 useJwt.setToken(userData.account.accessToken);
                 useJwt.setRefreshToken(userData.account.refreshToken);
                 localStorage.setItem('userData', JSON.stringify(userData));
-
                 this.$ability.update(userData.ability);
-
-                /* this.$store.dispatch('user/getUserData', response.data) */
-                /* this.userData = getUserData() */
                 this.$router
                   .replace(getHomeRouteForLoggedInUser(userData.account.role))
                   .then(() => {

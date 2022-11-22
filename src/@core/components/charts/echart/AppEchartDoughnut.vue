@@ -31,12 +31,13 @@ export default {
       option: {
         tooltip: {
           trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)',
+          formatter: '{b}: {c} ({d}%)',
         },
-        legend: {
-          left: 10,
-          bottom: '0',
-        },
+        // legend: {
+        //   left: 10,
+        //   bottom: '-10',
+        //   // top: 120,
+        // },
         series: this.series,
       },
     };

@@ -73,20 +73,42 @@
       <vertical-nav-menu-items
         :items="navMenuItems"
         class="navigation navigation-main" />
+      <div
+        v-if="admin === 'admin'"
+        class="d-flex flex-column align-items-center w-100">
+        <h6 class="mt-1 mr-1">
+          Клиент:
+        </h6>
+        <v-select
+          v-model="selected"
+          label="name"
+          :options="allCompanies"
+          :clearable="false"
+          :filter="filter"
+          class="w-75"
+          @input="getContractName" />
+      </div>
     </vue-perfect-scrollbar>
     <!-- /main menu content-->
   </div>
 </template>
 
 <script>
-import navMenuItems from '@/navigation/vertical';
+// import navMenuItems from '@/navigation/vertical';
 import VuePerfectScrollbar from 'vue-perfect-scrollbar';
 import { BLink, BImg } from 'bootstrap-vue';
 import { provide, computed, ref } from '@vue/composition-api';
 import useAppConfig from '@core/app-config/useAppConfig';
 import { $themeConfig } from '@themeConfig';
-import VerticalNavMenuItems from './components/vertical-nav-menu-items/VerticalNavMenuItems.vue';
+import vSelect from 'vue-select';
+import store from '@/store';
+import Fuse from 'fuse.js';
+import { mapGetters } from 'vuex';
+import useJwt from '@/auth/jwt/useJwt';
+// eslint-disable-next-line import/extensions
+import navMenuItems from '../../../../../navigation/vertical/index.js';
 import useVerticalNavMenu from './useVerticalNavMenu';
+import VerticalNavMenuItems from './components/vertical-nav-menu-items/VerticalNavMenuItems.vue';
 
 export default {
   components: {
@@ -94,6 +116,8 @@ export default {
     VerticalNavMenuItems,
     BLink,
     BImg,
+    vSelect,
+
   },
   props: {
     isVerticalMenuActive: {
@@ -115,6 +139,7 @@ export default {
     } = useVerticalNavMenu(props);
 
     const { skin } = useAppConfig();
+    // const option = ref([]);
 
     // Shadow bottom is UI specific and can be removed by user => It's not in `useVerticalNavMenu`
     const shallShadowBottom = ref(false);
@@ -128,6 +153,16 @@ export default {
 
     const collapseTogglerIconFeather = computed(() => (collapseTogglerIcon.value === 'unpinned' ? 'CircleIcon' : 'DiscIcon'));
 
+    const filter = (options, search) => {
+      const fuse = new Fuse(options, {
+        keys: ['name'],
+        shouldSort: true,
+      });
+      return search.length
+        ? fuse.search(search).map(({ item }) => item)
+        : fuse.list;
+    };
+
     // App Name
     const { appName, appLogoImage } = $themeConfig.app;
 
@@ -140,17 +175,70 @@ export default {
       isMouseHovered,
       updateMouseHovered,
       collapseTogglerIconFeather,
+      // index,
 
       // Shadow Bottom
       shallShadowBottom,
-
+      filter,
       // Skin
       skin,
+      // selected,
+      // option,
+      // getContractName,
 
       // App Name
       appName,
       appLogoImage,
     };
+  },
+
+  data() {
+    return {
+      selected: null,
+      allCompanies: [],
+      loadDone: false,
+      admin: store.getters.ADMIN,
+    };
+  },
+  ...mapGetters({
+    admin: 'ADMIN',
+  }),
+  // computed: {
+  //   getOPtion() {
+  //     return this.allCompany.map((el) => el);
+  //   },
+  // },
+  beforeMount() {
+    // this.allCompanies = this.$store.getters.ALL_COMPANIES;
+    if (this.$store.state.selectedCompany !== null) {
+      this.selected = this.$store.getters.COMPANY;
+      this.loadDone = true;
+    }
+
+    if (this.$store.state.companies == null) {
+      this.loadDone = true;
+    } else {
+      this.loadDone = true;
+    }
+    this.getAllComp();
+    // console.log('ADMINNN', ((this.admin)));
+  },
+  methods: {
+    getContractName() {
+      this.$store.dispatch('getCompany', this.selected.name);
+      this.$store.dispatch('getCompanyId', this.selected.id);
+    },
+    getAllComp() {
+      useJwt.getAllCompanies().then((response) => {
+        if (response.data.status) {
+          this.allCompanies = response.data;
+          const companies = this.allCompanies.data;
+          this.allCompanies = companies;
+          // console.log('ALL', companies.length, companies);
+          this.$store.dispatch('getAllCompanies', companies);
+        }
+      });
+    },
   },
 };
 </script>

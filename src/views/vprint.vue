@@ -236,4 +236,5 @@ export default {
 
 <style lang="scss" scoped>
 @import "../assets/scss/components/v-print";
+// @import "../src/assets/scss/components/checks.scss";
 </style>

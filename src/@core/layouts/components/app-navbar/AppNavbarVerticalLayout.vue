@@ -33,7 +33,8 @@
           label="number"
           :options="option"
           :clearable="false"
-          class="w-50" />
+          class="w-75"
+          style="max-heigth:30px;" />
       </div>
       <b-navbar-nav class="nav flex-nowrap align-items-center justify-content-end ml-auto w-25">
         <dark-Toggler class="d-none d-lg-block" />
@@ -51,6 +52,7 @@ import { mapGetters } from 'vuex';
 import vSelect from 'vue-select';
 import useJwt from '@/auth/jwt/useJwt';
 import store from '@/store';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import Bookmarks from './components/Bookmarks.vue';
 import SearchBar from './components/SearchBar.vue';
 import DarkToggler from './components/DarkToggler.vue';
@@ -79,7 +81,6 @@ export default {
     return {
       userData: null,
       option: [],
-      getInfo: null,
       contract: null,
     };
   },
@@ -90,6 +91,7 @@ export default {
     ...mapGetters({
       gotSelected: 'CONTRACT_NUMBER',
       gotSelectedContract: 'CONTRACT_ID',
+      gotOrgId: 'COMPANY_ID',
     }),
     selected: {
       get() {
@@ -105,44 +107,64 @@ export default {
     getWidth() {
       return this.getWidth;
     },
+    gotOrgId(val) {
+      useJwt.getConsumer(val)
+        .then((status) => {
+          if (status.status) {
+            this.consumer = status.data;
+            this.option = [];
+            this.makeOptions(this.consumer.data);
+            // eslint-disable-next-line prefer-destructuring
+            this.selected = this.option[0];
+          }
+        });
+    },
   },
-  // created() {
-  //   const storage = JSON.parse(localStorage.getItem('userData'));
-  //   if (storage) {
-  //     this.contract = storage;
-  //     // this.selected = this.contract.contract.number;
-  //     console.log(this.contract);
-  //   }
-  // },
+
   beforeMount() {
     useJwt.getCurrenUser().then((response) => {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
-          this.makeOptions();
+          this.$store.dispatch('getEmail', this.userData.account.email);
+          this.makeOptions(this.userData);
           this.getSelected();
         });
       }
     });
-    this.userData = JSON.parse(localStorage.getItem('userData'));
-    if (this.userData) {
-      this.getInfo = this.userData;
-    }
+    // this.userData = JSON.parse(localStorage.getItem('userData'));
+    // if (this.userData) {
+    //   this.getInfo = this.userData;
+    // }
     return { data: { status: false } };
   },
   methods: {
     getSelected() {
       this.selected = this.userData.contract;
     },
-    makeOptions() {
-      this.userData.contracts.forEach((el) => {
+    makeOptions(val) {
+      if (typeof (val.contracts) !== 'object') {
+        this.showToast();
+      }
+      val.contracts.forEach((el) => {
         this.option.push({ 'number': el.number, 'id': el.id });
       });
     },
+
     // onChange() {
     //   this.$store.commit('changeContractId', this.selected.id);
     //   this.$store.commit('changeContractNumber', this.selected.number);
     // },
+    showToast() {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: 'Уведомление',
+          icon: 'BellIcon',
+          text: 'Договор с контрагентом отсутствует',
+        },
+      });
+    },
   },
 };
 </script>

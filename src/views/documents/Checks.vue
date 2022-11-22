@@ -102,10 +102,10 @@
         <div
           v-if="visible"
           id="check"
-          ref="print"
+          ref="printMe"
           class="d-flex flex-row flex-wrap justify-content-around">
           <vprint
-            id="print"
+            id="printMe"
             :transactions="transactions" />
         </div>
         <b-pagination
@@ -116,7 +116,7 @@
           last-number
           prev-class="prev-item"
           next-class="next-item"
-          class="mb-0 "
+          class="mb-0 mt-2"
           align="center"
           @change="selectPage">
           <template #prev-text>
@@ -140,7 +140,8 @@ import {
   BCard, BButton, BPagination, BOverlay, BSpinner,
 } from 'bootstrap-vue';
 import html2pdf from 'html2pdf.js';
-// import print from 'vue-print-nb';
+import print from 'vue-print-nb';
+
 import vSelect from 'vue-select';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
@@ -160,6 +161,10 @@ export default {
     BOverlay,
     BSpinner,
     vprint,
+  },
+
+  directives: {
+    print,
   },
   data() {
     return {
@@ -329,13 +334,14 @@ export default {
     print() {
       this.getAllTransactions(this.gotSelectedContract);
       setTimeout(this.getAllChecks, 2000);
+      this.$htmlToPaper('printMe');
     },
     order(arr) {
       return arr.slice().sort((a, b) => a.card_number - b.card_number);
     },
-    clickPrint() {
-      this.$htmlToPaper('print');
-    },
+    // clickPrint() {
+    //   this.$htmlToPaper('printMe');
+    // },
     download() {
       const holder = this.selectedHolder;
       const ID = this.gotSelectedContract;
@@ -368,7 +374,7 @@ export default {
       // eslint-disable-next-line prefer-template
       this.start = arr[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
-      this.end = arr[1] + ' 00:00:00';
+      this.end = arr[1] + ' 23:59:59';
       const ID = this.gotSelectedContract;
       useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}&holder=${holder}&offset=10&limit=10`).then((response) => {
         if (response.data.status) {
@@ -399,7 +405,6 @@ export default {
     },
     selectPage() {
       const holder = this.selectedHolder;
-      console.log(this.currentPage);
       const { selected } = this;
       const { start } = this;
       const { end } = this;

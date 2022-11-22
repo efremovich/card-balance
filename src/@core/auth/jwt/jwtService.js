@@ -152,7 +152,7 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
-  // Изменение лимитов пользователем (заявка)
+  // Изменение лимитов пользователем (заявка) //Блокировка || Разблокировка карты
   async refreshDataUserLimits(payload) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
@@ -165,6 +165,7 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // Смена пароля
   async changePassword(payload) {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
@@ -188,11 +189,34 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // Смена пользователя
+  // async changeUser(payload) {
+  //   const userData = JSON.parse(localStorage.getItem('userData'));
+  //   if (userData) {
+  //     const response = await this.axiosIns.post(
+  //       `/api/user/${userData.account.uid}`, payload,
+  //     );
+  //     return response;
+  //   }
+  //   return { data: { status: false } };
+  // }
+
   async getCurrenUser() {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(
         `/api/user/${userData.account.uid}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getAllCompanies() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        '/api/companies',
       );
       return response;
     }
@@ -248,6 +272,16 @@ export default class JwtService {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(`/api/requests?${params}`);
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Платежи
+  async getPayments(params) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(`/api/payments?${params}`);
       return response;
     }
     return { data: { status: false } };
@@ -382,6 +416,18 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
+  // ID организации для получения банковских реквизитов
+  async getOrgId(contractId) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/contract/${contractId}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
   // Инфо по картам (cards)
   async getCardsDate(params) {
     const userData = JSON.parse(localStorage.getItem('userData'));
@@ -414,6 +460,81 @@ export default class JwtService {
     if (userData) {
       const response = await this.axiosIns.get(
         `/api/changeContract/${userData.account.uid}/${id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Все поставщики
+  async getAllProviders() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        '/api/organisations',
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Все реквизиты по ID
+  async getAllpayAccountsFrom(id) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/payAccount/${id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Получить покупателя
+  async getConsumer(id) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/company/${id}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Отдать поставщика
+  async getProvider(id, param) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/organisation/${id}?${param}`,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Отчёт (оперативный)
+  async getOperReport(id) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        `/api/getOperReport?${id}`,
+        // {
+        //   responseType: 'arraybuffer',
+        // },
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  // Значения для бюджетных организаций (потребление за месяц)
+  async getValueServices() {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(
+        '/api/contractsSettings',
       );
       return response;
     }

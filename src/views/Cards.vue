@@ -34,7 +34,6 @@
             <b-input-group class="input-group-merge">
               <b-form-input
                 v-model="filters"
-                autofocus
                 placeholder="Поиск по номеру карты"
                 class="search-product" />
               <b-input-group-append is-text>
@@ -53,68 +52,41 @@
           <b-card
             v-for="(product, index) in products.data.result"
             :key="index"
-            class="ecommerce-card mb-1 position-relative mr-9"
+            class="ecommerce-card mb-1 mr-9"
             no-body>
-            <div
-              class="d-flex flex-row flex-nowrap justify-content-around">
-              <b-button-group>
-                <b-button
-                  v-b-tooltip.hover.top="'Внести изменения'"
-                  variant="light"
-                  tag="a"
-                  class="btn-wishlist"
-                  @click="toggleProductInWishlist(product)">
-                  <feather-icon
-                    icon="SettingsIcon"
-                    class="mr-50" />
-                </b-button>
-                <b-button
-                  v-b-tooltip.hover.top="'Внести изменения'"
-                  variant="light"
-                  tag="a"
-                  class="btn-wishlist"
-                  @click="toggleProductInWishlist(product)">
-                  <feather-icon
-                    icon="Edit3Icon"
-                    class="mr-50" />
-                </b-button>
-                <b-button
-                  v-b-tooltip.hover.top="'Удалить карту'"
-                  variant="light"
-                  tag="a"
-                  class="btn-cart"
-                  @click="handleCartActionClick(product)">
-                  <feather-icon
-                    icon="Trash2Icon"
-                    class="mr-50" />
-                </b-button>
-                <b-button
-                  v-b-tooltip.hover.top="'Заблокировать карту'"
-                  variant="light"
-                  tag="a"
-                  class="btn-cart"
-                  @click="handleCartActionClick(product)">
-                  <feather-icon
-                    icon="LockIcon"
-                    class="mr-50" />
-                </b-button>
-              </b-button-group>
-            </div>
+            <b-button
+              v-if="product.card_status_id !== 'BLOCK'"
+              variant="danger"
+              class="mt-1"
+              @click="getLockCard(product)">
+              Заблокировать
+              <feather-icon
+                icon="LockIcon" />
+            </b-button>
+            <b-button
+              v-else
+              variant="success"
+              class="mt-1"
+              @click="getUnlockCard(product)">
+              Разблокировать
+              <feather-icon
+                icon="UnlockIcon" />
+            </b-button>
+
             <b-link
               class="w-80"
               :to="{ name: 'card', params: { card_number: product.number } }">
               <b-img
-                class="card-img-top "
+                class="card-img-top"
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
-              <!-- <span
-                v-if="product.card_status_id !== 'ACTIVE'"
-                class="position-absolute">
-                <feather-icon
-                  v-b-tooltip.hover.top="'Заявка в обработке'"
-                  icon="AlertTriangleIcon"
-                  class="position-absolute icon-margin"
-                  size="30" />
-              </span> -->
+
+              <b-badge
+                v-if="getStatusRequests(product.request_status)"
+                class="badge-glow position-absolute mar"
+                pill
+                variant="warning">
+                Заявка в обработке
+              </b-badge>
             </b-link>
             <div class="item-options">
               <b-link
@@ -128,51 +100,6 @@
                   </h5>
                 </div>
               </b-link>
-              <!-- <div
-                class="d-flex flex-row flex-nowrap justify-content-around mt-2">
-                <b-button-group>
-                  <b-button
-                    v-b-tooltip.hover.top="'Внести изменения'"
-                    variant="light"
-                    tag="a"
-                    class="btn-wishlist mb-1"
-                    @click="toggleProductInWishlist(product)">
-                    <feather-icon
-                      icon="SettingsIcon"
-                      class="mr-50" />
-                  </b-button>
-                  <b-button
-                    v-b-tooltip.hover.top="'Внести изменения'"
-                    variant="light"
-                    tag="a"
-                    class="btn-wishlist mb-1"
-                    @click="toggleProductInWishlist(product)">
-                    <feather-icon
-                      icon="Edit3Icon"
-                      class="mr-50" />
-                  </b-button>
-                  <b-button
-                    v-b-tooltip.hover.top="'Удалить карту'"
-                    variant="light"
-                    tag="a"
-                    class="btn-cart mb-1"
-                    @click="handleCartActionClick(product)">
-                    <feather-icon
-                      icon="Trash2Icon"
-                      class="mr-50" />
-                  </b-button>
-                  <b-button
-                    v-b-tooltip.hover.top="'Заблокировать карту'"
-                    variant="light"
-                    tag="a"
-                    class="btn-cart mb-1"
-                    @click="handleCartActionClick(product)">
-                    <feather-icon
-                      icon="LockIcon"
-                      class="mr-50" />
-                  </b-button>
-                </b-button-group>
-              </div> -->
             </div>
             <div class="d-flex flex-column align-items-center w-100 position-relative top-negative">
               <div
@@ -184,9 +111,6 @@
                   :value="getValue(product.limits)"
                   :max="getMaxValue(product.limits)" />
               </div>
-              <!-- <h5 class="mt-1 mb-2">
-              Статус: {{ product.card_status.name }}
-            </h5> -->
               <div class="wrap">
                 <b-badge
                   :variant="colorMap[product.card_status_id]"
@@ -195,13 +119,6 @@
                 </b-badge>
               </div>
             </div>
-
-            <!-- <b-badge
-              class="badge-glow"
-              pill
-              variant="success">
-              {{ product.card_status.name }}
-            </b-badge> -->
           </b-card>
         </section>
 
@@ -210,83 +127,168 @@
           v-else
           class="d-flex flex-column align-items-center">
           <b-card
-            v-for="(product, index) in products.data.result"
-            :key="index"
-            class="table d-flex justify-content-between  mb-1 rlt width mh-300"
+            v-for="(product ) in products.data.result"
+            :key="product.number"
+            class="table d-flex justify-content-between mb-1 width mh-300"
             no-body>
-            <div class="d-flex position-relative pr-1 pl-1 w-100">
+            <div class="d-flex pr-1 pl-1 w-100">
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
                 <div class="d-flex flex-column align-items-center">
+                  <b-badge
+                    v-if="getStatusRequests(product.request_status)"
+                    pill
+                    variant="warning"
+                    class="badge-glow position-absolute list-badge">
+                    Заявка в обработке
+                  </b-badge>
+
                   <b-img
-                    class="card card-img-top w-100 "
+                    variant="outline-primary"
+                    class="card card-img-top pt-1 w-100 mh-270"
                     :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
 
                   <b-badge
                     :variant="colorMap[product.card_status_id]"
-                    class="w-95 position-relative badge-glow b-80">
+                    class="w-95 position-relative badge-glow b-70">
                     {{ product.card_status.name }}
                   </b-badge>
+                  <div class="item-wrapper pad mt-10">
+                    <h6
+                      class="item-price">
+                      PIN: {{ product.pin }}
+                    </h6>
+
+                    <h5 class="item-price">
+                      {{ product.number }}
+                    </h5>
+                  </div>
                 </div>
               </b-link>
               <b-link
                 :to="{ name: 'card', params: { card_number: product.number } }">
-                <div class="item-wrapper abs pad">
-                  <h6 class="item-price">
+                <!-- <div class="item-wrapper pad bt-15">
+                  <h6
+                    class="item-price">
                     PIN: {{ product.pin }}
                   </h6>
+
                   <h5 class="item-price">
                     {{ product.number }}
                   </h5>
-                </div>
+                </div> -->
               </b-link>
 
               <div class="d-flex flex-column w-60 mr-1 ml-1 mt-2">
-                <label> Остаток: {{ getValue(product.limits) }}</label>
+                <h5> Остаток: {{ getValue(product.limits) }}</h5>
+                <!-- <p>{{ getServicesLength(product.limits) }}</p> -->
+
+                <div v-if="!getServicesLength(product.limits)">
+                  <!-- <template v-for="(item, index) in 2"> -->
+                  <div
+                    v-for="(i) in product.limits"
+                    :key="i.ID"
+                    class="mw-50">
+                    <h5 class="text-center pt-1 pr-1 pl-1">
+                      {{ getLabel(i.limit_services_labels) }}
+                    </h5>
+                    <b-progress
+                      variant="success"
+                      show-value
+                      class="mt-1"
+                      :value="i.value - i.consumption"
+                      :max="i.value" />
+                  </div>
+                </div>
+
                 <div
-                  v-for="(i) in product.limits"
-                  :key="i.ID"
-                  class="mw-50">
-                  <b-progress
-                    variant="success"
-                    show-value
-                    class="mt-1"
-                    :value="i.value - i.consumption"
-                    :max="i.value" />
+                  v-else>
+                  <template v-for="(item,index) in 2">
+                    <div
+                      :key="index"
+                      class="mw-50">
+                      <h5
+                        class="text-center pt-1 pr-1 pl-1">
+                        {{ getLabel(product.limits[index].limit_services_labels) }}
+                      </h5>
+                      <b-progress
+                        variant="success"
+                        show-value
+                        class="mt-1"
+                        :value="product.limits[index+1].value - product.limits[index+1].consumption"
+                        :max="product.limits[index+1].value" />
+                    </div>
+                  </template>
+
+                  <app-collapse>
+                    <app-collapse-item
+
+                      class="mh"
+                      title="Ещё">
+                      <template
+                        v-for="(item,index) in (getLabelServicesLength(product.limits)-2)"
+                        class="p-0">
+                        <h5
+                          :key="index"
+                          class="text-center pt-1 pr-1 pl-1">
+                          {{ getLabel(product.limits[index+2].limit_services_labels) }}
+                        </h5>
+                        <b-progress
+                          :key="index"
+                          variant="success"
+                          show-value
+                          :value="product.limits[index+2].value - product.limits[index+2].consumption"
+                          :max="product.limits[index+2].value" />
+                      </template>
+                    </app-collapse-item>
+                  </app-collapse>
                 </div>
               </div>
+
               <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1 mt-2">
                 <h5> Держатель: {{ product.holder }} </h5>
-                <h5> Последняя активность </h5>
+                <h5> Последняя активность: </h5>
                 <h5> Индекс активности: </h5>
               </div>
               <div
                 class="d-flex flex-column align-items-start mt-2">
                 <b-button
                   variant="light"
-                  tag="a"
-                  class="btn-wishlist mb-1 mw-100 p-1 min-w"
-                  @click="toggleProductInWishlist(product)">
+                  :to="{ name: 'card', params: { card_number: product.number } }"
+                  class="btn-wishlist mb-1 mw-100 p-1 min-w">
                   <feather-icon
                     icon="EditIcon"
                     class="mr-50" />
                   Настроить карту
                 </b-button>
+
                 <b-button
+                  v-if="product.card_status_id !== 'BLOCK'"
                   variant="light"
                   tag="a"
                   class="btn-wishlist mb-1 mw-100 p-1 min-w"
-                  @click="toggleProductInWishlist(product)">
+                  @click="getLockCard(product)">
                   <feather-icon
                     icon="LockIcon"
                     class="mr-25" />
                   Заблокировать карту
                 </b-button>
                 <b-button
+                  v-else
+                  variant="success"
+                  tag="a"
+                  class="btn-wishlist mb-1 mw-100 p-1 min-w"
+                  @click="getUnlockCard(product)">
+                  <feather-icon
+                    icon="LockIcon"
+                    class="mr-25" />
+                  Разблокировать карту
+                </b-button>
+                <b-button
                   variant="light"
                   tag="a"
                   class="btn-wishlist mb-1 mw-100 p-1 min-w"
-                  @click="toggleProductInWishlist(product)">
+                  @click="cardDate(product.number)">
                   <feather-icon
                     icon="NavigationIcon"
                     class="mr-50" />
@@ -296,7 +298,7 @@
                   variant="light"
                   tag="a"
                   class="btn-wishlist mw-100 mb-1 w-100 p-1 min-w"
-                  @click="toggleProductInWishlist(product)">
+                  @click="getTransactions(product.number)">
                   <feather-icon
                     icon="ListIcon"
                     class="mr-50" />
@@ -355,71 +357,38 @@
             :key="index"
             :class="[product.card_status_id !== 'ACTIVE'?'':'ecommerce-card', 'mb-1', 'position-relative', getWidth === 'xl'?'mr-9':'']"
             no-body>
-            <div
-              class="d-flex flex-row flex-nowrap justify-content-around">
-              <b-button-group>
-                <b-button
-                  v-b-tooltip.hover.top="'Внести изменения'"
-                  variant="light"
-                  tag="a"
-                  class="btn-wishlist"
-                  @click="toggleProductInWishlist(product)">
-                  <feather-icon
-                    icon="SettingsIcon"
-                    class="mr-50" />
-                </b-button>
-                <b-button
-                  v-b-tooltip.hover.top="'Внести изменения'"
-                  variant="light"
-                  tag="a"
-                  class="btn-wishlist"
-                  @click="toggleProductInWishlist(product)">
-                  <feather-icon
-                    icon="Edit3Icon"
-                    class="mr-50" />
-                </b-button>
-                <b-button
-                  v-b-tooltip.hover.top="'Удалить карту'"
-                  variant="light"
-                  tag="a"
-                  class="btn-cart"
-                  @click="handleCartActionClick(product)">
-                  <feather-icon
-                    icon="Trash2Icon"
-                    class="mr-50" />
-                </b-button>
-                <b-button
-                  v-b-tooltip.hover.top="'Заблокировать карту'"
-                  variant="light"
-                  tag="a"
-                  class="btn-cart"
-                  @click="handleCartActionClick(product)">
-                  <feather-icon
-                    icon="LockIcon"
-                    class="mr-50" />
-                </b-button>
-              </b-button-group>
-            </div>
+            <b-button
+              v-if="product.card_status_id !== 'BLOCK'"
+              variant="danger"
+              class="mt-1"
+              @click="getLockCard(product)">
+              Заблокировать
+              <feather-icon
+                icon="LockIcon" />
+            </b-button>
+            <b-button
+              v-else
+              variant="success"
+              class="mt-1"
+              @click="getUnlockCard(product)">
+              Разблокировать
+              <feather-icon
+                icon="UnlockIcon" />
+            </b-button>
             <b-link
               class="w-80"
               :to="{ name: 'card', params: { card_number: product.number } }">
               <b-img
                 class="card-img-top"
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
-              <!-- <span
-                v-if="product.card_status_id !== 'ACTIVE'"
-                class="position-absolute">
-                <feather-icon
-                  v-b-tooltip.hover.top="'Заявка в обработке'"
-                  icon="AlertTriangleIcon"
-                  class="position-absolute icon-margin"
-                  size="30" />
-              </span> -->
-              <!-- <feather-icon
-                v-b-tooltip.hover.top="'Заявка в обработке'"
-                icon="AlertTriangleIcon"
-                class="position-absolute icon-margin"
-                size="30" /> -->
+
+              <b-badge
+                v-if="getStatusRequests(product.request_status)"
+                class="badge-glow position-absolute mar"
+                pill
+                variant="warning">
+                Заявка в обработке
+              </b-badge>
             </b-link>
             <div class="item-options">
               <b-link
@@ -433,51 +402,6 @@
                   </h5>
                 </div>
               </b-link>
-              <!-- <div
-                class="d-flex flex-row flex-nowrap justify-content-around mt-2">
-                <b-button-group>
-                  <b-button
-                    v-b-tooltip.hover.top="'Внести изменения'"
-                    variant="light"
-                    tag="a"
-                    class="btn-wishlist mb-1"
-                    @click="toggleProductInWishlist(product)">
-                    <feather-icon
-                      icon="SettingsIcon"
-                      class="mr-50" />
-                  </b-button>
-                  <b-button
-                    v-b-tooltip.hover.top="'Внести изменения'"
-                    variant="light"
-                    tag="a"
-                    class="btn-wishlist mb-1"
-                    @click="toggleProductInWishlist(product)">
-                    <feather-icon
-                      icon="Edit3Icon"
-                      class="mr-50" />
-                  </b-button>
-                  <b-button
-                    v-b-tooltip.hover.top="'Удалить карту'"
-                    variant="light"
-                    tag="a"
-                    class="btn-cart mb-1"
-                    @click="handleCartActionClick(product)">
-                    <feather-icon
-                      icon="Trash2Icon"
-                      class="mr-50" />
-                  </b-button>
-                  <b-button
-                    v-b-tooltip.hover.top="'Заблокировать карту'"
-                    variant="light"
-                    tag="a"
-                    class="btn-cart mb-1"
-                    @click="handleCartActionClick(product)">
-                    <feather-icon
-                      icon="LockIcon"
-                      class="mr-50" />
-                  </b-button>
-                </b-button-group>
-              </div> -->
             </div>
             <div class="d-flex flex-column align-items-center w-100 position-relative top-negative">
               <div
@@ -489,9 +413,6 @@
                   :value="getValue(product.limits)"
                   :max="getMaxValue(product.limits)" />
               </div>
-              <!-- <h5 class="mt-1 mb-2">
-              Статус: {{ product.card_status.name }}
-            </h5> -->
               <div class="wrap">
                 <b-badge
                   :variant="colorMap[product.card_status_id]"
@@ -500,13 +421,6 @@
                 </b-badge>
               </div>
             </div>
-
-            <!-- <b-badge
-              class="badge-glow"
-              pill
-              variant="success">
-              {{ product.card_status.name }}
-            </b-badge> -->
           </b-card>
         </section>
         <b-card-body class="d-flex justify-content-center flex-wrap align-items-center">
@@ -563,7 +477,6 @@ import {
   VBTooltip,
   BProgress,
   BInputGroupAppend,
-  BButtonGroup,
   BLink,
   BRow,
   BOverlay,
@@ -581,11 +494,11 @@ import { ref } from '@vue/composition-api';
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
 import { mapGetters, mapMutations } from 'vuex';
 import store from '@/store';
-
-// import { $themeBreakpoints } from '@themeConfig';
-
-import { useShopUi, useShopRemoteData } from './useECommerceShop';
-import { useEcommerceUi } from './useEcommerce';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import AppCollapse from '@core/components/app-collapse/AppCollapse.vue';
+import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue';
+import { useShopUi, useShopRemoteData } from '../libs/useECommerceShop';
+import { useEcommerceUi } from '../libs/useEcommerce';
 
 export default {
   directives: {
@@ -593,6 +506,8 @@ export default {
     Ripple,
   },
   components: {
+    AppCollapse,
+    AppCollapseItem,
     BLink,
     BCardBody,
     BFormSelect,
@@ -600,7 +515,6 @@ export default {
     BFormGroup,
     BPagination,
     BProgress,
-    BButtonGroup,
     BOverlay,
     BImg,
     BButton,
@@ -625,7 +539,6 @@ export default {
     } else {
       contractID.value = store.getters.CONTRACT_ID;
     }
-
     const showLoading = ref(true);
     const download = ref(false);
     const filters = ref('');
@@ -651,7 +564,6 @@ export default {
         }
       });
     };
-
     fetchShopProducts();
 
     // watch([filters], () => {
@@ -679,6 +591,7 @@ export default {
     return {
       view: true,
       page: 1,
+      cardData: null,
       itemView: this.$store.state.cardsView,
       colorMap: {
         FINANCE: 'warning',
@@ -700,6 +613,10 @@ export default {
     getWidth() {
       return store.getters['app/currentBreakPoint'];
     },
+    getAllLimits() {
+      return this.products.data.result;
+    },
+
   },
   watch: {
     perPage() {
@@ -737,7 +654,6 @@ export default {
     },
     currentPage() {
       this.page = this.currentPage;
-      // this.$store.dispatch('getSelectedPages', this.page);
       useJwt.getChangeCardsDate(this.contractID, `&offset=${this.perPage * (this.page - 1)}&limit=${this.perPage}`).then((response) => {
         if (response.data.status) {
           this.products = response.data;
@@ -745,16 +661,15 @@ export default {
       });
     },
     filters(val) {
-      useJwt.getChangeCardsDate(this.gotSelected, `offset=0&limit=${this.perPage}`).then((response) => {
+      useJwt.getChangeCardsDate(this.gotSelected, 'offset=0&limit=-1').then((response) => {
         if (response.data.status) {
           this.products = response.data;
           this.showLoading = false;
           this.download = true;
-
           this.totalRows = this.products.data.total;
-
           if (val !== '') {
-            this.products.data.result = response.data.data.result.filter((product) => product.number.includes(val));
+            this.products = response.data;
+            this.products.data.result = this.products.data.result.filter((product) => product.number.includes(val));
           }
         }
       });
@@ -779,6 +694,113 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       return totalSumm;
     },
+    getTransactions(val) {
+      this.$store.dispatch('getCardNumber', val);
+      this.$router.push({ name: 'transactions' });
+    },
+
+    cardDate(params) {
+      useJwt.getCardData(params).then((response) => {
+        if (response.data.status) {
+          this.cardData = response.data;
+        }
+        return this.cardData.data.limits.map((el) => el.limit_services);
+      });
+    },
+    getServicesLength(item) {
+      if (Object.keys(item).length > 2) {
+        return true;
+      }
+      return false;
+    },
+    // Смена статуса карты
+    getLockCard(item) {
+      this.$bvModal
+        .msgBoxConfirm(`Вы уверены что хотите заблокировать карту № ${item.number}?`, {
+          cancelVariant: 'outline-secondary',
+          okVariant: 'primary',
+          okTitle: 'Да',
+          cancelTitle: 'Нет',
+          centered: true,
+        })
+        .then((value) => {
+          if (value === true && item.card_status_id === 'ACTIVE') {
+            const status = [{
+              'card_number': item.number,
+              'request_type_code': 'LOCK',
+              'request_status_code': 'CREATED',
+              'contract_id': this.contractID,
+            }];
+            useJwt.refreshDataUserLimits(status).then((response) => {
+              if (response.data.status) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Направлена заявка на блокировку',
+                    icon: 'LockIcon',
+                    variant: 'success',
+                  },
+                });
+              } else {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: '🙄 Ошибка. Попробуйте позже, а мы пока починим 👨‍🔧',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'warning',
+                  },
+                });
+              }
+            });
+          }
+        });
+    },
+    getUnlockCard(item) {
+      this.$bvModal
+        .msgBoxConfirm(`Вы уверены что хотите разблокировать карту № ${item.number}?`, {
+          cancelVariant: 'outline-secondary',
+          okVariant: 'success',
+          okTitle: 'Да',
+          cancelTitle: 'Нет',
+          centered: true,
+        })
+        .then((value) => {
+          if (value === true && item.card_status_id === 'BLOCK') {
+            const status = [{
+              'card_number': item.number,
+              'request_type_code': 'UNLOCK',
+              'request_status_code': 'CREATED',
+              'contract_id': this.contractID,
+            }];
+            useJwt.refreshDataUserLimits(status).then((response) => {
+              if (response.data.status) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Направлена заявка на разблокировку',
+                    icon: 'LockIcon',
+                    variant: 'success',
+                  },
+                });
+              } else {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: '🙄 Ошибка. Попробуйте позже, а мы пока починим 👨‍🔧',
+                    icon: 'AlertTriangleIcon',
+                    variant: 'warning',
+                  },
+                });
+              }
+            });
+          }
+        });
+    },
+    getStatusRequests(item) {
+      if (item === 'PROCESSING' || item === 'CREATED') {
+        return true;
+      } return false;
+    },
 
     getValue(item) {
       if (item === undefined || null || item.length < 1) {
@@ -787,6 +809,14 @@ export default {
       const totalSumm = item.reduce((accumulator, el) => accumulator + el.value, 0);
       const consumption = item.reduce((accumulator, el) => accumulator + el.consumption, 0);
       return totalSumm - consumption;
+    },
+    getLabel(item) {
+      if (item) {
+        return String(item);
+      } return '';
+    },
+    getLabelServicesLength(item) {
+      return Object.keys(item).length;
     },
   },
 };

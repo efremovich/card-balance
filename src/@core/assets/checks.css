@@ -1,6 +1,6 @@
 #check {
   display: flex !important;
-  min-width: 300px;
+  min-width: 200px;
   flex-wrap: wrap !important;
   justify-content: space-evenly !important;
 }

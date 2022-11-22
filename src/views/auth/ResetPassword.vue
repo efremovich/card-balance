@@ -16,7 +16,7 @@
           Сбросить пароль 🔒
         </b-card-title>
         <b-card-text class="mb-2">
-          Ваш новый пароль должен отличаться от используемого ранее
+          Ваш новый пароль должен отличаться от используемого ранее:
         </b-card-text>
 
         <!-- form -->
@@ -27,11 +27,11 @@
             @submit.prevent="validationForm">
             <!-- password -->
             <b-form-group
-              label="New Password"
+              label="Новый пароль"
               label-for="reset-password-new">
               <validation-provider
                 v-slot="{ errors }"
-                name="Password"
+                name="`Новый пароль`"
                 vid="Password"
                 rules="required|password">
                 <b-input-group
@@ -59,10 +59,10 @@
             <!-- confirm password -->
             <b-form-group
               label-for="reset-password-confirm"
-              label="Confirm Password">
+              label="Повторите новый пароль">
               <validation-provider
                 v-slot="{ errors }"
-                name="Confirm Password"
+                name="`Повторите новый пароль`"
                 rules="required|confirmed:Password">
                 <b-input-group
                   class="input-group-merge"
@@ -114,6 +114,8 @@ import {
   BCard, BCardTitle, BCardText, BForm, BFormGroup, BInputGroup, BInputGroupAppend, BLink, BFormInput, BButton,
 } from 'bootstrap-vue';
 import { required } from '@validations';
+import useJwt from '@/auth/jwt/useJwt';
+import store from '@/store';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 
 export default {
@@ -139,7 +141,8 @@ export default {
       password: '',
       // validation
       required,
-
+      getInfo: null,
+      empty: null,
       // Toggle Password
       password1FieldType: 'password',
       password2FieldType: 'password',
@@ -160,16 +163,38 @@ export default {
     togglePassword2Visibility() {
       this.password2FieldType = this.password2FieldType === 'password' ? 'text' : 'password';
     },
+    // validationForm() {
+    //   this.$refs.simpleRules.validate().then((success) => {
+    //     if (success) {
+    //       this.$toast({
+    //         component: ToastificationContent,
+    //         props: {
+    //           title: 'Form Submitted',
+    //           icon: 'EditIcon',
+    //           variant: 'success',
+    //         },
+    //       });
+    //     }
+    //   });
+    // },
     validationForm() {
       this.$refs.simpleRules.validate().then((success) => {
         if (success) {
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Form Submitted',
-              icon: 'EditIcon',
-              variant: 'success',
-            },
+          const newPassword = {
+            new_password: this.password,
+            old_password: '',
+            email: store.getters.EMAIL,
+          };
+          useJwt.changePassword(JSON.stringify(newPassword)).then((response) => {
+            this.empty = response;
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Пароль изменён',
+                icon: 'EditIcon',
+                variant: 'success',
+              },
+            });
           });
         }
       });
