@@ -3,7 +3,9 @@
     <div class="auth-inner py-2">
       <!-- Login v1 -->
       <b-card class="mb-0">
-        <b-link class="brand-logo">
+        <b-link
+          class="brand-logo"
+          style="height:70px">
           <vuexy-logo />
         </b-link>
 
@@ -127,7 +129,7 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import VuexyLogo from '@core/layouts/components/Logo.vue';
 import { required, email } from '@validations';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
-import store from '@/store';
+import store from '../../store'; // @/store
 import useJwt from '../../auth/jwt/useJwt';
 import { togglePasswordVisibility } from '../../@core/mixins/ui/forms';
 import { getHomeRouteForLoggedInUser } from '../../auth/utils';

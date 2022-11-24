@@ -8,13 +8,13 @@ import 'animate.css';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 // import 'swiper/swiper-bundle.css';
 // Routes
-import { canNavigate } from '@/libs/acl/routeProtection';
+import { canNavigate } from '../libs/acl/routeProtection'; // @/libs/acl/routeProtection
 // import { getModal } from '@/views/CardDetails.vue';
 import {
   isUserLoggedIn,
   getUserData,
   getHomeRouteForLoggedInUser,
-} from '@/auth/utils';
+} from '../auth/utils';// @/auth/utils
 // eslint-disable-next-line import/no-cycle
 import pages from './pages';
 

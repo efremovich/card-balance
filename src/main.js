@@ -14,13 +14,13 @@ import './libs/global-components';
 
 // 3rd party plugins
 import '@axios';
-import '@/libs/acl';
-import '@/libs/portal-vue';
-import '@/libs/clipboard';
-import '@/libs/toastification';
-import '@/libs/sweet-alerts';
-import '@/libs/vue-select';
-import '@/libs/tour';
+import './libs/acl'; // @/libs/acl
+import './libs/portal-vue'; // @/libs/portal-vue
+import './libs/clipboard'; // @/libs/clipboard
+import './libs/toastification'; // @/libs/toastification
+import './libs/sweet-alerts'; // @/libs/sweet-alerts
+import './libs/vue-select'; // @/libs/vue-select
+import './libs/tour'; // @/libs/tour
 
 const options = {
   'name': '_blank',

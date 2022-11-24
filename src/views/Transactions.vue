@@ -329,7 +329,6 @@
 import { required, credit } from '@validations';
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import { Russian } from 'flatpickr/dist/l10n/ru';
-import store from '@/store';
 import { mapGetters } from 'vuex';
 import {
   BRow,
@@ -351,6 +350,7 @@ import {
 // import 'swiper/swiper-bundle.css';
 import vSelect from 'vue-select';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import store from '../store';
 // import store from '@/store';
 import useJwt from '../auth/jwt/useJwt';
 import { formatDate } from '../@core/utils/filter';

@@ -18,11 +18,9 @@ import ScrollToTop from '@core/components/scroll-to-top/ScrollToTop.vue';
 import { $themeColors, $themeBreakpoints, $themeConfig } from '@themeConfig';
 import { provideToast } from 'vue-toastification/composition';
 import { watch } from '@vue/composition-api';
-import useAppConfig from '@core/app-config/useAppConfig';
-
 import { useWindowSize, useCssVar } from '@vueuse/core';
-
-import store from '@/store/index';
+import useAppConfig from './@core/app-config/useAppConfig'; // @core/app-config/useAppConfig
+import store from './store/index'; // @/store/index
 
 const LayoutVertical = () => import('@/layouts/vertical/LayoutVertical.vue');
 const LayoutHorizontal = () => import('@/layouts/horizontal/LayoutHorizontal.vue');

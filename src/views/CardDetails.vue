@@ -332,7 +332,8 @@
                 </b-overlay>
               </b-col>
             </div>
-            <div class="d-flex justify-content-around w-90 position-sticky bottom">
+            <div
+              class="d-flex justify-content-around w-90 position-sticky bottom">
               <b-button
                 v-if="!getRequestStatus"
                 variant="success"
@@ -890,13 +891,13 @@ import {
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import vSelect from 'vue-select';
-import store from '@/store';
 import { required } from '@validations';
 import BCardActions from '@core/components/b-card-actions/BCardActions.vue';
 import { ref, computed } from '@vue/composition-api';
 import Fuse from 'fuse.js';
 import AppEchartDoughnut from '@core/components/charts/echart/AppEchartDoughnut.vue';
 import { mapGetters } from 'vuex';
+import store from '../store';
 import { useRouter } from '../@core/utils/utils';
 import useJwt from '../auth/jwt/useJwt';
 
@@ -1526,6 +1527,7 @@ export default {
         return '';
       }
       let label = '';
+      console.log('arr', arrService);
       // eslint-disable-next-line no-return-assign
       Object.values(arrService).forEach((el) => (label += `${this.labelService[el]}, `));
       // eslint-disable-next-line no-plusplus
