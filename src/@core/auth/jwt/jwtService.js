@@ -1,5 +1,5 @@
-import router from '@/router';
-import jwtDefaultConfig from '@/@core/auth/jwt/jwtDefaultConfig';
+import router from '../../../router'; // @/router
+import jwtDefaultConfig from './jwtDefaultConfig'; // @/@core/auth/jwt/jwtDefaultConfig
 
 export default class JwtService {
   // Will be used by this service for making API calls

@@ -9,7 +9,6 @@ import ToastificationContent from '@core/components/toastification/Toastificatio
 // import 'swiper/swiper-bundle.css';
 // Routes
 import { canNavigate } from '../libs/acl/routeProtection'; // @/libs/acl/routeProtection
-// import { getModal } from '@/views/CardDetails.vue';
 import {
   isUserLoggedIn,
   getUserData,
