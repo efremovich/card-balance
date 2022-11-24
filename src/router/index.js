@@ -24,7 +24,7 @@ Vue.use(VueRouter);
 // const store = useStore();
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash', // history
   base: process.env.BASE_URL,
   scrollBehavior() {
     return { x: 0, y: 0 };
