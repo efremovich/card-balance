@@ -1348,7 +1348,7 @@ export default {
     },
     Holder(old, val) {
       if (JSON.stringify(val) === JSON.stringify(this.cardHolderSource)) {
-        console.log(old, val);
+        // console.log(old, val);
         this.holderComparison = true;
       } else {
         this.holderComparison = false;
@@ -1414,9 +1414,9 @@ export default {
         }
       });
     },
-    changeHolder(old, val) {
-      console.log(old, val);
-    },
+    // changeHolder(old, val) {
+    //   console.log(old, val);
+    // },
     sendRequest() {
       const request = [{
         card_number: this.cardData.data.number,
@@ -1527,7 +1527,7 @@ export default {
         return '';
       }
       let label = '';
-      console.log('arr', arrService);
+      // console.log('arr', arrService);
       // eslint-disable-next-line no-return-assign
       Object.values(arrService).forEach((el) => (label += `${this.labelService[el]}, `));
       // eslint-disable-next-line no-plusplus

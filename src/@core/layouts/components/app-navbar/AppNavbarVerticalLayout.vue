@@ -1,3 +1,4 @@
+<!-- eslint-disable import/extensions -->
 <template>
   <div class="navbar-container d-flex content justify-content-between align-items-center">
     <!-- Nav Menu Toggler -->
@@ -50,7 +51,9 @@
 import { BLink, BNavbarNav } from 'bootstrap-vue';
 import { mapGetters } from 'vuex';
 import vSelect from 'vue-select';
+// eslint-disable-next-line import/extensions
 import useJwt from '@/auth/jwt/useJwt';
+// eslint-disable-next-line import/extensions
 import store from '@/store';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import Bookmarks from './components/Bookmarks.vue';
