@@ -1069,7 +1069,6 @@ export default {
       useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selectedOper}`).then((response) => {
         if (response.data.status) {
           this.emptyArr = response.data;
-          console.log(this.emptyArr);
           this.totalRows = this.emptyArr.data.total;
           if (this.totalRows > 0) {
             this.resultLength = true;

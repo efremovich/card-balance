@@ -159,7 +159,7 @@
                     @submit.prevent="newLimitsData">
                     <!-- Нужен template для отрисовки карты без заданнных при открытии карты лимитов, отрисовывать
                       шаблон лимита (newLimit), но не пустоту -->
-                    <template v-if="limitsLength<1 || limitsLength !==null">
+                    <template v-if="limitsLength<1 || limitsLength ==null">
                       <template
                         v-for="(item,index) in count">
                         <b-card-actions
@@ -1195,6 +1195,7 @@ export default {
       if (response.data.status) {
         cardData.value = response.data;
         cardEmitentCode.value = cardData.value.data.emitent.code;
+
         limitsLength.value = cardData.value.data.limits.length;
         source.value = JSON.parse(JSON.stringify(cardData.value.data.limits));
         cardHolderSource.value = JSON.parse(JSON.stringify(cardData.value.data.holder));
