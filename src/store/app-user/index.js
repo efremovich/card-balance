@@ -1,5 +1,6 @@
-import { initialAbility } from '@/libs/acl/config';
-import useJwt from '@/auth/jwt/useJwt';
+// eslint-disable-next-line import/extensions
+import { initialAbility } from '@/libs/acl/config'; // @/libs/acl/config
+import useJwt from '../../auth/jwt/useJwt'; // @/auth/jwt/useJwt
 
 export default {
   namespaced: true,
@@ -25,6 +26,7 @@ export default {
       useJwt.setToken(userData.account.accessToken);
       useJwt.setRefreshToken(userData.account.refreshToken);
       localStorage.setItem('userData', JSON.stringify(userData));
+      localStorage.setItem('admin', JSON.stringify(userData.account.role)); // добавил
       return userData;
     },
     getCardStatistic(ctx, payload) {

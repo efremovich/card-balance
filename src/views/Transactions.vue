@@ -61,7 +61,7 @@
                         :disabled="busy"
                         :options="option"
                         class="w-100 mb-1"
-                        @input="onChange()" />
+                        @input="onChange" />
                     </b-overlay>
                   </div>
                 </div>
@@ -87,7 +87,7 @@
                   </b-form-group>
 
                   <div>
-                    <export-excel
+                    <!-- <export-excel
                       class="btn btn-primary"
                       :data="transactions.data.result"
                       :fields="columns"
@@ -104,7 +104,16 @@
                         <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
                       </svg>
                       Скачать
-                    </export-excel>
+                    </export-excel> -->
+                    <b-button
+
+                      variant="primary"
+                      class="ml-2"
+                      @click="downloadTransReport">
+                      <feather-icon
+                        icon="DownloadCloudIcon" />
+                      <span class="align-middle ml-1">Скачать</span>
+                    </b-button>
                   </div>
                 </div>
               </div>
@@ -350,6 +359,8 @@ import {
 // import 'swiper/swiper-bundle.css';
 import vSelect from 'vue-select';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import axios from '@axios';
+// eslint-disable-next-line import/no-cycle
 import store from '../store';
 // import store from '@/store';
 import useJwt from '../auth/jwt/useJwt';
@@ -401,24 +412,28 @@ export default {
       config: {
         mode: 'range',
         maxDate: 'today',
-        // defaultDate: ['01-03-2021', 'today'],
         locale: Russian,
         dateFormat: 'd.m.Y',
       },
       fields: [
-        {
-          key: 'service.full_name',
-          label: 'Товар/услуга',
-          sortable: true,
-        },
         {
           key: 'date',
           label: 'Дата',
           sortable: true,
         },
         {
+          key: 'service.full_name',
+          label: 'Товар/услуга',
+          sortable: true,
+        },
+        {
           key: 'summ',
           label: 'Сумма',
+          sortable: true,
+        },
+        {
+          key: 'card_holder',
+          label: 'Держатель',
           sortable: true,
         },
         {
@@ -730,6 +745,45 @@ export default {
             }
           });
         }
+      }
+    },
+    downloadTransReport() {
+      const date = this.rangeDate;
+      const newDate = Array.from(date).filter((n) => n !== '—');
+      const arr = newDate.join('').split('00:00:00');
+      const trim = arr.join('').split(' ').filter((n) => n !== '');
+      // eslint-disable-next-line prefer-template
+      this.start = trim[0] + ' 00:00:00';
+      // eslint-disable-next-line prefer-template
+      this.end = trim[1] + ' 23:59:59';
+      if (this.selected === null) {
+        axios.get(`/api/getTransReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`, {
+          responseType: 'blob',
+        }).then((response) => {
+          const url = URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute(
+            'download',
+            `Транзакционный отчёт от ${new Date().toLocaleDateString()}.xls`,
+          );
+          document.body.appendChild(link);
+          link.click();
+        });
+      } else {
+        axios.get(`/api/getTransReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`, {
+          responseType: 'blob',
+        }).then((response) => {
+          const url = URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute(
+            'download',
+            `Транзакционный отчёт от ${new Date().toLocaleDateString()}.xls`,
+          );
+          document.body.appendChild(link);
+          link.click();
+        });
       }
     },
     onFiltered(filteredItems) {

@@ -1,5 +1,7 @@
-import router from '../../../router'; // @/router
-import jwtDefaultConfig from './jwtDefaultConfig'; // @/@core/auth/jwt/jwtDefaultConfig
+// eslint-disable-next-line import/extensions
+import router from '@/router';
+// eslint-disable-next-line import/extensions
+import jwtDefaultConfig from '@/@core/auth/jwt/jwtDefaultConfig';
 
 export default class JwtService {
   // Will be used by this service for making API calls
@@ -262,6 +264,25 @@ export default class JwtService {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
       const response = await this.axiosIns.get(`/api/transactions?${params}`);
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  //  отчёт по ЛИМИТАМ
+  async getLimits(params) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(`/api/getLimitReport?${params}`);
+      return response;
+    }
+    return { data: { status: false } };
+  }
+
+  async getAllLimits(params) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.get(`/api/limits?${params}`);
       return response;
     }
     return { data: { status: false } };

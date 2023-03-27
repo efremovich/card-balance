@@ -107,32 +107,19 @@
                     icon="DownloadCloudIcon" /> -->
                   <span class="align-middle">Скачать</span>
                 </b-button>
-                <!-- <export-excel
-                v-if="selectable==='оперативный'"
-                class="ml-1 btn btn-primary"
-                :data="dataReport"
-                :fields="columnsReport"
-                type="xls"
-                :name="`Отчёт за период с ${getStartDate} по ${getEndDate}.xls`">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="currentColor"
-                  class="bi bi-file-earmark-excel"
-                  viewBox="0 0 16 16">
-                  <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                  <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-                </svg>
-                Скачать
-              </export-excel> -->
+
                 <b-button
                   v-if="selectable==='оперативный'"
                   variant="primary"
                   class="ml-2"
                   @click="downloadOperReport">
-                  <!-- <feather-icon
-                    icon="DownloadCloudIcon" /> -->
+                  <span class="align-middle">Скачать</span>
+                </b-button>
+                <b-button
+                  v-if="selectable==='отчёт по лимитам'"
+                  variant="primary"
+                  class="ml-2"
+                  @click="downloadLimitReport">
                   <span class="align-middle">Скачать</span>
                 </b-button>
               </div>
@@ -157,7 +144,7 @@
                 </b-input-group>
               </b-form-group>
             </div>
-            <div v-if="selectable!==null">
+            <!-- <div v-if="selectable!==null">
               <div class="w-100">
                 <label
                   class="mt-2"
@@ -182,9 +169,33 @@
                   class="w-50"
                   @input="getHolder" />
               </div>
-            </div>
+            </div> -->
 
             <div v-if="selectable==='транзакционный'">
+              <div class="w-100">
+                <label
+                  class="mt-2"
+                  for="selectCard">Выберете карту:</label>
+                <v-select
+                  id="selectCard"
+                  v-model="selected"
+                  :disabled="selectedHolder !== null"
+                  multiple
+                  :options="option"
+                  class="w-50"
+                  @input="onChange" />
+                <label
+                  class="mt-2"
+                  for="selectCard">Выберете держателя:</label>
+                <v-select
+                  id="selectCard"
+                  v-model="selectedHolder"
+                  :disabled="selected !== null"
+                  multiple
+                  :options="holders"
+                  class="w-50"
+                  @input="getHolder" />
+              </div>
               <b-table
                 hover
                 responsive
@@ -228,6 +239,30 @@
             </div>
           </div>
           <div v-if="selectable==='оперативный'">
+            <div class="w-100">
+              <label
+                class="mt-2"
+                for="selectCard">Выберете карту:</label>
+              <v-select
+                id="selectCard"
+                v-model="selectedOper"
+                :disabled="selectedHolderOper !== null"
+                multiple
+                :options="option"
+                class="w-50"
+                @input="filterOper" />
+              <label
+                class="mt-2"
+                for="selectCard">Выберете держателя:</label>
+              <v-select
+                id="selectCard"
+                v-model="selectedHolderOper"
+                :disabled="selectedOper !== null"
+                multiple
+                :options="holders"
+                class="w-50"
+                @input="getHolder" />
+            </div>
             <b-table
               hover
               responsive
@@ -285,19 +320,83 @@
                     Детали
                   </b-button>
                 </b-table>
-                <export-excel
-                  class="mt-1 btn btn-primary"
-                  :data="row.item.details[0]"
-                  :fields="fieldsPrint"
-                  :title="`Транзакции по карте по карте № ${row.item.details[0][0].card_number}`"
-                  type="xls"
-                  :name="`Отчёт по карте № ${row.item.details[0][0].card_number} за период с ${getStartDate} по ${getEndDate}.xls`">
-                  <h5 class="text-white">
-                    Скачать отчёт по карте № {{ row.item.details[0][0].card_number }}
-                  </h5>
-                </export-excel>
+                <b-button
+                  variant="primary"
+                  class="ml-2"
+                  @click="downloadOperReportCard(row.item.details[0][0].card_number)">
+                  <feather-icon
+                    icon="DownloadCloudIcon" />
+                  <span class="align-middle">  Скачать отчёт по карте № {{ row.item.details[0][0].card_number }}</span>
+                </b-button>
               </template>
             </b-table>
+
+            <b-pagination
+              v-model="currentPage"
+              :total-rows="arrUniqueCards"
+              :per-page="perPage"
+              first-number
+              last-number
+              prev-class="prev-item"
+              next-class="next-item"
+              class="mb-0 mt-1">
+              <template #prev-text>
+                <feather-icon
+                  icon="ChevronLeftIcon"
+                  size="18" />
+              </template>
+              <template #next-text>
+                <feather-icon
+                  icon="ChevronRightIcon"
+                  size="18" />
+              </template>
+            </b-pagination>
+          </div>
+          <div v-if="selectable==='отчёт по лимитам'">
+            <div class="w-100">
+              <label
+                class="mt-2"
+                for="selectCard">Выберете карту:</label>
+              <v-select
+                id="selectCard"
+                v-model="selectedLimit"
+                :disabled="selectedHolder !== null"
+                multiple
+                :options="option"
+                class="w-50"
+                @input="onChangeLimit" />
+              <label
+                class="mt-2"
+                for="selectCard">Выберете держателя:</label>
+              <v-select
+                id="selectCard"
+                v-model="selectedHolderLimit"
+                :disabled="selected !== null"
+                multiple
+                :options="holders"
+                class="w-50"
+                @input="getHolderLimit" />
+            </div>
+            <b-table
+              hover
+              responsive
+              class="position-relative table-hover text-center mt-1"
+              :per-page="perPage"
+              :current-page="currentPage"
+              :items="limitsData"
+              :fields="fieldsLimits"
+              :sort-by.sync="sortBy"
+              :sort-desc.sync="sortDesc"
+              :sort-direction="sortDirection"
+              :filter="filter"
+              :filter-included-fields="filterOn"
+              @filtered="onFiltered" />
+            <!-- <b-button
+              variant="primary"
+              class="ml-2"
+              @click="downloadLimitReport">
+              <span class="align-middle">Скачать</span>
+            </b-button> -->
 
             <b-pagination
               v-model="currentPage"
@@ -347,8 +446,9 @@ import { mapGetters } from 'vuex';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import vSelect from 'vue-select';
-import store from '@/store';
 import axios from '@axios';
+// eslint-disable-next-line import/extensions
+import store from '@/store';
 import useJwt from '../auth/jwt/useJwt';
 
 export default {
@@ -370,8 +470,9 @@ export default {
   data() {
     return {
       contractId: null,
-      arrReport: ['оперативный', 'транзакционный'],
-      selectable: null,
+      haveLimits: false,
+      arrReport: ['оперативный', 'транзакционный', 'отчёт по лимитам'],
+      selectable: 'транзакционный',
       sortBy: 'date',
       sortDesc: false,
       sortDirection: 'asc',
@@ -381,7 +482,11 @@ export default {
       arrUniqueCards: null,
       end: null,
       selected: [],
+      selectedOper: [],
+      selectedLimit: [],
+      selectedHolderOper: null,
       selectedHolder: null,
+      selectedHolderLimit: null,
       download: false,
       totalRows: null,
       transactions: {},
@@ -391,6 +496,8 @@ export default {
       operReport: null,
       isBudget: this.$store.state.status,
       option: [],
+      limitsData: {},
+      totalRowsLimits: null,
       holders: [],
       perPage: 5,
       dataDetails: [],
@@ -507,6 +614,101 @@ export default {
           key: 'pos.address',
           label: 'Адрес',
           sortable: true,
+        },
+
+      ],
+      fieldsLimits: [
+
+        {
+          key: 'card_number',
+          label: 'Номер карты',
+          sortable: true,
+        },
+        {
+          key: 'holer',
+          label: 'Держатель',
+          sortable: true,
+        },
+        {
+          key: 'limit_services_labels',
+          label: 'Тип топлива',
+          sortable: true,
+          formatter(value) {
+            let name = '';
+            if ((value != null) && ((value).length > 1)) {
+              // eslint-disable-next-line no-plusplus
+              for (let q = 0; q < (value).length; q++) {
+                if (q === ((value).length) - 1) {
+                  name += ` ${value[q]} `;
+                  break;
+                }
+                name += ` ${value[q]}, `;
+              }
+            } else {
+              name = '';
+            }
+
+            return name;
+          },
+        },
+        {
+          key: 'limit_period_code',
+          label: 'Период лимита',
+          sortable: true,
+          formatter(value) {
+            const periodLabel = {
+              DAY: 'Суточный',
+              WEEK: 'Недельный',
+              MONTH: 'Месячный',
+              QUARTER: 'Квартальный',
+              HALFYEAR: 'Полугодовой',
+              YEAR: 'Годовой',
+            };
+            return periodLabel[value];
+          },
+        },
+        {
+          key: 'limit_type_code',
+          label: 'Тип лимита',
+          sortable: true,
+          formatter(value) {
+            const typeLabel = {
+              INDIVID: 'Индивид.',
+              COMMON: 'Общий',
+
+            };
+            return typeLabel[value];
+          },
+        },
+        {
+          key: 'limit_unit_code',
+          label: 'Ед.измерения',
+          sortable: true,
+          formatter(value) {
+            const unicodeLabel = {
+              L: 'Литры',
+              RU: 'Рубли',
+            };
+            return unicodeLabel[value];
+          },
+        },
+        {
+          key: 'value',
+          label: 'Лимит',
+          sortable: true,
+
+        },
+        {
+          key: 'consumption',
+          label: 'Израсходовано',
+          sortable: true,
+        },
+
+        {
+          key: 'remains',
+          label: 'Остаток',
+          sortable: true,
+
         },
 
       ],
@@ -633,9 +835,9 @@ export default {
         this.resultLength = false;
         this.getToast();
       }
-      // if (val === 'оперативный') {
-
-      // }
+      if (val === 'отчёт по лимитам') {
+        this.getAllLimits();
+      }
     },
     selectedHolder(val) {
       if (val.length < 1) {
@@ -661,6 +863,7 @@ export default {
     this.rangeDate = [this.start, this.end];
     this.getTransactions(this.contractId);
     this.getAllCards(this.contractId);
+    this.getAllLimits(this.contractId);
   },
   methods: {
     isToday() {
@@ -675,7 +878,6 @@ export default {
 
     getTransactions(val) {
       this.rangeDate = [this.start, this.end];
-
       this.download = true;
       this.dataReport = [];
       this.emptyArr = {};
@@ -796,9 +998,6 @@ export default {
     selectDate() {
       //  const date = this.rangeDate;
       this.getDate();
-      // if (date.length > 22) {
-      //   this.getTransactions(this.contractId);
-      // }
       if (this.rangeDate.length > 22) {
         const date = this.rangeDate;
         const newDate = Array.from(date).filter((n) => n !== '—');
@@ -856,7 +1055,7 @@ export default {
           link.href = url;
           link.setAttribute(
             'download',
-            `Оперативный отчёт от ${new Date().toLocaleDateString()}.xlsx`,
+            `Оперативный отчёт от ${new Date().toLocaleDateString()}.xls`,
           );
           document.body.appendChild(link);
           link.click();
@@ -870,7 +1069,69 @@ export default {
           link.href = url;
           link.setAttribute(
             'download',
-            `Оперативный отчёт от ${new Date().toLocaleDateString()}.xlsx`,
+            `Оперативный отчёт от ${new Date().toLocaleDateString()}.xls`,
+          );
+          document.body.appendChild(link);
+          link.click();
+        });
+      }
+    },
+    downloadOperReportCard(val) {
+      const date = this.rangeDate;
+      const newDate = Array.from(date).filter((n) => n !== '—');
+      const arr = newDate.join('').split('00:00:00');
+      const trim = arr.join('').split(' ').filter((n) => n !== '');
+      // eslint-disable-next-line prefer-template
+      this.start = trim[0] + ' 00:00:00';
+      // eslint-disable-next-line prefer-template
+      this.end = trim[1] + ' 23:59:59';
+      axios.get(`/api/getOperReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${val}`, {
+        responseType: 'blob',
+      }).then((response) => {
+        const url = URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute(
+          'download',
+          `Оперативный отчёт от ${new Date().toLocaleDateString()}.xls`,
+        );
+        document.body.appendChild(link);
+        link.click();
+      });
+    },
+    downloadLimitReport() {
+      const date = this.rangeDate;
+      const newDate = Array.from(date).filter((n) => n !== '—');
+      const arr = newDate.join('').split('00:00:00');
+      const trim = arr.join('').split(' ').filter((n) => n !== '');
+      // eslint-disable-next-line prefer-template
+      this.start = trim[0] + ' 00:00:00';
+      // eslint-disable-next-line prefer-template
+      this.end = trim[1] + ' 23:59:59';
+      if (this.selected !== null) {
+        axios.get(`/api/getLimitReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selectedLimit}`, {
+          responseType: 'blob',
+        }).then((response) => {
+          const url = URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute(
+            'download',
+            `Отчёт по лимитам от ${new Date().toLocaleDateString()}.xls`,
+          );
+          document.body.appendChild(link);
+          link.click();
+        });
+      } else {
+        axios.get(`/api/getLimitReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`, {
+          responseType: 'blob',
+        }).then((response) => {
+          const url = URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute(
+            'download',
+            `Отчёт по лимитам от ${new Date().toLocaleDateString()}.xls`,
           );
           document.body.appendChild(link);
           link.click();
@@ -878,7 +1139,6 @@ export default {
       }
     },
     onChange() {
-      // console.log(this.selected);
       useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`).then((response) => {
         if (response.data.status) {
           this.emptyArr = response.data;
@@ -888,6 +1148,329 @@ export default {
               component: ToastificationContent,
               props: {
                 title: 'Отсутвуют транзакции по карте за выбранный период',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
+        }
+      });
+    },
+    getHolderLimit() {
+      if (this.selectedHolderLimit !== null) {
+        useJwt.getAllLimits(`contract_id=${this.contractId}&holder=${this.selectedHolderLimit}`).then((response) => {
+          if (response.data.status) {
+            this.limitsData = response.data;
+            this.totalRowsLimits = this.limitsData.data.total;
+
+            const data = [];
+            const mainArr = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < this.limitsData.data.total; i++) {
+              const someObj = [];
+
+              // eslint-disable-next-line no-plusplus
+              for (let j = 0; j < (this.limitsData.data.result[i].limits).length; j++) {
+                this.limitsData.data.result[i].limits[j].remains = this.limitsData.data.result[i].limits[j].value - this.limitsData.data.result[i].limits[j].consumption;
+                someObj.push(this.limitsData.data.result[i].limits[j]);
+              }
+              data.push(someObj);
+            }
+            // eslint-disable-next-line no-plusplus
+            for (let q = 0; q < (data).length; q++) {
+              // eslint-disable-next-line no-plusplus
+              for (let v = 0; v < data[q].length; v++) {
+                mainArr.push(data[q][v]);
+              }
+            }
+            this.limitsData = mainArr;
+            if (this.totalRowsLimits < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутствуют карты на договоре',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      } else {
+        useJwt.getAllLimits(`contract_id=${this.contractId}`).then((response) => {
+          if (response.data.status) {
+            this.limitsData = response.data;
+            this.totalRowsLimits = this.limitsData.data.total;
+
+            const data = [];
+            const mainArr = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < this.limitsData.data.total; i++) {
+              const someObj = [];
+
+              // eslint-disable-next-line no-plusplus
+              for (let j = 0; j < (this.limitsData.data.result[i].limits).length; j++) {
+                this.limitsData.data.result[i].limits[j].remains = this.limitsData.data.result[i].limits[j].value - this.limitsData.data.result[i].limits[j].consumption;
+                someObj.push(this.limitsData.data.result[i].limits[j]);
+              }
+              data.push(someObj);
+            }
+            // eslint-disable-next-line no-plusplus
+            for (let q = 0; q < (data).length; q++) {
+              // eslint-disable-next-line no-plusplus
+              for (let v = 0; v < data[q].length; v++) {
+                mainArr.push(data[q][v]);
+              }
+            }
+            this.limitsData = mainArr;
+            if (this.totalRowsLimits < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутствуют карты на договоре',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      }
+    },
+    onChangeLimit() {
+      if (this.selectedLimit !== null) {
+        useJwt.getAllLimits(`contract_id=${this.contractId}&card_number=${this.selectedLimit}`).then((response) => {
+          if (response.data.status) {
+            this.limitsData = response.data;
+            this.totalRowsLimits = this.limitsData.data.total;
+
+            const data = [];
+            const mainArr = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < this.limitsData.data.total; i++) {
+              const someObj = [];
+
+              // eslint-disable-next-line no-plusplus
+              for (let j = 0; j < (this.limitsData.data.result[i].limits).length; j++) {
+                this.limitsData.data.result[i].limits[j].remains = this.limitsData.data.result[i].limits[j].value - this.limitsData.data.result[i].limits[j].consumption;
+                someObj.push(this.limitsData.data.result[i].limits[j]);
+              }
+              data.push(someObj);
+            }
+            // eslint-disable-next-line no-plusplus
+            for (let q = 0; q < (data).length; q++) {
+              // eslint-disable-next-line no-plusplus
+              for (let v = 0; v < data[q].length; v++) {
+                mainArr.push(data[q][v]);
+              }
+            }
+            this.limitsData = mainArr;
+            if (this.totalRowsLimits < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутствуют карты на договоре',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      } else {
+        useJwt.getAllLimits(`contract_id=${this.contractId}`).then((response) => {
+          if (response.data.status) {
+            this.limitsData = response.data;
+            this.totalRowsLimits = this.limitsData.data.total;
+
+            const data = [];
+            const mainArr = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < this.limitsData.data.total; i++) {
+              const someObj = [];
+
+              // eslint-disable-next-line no-plusplus
+              for (let j = 0; j < (this.limitsData.data.result[i].limits).length; j++) {
+                this.limitsData.data.result[i].limits[j].remains = this.limitsData.data.result[i].limits[j].value - this.limitsData.data.result[i].limits[j].consumption;
+                someObj.push(this.limitsData.data.result[i].limits[j]);
+              }
+              data.push(someObj);
+            }
+            // eslint-disable-next-line no-plusplus
+            for (let q = 0; q < (data).length; q++) {
+              // eslint-disable-next-line no-plusplus
+              for (let v = 0; v < data[q].length; v++) {
+                mainArr.push(data[q][v]);
+              }
+            }
+            this.limitsData = mainArr;
+            // console.log(this.limitsData);
+            if (this.totalRowsLimits < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутствуют карты на договоре',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      }
+    },
+    filterOper() {
+      this.dataReport = [];
+      this.emptyArr = {};
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selectedOper}`).then((response) => {
+        if (response.data.status) {
+          this.emptyArr = response.data;
+          this.totalRows = this.emptyArr.data.total;
+          if (this.totalRows > 0) {
+            this.resultLength = true;
+            this.transactions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.summ, 0).toLocaleString());
+            this.consumptions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.quantity, 0).toLocaleString());
+            const allLabels = [];
+            allLabels.push(this.emptyArr.data.result.map((el) => el.service).map((el) => el.full_name));
+            // Для отчета
+            const allCards = [];
+            allCards.push(this.emptyArr.data.result.map((el) => el.card_number));
+            const arrCards = allCards[0];
+            const uniqueCards = new Set(arrCards);
+            const arrUniqueCards = Array.from(uniqueCards);
+            this.dataTable = [];
+            this.arrUniqueCards = Array.from(uniqueCards).length;
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < arrUniqueCards.length; i++) {
+              const numberObject = {};
+              numberObject.details = [];
+              numberObject.number = Number(arrUniqueCards[i]);
+              this.dataTable.push(this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]));
+              numberObject.AllSumm = this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]).map((el) => el.summ).reduce((el, acc) => el + acc, 0);
+              numberObject.quantity = this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]).map((el) => el.quantity).reduce((el, acc) => el + acc, 0);
+              // eslint-disable-next-line prefer-destructuring
+              numberObject.holder = this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]).map((el) => el.card_holder)[0];
+              numberObject.details.push(this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]));
+              this.dataReport.push(numberObject);
+            }
+            this.download = false;
+            // Конец отчёта
+            const arr = allLabels[0];
+            const uniqueLabel = new Set(arr); // size != length
+            const arrLabel = Array.from(uniqueLabel);
+            const data = {};
+            const dataConumption = {};
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < arrLabel.length; i++) {
+              let zero = 0;
+              let consumption = 0;
+
+              this.emptyArr.data.result.forEach((el) => { // необходимо создавать объект на каждое используемое значение вида топлива
+                if (el.service.full_name === arrLabel[i]) {
+                  zero += (el.summ);
+                  consumption += el.quantity;
+                  const name = arrLabel[i];
+                  const value = zero;
+                  data[name] = value;
+                  dataConumption[name] = consumption; // объект вида {Вид топлива-Сумма}
+                }
+              });
+            }
+            this.consumptionData = [];
+            this.series[0].data = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < Object.keys(data).length; i++) {
+              const label = Object.keys(data);
+              const value = Object.values(data);
+              const consumptionL = Object.values(dataConumption);
+              const randomObject = {};
+              const anotherRandomObject = {};
+              anotherRandomObject.value = value[i];
+              anotherRandomObject.name = label[i];
+              anotherRandomObject.id = this.getRandom();
+              anotherRandomObject.consumption = consumptionL[i];
+              randomObject.value = Number(value[i]).toFixed(2);
+              randomObject.name = label[i];
+              this.series[0].data.push(randomObject);
+              this.consumptionData.push(anotherRandomObject);
+            }
+          } else {
+            this.download = false;
+            this.transactions = '0';
+            this.resultLength = false;
+            this.getToast();
+          }
+        }
+      });
+    },
+    getAllLimits() {
+      this.rangeDate = [this.start, this.end];
+
+      useJwt.getAllLimits(`contract_id=${this.contractId}`).then((response) => {
+        if (response.data.status) {
+          this.limitsData = response.data;
+          this.totalRowsLimits = this.limitsData.data.total;
+
+          const data = [];
+          const mainArr = [];
+          // eslint-disable-next-line no-plusplus
+          for (let i = 0; i < this.limitsData.data.total; i++) {
+            const someObj = [];
+            if ((this.limitsData.data.result[i].limits.length > 0) && (this.limitsData.data.result[i].limits !== null)) {
+              // console.log('!');
+              // eslint-disable-next-line no-plusplus
+              for (let j = 0; j < (this.limitsData.data.result[i].limits).length; j++) {
+                this.limitsData.data.result[i].limits[j].remains = this.limitsData.data.result[i].limits[j].value - this.limitsData.data.result[i].limits[j].consumption;
+                someObj.push(this.limitsData.data.result[i].limits[j]);
+              }
+              data.push(someObj);
+              // eslint-disable-next-line no-plusplus
+              for (let q = 0; q < (data).length; q++) {
+                // eslint-disable-next-line no-plusplus
+                for (let v = 0; v < data[q].length; v++) {
+                  mainArr.push(data[q][v]);
+                }
+              }
+              this.limitsData = mainArr;
+            } else {
+              this.limitsData.data.result[i].limits.holer = this.limitsData.data.result[i].holder;
+              this.limitsData.data.result[i].limits.card_number = this.limitsData.data.result[i].number;
+              this.limitsData.data.result[i].limits.limit_period_code = '';
+              this.limitsData.data.result[i].limits.limit_type_code = '';
+              this.limitsData.data.result[i].limits.limit_unit_code = '';
+              this.limitsData.data.result[i].limits.value = '';
+              this.limitsData.data.result[i].limits.consumption = '';
+              this.limitsData.data.result[i].limits.remains = '';
+              this.limitsData.data.result[i].limits.limit_services_labels = '';
+              // someObj.push(this.limitsData.data.result[i].limits);
+              data.push(this.limitsData.data.result[i].limits);
+              // this.limitsData = data;
+              // this.limitsData.push(data);
+            }
+            // this.limitsData = data;
+            // // eslint-disable-next-line no-plusplus
+            // for (let j = 0; j < (this.limitsData.data.result[i].limits).length; j++) {
+            //   this.limitsData.data.result[i].limits[j].remains = this.limitsData.data.result[i].limits[j].value - this.limitsData.data.result[i].limits[j].consumption;
+            //   someObj.push(this.limitsData.data.result[i].limits[j]);
+            // }
+            // data.push(someObj);
+          }
+          this.limitsData = data;
+          // console.log('DTA', data);
+          // eslint-disable-next-line no-plusplus
+          // for (let q = 0; q < (data).length; q++) {
+          //   // eslint-disable-next-line no-plusplus
+          //   for (let v = 0; v < data[q].length; v++) {
+          //     mainArr.push(data[q][v]);
+          //   }
+          // }
+          // this.limitsData = mainArr;
+          // console.log('ALL', this.limitsData);
+          if (this.totalRowsLimits < 1) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Отсутствуют карты на договоре',
                 icon: 'AlertTriangleIcon',
                 variant: 'danger',
               },
@@ -932,7 +1515,7 @@ export default {
           link.href = url;
           link.setAttribute(
             'download',
-            `Транзакционный отчёт от ${new Date().toLocaleDateString()}.xlsx`,
+            `Транзакционный отчёт от ${new Date().toLocaleDateString()}.xls`,
           );
           document.body.appendChild(link);
           link.click();
@@ -946,13 +1529,14 @@ export default {
           link.href = url;
           link.setAttribute(
             'download',
-            `Транзакционный отчёт от ${new Date().toLocaleDateString()}.xlsx`,
+            `Транзакционный отчёт от ${new Date().toLocaleDateString()}.xls`,
           );
           document.body.appendChild(link);
           link.click();
         });
       }
     },
+
   },
 };
 

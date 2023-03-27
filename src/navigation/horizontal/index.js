@@ -51,9 +51,9 @@ export default [
       },
     ],
   },
-  {
-    title: 'Контакты',
-    route: 'locator',
-    icon: 'PhoneCallIcon',
-  },
+  // {
+  //   title: 'Контакты',
+  //   route: 'locator',
+  //   icon: 'PhoneCallIcon',
+  // },
 ];

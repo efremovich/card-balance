@@ -58,8 +58,7 @@
                 Держатель:
               </h6>
               <b-form-input
-                v-model="Holder"
-                @change="changeHolder(old,val)" />
+                v-model="Holder" />
             </div>
           </div>
           <div v-if="getWidth !== 'xs'">
@@ -91,18 +90,18 @@
                 icon="LockIcon"
                 class="mr-50" />
             </b-button>
-            <div class="mb-2">
+            <!-- <div class="mb-2">
               <h6 v-if="getWidth !== 'xs'">
                 Выдана: {{ cardData.data.expiry_date | formatOnlyDate }}
-                <!-- указать дату выдачи карты не в лимитах, а выше, иначе при удалении всех лимитов
-                  невозможно создать новый лимит -->
               </h6>
-            </div>
-            <div class="mb-2">
+            </div> -->
+            <!-- указать дату выдачи карты не в лимитах, а выше, иначе при удалении всех лимитов
+                  невозможно создать новый лимит -->
+            <!-- <div class="mb-2">
               <h6 v-if="getWidth !== 'xs'">
                 Действует до: {{ cardData.data.expiry_date | formatDateNoTime }}
               </h6>
-            </div>
+            </div> -->
             <div class="mb-2">
               <h6 v-if="getWidth !== 'xs'">
                 Последнее изменения:<br>
@@ -181,7 +180,7 @@
                                 id="labelServices"
                                 v-model="count[index].limit_services"
                                 :filter="fuseSearch"
-                                multiple
+                                :multiple="canGroupServeces"
                                 label="full_name"
                                 :reduce="(services) => `${services.id}`"
                                 :options="services"
@@ -246,7 +245,7 @@
                               id="labelServices"
                               v-model="limit.limit_services"
                               :filter="fuseSearch"
-                              multiple
+                              :multiple="canGroupServeces"
                               label="full_name"
                               :reduce="(services) => `${services.id}`"
                               :options="services"
@@ -313,21 +312,57 @@
                     @refresh="refreshLimits('limits')">
                     <h4>Текущие лимиты по карте:</h4>
                     <hr>
-                    <template
+                    <div
+                      v-if="canGroupServeces">
+                      <template
+                        v-for="(limit) in cardData.data.limits">
+                        <div :key="limit.ID">
+                          <h4>
+                            Вид топлива:
+                            {{ selectedService(limit.limit_services) }}
+                          </h4>
+                          <!-- Передать limit.limit_label -->
+                          <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
+                          <h4>
+                            Остаток: {{ (limit.value - limit.consumption).toFixed(2) }} {{ unicodeLabel[limit.limit_unit_code] }}.
+                          </h4>
+                          <hr>
+                        </div>
+                      </template>
+                    </div>
+                    <div
+                      v-else>
+                      <template
+                        v-for="(limit) in cardData.data.limits">
+                        <div :key="limit.ID">
+                          <h4>
+                            Вид топлива:
+                            {{ labelService[limit.limit_services] }}
+                          </h4>
+
+                          <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
+                          <h4>
+                            Остаток: {{ (limit.value - limit.consumption).toFixed(2) }} {{ unicodeLabel[limit.limit_unit_code] }}.
+                          </h4>
+                          <hr>
+                        </div>
+                      </template>
+                    </div>
+                    <!-- <template
                       v-for="(limit) in cardData.data.limits">
                       <div :key="limit.ID">
                         <h4>
                           Вид топлива:
                           {{ selectedService(limit.limit_services) }}
                         </h4>
-                        <!-- Передать limit.limit_label -->
+
                         <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
                         <h4>
                           Остаток: {{ (limit.value - limit.consumption).toFixed(2) }} {{ unicodeLabel[limit.limit_unit_code] }}.
                         </h4>
                         <hr>
                       </div>
-                    </template>
+                    </template> -->
                   </b-card-actions>
                 </b-overlay>
               </b-col>
@@ -897,9 +932,11 @@ import { ref, computed } from '@vue/composition-api';
 import Fuse from 'fuse.js';
 import AppEchartDoughnut from '@core/components/charts/echart/AppEchartDoughnut.vue';
 import { mapGetters } from 'vuex';
-import store from '../store';
+// eslint-disable-next-line import/extensions
+import store from '@/store';
+// eslint-disable-next-line import/extensions
+import useJwt from '@/auth/jwt/useJwt';
 import { useRouter } from '../@core/utils/utils';
-import useJwt from '../auth/jwt/useJwt';
 
 export default {
   // directives: {
@@ -936,6 +973,7 @@ export default {
   },
   setup() {
     const cardData = ref({});
+    const canGroupServeces = ref(null);
     const dataCharts = ref([]);
     const summAllTransactions = ref(null);
     const allConsumptionSumm = ref(null);
@@ -1099,6 +1137,7 @@ export default {
           for (let i = 0; i < idService.length; i++) {
             labelService.value[idService[i]] = label[i];
           }
+          // console.log('LABEL', labelService.value['c9562951-8641-11e7-9453-7054d2199b65']);
           allLabelService.value = Object.entries(labelService.value); // приведение к массиву
         }
       });
@@ -1195,6 +1234,7 @@ export default {
       if (response.data.status) {
         cardData.value = response.data;
         cardEmitentCode.value = cardData.value.data.emitent.code;
+        canGroupServeces.value = cardData.value.data.emitent.can_group_serveces;
         limitsLength.value = cardData.value.data.limits.length;
         source.value = JSON.parse(JSON.stringify(cardData.value.data.limits));
         cardHolderSource.value = JSON.parse(JSON.stringify(cardData.value.data.holder));
@@ -1218,6 +1258,7 @@ export default {
 
     return {
       consumptionData,
+      canGroupServeces,
       allLabelService,
       allConsumptionSumm,
       summAllTransactions,
@@ -1332,6 +1373,7 @@ export default {
     },
     ...mapGetters({
       gotStatus: 'STATUS_ORG',
+      changeContract: 'COMPANY',
     }),
   },
   watch: {
@@ -1348,11 +1390,15 @@ export default {
     },
     Holder(old, val) {
       if (JSON.stringify(val) === JSON.stringify(this.cardHolderSource)) {
-        console.log(old, val);
         this.holderComparison = true;
       } else {
         this.holderComparison = false;
         this.Holder = val;
+      }
+    },
+    changeContract(old, val) {
+      if (old !== val) {
+        this.$router.push({ name: 'cards' });
       }
     },
 
@@ -1414,9 +1460,9 @@ export default {
         }
       });
     },
-    changeHolder(old, val) {
-      console.log(old, val);
-    },
+    // changeHolder(old, val) {
+    //   console.log(old, val);
+    // },
     sendRequest() {
       const request = [{
         card_number: this.cardData.data.number,
@@ -1527,7 +1573,6 @@ export default {
         return '';
       }
       let label = '';
-      console.log('arr', arrService);
       // eslint-disable-next-line no-return-assign
       Object.values(arrService).forEach((el) => (label += `${this.labelService[el]}, `));
       // eslint-disable-next-line no-plusplus
@@ -1535,6 +1580,7 @@ export default {
         // eslint-disable-next-line no-unused-expressions
         this.allLabelService;
       }
+
       return label.split('').slice(0, -2).join('');
     },
     // Смена статуса карты

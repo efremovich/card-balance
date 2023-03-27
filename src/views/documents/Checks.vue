@@ -32,7 +32,7 @@
             :disabled="busy"
             :options="names"
             class="w-100 mt-1 mb-1"
-            @input="onChange" />
+            @input="onChangeHolder" />
         </b-overlay>
 
         <p>Выберете карту:</p>
@@ -108,7 +108,7 @@
             id="printMe"
             :transactions="transactions" />
         </div>
-        <b-pagination
+        <!-- <b-pagination
           v-if="hidden"
           v-model="currentPage"
           :total-rows="totalRows"
@@ -118,6 +118,29 @@
           next-class="next-item"
           class="mb-0 mt-2"
           align="center"
+          @change="selectPage">
+          <template #prev-text>
+            <feather-icon
+              icon="ChevronLeftIcon"
+              size="18" />
+          </template>
+          <template #next-text>
+            <feather-icon
+              icon="ChevronRightIcon"
+              size="18" />
+          </template>
+        </b-pagination> -->
+        <b-pagination
+          v-if="hidden"
+          v-model="currentPage"
+          :total-rows="totalRows"
+          :per-page="perPage"
+          align="center"
+          first-number
+          last-number
+          prev-class="prev-item"
+          next-class="next-item"
+          class="mb-0"
           @change="selectPage">
           <template #prev-text>
             <feather-icon
@@ -147,6 +170,7 @@ import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { mapGetters } from 'vuex';
+// eslint-disable-next-line import/extensions
 import store from '@/store';
 import vprint from '../vprint.vue';
 import useJwt from '../../auth/jwt/useJwt';
@@ -179,6 +203,7 @@ export default {
       onlyForPrintandDownload: false,
       selectedHolder: null,
       names: [],
+      perPage: 5,
       response: null,
       start: null,
       hidden: false,
@@ -223,9 +248,11 @@ export default {
       this.getAllCards(val);
       this.getAllTransactions(val);
     },
-    // rangeDate() {
-    //   this.selectDate();
-    // },
+    selected(val) {
+      if (val === null) {
+        this.onChange();
+      }
+    },
   },
   // created() {
   //   this.busy = true;
@@ -248,7 +275,7 @@ export default {
         if (response.data.status) {
           this.transactions = response.data;
           // console.log(this.transactions.data.result);
-          this.totalRows = this.transactions.data.total;
+          this.totalRows = this.transactions.data.result.length;
           this.transactions.data.result = this.order(this.transactions.data.result);
         }
         if (this.transactions.data.result.length < 1) {
@@ -280,14 +307,13 @@ export default {
       return this.arr;
     },
     getAllCards(val) {
-      // console.log(val);
       this.option = [];
       this.names = [];
       this.busy = true;
       useJwt.getCards(val).then((response) => {
         if (response.data.status) {
           this.response = response.data;
-          // console.log(this.response.cards);
+
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
           });
@@ -310,7 +336,7 @@ export default {
         .then((response) => {
           if (response.data.status) {
             this.transactions = response.data;
-            this.totalRows = this.transactions.data.total;
+            this.totalRows = this.transactions.data.result.length;
             this.transactions.data.result = this.order(this.transactions.data.result);
           }
           if (this.transactions.data.result.length > 1) {
@@ -376,10 +402,10 @@ export default {
       // eslint-disable-next-line prefer-template
       this.end = arr[1] + ' 23:59:59';
       const ID = this.gotSelectedContract;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}&holder=${holder}&offset=10&limit=10`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}&holder=${holder}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          this.totalRows = this.transactions.data.total;
+          this.totalRows = this.transactions.data.result.length;
           // console.log('SelectDate totalRow', this.totalRows);
           if (this.transactions.data.result.length > 1) {
             this.haveTransactions = true;
@@ -404,80 +430,175 @@ export default {
       });
     },
     selectPage() {
-      const holder = this.selectedHolder;
       const { selected } = this;
-      const { start } = this;
-      const { end } = this;
-      const ID = this.gotSelectedContract;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&holder=${holder}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
-        if (response.data.status) {
-          this.transactions = response.data;
-          // console.log('page transactions.data:', this.transactions.data);
-        }
-        if (this.transactions.data.result.length < 1) {
-          // this.visible = false;
-          this.hidden = false;
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Отсутвуют операции по карте за период',
-              icon: 'AlertTriangleIcon',
-              variant: 'danger',
-            },
-          });
-        }
-        // return this.transactions.data.result;
-      });
+      this.getDate();
+      if (selected === null) {
+        useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
+          if (response.data.status) {
+            this.transactions = response.data;
+            this.totalRows = (this.transactions.data.result).length;
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      } else {
+        useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
+          if (response.data.status) {
+            this.transactions = response.data;
+            this.totalRows = (this.transactions.data.result).length;
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции по карте за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      }
     },
+    getDate() {
+      const date = this.rangeDate;
+      const newDate = Array.from(date).filter((n) => n !== '—');
+      const arr = newDate.join('').split('00:00:00');
+      const trim = arr.join('').split(' ').filter((n) => n !== '');
+      // eslint-disable-next-line prefer-template
+      this.start = trim[0] + ' 00:00:00';
+      // eslint-disable-next-line prefer-template
+      this.end = trim[1] + ' 23:59:59';
+    },
+    onChangeHolder() {
+      const { selectedHolder } = this;
+      this.getDate();
+      if (selectedHolder === null) {
+        useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
+          if (response.data.status) {
+            this.transactions = response.data;
+            this.totalRows = (this.transactions.data.result).length;
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      } else {
+        useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_holder=${selectedHolder}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
+          if (response.data.status) {
+            this.transactions = response.data;
+            this.totalRows = (this.transactions.data.result).length;
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции по карте за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      }
+    },
+
     onChange() {
+      // const { selected } = this;
+      // const holder = this.selectedHolder;
+      // // this.hidden = false;
+      // const { start } = this;
+      // const { end } = this;
+      // const ID = this.gotSelectedContract;
+      // useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&card_holder=${holder}&offset=10&limit=10`).then((response) => {
+      //   if (response.data.status) {
+      //     this.transactions = response.data;
+      //     // console.log('Change/transactions:', this.transactions);
+      //     this.totalRows = this.transactions.data.result.length;
+      //     if (this.transactions.data.total > 1) {
+      //       this.haveTransactions = true;
+      //       this.hidden = true;
+      //     }
+      //     if (this.transactions.data.total < 1 && this.selected < 1) {
+      //       this.haveTransactions = false;
+      //       this.visible = false;
+      //       this.transactions.data.result = [];
+      //       this.$toast({
+      //         component: ToastificationContent,
+      //         props: {
+      //           title: 'Отсутвуют операции за выбранный период',
+      //           icon: 'AlertTriangleIcon',
+      //           variant: 'danger',
+      //         },
+      //       });
+      //     } else {
+      //       this.haveTransactions = false;
+      //       this.visible = false;
+      //       this.transactions.data.result = [];
+      //       this.hidden = false;
+      //       this.$toast({
+      //         component: ToastificationContent,
+      //         props: {
+      //           title: 'Отсутвуют операции по карте за период',
+      //           icon: 'AlertTriangleIcon',
+      //           variant: 'danger',
+      //         },
+      //       });
+      //     }
+      //   }
+      // });
       const { selected } = this;
-      const holder = this.selectedHolder;
-      // this.hidden = false;
-      const { start } = this;
-      const { end } = this;
-      const ID = this.gotSelectedContract;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${start}&endDate=${end}&card_number=${selected}&card_holder=${holder}&offset=10&limit=10`).then((response) => {
-        if (response.data.status) {
-          this.transactions = response.data;
-          // console.log('Change/transactions:', this.transactions);
-          this.totalRows = this.transactions.data.total;
-          if (this.transactions.data.total > 1) {
-            this.haveTransactions = true;
-            this.hidden = true;
+      this.getDate();
+      if (selected === null) {
+        useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
+          if (response.data.status) {
+            this.transactions = response.data;
+            this.totalRows = (this.transactions.data.result).length;
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
           }
-          if (this.transactions.data.total < 1 && this.selected < 1) {
-            this.haveTransactions = false;
-            this.visible = false;
-            this.transactions.data.result = [];
-            this.$toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Отсутвуют операции за выбранный период',
-                icon: 'AlertTriangleIcon',
-                variant: 'danger',
-              },
-            });
-          } else {
-            this.haveTransactions = false;
-            this.visible = false;
-            this.transactions.data.result = [];
-            this.hidden = false;
-            this.$toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Отсутвуют операции по карте за период',
-                icon: 'AlertTriangleIcon',
-                variant: 'danger',
-              },
-            });
+        });
+      } else {
+        useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${selected}&offset=${10 * this.currentPage}&limit=10`).then((response) => {
+          if (response.data.status) {
+            this.transactions = response.data;
+            this.totalRows = (this.transactions.data.result).length;
+            if (this.totalRows < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутвуют транзакции по карте за выбранный период',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
           }
-        }
-        // return this.order(this.transactions.data.result);
-      });
-      // if (this.selected.length < 1) {
-      //   this.getAllTransactions();
-      //   // this.hidden = true;
-      // }
+        });
+      }
     },
     toogle() {
       this.visible = !this.visible;

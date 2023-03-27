@@ -7,6 +7,7 @@
 export const isUserLoggedIn = () => {
   return (
     localStorage.getItem('userData') && localStorage.getItem('accessToken')
+    // localStorage.getItem('userData')
   );
 };
 

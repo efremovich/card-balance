@@ -51,9 +51,9 @@ export default [
       },
     ],
   },
-  {
-    title: 'Контакты',
-    route: 'locator',
-    icon: 'MapPinIcon',
-  },
+  // {
+  //   title: 'Контакты',
+  //   route: 'locator',
+  //   icon: 'MapPinIcon',
+  // },
 ];

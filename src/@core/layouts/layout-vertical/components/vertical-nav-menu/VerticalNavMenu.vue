@@ -98,15 +98,19 @@
 import VuePerfectScrollbar from 'vue-perfect-scrollbar';
 import { BLink, BImg } from 'bootstrap-vue';
 import { provide, computed, ref } from '@vue/composition-api';
-import useAppConfig from '@core/app-config/useAppConfig';
 import { $themeConfig } from '@themeConfig';
 import vSelect from 'vue-select';
-import store from '@/store';
 import Fuse from 'fuse.js';
 import { mapGetters } from 'vuex';
+// eslint-disable-next-line import/extensions
 import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line import/extensions
-import navMenuItems from '../../../../../navigation/vertical/index.js';
+import useAppConfig from '@core/app-config/useAppConfig'; // @core/app-config/useAppConfig
+// eslint-disable-next-line import/extensions
+import store from '@/store'; // @/store
+// import useJwt from '../../../../auth/jwt/useJwt'; // @/auth/jwt/useJwt
+// eslint-disable-next-line import/extensions
+import navMenuItems from '@/navigation/vertical/index.js';
 import useVerticalNavMenu from './useVerticalNavMenu';
 import VerticalNavMenuItems from './components/vertical-nav-menu-items/VerticalNavMenuItems.vue';
 
@@ -137,7 +141,7 @@ export default {
       toggleCollapsed,
       updateMouseHovered,
     } = useVerticalNavMenu(props);
-
+    const admin = store.getters.ADMIN;
     const { skin } = useAppConfig();
     // const option = ref([]);
 
@@ -167,6 +171,7 @@ export default {
     const { appName, appLogoImage } = $themeConfig.app;
 
     return {
+      admin,
       navMenuItems,
       perfectScrollbarSettings,
       isVerticalMenuCollapsed,
@@ -194,21 +199,39 @@ export default {
 
   data() {
     return {
-      selected: null,
+      selected: store.getters.COMPANY,
       allCompanies: [],
       loadDone: false,
-      admin: store.getters.ADMIN,
+      // admin: null,
     };
   },
-  ...mapGetters({
-    admin: 'ADMIN',
-  }),
-  // computed: {
-  //   getOPtion() {
-  //     return this.allCompany.map((el) => el);
+
+  computed: {
+    ...mapGetters({
+      admin: 'ADMIN',
+      gotSelected: 'COMPANY',
+    }),
+  //   selected: {
+  //     get() {
+  //       return this.gotSelected;
+  //     },
+  //     set(value) {
+  //       this.$store.dispatch('getCompany', value);
+  //       this.$store.dispatch('getContractId', value.id);
+  //     },
   //   },
-  // },
-  beforeMount() {
+  },
+  watch: {
+    admin(old, newVal) {
+      localStorage.setItem('admin', JSON.stringify(newVal));
+    },
+    // selected(old, val) {
+    //   localStorage.setItem('selected', JSON.stringify(val));
+    // },
+  },
+  mounted() {
+    this.admin = JSON.parse(localStorage.getItem('admin'));
+    // this.selected = JSON.parse(localStorage.getItem('selected'));
     // this.allCompanies = this.$store.getters.ALL_COMPANIES;
     if (this.$store.state.selectedCompany !== null) {
       this.selected = this.$store.getters.COMPANY;
@@ -221,7 +244,6 @@ export default {
       this.loadDone = true;
     }
     this.getAllComp();
-    // console.log('ADMINNN', ((this.admin)));
   },
   methods: {
     getContractName() {
@@ -234,7 +256,6 @@ export default {
           this.allCompanies = response.data;
           const companies = this.allCompanies.data;
           this.allCompanies = companies;
-          // console.log('ALL', companies.length, companies);
           this.$store.dispatch('getAllCompanies', companies);
         }
       });

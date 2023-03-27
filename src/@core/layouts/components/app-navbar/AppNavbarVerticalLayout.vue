@@ -50,9 +50,13 @@
 import { BLink, BNavbarNav } from 'bootstrap-vue';
 import { mapGetters } from 'vuex';
 import vSelect from 'vue-select';
-import useJwt from '@/auth/jwt/useJwt';
-import store from '@/store';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+// eslint-disable-next-line import/named
+// import { useJwt } from '../../../auth/jwt/useJwt'; // @/auth/jwt/ // ../../../auth/jwt/useJwt
+// eslint-disable-next-line import/extensions
+import useJwt from '@/auth/jwt/useJwt';
+// eslint-disable-next-line import/extensions
+import store from '@/store'; // @/store
 import Bookmarks from './components/Bookmarks.vue';
 import SearchBar from './components/SearchBar.vue';
 import DarkToggler from './components/DarkToggler.vue';

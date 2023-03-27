@@ -91,7 +91,6 @@ export default {
       if (response.data.status) {
         this.$store.dispatch('user/getUserData', response.data).then(() => {
           this.userData = response.data;
-          // console.log(this.userData);
         });
       }
     });

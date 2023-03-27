@@ -152,8 +152,11 @@
                       <h4>
                         Всего карт:
                       </h4>
-                      <h4>
+                      <!-- <h4>
                         {{ getCardsSumm }}
+                      </h4> -->
+                      <h4>
+                        {{ totalCards }}
                       </h4>
                     </div>
                   </div>
@@ -177,7 +180,7 @@
                             :key="status.id"
                             class="d-flex justify-content-between">
                             <h4>
-                              {{ mapStatus[status.label] }}
+                              {{ mapStatus[status.name] }}
                             </h4>
                             <h4>
                               {{ status.value }}
@@ -421,10 +424,13 @@ import VueApexCharts from 'vue-apexcharts';
 import { $themeColors } from '@themeConfig';
 // import { Icon } from 'leaflet';
 import { mapGetters } from 'vuex';
+
+// eslint-disable-next-line import/no-cycle, import/extensions
 import store from '@/store';
 import {
   BCardText, BCol, BButton, BTable, BCardBody, BOverlay, BLink,
 } from 'bootstrap-vue';
+// eslint-disable-next-line import/extensions
 import useJwt from '@/auth/jwt/useJwt';
 import { ru } from '../../node_modules/apexcharts/dist/locales/ru.json';
 
@@ -455,6 +461,7 @@ export default {
       cardBalance: {},
       organisationId: null,
       statisticsData: null,
+      totalCards: null, // Всего карт
       currentConsumption: null,
       consumptionDinamic: null,
       currentConsumptionDynamic: null,
@@ -625,9 +632,19 @@ export default {
       },
     },
 
-    getCardsSumm() {
-      return this.statisticsData.cardStatistic.map((el) => el.total).reduce((el, summ) => el + summ, 0);
-    },
+    // getCardsSumm() {
+    //   return this.statisticsData.cardStatistic.map((el) => el.total).reduce((el, summ) => el + summ, 0);
+    // },
+    // getCardsSumm: {
+    // // геттер (для получения значения)
+    //   get() {
+    //     return this.statisticsData.cardStatistic.map((el) => el.total).reduce((el, summ) => el + summ, 0);
+    //   },
+    //   // сеттер (при присвоении нового значения)
+    //   set(newValue) {
+    //     this.getCardsSumm = newValue;
+    //   },
+    // },
     getUpdate() {
       return this.dateUpdate.split('').slice(0, 10).join('');
     },
@@ -643,9 +660,18 @@ export default {
       this.getCardStatistica(val);
       this.onChange(val);
     },
+    // watch: {
+    //   getCardsSumm(val) {
+    //     localStorage.setItem('cardStatistic', JSON.stringify(val));
+    //   },
+    // // selected(old, val) {
+    // //   localStorage.setItem('selected', JSON.stringify(val));
+    // // },
+    // },
   },
   beforeMount() {
     const userData = JSON.parse(localStorage.getItem('userData'));
+    // console.log('USERDATA', userData.account.role);
     if (userData && this.gotSelectedContract === null) {
       this.yetContract = userData;
       this.ID = this.yetContract.account.contract_id;
@@ -729,6 +755,8 @@ export default {
         });
       }
     });
+    this.getCardsSumm = JSON.parse(localStorage.getItem('cardStatistic'));
+    this.showLoading = false;
   },
   methods: {
     showToast() {
@@ -864,6 +892,7 @@ export default {
           }
 
           const totalSumm = [];
+          this.totalCards = this.statisticsData.cardStatistic.map((el) => el.total).reduce((el, summ) => el + summ, 0);
           this.cardStatisticsData = [];
           // eslint-disable-next-line no-plusplus
           for (let i = 0; i < emptyObject.length; i++) {

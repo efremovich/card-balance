@@ -112,6 +112,7 @@ import { onUnmounted, computed } from '@vue/composition-api';
 import LayoutContentRendererDefault from '@core/layouts/components/layout-content-renderer/LayoutContentRendererDefault.vue';
 import LayoutContentRendererLeft from '@core/layouts/components/layout-content-renderer/LayoutContentRendererLeft.vue';
 import LayoutContentRendererLeftDetached from '@core/layouts/components/layout-content-renderer/LayoutContentRendererLeftDetached.vue';
+// eslint-disable-next-line import/extensions
 import store from '@/store';
 // Vertical Menu
 /* eslint-disable import/order */

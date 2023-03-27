@@ -488,11 +488,14 @@ import {
   BCardBody,
   BBadge,
 } from 'bootstrap-vue';
+// eslint-disable-next-line import/extensions
 import useJwt from '@/auth/jwt/useJwt';
 import Ripple from 'vue-ripple-directive';
 import { ref } from '@vue/composition-api';
+// eslint-disable-next-line import/extensions
 import { useResponsiveAppLeftSidebarVisibility } from '@core/comp-functions/ui/app';
 import { mapGetters, mapMutations } from 'vuex';
+// eslint-disable-next-line import/extensions
 import store from '@/store';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue';

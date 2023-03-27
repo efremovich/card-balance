@@ -334,7 +334,9 @@ import {
 } from '@validations';
 // import { useStore } from 'vuex';
 // import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+// eslint-disable-next-line import/extensions
 import useJwt from '@/auth/jwt/useJwt';
+// eslint-disable-next-line import/extensions
 import { useInputImageRenderer } from '@core/comp-functions/forms/form-utils';
 import { ref } from '@vue/composition-api';
 // import { mapGetters } from 'vuex';

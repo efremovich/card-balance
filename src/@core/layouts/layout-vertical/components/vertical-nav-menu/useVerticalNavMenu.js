@@ -1,4 +1,5 @@
 import { ref, computed } from '@vue/composition-api';
+// eslint-disable-next-line import/extensions
 import store from '@/store';
 
 export default function useVerticalNavMenu(props) {

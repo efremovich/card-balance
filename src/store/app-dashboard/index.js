@@ -1,4 +1,5 @@
-import useJwt from '@/auth/jwt/useJwt';
+// eslint-disable-next-line import/extensions
+import useJwt from '@/auth/jwt/useJwt'; // @/auth/jwt/useJwt
 
 export default {
   namespaced: true,
@@ -19,6 +20,7 @@ export default {
       // Get Data localStorage
       const dashBoardData = JSON.parse(localStorage.getItem('dashBoardData')) || state;
 
+      // eslint-disable-next-line no-restricted-syntax
       for (const property of Object.keys(payload)) {
         if (payload[property] != null) {
           state[property] = payload[property];
@@ -42,6 +44,7 @@ export default {
 
               resolve(response);
             } else {
+              // eslint-disable-next-line prefer-promise-reject-errors
               reject({ message: 'Ошибка обновления расхода за текущий месяц' });
             }
           })
