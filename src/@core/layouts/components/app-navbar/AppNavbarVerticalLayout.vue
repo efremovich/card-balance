@@ -1,3 +1,4 @@
+<!-- eslint-disable import/extensions -->
 <template>
   <div class="navbar-container d-flex content justify-content-between align-items-center">
     <!-- Nav Menu Toggler -->
