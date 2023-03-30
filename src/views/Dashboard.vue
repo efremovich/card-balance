@@ -87,7 +87,7 @@
                   @refresh="refreshMainCard('userDate')">
                   <b-card-text fluid>
                     <h3>
-                      Договор №: {{ gotSelected }}
+                      Договор №: {{ selected }}
                     </h3>
                     <h4>Статус: {{ cardBalance.contract.status }} </h4>
                     <h3>

@@ -52,6 +52,7 @@
         </b-card-body>
 
         <b-table
+          v-if="availabilityOfPayments"
           hover
           :items="requests.data.result"
           responsive
@@ -111,6 +112,7 @@ export default {
       contract: null,
       contractId: null,
       selected: null,
+      availabilityOfPayments: true,
       sortBy: 'date',
       start: null,
       end: null,
@@ -217,6 +219,7 @@ export default {
         if (response.data.status) {
           this.requests = response.data;
           if (this.requests.data.result < 1) {
+            this.availabilityOfPayments = false;
             this.$toast({
               component: ToastificationContent,
               props: {

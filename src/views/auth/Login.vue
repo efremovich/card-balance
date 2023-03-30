@@ -213,7 +213,6 @@ export default {
                     store.dispatch('getAdmin', userData.account.role);
                   })
                   .catch((error) => {
-                    // console.log('На форме:', error);
                     this.$toast({
                       component: ToastificationContent,
                       position: 'top-right',

@@ -757,7 +757,7 @@ export default {
       // eslint-disable-next-line prefer-template
       this.end = trim[1] + ' 23:59:59';
       if (this.selected === null) {
-        axios.get(`/api/getTransReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`, {
+        axios.get(`/api/getTransReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`, {
           responseType: 'blob',
         }).then((response) => {
           const url = URL.createObjectURL(new Blob([response.data]));
@@ -771,7 +771,7 @@ export default {
           link.click();
         });
       } else {
-        axios.get(`/api/getTransReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`, {
+        axios.get(`/api/getTransReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`, {
           responseType: 'blob',
         }).then((response) => {
           const url = URL.createObjectURL(new Blob([response.data]));

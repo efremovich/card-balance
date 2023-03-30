@@ -487,6 +487,7 @@ export default {
       selectedHolderOper: null,
       selectedHolder: null,
       selectedHolderLimit: null,
+      available: true,
       download: false,
       totalRows: null,
       transactions: {},
@@ -1155,6 +1156,10 @@ export default {
           }
         }
       });
+      this.toogle();
+    },
+    toogle() {
+      this.available = !this.available;
     },
     getHolderLimit() {
       if (this.selectedHolderLimit !== null) {
@@ -1496,6 +1501,7 @@ export default {
           }
         }
       });
+      this.toogle();
     },
     downloadTransReport() {
       const date = this.rangeDate;

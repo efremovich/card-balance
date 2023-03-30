@@ -141,7 +141,7 @@ export default {
       toggleCollapsed,
       updateMouseHovered,
     } = useVerticalNavMenu(props);
-    const admin = store.getters.ADMIN;
+    // const admin = store.getters.ADMIN;
     const { skin } = useAppConfig();
     // const option = ref([]);
 
@@ -171,7 +171,7 @@ export default {
     const { appName, appLogoImage } = $themeConfig.app;
 
     return {
-      admin,
+      // admin,
       navMenuItems,
       perfectScrollbarSettings,
       isVerticalMenuCollapsed,
@@ -202,32 +202,61 @@ export default {
       selected: store.getters.COMPANY,
       allCompanies: [],
       loadDone: false,
-      // admin: null,
+      admin: store.getters.ADMIN,
     };
   },
 
   computed: {
     ...mapGetters({
-      admin: 'ADMIN',
+      getAdmin: 'ADMIN',
       gotSelected: 'COMPANY',
     }),
-  //   selected: {
-  //     get() {
-  //       return this.gotSelected;
-  //     },
-  //     set(value) {
-  //       this.$store.dispatch('getCompany', value);
-  //       this.$store.dispatch('getContractId', value.id);
-  //     },
+  // selected: {
+  //   get() {
+  //     return this.gotSelected;
   //   },
+  //   set(value) {
+  //     this.$store.dispatch('getCompany', value);
+  //     this.$store.dispatch('getContractId', value.id);
+  //   },
+  // },
   },
   watch: {
-    admin(old, newVal) {
-      localStorage.setItem('admin', JSON.stringify(newVal));
+    admin: {
+      // localStorage.setItem('admin', JSON.stringify(newVal));
+      // get() {
+      //   return this.getAdmin;
+      // },
+      // set(old, value) {
+      //   this.$store.dispatch('getAdmin', value);
+      //   localStorage.setItem('admin', JSON.stringify(value));
+      // },
+      handler(newVal) {
+        this.$store.dispatch('getAdmin', newVal);
+        localStorage.setItem('admin', JSON.stringify(newVal));
+      },
     },
     // selected(old, val) {
-    //   localStorage.setItem('selected', JSON.stringify(val));
+    //   // localStorage.setItem('selected', JSON.stringify(val.name));
+    //   console.log(old, val);
     // },
+    selected: {
+      // get() {
+      //   return this.gotSelected;
+      // },
+      // set(value) {
+      //   this.$store.dispatch('getCompany', value);
+      //   this.$store.dispatch('getContractId', value.id);
+      // },
+      handler(newVal) {
+        // console.log('handler', newVal);
+        // this.$store.dispatch('getCompany', newVal.name);
+        // this.$store.dispatch('getContractId', newVal.id);
+        // localStorage.setItem('selected', JSON.stringify(newVal.name));
+        this.getContractName(newVal);
+      },
+    },
+
   },
   mounted() {
     this.admin = JSON.parse(localStorage.getItem('admin'));
@@ -246,9 +275,9 @@ export default {
     this.getAllComp();
   },
   methods: {
-    getContractName() {
-      this.$store.dispatch('getCompany', this.selected.name);
-      this.$store.dispatch('getCompanyId', this.selected.id);
+    getContractName(val) {
+      this.$store.dispatch('getCompany', val.name);
+      this.$store.dispatch('getCompanyId', val.id);
     },
     getAllComp() {
       useJwt.getAllCompanies().then((response) => {
