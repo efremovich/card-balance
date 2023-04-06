@@ -530,7 +530,7 @@ export default {
           'locales': [{
             'name': { ru },
             'options': {
-              'months': ['January', 'February', 'March', 'April', 'May', 'Июнь', 'Июнь', 'Июнь', 'September', 'October', 'November', 'December'],
+              'months': ['January', 'February', 'Март', 'April', 'May', 'Июнь', 'Июнь', 'Июнь', 'September', 'October', 'November', 'December'],
               'shortMonths': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Июнь', 'Июнь', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
               'days': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
               'shortDays': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],

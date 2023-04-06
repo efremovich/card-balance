@@ -1570,6 +1570,8 @@ export default {
     },
     del(index) {
       this.count.splice(index, 1);
+      // if (this.cardData.data.limits.length)
+      this.cardData.data.limits.splice(index, 1);
     },
 
     selectedService(arrService) { // параметр функции у нас объект,

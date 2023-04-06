@@ -7,7 +7,7 @@ export default [
   {
     title: 'Топливные карты',
     route: 'cards',
-    icon: 'FileIcon',
+    icon: 'CreditCardIcon',
   },
   {
     title: 'Транзакции',

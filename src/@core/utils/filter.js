@@ -12,7 +12,7 @@ Vue.filter('formatDate', (value, withtime = true) => {
 
   if (withtime) {
     options = {
-      timeZone: 'UTC',
+      timeZone: 'Europe/Moscow', // было UTC
       hours: 'numeric',
       min: 'numeric',
       hour24: 'true',
