@@ -140,13 +140,13 @@
                     currency: 'RUB'
                   }) }}</span><br>
 
-                  <b-button
+                  <!-- <b-button
                     class="mt-1"
                     pill
                     size="sm"
                     @click="row.detailsShowing">
                     Детали
-                  </b-button>
+                  </b-button> -->
                 </b-col>
               </template>
 
@@ -157,16 +157,19 @@
                 </b-col>
               </template>
 
-              <template #row-details="row">
+              <template
+                #cell(card_number)="row">
+                <b-col>
+                  <router-link :to="{ name: 'card', params: { card_number: row.item.card_number } }">
+                    <span class="text-body"> {{ row.item.card_number }} </span>
+                  </router-link>
+                </b-col>
+              </template>
+
+              <!-- <template #row-details="row">
                 <b-card
                   @click="row.toggleDetails">
                   <b-row class="mb-2">
-                    <!-- <b-col
-                      md="4"
-                      class="mb-1"
-                    >
-                      <strong>Сумма : </strong>  <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">  {{ row.item.summ }} </span>
-                    </b-col> -->
 
                     <b-col
                       md="4"
@@ -184,15 +187,8 @@
                       <strong>Товар/Услуга : </strong>{{ row.item.service.full_name }}
                     </b-col>
                   </b-row>
-
-                  <!-- <b-button
-                    size="sm"
-                    variant="outline-secondary"
-                    @click="row.toggleDetails">
-                    Скрыть детали
-                  </b-button> -->
                 </b-card>
-              </template>
+              </template> -->
 
               <template #cell(period)="row">
                 <b-col @click="row.toggleDetails">
@@ -216,28 +212,34 @@
               :filter-included-fields="filterOn"
               @filtered="onFiltered">
               <template #cell(summ)="row">
-                <b-col @click="row.toggleDetails">
-                  <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseInt(row.item.summ).toLocaleString('ru-RU', {
-                    style: 'currency',
-                    currency: 'RUB'
-                  }) }}</span><br>
+                <!-- <b-col @click="row.toggleDetails"> -->
+                <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseInt(row.item.summ).toLocaleString('ru-RU', {
+                  style: 'currency',
+                  currency: 'RUB'
+                }) }}</span><br>
 
-                  <b-button
+                <!-- <b-button
                     class="mt-1"
                     pill
                     size="sm"
                     @click="row.detailsShowing">
                     Детали
-                  </b-button>
-                </b-col>
+                  </b-button> -->
+                <!-- </b-col> -->
               </template>
 
-              <template
+              <!-- <template
                 #cell(date)="row">
                 <b-col @click="row.toggleDetails">
                   {{ row.item.date | formatDate }}
                 </b-col>
-              </template>
+              </template> -->
+
+              <!-- <template #cell(card_number)="row">
+                <router-link :to="{ name: 'card', params: { card_number: row.item.card_number } }">
+                  {{ row.item.card_number }}
+                </router-link>
+              </template> -->
 
               <template #row-details="row">
                 <b-card
@@ -248,11 +250,13 @@
                       class="mb-1">
                       <strong>Дата/время : </strong>{{ row.item.date | formatDate }}
                     </b-col>
+
                     <b-col
                       md="4"
                       class="mb-1">
                       <strong>Номер карты : </strong>{{ row.item.card_number }}
                     </b-col>
+
                     <b-col
                       md="4"
                       class="mb-1">
@@ -269,13 +273,6 @@
                       <strong>Адрес операции: </strong>{{ row.item.pos.address }}
                     </b-col>
                   </b-row>
-
-                  <!-- <b-button
-                    size="sm"
-                    variant="outline-secondary"
-                    @click="row.toggleDetails">
-                    Скрыть детали
-                  </b-button> -->
                 </b-card>
               </template>
 
@@ -375,6 +372,7 @@ export default {
     BContainer,
     BCol,
     BRow,
+
     BTable,
     BFormGroup,
     BFormSelect,
@@ -424,6 +422,11 @@ export default {
         {
           key: 'service.full_name',
           label: 'Товар/услуга',
+          sortable: true,
+        },
+        {
+          key: 'quantity',
+          label: 'Количество',
           sortable: true,
         },
         {
@@ -521,6 +524,7 @@ export default {
       if (oldVal !== null) {
         this.onChange();
       }
+      this.$store.dispatch('getCardNumber', null);
     },
   },
   beforeMount() {
@@ -535,7 +539,7 @@ export default {
     this.end = `${this.isToday()} 23:59:59`;
     this.rangeDate = [this.start, this.end];
 
-    if (this.selected === null) {
+    if ((this.selected === null) || (this.selected === undefined)) {
       useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
@@ -596,7 +600,6 @@ export default {
       useJwt.getCards(val).then((response) => {
         if (response.data.status) {
           this.response = response.data;
-          // console.log('trans:', this.response);
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
           });

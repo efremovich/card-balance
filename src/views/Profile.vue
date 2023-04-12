@@ -72,8 +72,9 @@
                   label-for="userName">
                   <b-form-input
                     id="userName"
-                    v-model="getInfo.account.name"
-                    placeholder="Имя" />
+                    v-model.trim="name"
+                    placeholder="Имя"
+                    @change="changeName" />
                 </b-form-group>
               </b-col>
               <b-col sm="6">
@@ -93,7 +94,7 @@
                   label-for="name">
                   <validation-provider
                     v-slot="{ errors }"
-                    rules="integer|min:10"
+                    rules="min:10"
                     name="Телефон">
                     <b-input-group>
                       <b-input-group-prepend is-text>
@@ -101,8 +102,9 @@
                       </b-input-group-prepend>
                       <b-form-input
                         id="name"
-                        v-model="getInfo.account.phone"
-                        placeholder="Телефон" />
+                        v-model.trim="phone"
+                        placeholder="Телефон"
+                        @change="changePhone" />
                     </b-input-group>
                     <small class="text-danger">{{ errors[0] }}</small>
                   </validation-provider>
@@ -119,26 +121,28 @@
                     placeholder="Организация" />
                 </b-form-group>
               </b-col>
-              <b-col
+              <!-- <b-col
                 sm="6"
                 class="mb-1">
                 <b-button
-                  :disabled="!comparison"
+                  :disabled="comparison"
                   variant="primary"
                   class="mt-2 mr-1"
                   @click="onSubmit">
                   Сохранить
                 </b-button>
                 <b-button
-                  :disabled="!comparison"
+                  :disabled="comparison"
                   variant="outline-secondary"
                   type="reset"
                   class="mt-2"
                   @click.prevent="undoChange">
                   Отмена
                 </b-button>
-              </b-col>
-              <b-col sm="6">
+              </b-col> -->
+              <b-col
+                sm="6"
+                class="mt-2">
                 <b-link
                   class=" w-100 d-flex"
                   @click="toogleSeen">
@@ -333,7 +337,7 @@ import {
   required, confirmed, password, length,
 } from '@validations';
 // import { useStore } from 'vuex';
-// import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 // eslint-disable-next-line import/extensions
 import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line import/extensions
@@ -410,24 +414,29 @@ export default {
       oldPassword: '',
       newPasswordValue: '',
       RetypePassword: '',
+      changeNameFlag: false,
+      changePhoneFlag: false,
       required,
       confirmed,
       emptyValue: null,
       password,
+      phone: null,
       length,
       valid: false,
+      name: null,
       validPassword: false,
       seen: false,
       popoverShow: false,
       // refInputEl: null,
       getInfo: null,
       download: false,
+      newName: null,
     };
   },
   computed: {
-    comparison() {
-      return ((JSON.stringify(this.getInfo) !== this.source) && (this.valid === true));
-    },
+    // comparison() {
+    //   return ((JSON.stringify(this.getInfo) !== this.source) && (this.valid === true));
+    // },
     passwordToggleIconOld() {
       return this.passwordFieldTypeOld === 'password' ? 'EyeIcon' : 'EyeOffIcon';
     },
@@ -451,6 +460,16 @@ export default {
       });
       // console.log(this.twin.avatar);
     },
+    // name() {
+    //   this.changeName();
+    //   console.log('new', this.newName);
+    //   this.comparison = true;
+    //   this.twin.name = this.newName;
+    //   useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then(() => {
+    //     // this.emptyValue = response;
+    //     this.name = this.newName;
+    //   });
+    // },
   },
   created() {
     useJwt.getCurrenUser().then((response) => {
@@ -461,7 +480,11 @@ export default {
           this.getInfo = response.data;
           this.image = this.getInfo.account.avatar;
           this.twin = this.getInfo.account;
+          this.sourceName = JSON.stringify(this.getInfo.account.name);
+          this.sourcePhone = JSON.stringify(this.getInfo.account.phone);
           this.source = JSON.stringify(response.data);
+          this.name = this.getInfo.account.name;
+          this.phone = this.getInfo.account.phone;
         });
       }
     });
@@ -469,10 +492,8 @@ export default {
   methods: {
     onSubmit() {
       this.$refs.userData.validate().then((success) => {
-        if (success === true) {
+        if ((success === true) && (this.changeNameFlag === false)) {
           this.saveChange = true;
-          // this.twin.name = 'Хакер';
-          // this.twin.phone = '+7892246643456456';
           useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then((response) => {
             this.twin = response;
             this.$swal({
@@ -524,6 +545,94 @@ export default {
           this.validPassword = false;
         }
       });
+    },
+    changeName() {
+      // eslint-disable-next-line quotes
+      if (this.name !== this.sourceName.replace(/("|')/g, "")) {
+        this.comparison = true;
+        this.newName = this.name;
+        this.changeNameFlag = true;
+        this.twin.name = this.newName;
+        this.$bvModal
+          .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
+            title: 'Уведомление',
+            size: 'sm',
+            okVariant: 'primary',
+            okTitle: 'Да',
+            cancelTitle: 'Нет',
+            cancelVariant: 'outline-secondary',
+            hideHeaderClose: false,
+            centered: true,
+          }).then((value) => {
+            // console.log('changeBName', value);
+            if (value === true) {
+              useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then(() => {
+              });
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Данные сохранены',
+                  icon: 'EditIcon',
+                  variant: 'success',
+                },
+              });
+            } else {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Изменения не сохранены',
+                  icon: 'alertCircle',
+                  variant: 'warning',
+                },
+              });
+            }
+          });
+      }
+    },
+    changePhone() {
+      if (this.phone !== this.sourcePhone.replace(/("|')/g, '')) {
+        this.comparison = true;
+        this.changePhoneFlag = true;
+        this.twin.phone = this.phone;
+        this.$bvModal
+          .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
+            title: 'Уведомление',
+            size: 'sm',
+            okVariant: 'primary',
+            okTitle: 'Да',
+            cancelTitle: 'Нет',
+            cancelVariant: 'outline-secondary',
+            hideHeaderClose: false,
+            centered: true,
+          }).then((value) => {
+            // console.log('changeBName', value);
+            if (value === true) {
+              useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then(() => {
+              });
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Данные сохранены',
+                  icon: 'EditIcon',
+                  variant: 'success',
+                },
+              });
+            } else {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Изменения не сохранены',
+                  icon: 'alertCircle',
+                  variant: 'warning',
+                },
+              });
+            }
+          });
+      }
+      // else {
+      //   this.comparison = false;
+      //   this.changePhoneFlag = false;
+      // }
     },
     undoChange() {
       useJwt.getCurrenUser().then((response) => {

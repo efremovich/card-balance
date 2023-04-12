@@ -243,16 +243,14 @@ export default {
         // console.log('handler', newVal);
         this.$store.dispatch('getCompany', newVal.name);
         // this.$store.dispatch('getContractId', newVal.id);
-        localStorage.setItem('selected', JSON.stringify(newVal.name));
+        localStorage.setItem('selected', (newVal.name));
         this.getContractName(newVal);
       },
     },
 
   },
   mounted() {
-    console.log(this.$store.getters);
     this.admin = JSON.parse(localStorage.getItem('admin'));
-    this.selected = JSON.parse(localStorage.getItem('selected'));
     // this.allCompanies = this.$store.getters.ALL_COMPANIES;
     if (this.$store.state.selectedCompany !== null) {
       this.selected = this.$store.getters.COMPANY;

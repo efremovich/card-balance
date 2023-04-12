@@ -191,17 +191,17 @@ export default class JwtService {
     return { data: { status: false } };
   }
 
-  // Смена пользователя
-  // async changeUser(payload) {
-  //   const userData = JSON.parse(localStorage.getItem('userData'));
-  //   if (userData) {
-  //     const response = await this.axiosIns.post(
-  //       `/api/user/${userData.account.uid}`, payload,
-  //     );
-  //     return response;
-  //   }
-  //   return { data: { status: false } };
-  // }
+  // Смена данных о пользователе (телефон,имя,почта)
+  async updateUser(payload) {
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      const response = await this.axiosIns.post(
+        `/api/user/${userData.account.uid}`, payload,
+      );
+      return response;
+    }
+    return { data: { status: false } };
+  }
 
   async getCurrenUser() {
     const userData = JSON.parse(localStorage.getItem('userData'));

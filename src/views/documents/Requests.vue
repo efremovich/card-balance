@@ -207,6 +207,7 @@ export default {
         EDIT: 'Смена лимита',
         LOCK: 'Блокировка карты',
         UNLOCK: 'Разблокировка карты',
+        RENAME: 'Смена держателя',
       },
       colorMap: {
         CREATED: 'primary',

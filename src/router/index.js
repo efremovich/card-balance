@@ -70,8 +70,9 @@ Vue.mixin({
 
     //   });
     // }
-    if ((from.name === 'card' && (this.comparison === false || this.holderComparison === false) && this.saveChange === false)
-    || (from.name === 'profile' && this.comparison === true && this.saveChange !== true)) {
+
+    // || (from.name === 'profile' && this.comparison === true && this.saveChange !== true))
+    if (from.name === 'card' && (this.comparison === false || this.holderComparison === false) && this.saveChange === false) {
       this.$bvModal
         .msgBoxConfirm('Изменения ещё не сохранены. Сохранить?', {
           title: 'Уведомление',
@@ -96,8 +97,19 @@ Vue.mixin({
               },
 
             });
-          } else if (this.saveChange === true && this.servicesLength === false) {
+          } else if (this.saveChange === true && this.servicesLength === false && this.changeValueHolder === false) {
             this.sendRequest();
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Данные сохранены',
+                icon: 'EditIcon',
+                variant: 'success',
+              },
+            });
+            next(true);
+          } else if (this.saveChange === true && this.changeValueHolder === true) {
+            this.changeHolder();
             this.$toast({
               component: ToastificationContent,
               props: {

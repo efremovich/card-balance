@@ -58,7 +58,8 @@
                 Держатель:
               </h6>
               <b-form-input
-                v-model="Holder" />
+                v-model="cardHolder"
+                @change="changeHolder" />
             </div>
           </div>
           <div v-if="getWidth !== 'xs'">
@@ -1013,15 +1014,16 @@ export default {
     const cardHolderSource = ref(null);
     const fields = [
       {
-        key: 'service.full_name',
-        label: 'Товар/услуга',
-        sortable: true,
-      },
-      {
         key: 'date',
         label: 'Дата',
         sortable: true,
       },
+      {
+        key: 'service.full_name',
+        label: 'Товар/услуга',
+        sortable: true,
+      },
+
       {
         key: 'quantity',
         label: 'Количество',
@@ -1316,11 +1318,11 @@ export default {
       sortDirection: 'asc',
       required,
       operReport: null,
-      Holder: this.cardHolder,
       // userData: null,
       saveChange: false,
       comparison: true,
       holderComparison: true,
+      changeValueHolder: false,
       newServices: [],
       newLimits: [{
         limit_period_code: 'MONTH',
@@ -1389,14 +1391,11 @@ export default {
         }
       },
     },
-    Holder(old, val) {
-      if (JSON.stringify(val) === JSON.stringify(this.cardHolderSource)) {
-        this.holderComparison = true;
-      } else {
-        this.holderComparison = false;
-        this.Holder = val;
-      }
-    },
+    // Holder(val) {
+    //   if (JSON.stringify(val) !== JSON.stringify(this.cardHolderSource)) {
+    //     this.Holder = val;
+    //   }
+    // },
     changeContract(old, val) {
       if (old !== val) {
         this.$router.push({ name: 'cards' });
@@ -1461,12 +1460,24 @@ export default {
         }
       });
     },
-    // changeHolder(old, val) {
-    //   console.log(old, val);
-    // },
-    // changeHolder(old, val) {
-    //   console.log(old, val);
-    // },
+    changeHolder() {
+      if (JSON.stringify(this.cardHolder) !== JSON.stringify(this.cardHolderSource)) {
+        this.comparison = false;
+        this.changeValueHolder = true;
+        if (this.saveChange) {
+          console.log('changeHolder');
+          const request = [{
+            card_number: this.cardData.data.number,
+            request_type_code: 'RENAME',
+            request_status_code: 'CREATED',
+            contract_id: this.cardData.data.contract_id,
+            holder: JSON.stringify(`${this.cardHolder}`),
+            // holder: this.cardHolder,
+          }];
+          useJwt.refreshDataUserLimits(request);
+        }
+      }
+    },
     sendRequest() {
       const request = [{
         card_number: this.cardData.data.number,
@@ -1474,36 +1485,39 @@ export default {
         request_status_code: 'CREATED',
         contract_id: this.cardData.data.contract_id,
         limits: this.newLimits,
-        holder: this.Holder,
 
       }];
       useJwt.refreshDataUserLimits(request);
     },
     newLimitsData() {
-      this.$refs.limitsForm.validate().then((success) => {
-        if (success) {
-          this.saveChange = true;
-          this.sendRequest();
-          this.$router.push({ name: 'cards' });
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Данные сохранены',
-              icon: 'EditIcon',
-              variant: 'success',
-            },
-          });
-        } else {
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Укажите вид(ы) топлива',
-              icon: 'AlertTriangleIcon',
-              variant: 'danger',
-            },
-          });
-        }
-      });
+      if (this.changeValueHolder === false) {
+        this.$refs.limitsForm.validate().then((success) => {
+          if (success) {
+            this.saveChange = true;
+            this.sendRequest();
+            this.$router.push({ name: 'cards' });
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Данные сохранены',
+                icon: 'EditIcon',
+                variant: 'success',
+              },
+            });
+          } else {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Укажите вид(ы) топлива',
+                icon: 'AlertTriangleIcon',
+                variant: 'danger',
+              },
+            });
+          }
+        });
+      } else {
+        this.changeHolder();
+      }
     },
     sendMessage() {
       this.$refs.simpleRules.validate().then((success) => {
