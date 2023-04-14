@@ -546,11 +546,15 @@ export default {
         }
       });
     },
+
     changeName() {
       // eslint-disable-next-line quotes
       if (this.name !== this.sourceName.replace(/("|')/g, "")) {
         this.comparison = true;
         this.newName = this.name;
+        // if (this.name.length > 20) {
+        //   this.newName = this.truncate(this.name, 20);
+        // }
         this.changeNameFlag = true;
         this.twin.name = this.newName;
         this.$bvModal
@@ -564,7 +568,6 @@ export default {
             hideHeaderClose: false,
             centered: true,
           }).then((value) => {
-            // console.log('changeBName', value);
             if (value === true) {
               useJwt.refreshGetCurrentUser(JSON.stringify(this.twin)).then(() => {
               });

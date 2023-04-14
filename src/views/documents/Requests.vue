@@ -85,7 +85,7 @@
           </div>
         </b-card-body>
 
-        <b-table
+        <!-- <b-table
           v-if="requests.data.total>0"
           hover
           :items="requests.data.result"
@@ -97,9 +97,17 @@
           :fields="fields">
           <template
             #cell(UpdatedAt)="row">
-            <b-col>
+            <b-col
+              @click="row.toggleDetails">
               {{ row.item.UpdatedAt | formatDate }}
             </b-col>
+            <b-button
+              class="mt-1"
+              pill
+              size="sm"
+              @click="row.detailsShowing">
+              Детали
+            </b-button>
           </template>
           <template
             #cell(request_status_code)="row">
@@ -117,6 +125,68 @@
               </p>
             </b-col>
           </template>
+          <template
+            #cell(period)="row">
+            <b-col @click="row.toggleDetails">
+              {{ requsestsTypes[row.item.request_type_code] }}
+            </b-col>
+          </template>
+
+        </b-table> -->
+        <b-table
+          v-if="requests.data.total>0"
+          hover
+          responsive
+          class="position-relative table-hover text-center"
+          :per-page="perPage"
+          :current-page="currentPage"
+          :items="requests.data.result"
+          :fields="fields"
+          :filter="filter">
+          <template #cell(UpdatedAt)="row">
+            <b-col @click="row.toggleDetails">
+              {{ row.item.UpdatedAt | formatDate }}
+            </b-col>
+          </template>
+
+          <template
+            #cell(request_type_code)="row">
+            <b-col @click="row.toggleDetails">
+              {{ requsestsTypes[row.item.request_type_code] }}
+            </b-col>
+          </template>
+
+          <template
+            #cell(request_status_code)="row">
+            <b-col @click="row.toggleDetails">
+              <p>
+                {{ requsestsStatus[row.item.request_status_code] }}
+              </p>
+            </b-col>
+          </template>
+
+          <template #row-details="row">
+            <b-card
+              @click="row.toggleDetails">
+              <b-row class="mb-2">
+                <b-col
+                  md="4"
+                  class="mb-1">
+                  <strong>Дата/время : </strong>{{ requsestsTypes[row.item.request_type_code] }}
+                </b-col>
+                <b-col
+                  md="4"
+                  class="mb-1">
+                  <strong>Количество : </strong>{{ requsestsTypes[row.item.request_type_code] }}
+                </b-col>
+                <b-col
+                  md="4"
+                  class="mb-1">
+                  <strong>Товар/Услуга : </strong>{{ requsestsTypes[row.item.request_type_code] }}
+                </b-col>
+              </b-row>
+            </b-card>
+          </template>
         </b-table>
       </b-card>
     </div>
@@ -126,7 +196,7 @@
 <script>
 import {
   BCard, BTable, BFormGroup,
-  BFormInput, BCardBody, BButton, BInputGroup, BInputGroupAppend, BOverlay, BSpinner, BCol,
+  BFormInput, BCardBody, BButton, BRow, BInputGroup, BInputGroupAppend, BOverlay, BSpinner, BCol,
 } from 'bootstrap-vue';
 import vSelect from 'vue-select';
 import { mapGetters } from 'vuex';
@@ -141,6 +211,7 @@ export default {
     BCard,
     flatPickr,
     BTable,
+    BRow,
     BFormGroup,
     BFormInput,
     BCardBody,
@@ -287,6 +358,7 @@ export default {
     useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
       if (response.data.status) {
         this.requests = response.data;
+        console.log('rq', this.requests);
         if (this.requests.data.result < 1) {
           this.$toast({
             component: ToastificationContent,
@@ -306,7 +378,6 @@ export default {
       const today = new Date();
       return today.toLocaleDateString();
     },
-
     getDate() {
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
@@ -353,6 +424,7 @@ export default {
         useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
           if (response.data.status) {
             this.requests = response.data;
+            console.log('rq', this.requests);
             this.totalRows = this.requests.data.total;
             if (this.totalRows < 1) {
               this.$toast({

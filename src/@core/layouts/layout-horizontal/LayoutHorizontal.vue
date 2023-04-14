@@ -29,7 +29,7 @@
         :clearable="false"
         label="number"
         class="w-100 mt-1 mb-1"
-        @input="onChange()" />
+        @input="onChange" />
     </b-navbar>
     <!--/ NAVBAR -->
 

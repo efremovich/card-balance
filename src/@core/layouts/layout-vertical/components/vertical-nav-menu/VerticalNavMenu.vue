@@ -199,7 +199,7 @@ export default {
 
   data() {
     return {
-      selected: store.getters.COMPANY,
+      // selected: this.$store.state.selectedCompany,
       allCompanies: [],
       loadDone: false,
       admin: store.getters.ADMIN,
@@ -232,29 +232,30 @@ export default {
     //   console.log(old, val);
     // },
     selected: {
-      // get() {
-      //   return this.gotSelected;
-      // },
-      // set(value) {
-      //   this.$store.dispatch('getCompany', value);
-      //   this.$store.dispatch('getContractId', value.id);
-      // },
-      handler(newVal) {
-        // console.log('handler', newVal);
-        this.$store.dispatch('getCompany', newVal.name);
-        // this.$store.dispatch('getContractId', newVal.id);
-        localStorage.setItem('selected', (newVal.name));
-        this.getContractName(newVal);
+      get() {
+        return this.$store.getters.COMPANY;
       },
+      set(value) {
+        this.$store.dispatch('getCompany', value);
+        this.$store.dispatch('getContractId', value.id);
+      },
+      // handler(newVal) {
+      //   // console.log('handler', newVal);
+      //   this.$store.dispatch('getCompany', newVal.name);
+      //   // this.$store.dispatch('getContractId', newVal.id);
+      //   // localStorage.setItem('selected', (newVal.name));
+      //   this.getContractName(newVal);
+      // },
     },
 
   },
-  mounted() {
+  created() {
     this.admin = JSON.parse(localStorage.getItem('admin'));
     // this.allCompanies = this.$store.getters.ALL_COMPANIES;
-    if (this.$store.state.selectedCompany !== null) {
-      this.selected = this.$store.getters.COMPANY;
+    if ((this.$store.state.selectedCompany !== null) || (this.$store.state.selectedCompany !== undefined)) {
+      this.selected = this.$store.state.selectedCompany;
       this.loadDone = true;
+      console.log('select', this.$store.getters);
     }
 
     if (this.$store.state.companies == null) {

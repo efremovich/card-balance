@@ -707,7 +707,7 @@
               v-if="cardData.data.card_status_id==='ACTIVE'"
               variant="danger"
               class="btn mb-2"
-              @click="getLockCard()">
+              @click="getLockCard">
               Заблокировать карту
               <feather-icon
                 icon="LockIcon"
@@ -717,8 +717,8 @@
               v-if="cardData.data.card_status_id !=='ACTIVE'"
               variant="success"
               class="btn mb-2"
-              :disable="cardData.data.card_status_id ==='FINANSE'"
-              @click="getUnlockCard()">
+              :disable="cardData.data.card_status_id ==='FINANCE'"
+              @click="getUnlockCard">
               {{ cardData.data.card_status_id }}
               <feather-icon
                 icon="unlock"
@@ -1461,11 +1461,25 @@ export default {
       });
     },
     changeHolder() {
+      // if (JSON.stringify(this.cardHolder) !== JSON.stringify(this.cardHolderSource)) {
+      //   this.comparison = false;
+      //   this.changeValueHolder = true;
+      //   if (this.saveChange) {
+      //     const request = [{
+      //       card_number: this.cardData.data.number,
+      //       request_type_code: 'RENAME',
+      //       request_status_code: 'CREATED',
+      //       contract_id: this.cardData.data.contract_id,
+      //       holder: JSON.stringify(`${this.cardHolder}`),
+      //       // holder: this.cardHolder,
+      //     }];
+      //     useJwt.refreshDataUserLimits(request);
+      //   }
+      // }
       if (JSON.stringify(this.cardHolder) !== JSON.stringify(this.cardHolderSource)) {
         this.comparison = false;
         this.changeValueHolder = true;
         if (this.saveChange) {
-          console.log('changeHolder');
           const request = [{
             card_number: this.cardData.data.number,
             request_type_code: 'RENAME',
@@ -1517,6 +1531,14 @@ export default {
         });
       } else {
         this.changeHolder();
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'Данные сохранены',
+            icon: 'EditIcon',
+            variant: 'success',
+          },
+        });
       }
     },
     sendMessage() {

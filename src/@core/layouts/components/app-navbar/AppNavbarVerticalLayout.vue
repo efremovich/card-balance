@@ -149,6 +149,7 @@ export default {
   methods: {
     getSelected() {
       this.selected = this.userData.contract;
+      this.$store.dispatch('getCompany', this.userData.company.full_name);
     },
     makeOptions(val) {
       if (typeof (val.contracts) !== 'object') {

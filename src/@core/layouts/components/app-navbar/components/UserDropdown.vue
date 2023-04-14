@@ -6,7 +6,7 @@
     <template #button-content>
       <div class="d-sm-flex d-none user-nav">
         <p class="user-name font-weight-bolder mb-0">
-          {{ userData.account.name }}
+          {{ userName }}
         </p>
       </div>
       <b-avatar
@@ -77,6 +77,11 @@ export default {
       visible: false,
     };
   },
+  computed: {
+    userName() {
+      return `${this.userData.account.name.slice(0, 20 - 1)}…`;
+    },
+  },
   beforeCreate() {
     useJwt.getCurrenUser().then((response) => {
       if (!response.status) {
@@ -116,6 +121,10 @@ export default {
 
       // Redirect to login page
       this.$router.push({ name: 'auth-login' });
+    },
+    truncate(str, maxlength) {
+      return (str.length > maxlength)
+        ? `${str.slice(0, maxlength - 1)}…` : str;
     },
   },
 };

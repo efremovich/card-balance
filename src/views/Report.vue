@@ -96,6 +96,7 @@
                 <v-select
                   id="labelServices"
                   v-model="selectable"
+                  :clearable="false"
                   :class="['w-50',{'w-100': getWidth === 'xs'}]"
                   :options="arrReport" />
                 <b-button
@@ -215,6 +216,14 @@
                     {{ row.item.date | formatDate }}
                   </b-col>
                 </template>
+                <template
+                  #cell(card_number)="row">
+                  <b-col>
+                    <router-link :to="{ name: 'card', params: { card_number: row.item.card_number } }">
+                      <span class="text-body"> {{ row.item.card_number }} </span>
+                    </router-link>
+                  </b-col>
+                </template>
               </b-table>
               <b-pagination
                 v-model="currentPage"
@@ -246,7 +255,6 @@
               <v-select
                 id="selectCard"
                 v-model="selectedOper"
-                :disabled="selectedHolderOper !== null"
                 multiple
                 :options="option"
                 class="w-50"
@@ -257,7 +265,6 @@
               <v-select
                 id="selectCard"
                 v-model="selectedHolderOper"
-                :disabled="selectedOper !== null"
                 multiple
                 :options="holders"
                 class="w-50"
@@ -286,6 +293,15 @@
                   Детали
                 </b-button>
               </template>
+              <template
+                #cell(number)="row">
+                <b-col>
+                  <router-link :to="{ name: 'card', params: { card_number: row.item.number } }">
+                    <span class="text-body"> {{ row.item.number }} </span>
+                  </router-link>
+                </b-col>
+              </template>
+
               <template #cell(quantity)="row">
                 <b-col @click="row.toggleDetails">
                   {{ row.item.quantity.toFixed(2) }}
@@ -296,6 +312,7 @@
                   {{ row.item.holder }}
                 </b-col>
               </template>
+
               <template #cell(AllSumm)="row">
                 <b-col @click="row.toggleDetails">
                   {{ row.item.AllSumm.toFixed(2) }}
@@ -1401,6 +1418,7 @@ export default {
             }
           } else {
             this.download = false;
+            this.selectedOper = null;
             this.transactions = '0';
             this.resultLength = false;
             this.getToast();
@@ -1485,23 +1503,105 @@ export default {
       });
     },
     getHolder() {
-      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_holder=${this.selectedHolder}`).then((response) => {
+      // useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_holder=${this.selectedHolder}`).then((response) => {
+      //   if (response.data.status) {
+      //     this.emptyArr = response.data;
+      //     this.totalRows = this.emptyArr.data.total;
+      //     if (this.totalRows < 1) {
+      //       this.$toast({
+      //         component: ToastificationContent,
+      //         props: {
+      //           title: 'Отсутвуют транзакции по карте за выбранный период',
+      //           icon: 'AlertTriangleIcon',
+      //           variant: 'danger',
+      //         },
+      //       });
+      //     }
+      //   }
+      // });
+      // this.toogle();
+      this.dataReport = [];
+      this.emptyArr = {};
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&holder=${this.selectedHolderLimit}`).then((response) => {
         if (response.data.status) {
           this.emptyArr = response.data;
           this.totalRows = this.emptyArr.data.total;
-          if (this.totalRows < 1) {
-            this.$toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Отсутвуют транзакции по карте за выбранный период',
-                icon: 'AlertTriangleIcon',
-                variant: 'danger',
-              },
-            });
+          if (this.totalRows > 0) {
+            this.resultLength = true;
+            this.transactions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.summ, 0).toLocaleString());
+            this.consumptions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.quantity, 0).toLocaleString());
+            const allLabels = [];
+            allLabels.push(this.emptyArr.data.result.map((el) => el.service).map((el) => el.full_name));
+            // Для отчета
+            const allCards = [];
+            allCards.push(this.emptyArr.data.result.map((el) => el.card_number));
+            const arrCards = allCards[0];
+            const uniqueCards = new Set(arrCards);
+            const arrUniqueCards = Array.from(uniqueCards);
+            this.dataTable = [];
+            this.arrUniqueCards = Array.from(uniqueCards).length;
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < arrUniqueCards.length; i++) {
+              const numberObject = {};
+              numberObject.details = [];
+              numberObject.number = Number(arrUniqueCards[i]);
+              this.dataTable.push(this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]));
+              numberObject.AllSumm = this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]).map((el) => el.summ).reduce((el, acc) => el + acc, 0);
+              numberObject.quantity = this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]).map((el) => el.quantity).reduce((el, acc) => el + acc, 0);
+              // eslint-disable-next-line prefer-destructuring
+              numberObject.holder = this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]).map((el) => el.card_holder)[0];
+              numberObject.details.push(this.emptyArr.data.result.filter((el) => (el.card_number) === arrUniqueCards[i]));
+              this.dataReport.push(numberObject);
+            }
+            this.download = false;
+            // Конец отчёта
+            const arr = allLabels[0];
+            const uniqueLabel = new Set(arr); // size != length
+            const arrLabel = Array.from(uniqueLabel);
+            const data = {};
+            const dataConumption = {};
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < arrLabel.length; i++) {
+              let zero = 0;
+              let consumption = 0;
+
+              this.emptyArr.data.result.forEach((el) => { // необходимо создавать объект на каждое используемое значение вида топлива
+                if (el.service.full_name === arrLabel[i]) {
+                  zero += (el.summ);
+                  consumption += el.quantity;
+                  const name = arrLabel[i];
+                  const value = zero;
+                  data[name] = value;
+                  dataConumption[name] = consumption; // объект вида {Вид топлива-Сумма}
+                }
+              });
+            }
+            this.consumptionData = [];
+            this.series[0].data = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < Object.keys(data).length; i++) {
+              const label = Object.keys(data);
+              const value = Object.values(data);
+              const consumptionL = Object.values(dataConumption);
+              const randomObject = {};
+              const anotherRandomObject = {};
+              anotherRandomObject.value = value[i];
+              anotherRandomObject.name = label[i];
+              anotherRandomObject.id = this.getRandom();
+              anotherRandomObject.consumption = consumptionL[i];
+              randomObject.value = Number(value[i]).toFixed(2);
+              randomObject.name = label[i];
+              this.series[0].data.push(randomObject);
+              this.consumptionData.push(anotherRandomObject);
+            }
+          } else {
+            this.download = false;
+            this.transactions = '0';
+            this.resultLength = false;
+            this.getToast();
           }
         }
       });
-      this.toogle();
     },
     downloadTransReport() {
       const date = this.rangeDate;

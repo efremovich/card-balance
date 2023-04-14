@@ -56,6 +56,7 @@
             no-body>
             <b-button
               v-if="product.card_status_id !== 'BLOCK'"
+              :disabled="product.card_status_id == 'FINANCE'"
               variant="danger"
               class="mt-1"
               @click="getLockCard(product)">
@@ -66,6 +67,7 @@
             <b-button
               v-else
               variant="success"
+              :disabled="product.card_status_id == 'FINANCE'"
               class="mt-1"
               @click="getUnlockCard(product)">
               Разблокировать
@@ -264,6 +266,7 @@
 
                 <b-button
                   v-if="product.card_status_id !== 'BLOCK'"
+                  :disabled="product.card_status_id == 'FINANCE'"
                   variant="light"
                   tag="a"
                   class="btn-wishlist mb-1 mw-100 p-1 min-w"
@@ -275,6 +278,7 @@
                 </b-button>
                 <b-button
                   v-else
+                  :disabled="product.card_status_id == 'FINANCE'"
                   variant="success"
                   tag="a"
                   class="btn-wishlist mb-1 mw-100 p-1 min-w"
@@ -359,6 +363,7 @@
             no-body>
             <b-button
               v-if="product.card_status_id !== 'BLOCK'"
+              :disabled="product.card_status_id == 'FINANCE'"
               variant="danger"
               class="mt-1"
               @click="getLockCard(product)">
@@ -368,6 +373,7 @@
             </b-button>
             <b-button
               v-else
+              :disabled="product.card_status_id == 'FINANCE'"
               variant="success"
               class="mt-1"
               @click="getUnlockCard(product)">
