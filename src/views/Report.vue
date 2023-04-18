@@ -180,22 +180,21 @@
                 <v-select
                   id="selectCard"
                   v-model="selected"
-                  :disabled="selectedHolder !== null"
+
                   multiple
                   :options="option"
                   class="w-50"
-                  @input="onChange" />
+                  @input="getCharData" />
                 <label
                   class="mt-2"
-                  for="selectCard">Выберете держателя:</label>
+                  for="selectHolder">Выберете держателя:</label>
                 <v-select
-                  id="selectCard"
+                  id="selectHolder"
                   v-model="selectedHolder"
-                  :disabled="selected !== null"
                   multiple
                   :options="holders"
                   class="w-50"
-                  @input="getHolder" />
+                  @input="getCharDataHolder" />
               </div>
               <b-table
                 hover
@@ -216,6 +215,13 @@
                     {{ row.item.date | formatDate }}
                   </b-col>
                 </template>
+                <template #cell(quantity)="row">
+                  <b-col>
+                    <!-- {{ row.item.quantity.toFixed(2) }} -->
+                    {{ parseFloat(row.item.quantity).toLocaleString('ru-RU') }}
+                  </b-col>
+                </template>
+
                 <template
                   #cell(card_number)="row">
                   <b-col>
@@ -304,9 +310,11 @@
 
               <template #cell(quantity)="row">
                 <b-col @click="row.toggleDetails">
-                  {{ row.item.quantity.toFixed(2) }}
+                  <!-- {{ row.item.quantity.toFixed(2) }} -->
+                  {{ parseFloat(row.item.quantity).toLocaleString('ru-RU') }}
                 </b-col>
               </template>
+
               <template #cell(holder)="row">
                 <b-col @click="row.toggleDetails">
                   {{ row.item.holder }}
@@ -315,7 +323,7 @@
 
               <template #cell(AllSumm)="row">
                 <b-col @click="row.toggleDetails">
-                  {{ row.item.AllSumm.toFixed(2) }}
+                  {{ parseFloat(row.item.AllSumm).toLocaleString('ru-RU') }}
                 </b-col>
               </template>
               <template #row-details="row">
@@ -377,7 +385,6 @@
               <v-select
                 id="selectCard"
                 v-model="selectedLimit"
-                :disabled="selectedHolder !== null"
                 multiple
                 :options="option"
                 class="w-50"
@@ -388,7 +395,6 @@
               <v-select
                 id="selectCard"
                 v-model="selectedHolderLimit"
-                :disabled="selected !== null"
                 multiple
                 :options="holders"
                 class="w-50"
@@ -407,7 +413,16 @@
               :sort-direction="sortDirection"
               :filter="filter"
               :filter-included-fields="filterOn"
-              @filtered="onFiltered" />
+              @filtered="onFiltered">
+              <template
+                #cell(number)="row">
+                <b-col>
+                  <router-link :to="{ name: 'card', params: { card_number: row.item.number } }">
+                    <span class="text-body"> {{ row.item.number }} </span>
+                  </router-link>
+                </b-col>
+              </template>
+            </b-table>
             <!-- <b-button
               variant="primary"
               class="ml-2"
@@ -562,6 +577,12 @@ export default {
           key: 'AllSumm',
           label: 'Сумма',
           sortable: true,
+          formatter(value) {
+            if ((value).toString().includes('.')) {
+              return ((value).toString()).replace('.', ',');
+            }
+            return value;
+          },
         },
 
         {
@@ -592,12 +613,19 @@ export default {
           key: 'summ',
           label: 'Сумма',
           sortable: true,
+          formatter(value) {
+            if ((value).toString().includes('.')) {
+              return ((value).toString()).replace('.', ',');
+            }
+            return value;
+          },
         },
 
         {
           key: 'pos.address',
           label: 'Адрес',
           sortable: true,
+
         },
 
       ],
@@ -610,6 +638,11 @@ export default {
         {
           key: 'card_number',
           label: 'Номер карты',
+          sortable: true,
+        },
+        {
+          key: 'card_holder',
+          label: 'Держатель',
           sortable: true,
         },
         {
@@ -626,6 +659,12 @@ export default {
           key: 'summ',
           label: 'Сумма',
           sortable: true,
+          formatter(value) {
+            if ((value).toString().includes('.')) {
+              return ((value).toString()).replace('.', ',');
+            }
+            return value;
+          },
         },
 
         {
@@ -856,17 +895,21 @@ export default {
       if (val === 'отчёт по лимитам') {
         this.getAllLimits();
       }
+      // this.selected = null;
+      // this.selectedHolderLimit = null;
+      // this.selectedHolder = null;
+      // this.selectedOper = null;
     },
     selectedHolder(val) {
       if (val.length < 1) {
         this.selectedHolder = null;
       }
     },
-    selected(val) {
-      if (val.length < 1) {
-        this.selected = null;
-      }
-    },
+    // selected(val) {
+    //   if (val.length < 1) {
+    //     this.selected = null;
+    //   }
+    // },
 
   },
 
@@ -1046,6 +1089,7 @@ export default {
       useJwt.getCards(val).then((response) => {
         if (response.data.status) {
           this.response = response.data;
+
           this.response.cards.forEach((el) => {
             this.option.push(el.number);
           });
@@ -1326,7 +1370,7 @@ export default {
               }
             }
             this.limitsData = mainArr;
-            // console.log(this.limitsData);
+
             if (this.totalRowsLimits < 1) {
               this.$toast({
                 component: ToastificationContent,
@@ -1341,6 +1385,137 @@ export default {
         });
       }
     },
+    getCharData() {
+      this.selectedHolder = null;
+      // this.dataReport = [];
+      this.emptyArr = {};
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`).then((response) => {
+        if (response.data.status) {
+          this.emptyArr = response.data;
+          this.totalRows = this.emptyArr.data.total;
+          if (this.totalRows > 0) {
+            this.resultLength = true;
+            this.transactions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.summ, 0).toLocaleString());
+            this.consumptions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.quantity, 0).toLocaleString());
+            const allLabels = [];
+            allLabels.push(this.emptyArr.data.result.map((el) => el.service).map((el) => el.full_name));
+
+            this.download = false;
+
+            const arr = allLabels[0];
+            const uniqueLabel = new Set(arr); // size != length
+            const arrLabel = Array.from(uniqueLabel);
+            const data = {};
+            const dataConumption = {};
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < arrLabel.length; i++) {
+              let zero = 0;
+              let consumption = 0;
+
+              this.emptyArr.data.result.forEach((el) => { // необходимо создавать объект на каждое используемое значение вида топлива
+                if (el.service.full_name === arrLabel[i]) {
+                  zero += (el.summ);
+                  consumption += el.quantity;
+                  const name = arrLabel[i];
+                  const value = zero;
+                  data[name] = value;
+                  dataConumption[name] = consumption; // объект вида {Вид топлива-Сумма}
+                }
+              });
+            }
+            this.consumptionData = [];
+            this.series[0].data = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < Object.keys(data).length; i++) {
+              const label = Object.keys(data);
+              const value = Object.values(data);
+              const consumptionL = Object.values(dataConumption);
+              const randomObject = {};
+              const anotherRandomObject = {};
+              anotherRandomObject.value = value[i];
+              anotherRandomObject.name = label[i];
+              anotherRandomObject.id = this.getRandom();
+              anotherRandomObject.consumption = consumptionL[i];
+              randomObject.value = Number(value[i]).toFixed(2);
+              randomObject.name = label[i];
+              this.series[0].data.push(randomObject);
+              this.consumptionData.push(anotherRandomObject);
+            }
+          } else {
+            this.download = false;
+            // this.selected = null;
+            this.transactions = '0';
+            this.resultLength = false;
+            this.getToast();
+          }
+        }
+      });
+    },
+    getCharDataHolder() {
+      this.selected = null;
+      // this.dataReport = [];
+      this.emptyArr = {};
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&holder=${this.selectedHolder}`).then((response) => {
+        if (response.data.status) {
+          this.emptyArr = response.data;
+          this.totalRows = this.emptyArr.data.total;
+          if (this.totalRows > 0) {
+            this.resultLength = true;
+            this.transactions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.summ, 0).toLocaleString());
+            this.consumptions = (this.emptyArr.data.result.reduce((ac, el) => ac + el.quantity, 0).toLocaleString());
+            const allLabels = [];
+            allLabels.push(this.emptyArr.data.result.map((el) => el.service).map((el) => el.full_name));
+            this.download = false;
+            const arr = allLabels[0];
+            const uniqueLabel = new Set(arr); // size != length
+            const arrLabel = Array.from(uniqueLabel);
+            const data = {};
+            const dataConumption = {};
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < arrLabel.length; i++) {
+              let zero = 0;
+              let consumption = 0;
+
+              this.emptyArr.data.result.forEach((el) => { // необходимо создавать объект на каждое используемое значение вида топлива
+                if (el.service.full_name === arrLabel[i]) {
+                  zero += (el.summ);
+                  consumption += el.quantity;
+                  const name = arrLabel[i];
+                  const value = zero;
+                  data[name] = value;
+                  dataConumption[name] = consumption; // объект вида {Вид топлива-Сумма}
+                }
+              });
+            }
+            this.consumptionData = [];
+            this.series[0].data = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < Object.keys(data).length; i++) {
+              const label = Object.keys(data);
+              const value = Object.values(data);
+              const consumptionL = Object.values(dataConumption);
+              const randomObject = {};
+              const anotherRandomObject = {};
+              anotherRandomObject.value = value[i];
+              anotherRandomObject.name = label[i];
+              anotherRandomObject.id = this.getRandom();
+              anotherRandomObject.consumption = consumptionL[i];
+              randomObject.value = Number(value[i]).toFixed(2);
+              randomObject.name = label[i];
+              this.series[0].data.push(randomObject);
+              this.consumptionData.push(anotherRandomObject);
+            }
+          } else {
+            this.download = false;
+            this.selected = null;
+            this.transactions = '0';
+            this.resultLength = false;
+            this.getToast();
+          }
+        }
+      });
+    },
+
     filterOper() {
       this.dataReport = [];
       this.emptyArr = {};
@@ -1440,7 +1615,6 @@ export default {
           for (let i = 0; i < this.limitsData.data.total; i++) {
             const someObj = [];
             if ((this.limitsData.data.result[i].limits.length > 0) && (this.limitsData.data.result[i].limits !== null)) {
-              // console.log('!');
               // eslint-disable-next-line no-plusplus
               for (let j = 0; j < (this.limitsData.data.result[i].limits).length; j++) {
                 this.limitsData.data.result[i].limits[j].remains = this.limitsData.data.result[i].limits[j].value - this.limitsData.data.result[i].limits[j].consumption;
@@ -1465,30 +1639,11 @@ export default {
               this.limitsData.data.result[i].limits.consumption = '';
               this.limitsData.data.result[i].limits.remains = '';
               this.limitsData.data.result[i].limits.limit_services_labels = '';
-              // someObj.push(this.limitsData.data.result[i].limits);
               data.push(this.limitsData.data.result[i].limits);
-              // this.limitsData = data;
-              // this.limitsData.push(data);
             }
-            // this.limitsData = data;
-            // // eslint-disable-next-line no-plusplus
-            // for (let j = 0; j < (this.limitsData.data.result[i].limits).length; j++) {
-            //   this.limitsData.data.result[i].limits[j].remains = this.limitsData.data.result[i].limits[j].value - this.limitsData.data.result[i].limits[j].consumption;
-            //   someObj.push(this.limitsData.data.result[i].limits[j]);
-            // }
-            // data.push(someObj);
           }
           this.limitsData = data;
-          // console.log('DTA', data);
-          // eslint-disable-next-line no-plusplus
-          // for (let q = 0; q < (data).length; q++) {
-          //   // eslint-disable-next-line no-plusplus
-          //   for (let v = 0; v < data[q].length; v++) {
-          //     mainArr.push(data[q][v]);
-          //   }
-          // }
-          // this.limitsData = mainArr;
-          // console.log('ALL', this.limitsData);
+
           if (this.totalRowsLimits < 1) {
             this.$toast({
               component: ToastificationContent,
@@ -1503,7 +1658,7 @@ export default {
       });
     },
     getHolder() {
-      // useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_holder=${this.selectedHolder}`).then((response) => {
+      // useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&holder=${this.selectedHolder}`).then((response) => {
       //   if (response.data.status) {
       //     this.emptyArr = response.data;
       //     this.totalRows = this.emptyArr.data.total;
@@ -1522,7 +1677,7 @@ export default {
       // this.toogle();
       this.dataReport = [];
       this.emptyArr = {};
-      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&holder=${this.selectedHolderLimit}`).then((response) => {
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&holder=${this.selectedHolderOper}`).then((response) => {
         if (response.data.status) {
           this.emptyArr = response.data;
           this.totalRows = this.emptyArr.data.total;

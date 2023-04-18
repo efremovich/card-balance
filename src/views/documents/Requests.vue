@@ -133,61 +133,134 @@
           </template>
 
         </b-table> -->
-        <b-table
-          v-if="requests.data.total>0"
-          hover
-          responsive
-          class="position-relative table-hover text-center"
-          :per-page="perPage"
-          :current-page="currentPage"
-          :items="requests.data.result"
-          :fields="fields"
-          :filter="filter">
-          <template #cell(UpdatedAt)="row">
-            <b-col @click="row.toggleDetails">
-              {{ row.item.UpdatedAt | formatDate }}
-            </b-col>
-          </template>
+        <div v-if="getWidth !== 'xs'">
+          <b-table
+            v-if="requests.data.total>0"
+            hover
+            responsive
+            class="position-relative table-hover text-center"
+            :per-page="perPage"
+            :current-page="currentPage"
+            :items="requests.data.result"
+            :fields="fields"
+            :filter="filter">
+            <template #cell(UpdatedAt)="row">
+              <b-col @click="row.toggleDetails">
+                {{ row.item.UpdatedAt | formatDate }}
+              </b-col>
+            </template>
 
-          <template
-            #cell(request_type_code)="row">
-            <b-col @click="row.toggleDetails">
-              {{ requsestsTypes[row.item.request_type_code] }}
-            </b-col>
-          </template>
+            <template
+              #cell(request_type_code)="row">
+              <b-col @click="row.toggleDetails">
+                {{ requsestsTypes[row.item.request_type_code] }}
+              </b-col>
+            </template>
 
-          <template
-            #cell(request_status_code)="row">
-            <b-col @click="row.toggleDetails">
-              <p>
-                {{ requsestsStatus[row.item.request_status_code] }}
-              </p>
-            </b-col>
-          </template>
+            <template
+              #cell(request_status_code)="row">
+              <b-col @click="row.toggleDetails">
+                <p>
+                  {{ requsestsStatus[row.item.request_status_code] }}
+                </p>
+              </b-col>
+            </template>
+            <template
+              #cell(card_number)="row">
+              <b-col>
+                <router-link :to="{ name: 'card', params: { card_number: row.item.card_number } }">
+                  <span class="text-body"> {{ row.item.card_number }} </span>
+                </router-link>
+              </b-col>
+            </template>
 
-          <template #row-details="row">
-            <b-card
-              @click="row.toggleDetails">
-              <b-row class="mb-2">
-                <b-col
-                  md="4"
-                  class="mb-1">
-                  <strong>Дата/время : </strong>{{ requsestsTypes[row.item.request_type_code] }}
-                </b-col>
-                <b-col
-                  md="4"
-                  class="mb-1">
-                  <strong>Количество : </strong>{{ requsestsTypes[row.item.request_type_code] }}
-                </b-col>
-                <b-col
-                  md="4"
-                  class="mb-1">
-                  <strong>Товар/Услуга : </strong>{{ requsestsTypes[row.item.request_type_code] }}
-                </b-col>
-              </b-row>
-            </b-card>
-          </template>
-        </b-table>
+            <template #row-details="row">
+              <b-card
+                @click="row.toggleDetails">
+                <b-row class="mb-2">
+                  <b-col
+                    md="4"
+                    class="mb-1">
+                    <strong>Дата/время : </strong>{{ requsestsTypes[row.item.request_type_code] }}
+                  </b-col>
+                  <b-col
+                    md="4"
+                    class="mb-1">
+                    <strong>Количество : </strong>{{ requsestsTypes[row.item.request_type_code] }}
+                  </b-col>
+                  <b-col
+                    md="4"
+                    class="mb-1">
+                    <strong>Товар/Услуга : </strong>{{ requsestsTypes[row.item.request_type_code] }}
+                  </b-col>
+                </b-row>
+              </b-card>
+            </template>
+          </b-table>
+        </div>
+        <div
+          v-else>
+          <b-table
+            v-if="requests.data.total>0"
+            hover
+            responsive
+            class="position-relative table-hover text-center"
+            :per-page="perPage"
+            :current-page="currentPage"
+            :items="requests.data.result"
+            :fields="fieldsSM"
+            :filter="filter">
+            <template #cell(UpdatedAt)="row">
+              <b-col @click="row.toggleDetails">
+                {{ row.item.UpdatedAt | formatDate }}
+              </b-col>
+            </template>
+            <template #cell(card_number)="row">
+              <b-col @click="row.toggleDetails">
+                {{ row.item.card_number }}
+              </b-col>
+            </template>
+
+            <template
+              #cell(request_type_code)="row">
+              <b-col @click="row.toggleDetails">
+                {{ requsestsTypes[row.item.request_type_code] }}
+              </b-col>
+            </template>
+
+            <template
+              #cell(request_status_code)="row">
+              <b-col @click="row.toggleDetails">
+                <p>
+                  {{ requsestsStatus[row.item.request_status_code] }}
+                </p>
+              </b-col>
+            </template>
+
+            <template #row-details="row">
+              <b-card
+                @click="row.toggleDetails">
+                <b-row class="mb-2">
+                  <b-col
+                    md="4"
+                    class="mb-1">
+                    <strong>Дата/время : </strong>{{ requsestsTypes[row.item.request_type_code] }}
+                  </b-col>
+                  <b-col
+                    md="4"
+                    class="mb-1">
+                    <strong>Количество : </strong>{{ requsestsTypes[row.item.request_type_code] }}
+                  </b-col>
+                  <b-col
+                    md="4"
+                    class="mb-1">
+                    <strong>Товар/Услуга : </strong>{{ requsestsTypes[row.item.request_type_code] }}
+                  </b-col>
+                </b-row>
+              </b-card>
+            </template>
+          </b-table>
+        </div>
       </b-card>
     </div>
   </b-overlay>
@@ -203,6 +276,7 @@ import { mapGetters } from 'vuex';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+import store from '../../store';
 import { formatDate } from '../../@core/utils/filter';
 import useJwt from '../../auth/jwt/useJwt';
 
@@ -267,6 +341,18 @@ export default {
           sortable: true,
         },
       ],
+      fieldsSM: [
+        {
+          key: 'UpdatedAt',
+          label: 'Дата заявки',
+          sortable: true,
+        },
+        {
+          key: 'card_number',
+          label: 'Номер карты',
+          sortable: true,
+        },
+      ],
       requsestsStatus: {
         CREATED: 'Создана',
         PROCESSING: 'В обработке',
@@ -295,6 +381,9 @@ export default {
     ...mapGetters({
       gotSelectedContract: 'CONTRACT_ID',
     }),
+    getWidth() {
+      return store.getters['app/currentBreakPoint'];
+    },
   },
   watch: {
     gotSelectedContract(val, oldVal) {
@@ -358,7 +447,7 @@ export default {
     useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
       if (response.data.status) {
         this.requests = response.data;
-        console.log('rq', this.requests);
+
         if (this.requests.data.result < 1) {
           this.$toast({
             component: ToastificationContent,
@@ -424,7 +513,7 @@ export default {
         useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
           if (response.data.status) {
             this.requests = response.data;
-            console.log('rq', this.requests);
+
             this.totalRows = this.requests.data.total;
             if (this.totalRows < 1) {
               this.$toast({

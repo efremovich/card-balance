@@ -138,13 +138,15 @@ export default {
           this.makeOptions(this.userData);
           this.getSelected();
         });
+      } else {
+        this.selected = this.gotSelected;
       }
     });
     // this.userData = JSON.parse(localStorage.getItem('userData'));
     // if (this.userData) {
     //   this.getInfo = this.userData;
     // }
-    return { data: { status: false } };
+    // return { data: { status: false } };
   },
   methods: {
     getSelected() {

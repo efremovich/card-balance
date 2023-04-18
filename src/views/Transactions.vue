@@ -87,24 +87,6 @@
                   </b-form-group>
 
                   <div>
-                    <!-- <export-excel
-                      class="btn btn-primary"
-                      :data="transactions.data.result"
-                      :fields="columns"
-                      type="xlsx"
-                      name="Транзакции.xlsx">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="currentColor"
-                        class="bi bi-file-earmark-excel"
-                        viewBox="0 0 16 16">
-                        <path d="M5.884 6.68a.5.5 0 1 0-.768.64L7.349 10l-2.233 2.68a.5.5 0 0 0 .768.64L8 10.781l2.116 2.54a.5.5 0 0 0 .768-.641L8.651 10l2.233-2.68a.5.5 0 0 0-.768-.64L8 9.219l-2.116-2.54z" />
-                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
-                      </svg>
-                      Скачать
-                    </export-excel> -->
                     <b-button
 
                       variant="primary"
@@ -135,7 +117,7 @@
               @filtered="onFiltered">
               <template #cell(summ)="row">
                 <b-col @click="row.toggleDetails">
-                  <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseInt(row.item.summ).toLocaleString('ru-RU', {
+                  <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseFloat(row.item.summ).toLocaleString('ru-RU', {
                     style: 'currency',
                     currency: 'RUB'
                   }) }}</span><br>
@@ -154,6 +136,13 @@
                 #cell(date)="row">
                 <b-col @click="row.toggleDetails">
                   {{ row.item.date | formatDate }}
+                </b-col>
+              </template>
+
+              <template
+                #cell(quantity)="row">
+                <b-col @click="row.toggleDetails">
+                  {{ parseFloat(row.item.quantity).toLocaleString('ru-RU') }}
                 </b-col>
               </template>
 
@@ -212,34 +201,34 @@
               :filter-included-fields="filterOn"
               @filtered="onFiltered">
               <template #cell(summ)="row">
-                <!-- <b-col @click="row.toggleDetails"> -->
-                <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseInt(row.item.summ).toLocaleString('ru-RU', {
-                  style: 'currency',
-                  currency: 'RUB'
-                }) }}</span><br>
+                <b-col @click="row.toggleDetails">
+                  <span :class="row.item.summ < 0 ? 'text-danger' : 'text-success'">{{ parseInt(row.item.summ).toLocaleString('ru-RU', {
+                    style: 'currency',
+                    currency: 'RUB'
+                  }) }}</span><br>
 
-                <!-- <b-button
+                  <b-button
                     class="mt-1"
                     pill
                     size="sm"
                     @click="row.detailsShowing">
                     Детали
-                  </b-button> -->
-                <!-- </b-col> -->
+                  </b-button>
+                </b-col>
               </template>
 
-              <!-- <template
+              <template
                 #cell(date)="row">
                 <b-col @click="row.toggleDetails">
                   {{ row.item.date | formatDate }}
                 </b-col>
-              </template> -->
+              </template>
 
-              <!-- <template #cell(card_number)="row">
+              <template #cell(card_number)="row">
                 <router-link :to="{ name: 'card', params: { card_number: row.item.card_number } }">
                   {{ row.item.card_number }}
                 </router-link>
-              </template> -->
+              </template>
 
               <template #row-details="row">
                 <b-card
@@ -281,27 +270,27 @@
                   {{ row.item.date | formatDate }}
                 </b-col>
               </template>
-            </b-table>
-            <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
-              <!-- page length -->
-              <b-form-group
-                label="На странице"
-                label-cols="7"
-                label-align="left"
-                label-size="sm"
-                label-for="sortBySelect"
-                class="text-nowrap mb-md-0 mr-1">
-                <b-form-select
-                  id="perPageSelect"
-                  v-model="perPage"
-                  size="sm"
-                  inline
-                  :options="pageOptions" />
-              </b-form-group>
 
-              <!-- pagination -->
-              <div>
-                <b-pagination
+              <b-card-body class="d-flex justify-content-between flex-wrap pt-0">
+                <!-- page length -->
+                <b-form-group
+                  label="На странице"
+                  label-cols="7"
+                  label-align="left"
+                  label-size="sm"
+                  label-for="sortBySelect"
+                  class="text-nowrap mb-md-0 mr-1">
+                  <b-form-select
+                    id="perPageSelect"
+                    v-model="perPage"
+                    size="sm"
+                    inline
+                    :options="pageOptions" />
+                </b-form-group>
+
+                <!-- pagination -->
+
+                <!-- <b-pagination
                   v-model="currentPage"
                   :total-rows="totalRows"
                   :per-page="perPage"
@@ -320,10 +309,30 @@
                       icon="ChevronRightIcon"
                       size="18" />
                   </template>
-                </b-pagination>
-              </div>
-            </b-card-body>
-            <!-- КОНЕЦ ТАБЛИЦЫ -->
+                </b-pagination> -->
+              </b-card-body>
+              <!-- КОНЕЦ ТАБЛИЦЫ -->
+            </b-table>
+            <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              first-number
+              last-number
+              prev-class="prev-item"
+              next-class="next-item"
+              class="mb-0 mt-1 ml-1">
+              <template #prev-text>
+                <feather-icon
+                  icon="ChevronLeftIcon"
+                  size="18" />
+              </template>
+              <template #next-text>
+                <feather-icon
+                  icon="ChevronRightIcon"
+                  size="18" />
+              </template>
+            </b-pagination>
           </b-card>
         </b-col>
       </b-container>
@@ -577,7 +586,6 @@ export default {
   },
   mounted() {
     this.loadDone = false;
-    // this.getAllTransactions();
   },
   methods: {
     unique(arr) {
@@ -589,7 +597,7 @@ export default {
       useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          this.totalRows = this.transactions.data.total;
+          this.totalRows = this.transactions.data.result.length;
         }
         this.loadDone = false;
       });

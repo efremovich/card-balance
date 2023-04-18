@@ -79,7 +79,10 @@ export default {
   },
   computed: {
     userName() {
-      return `${this.userData.account.name.slice(0, 20 - 1)}…`;
+      if (this.userData.account.name.length > 20) {
+        return `${this.userData.account.name.slice(0, 20 - 1)}…`;
+      }
+      return this.userData.account.name;
     },
   },
   beforeCreate() {

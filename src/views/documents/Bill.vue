@@ -348,7 +348,7 @@
                 v-if="getStamp"
                 class="position-relative"
                 :src="provider.data.stamp"
-                style="left:440px;bottom:170px"
+                style="left:440px;bottom:190px"
                 height="250px"
                 width="250px" />
 

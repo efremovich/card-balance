@@ -69,7 +69,7 @@
               :series="series" />
           </div>
           <div
-            :class="['d-flex', {'flex-column':getWidth !== 'xs'}, 'align-items-start', 'justify-content-start', {'heigth':getWidth !== 'xs'}, 'ml-1']">
+            :class="[{'d-flex':getWidth !== 'xs'}, {'flex-column':getWidth !== 'xs'}, 'align-items-start', 'justify-content-start', {'heigth':getWidth !== 'xs'}, {'ml-1':getWidth !== 'xs'},{'mx-auto':getWidth === 'xs'}]">
             <b-button
               v-if="cardData.data.card_status_id==='ACTIVE'"
               variant="danger"
@@ -1403,7 +1403,7 @@ export default {
     },
 
     saveChange() {
-      if (this.saveChange === true) {
+      if ((this.saveChange === true) && (this.changeValueHolder === false)) {
         this.sendRequest();
       }
     },
@@ -1530,6 +1530,7 @@ export default {
           }
         });
       } else {
+        this.saveChange = true;
         this.changeHolder();
         this.$toast({
           component: ToastificationContent,
