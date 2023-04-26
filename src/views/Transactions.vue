@@ -142,7 +142,7 @@
               <template
                 #cell(quantity)="row">
                 <b-col @click="row.toggleDetails">
-                  {{ parseFloat(row.item.quantity).toLocaleString('ru-RU') }}
+                  {{ (parseFloat(row.item.quantity).toFixed(2)).replace('.', ',') }}
                 </b-col>
               </template>
 

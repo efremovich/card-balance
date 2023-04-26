@@ -355,9 +355,10 @@ export default {
       ],
       requsestsStatus: {
         CREATED: 'Создана',
-        PROCESSING: 'В обработке',
+        PROGRESSING: 'В обработке',
         DONE: 'Исполнена',
         CANCELED: 'Отменена',
+        PROCCESSING: 'В обработке',
       },
       requsestsTypes: {
         ADD: 'Выдача топливных карт',
@@ -380,6 +381,7 @@ export default {
   computed: {
     ...mapGetters({
       gotSelectedContract: 'CONTRACT_ID',
+      gotCardNumber: 'CARD_NUMBER',
     }),
     getWidth() {
       return store.getters['app/currentBreakPoint'];
@@ -413,6 +415,7 @@ export default {
           }
         });
       } else {
+        this.$store.dispatch('getCardNumber', val);
         useJwt.GetRequests(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
           if (response.data.status) {
             this.requests = response.data;
@@ -439,7 +442,7 @@ export default {
       this.contract = userData;
       this.contractId = this.contract.contract.id;
     } else this.contractId = this.gotSelectedContract;
-
+    this.selected = this.gotCardNumber;
     this.start = `${this.getFirstDay()} 00:00:00`;
     this.end = `${this.isToday()} 23:59:59`;
     this.rangeDate = [this.start, this.end];

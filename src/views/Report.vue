@@ -215,10 +215,15 @@
                     {{ row.item.date | formatDate }}
                   </b-col>
                 </template>
-                <template #cell(quantity)="row">
+                <!-- <template #cell(quantity)="row">
                   <b-col>
-                    <!-- {{ row.item.quantity.toFixed(2) }} -->
                     {{ parseFloat(row.item.quantity).toLocaleString('ru-RU') }}
+                  </b-col>
+                </template> -->
+                <template
+                  #cell(quantity)="row">
+                  <b-col>
+                    {{ (parseFloat(row.item.quantity).toFixed(2)).replace('.', ',') }}
                   </b-col>
                 </template>
 
@@ -308,10 +313,16 @@
                 </b-col>
               </template>
 
-              <template #cell(quantity)="row">
+              <!-- <template #cell(quantity)="row">
                 <b-col @click="row.toggleDetails">
-                  <!-- {{ row.item.quantity.toFixed(2) }} -->
                   {{ parseFloat(row.item.quantity).toLocaleString('ru-RU') }}
+                </b-col>
+              </template> -->
+
+              <template
+                #cell(quantity)="row">
+                <b-col>
+                  {{ (parseFloat(row.item.quantity).toFixed(2)).replace('.', ',') }}
                 </b-col>
               </template>
 
@@ -323,7 +334,8 @@
 
               <template #cell(AllSumm)="row">
                 <b-col @click="row.toggleDetails">
-                  {{ parseFloat(row.item.AllSumm).toLocaleString('ru-RU') }}
+                  <!-- {{ parseFloat(row.item.AllSumm).toLocaleString('ru-RU') }} -->
+                  {{ (parseFloat(row.item.AllSumm).toFixed(2)).replace('.', ',') }}
                 </b-col>
               </template>
               <template #row-details="row">
@@ -388,7 +400,7 @@
                 multiple
                 :options="option"
                 class="w-50"
-                @input="onChangeLimit" />
+                @input="getCardDataLimits" />
               <label
                 class="mt-2"
                 for="selectCard">Выберете держателя:</label>
@@ -398,7 +410,7 @@
                 multiple
                 :options="holders"
                 class="w-50"
-                @input="getHolderLimit" />
+                @input="getHolderDataLimits" />
             </div>
             <b-table
               hover
@@ -406,7 +418,7 @@
               class="position-relative table-hover text-center mt-1"
               :per-page="perPage"
               :current-page="currentPage"
-              :items="limitsData"
+              :items="dataLimits"
               :fields="fieldsLimits"
               :sort-by.sync="sortBy"
               :sort-desc.sync="sortDesc"
@@ -422,6 +434,23 @@
                   </router-link>
                 </b-col>
               </template>
+              <!-- <template #cell(value)="row">
+                <b-col>
+                  {{ (parseFloat(row.item.value).toFixed(2)).replace('.', ',') }}
+                </b-col>
+              </template> -->
+              <template #cell(consumption)="row">
+                <b-col>
+                  <!-- {{ parseFloat(row.item.AllSumm).toLocaleString('ru-RU') }} -->
+                  {{ (parseFloat(row.item.consumption).toFixed(2)).replace('.', ',') }}
+                </b-col>
+              </template>
+              <template #cell(remains)="row">
+                <b-col>
+                  <!-- {{ parseFloat(row.item.AllSumm).toLocaleString('ru-RU') }} -->
+                  {{ (parseFloat(row.item.remains).toFixed(2)).replace('.', ',') }}
+                </b-col>
+              </template>
             </b-table>
             <!-- <b-button
               variant="primary"
@@ -432,7 +461,7 @@
 
             <b-pagination
               v-model="currentPage"
-              :total-rows="arrUniqueCards"
+              :total-rows="totalRowsLimits"
               :per-page="perPage"
               first-number
               last-number
@@ -506,6 +535,7 @@ export default {
       arrReport: ['оперативный', 'транзакционный', 'отчёт по лимитам'],
       selectable: 'транзакционный',
       sortBy: 'date',
+      dataLimits: null,
       sortDesc: false,
       sortDirection: 'asc',
       contract: null,
@@ -1224,7 +1254,7 @@ export default {
     },
     getHolderLimit() {
       if (this.selectedHolderLimit !== null) {
-        useJwt.getAllLimits(`contract_id=${this.contractId}&holder=${this.selectedHolderLimit}`).then((response) => {
+        useJwt.getAllLimits(`contract_id=${this.contractId}&card_holder=${this.selectedHolderLimit}`).then((response) => {
           if (response.data.status) {
             this.limitsData = response.data;
             this.totalRowsLimits = this.limitsData.data.total;
@@ -1305,7 +1335,7 @@ export default {
     },
     onChangeLimit() {
       if (this.selectedLimit !== null) {
-        useJwt.getAllLimits(`contract_id=${this.contractId}&card_number=${this.selectedLimit}`).then((response) => {
+        useJwt.getAllLimits(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selectedLimit}`).then((response) => {
           if (response.data.status) {
             this.limitsData = response.data;
             this.totalRowsLimits = this.limitsData.data.total;
@@ -1344,7 +1374,7 @@ export default {
           }
         });
       } else {
-        useJwt.getAllLimits(`contract_id=${this.contractId}`).then((response) => {
+        useJwt.getAllLimits(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
           if (response.data.status) {
             this.limitsData = response.data;
             this.totalRowsLimits = this.limitsData.data.total;
@@ -1455,7 +1485,7 @@ export default {
       this.selected = null;
       // this.dataReport = [];
       this.emptyArr = {};
-      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&holder=${this.selectedHolder}`).then((response) => {
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_holder=${this.selectedHolder}`).then((response) => {
         if (response.data.status) {
           this.emptyArr = response.data;
           this.totalRows = this.emptyArr.data.total;
@@ -1604,21 +1634,21 @@ export default {
     getAllLimits() {
       this.rangeDate = [this.start, this.end];
 
-      useJwt.getAllLimits(`contract_id=${this.contractId}`).then((response) => {
+      useJwt.getAllLimits(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
         if (response.data.status) {
           this.limitsData = response.data;
           this.totalRowsLimits = this.limitsData.data.total;
-
+          this.dataLimits = this.limitsData.data;
           const data = [];
           const mainArr = [];
           // eslint-disable-next-line no-plusplus
-          for (let i = 0; i < this.limitsData.data.total; i++) {
+          for (let i = 0; i < this.dataLimits.total; i++) {
             const someObj = [];
-            if ((this.limitsData.data.result[i].limits.length > 0) && (this.limitsData.data.result[i].limits !== null)) {
+            if ((this.dataLimits.result[i].limits.length > 0) && (this.dataLimits.result[i].limits !== null)) {
               // eslint-disable-next-line no-plusplus
-              for (let j = 0; j < (this.limitsData.data.result[i].limits).length; j++) {
-                this.limitsData.data.result[i].limits[j].remains = this.limitsData.data.result[i].limits[j].value - this.limitsData.data.result[i].limits[j].consumption;
-                someObj.push(this.limitsData.data.result[i].limits[j]);
+              for (let j = 0; j < (this.dataLimits.result[i].limits).length; j++) {
+                this.dataLimits.result[i].limits[j].remains = this.dataLimits.result[i].limits[j].value - this.dataLimits.result[i].limits[j].consumption;
+                someObj.push(this.dataLimits.result[i].limits[j]);
               }
               data.push(someObj);
               // eslint-disable-next-line no-plusplus
@@ -1628,21 +1658,23 @@ export default {
                   mainArr.push(data[q][v]);
                 }
               }
-              this.limitsData = mainArr;
+
+              // this.dataLimits.result.push(mainArr);
+              // console.log(this.dataLimits.result);
             } else {
-              this.limitsData.data.result[i].limits.holer = this.limitsData.data.result[i].holder;
-              this.limitsData.data.result[i].limits.card_number = this.limitsData.data.result[i].number;
-              this.limitsData.data.result[i].limits.limit_period_code = '';
-              this.limitsData.data.result[i].limits.limit_type_code = '';
-              this.limitsData.data.result[i].limits.limit_unit_code = '';
-              this.limitsData.data.result[i].limits.value = '';
-              this.limitsData.data.result[i].limits.consumption = '';
-              this.limitsData.data.result[i].limits.remains = '';
-              this.limitsData.data.result[i].limits.limit_services_labels = '';
-              data.push(this.limitsData.data.result[i].limits);
+              this.dataLimits.result[i].limits.holer = this.dataLimits.result[i].holder;
+              this.dataLimits.result[i].limits.card_number = this.dataLimits.result[i].number;
+              this.dataLimits.result[i].limits.limit_period_code = '';
+              this.dataLimits.result[i].limits.limit_type_code = '';
+              this.dataLimits.result[i].limits.limit_unit_code = '';
+              this.dataLimits.result[i].limits.value = '';
+              this.dataLimits.result[i].limits.consumption = '';
+              this.dataLimits.result[i].limits.remains = '';
+              this.dataLimits.result[i].limits.limit_services_labels = '';
+              data.push(this.dataLimits.result[i].limits);
             }
           }
-          this.limitsData = data;
+          this.dataLimits = this.dataLimits.result.map((el) => (el.limits)).flat(1);
 
           if (this.totalRowsLimits < 1) {
             this.$toast({
@@ -1657,27 +1689,212 @@ export default {
         }
       });
     },
+    getCardDataLimits() {
+      this.selectedHolderLimit = null;
+      this.rangeDate = [this.start, this.end];
+      if (this.selectedLimit !== null) {
+        useJwt.getAllLimits(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selectedLimit}`).then((response) => {
+          if (response.data.status) {
+            this.limitsData = response.data;
+            this.totalRowsLimits = this.limitsData.data.total;
+            this.dataLimits = this.limitsData.data;
+            const data = [];
+            const mainArr = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < this.dataLimits.total; i++) {
+              const someObj = [];
+              if ((this.dataLimits.result[i].limits.length > 0) && (this.dataLimits.result[i].limits !== null)) {
+                // eslint-disable-next-line no-plusplus
+                for (let j = 0; j < (this.dataLimits.result[i].limits).length; j++) {
+                  this.dataLimits.result[i].limits[j].remains = this.dataLimits.result[i].limits[j].value - this.dataLimits.result[i].limits[j].consumption;
+                  someObj.push(this.dataLimits.result[i].limits[j]);
+                }
+                data.push(someObj);
+                // eslint-disable-next-line no-plusplus
+                for (let q = 0; q < (data).length; q++) {
+                  // eslint-disable-next-line no-plusplus
+                  for (let v = 0; v < data[q].length; v++) {
+                    mainArr.push(data[q][v]);
+                  }
+                }
+
+              // this.dataLimits.result.push(mainArr);
+              // console.log(this.dataLimits.result);
+              } else {
+                this.dataLimits.result[i].limits.holer = this.dataLimits.result[i].holder;
+                this.dataLimits.result[i].limits.card_number = this.dataLimits.result[i].number;
+                this.dataLimits.result[i].limits.limit_period_code = '';
+                this.dataLimits.result[i].limits.limit_type_code = '';
+                this.dataLimits.result[i].limits.limit_unit_code = '';
+                this.dataLimits.result[i].limits.value = '';
+                this.dataLimits.result[i].limits.consumption = '';
+                this.dataLimits.result[i].limits.remains = '';
+                this.dataLimits.result[i].limits.limit_services_labels = '';
+                data.push(this.dataLimits.result[i].limits);
+              }
+            }
+            this.dataLimits = this.dataLimits.result.map((el) => (el.limits)).flat(1);
+
+            if (this.totalRowsLimits < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутствуют карты на договоре',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      } else {
+        useJwt.getAllLimits(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+          if (response.data.status) {
+            this.limitsData = response.data;
+            this.totalRowsLimits = this.limitsData.data.total;
+            this.dataLimits = this.limitsData.data;
+
+            const data = [];
+            const mainArr = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < this.limitsData.data.total; i++) {
+              const someObj = [];
+
+              // eslint-disable-next-line no-plusplus
+              for (let j = 0; j < (this.dataLimits.result[i].limits).length; j++) {
+                this.dataLimits.result[i].limits[j].remains = this.dataLimits.result[i].limits[j].value - this.dataLimits.result[i].limits[j].consumption;
+                someObj.push(this.dataLimits.result[i].limits[j]);
+              }
+              data.push(someObj);
+            }
+            // eslint-disable-next-line no-plusplus
+            for (let q = 0; q < (data).length; q++) {
+              // eslint-disable-next-line no-plusplus
+              for (let v = 0; v < data[q].length; v++) {
+                mainArr.push(data[q][v]);
+              }
+            }
+            this.dataLimits = this.dataLimits.result.map((el) => (el.limits)).flat(1);
+
+            if (this.totalRowsLimits < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутствуют карты на договоре',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      }
+    },
+    getHolderDataLimits() {
+      this.selectedLimit = null;
+      this.rangeDate = [this.start, this.end];
+      if (this.selectedHolderLimit !== null) {
+        useJwt.getAllLimits(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_holder=${this.selectedHolderLimit}`).then((response) => {
+          if (response.data.status) {
+            this.limitsData = response.data;
+            this.totalRowsLimits = this.limitsData.data.total;
+            this.dataLimits = this.limitsData.data;
+            const data = [];
+            const mainArr = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < this.dataLimits.total; i++) {
+              const someObj = [];
+              if ((this.dataLimits.result[i].limits.length > 0) && (this.dataLimits.result[i].limits !== null)) {
+                // eslint-disable-next-line no-plusplus
+                for (let j = 0; j < (this.dataLimits.result[i].limits).length; j++) {
+                  this.dataLimits.result[i].limits[j].remains = this.dataLimits.result[i].limits[j].value - this.dataLimits.result[i].limits[j].consumption;
+                  someObj.push(this.dataLimits.result[i].limits[j]);
+                }
+                data.push(someObj);
+                // eslint-disable-next-line no-plusplus
+                for (let q = 0; q < (data).length; q++) {
+                  // eslint-disable-next-line no-plusplus
+                  for (let v = 0; v < data[q].length; v++) {
+                    mainArr.push(data[q][v]);
+                  }
+                }
+
+              // this.dataLimits.result.push(mainArr);
+              // console.log(this.dataLimits.result);
+              } else {
+                this.dataLimits.result[i].limits.holer = this.dataLimits.result[i].holder;
+                this.dataLimits.result[i].limits.card_number = this.dataLimits.result[i].number;
+                this.dataLimits.result[i].limits.limit_period_code = '';
+                this.dataLimits.result[i].limits.limit_type_code = '';
+                this.dataLimits.result[i].limits.limit_unit_code = '';
+                this.dataLimits.result[i].limits.value = '';
+                this.dataLimits.result[i].limits.consumption = '';
+                this.dataLimits.result[i].limits.remains = '';
+                this.dataLimits.result[i].limits.limit_services_labels = '';
+                data.push(this.dataLimits.result[i].limits);
+              }
+            }
+            this.dataLimits = this.dataLimits.result.map((el) => (el.limits)).flat(1);
+
+            if (this.totalRowsLimits < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутствуют карты на договоре',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      } else {
+        useJwt.getAllLimits(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`).then((response) => {
+          if (response.data.status) {
+            this.limitsData = response.data;
+            this.totalRowsLimits = this.limitsData.data.total;
+            this.dataLimits = this.limitsData.data;
+
+            const data = [];
+            const mainArr = [];
+            // eslint-disable-next-line no-plusplus
+            for (let i = 0; i < this.limitsData.data.total; i++) {
+              const someObj = [];
+
+              // eslint-disable-next-line no-plusplus
+              for (let j = 0; j < (this.dataLimits.result[i].limits).length; j++) {
+                this.dataLimits.result[i].limits[j].remains = this.dataLimits.result[i].limits[j].value - this.dataLimits.result[i].limits[j].consumption;
+                someObj.push(this.dataLimits.result[i].limits[j]);
+              }
+              data.push(someObj);
+            }
+            // eslint-disable-next-line no-plusplus
+            for (let q = 0; q < (data).length; q++) {
+              // eslint-disable-next-line no-plusplus
+              for (let v = 0; v < data[q].length; v++) {
+                mainArr.push(data[q][v]);
+              }
+            }
+            this.dataLimits = this.dataLimits.result.map((el) => (el.limits)).flat(1);
+
+            if (this.totalRowsLimits < 1) {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Отсутствуют карты на договоре',
+                  icon: 'AlertTriangleIcon',
+                  variant: 'danger',
+                },
+              });
+            }
+          }
+        });
+      }
+    },
     getHolder() {
-      // useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&holder=${this.selectedHolder}`).then((response) => {
-      //   if (response.data.status) {
-      //     this.emptyArr = response.data;
-      //     this.totalRows = this.emptyArr.data.total;
-      //     if (this.totalRows < 1) {
-      //       this.$toast({
-      //         component: ToastificationContent,
-      //         props: {
-      //           title: 'Отсутвуют транзакции по карте за выбранный период',
-      //           icon: 'AlertTriangleIcon',
-      //           variant: 'danger',
-      //         },
-      //       });
-      //     }
-      //   }
-      // });
-      // this.toogle();
       this.dataReport = [];
       this.emptyArr = {};
-      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&holder=${this.selectedHolderOper}`).then((response) => {
+      useJwt.getTransactions(`contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_holder=${this.selectedHolderOper}`).then((response) => {
         if (response.data.status) {
           this.emptyArr = response.data;
           this.totalRows = this.emptyArr.data.total;

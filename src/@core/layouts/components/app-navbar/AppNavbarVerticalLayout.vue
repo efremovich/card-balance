@@ -150,6 +150,8 @@ export default {
   },
   methods: {
     getSelected() {
+      // console.log(this.userData.company);
+      // console.log(this.userData.contract);
       this.selected = this.userData.contract;
       this.$store.dispatch('getCompany', this.userData.company.full_name);
     },

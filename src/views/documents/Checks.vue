@@ -372,16 +372,18 @@ export default {
       const holder = this.selectedHolder;
       const ID = this.gotSelectedContract;
       const { selected } = this;
-      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&holder=${holder}&card_number=${selected}`).then((response) => {
+      useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_holder=${holder}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
+          console.log(this.transactions);
         }
         return this.order(this.transactions.data.result);
       });
-      setTimeout(this.getAllChecks, 2000);
+      this.getAllChecks();
+      // setTimeout(this.getAllChecks(), 2000);
     },
     getAllChecks() {
-      html2pdf(this.$refs.print, {
+      html2pdf(this.$refs.printMe, {
         filename: 'Чеки.pdf',
         image: { type: 'png', quality: 0.7 },
         html2canvas: { dpi: 140, letterRendering: true },

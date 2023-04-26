@@ -50,13 +50,13 @@
           v-if="gotItemView !== 'list-view'"
           class="views">
           <b-card
-            v-for="(product, index) in products.data.result"
-            :key="index"
+            v-for="(product) in products.data.result"
+            :key="product.pin"
             class="ecommerce-card mb-1 mr-9"
             no-body>
             <b-button
               v-if="product.card_status_id !== 'BLOCK'"
-              :disabled="product.card_status_id == 'FINANCE'"
+              :disabled="getDisabledStatus(product)"
               variant="danger"
               class="mt-1"
               @click="getLockCard(product)">
@@ -83,7 +83,7 @@
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
 
               <b-badge
-                v-if="getStatusRequests(product.request_status)"
+                v-if="getStatusRequests(product.request_edit_status)"
                 class="badge-glow position-absolute mar"
                 pill
                 variant="warning">
@@ -138,7 +138,7 @@
                 :to="{ name: 'card', params: { card_number: product.number } }">
                 <div class="d-flex flex-column align-items-center">
                   <b-badge
-                    v-if="getStatusRequests(product.request_status)"
+                    v-if="getStatusRequests(product.request_edit_status)"
                     pill
                     variant="warning"
                     class="badge-glow position-absolute list-badge">
@@ -224,12 +224,10 @@
 
                   <app-collapse>
                     <app-collapse-item
-
-                      class="mh"
+                      class="mh p-0"
                       title="Ещё">
                       <template
-                        v-for="(item,index) in (getLabelServicesLength(product.limits)-2)"
-                        class="p-0">
+                        v-for="(item,index) in (getLabelServicesLength(product.limits)-2)">
                         <h5
                           :key="index"
                           class="text-center pt-1 pr-1 pl-1">
@@ -250,7 +248,7 @@
               <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1 mt-2">
                 <h5> Держатель: {{ product.holder }} </h5>
                 <h5> Последняя активность: </h5>
-                <h5> Индекс активности: </h5>
+                <!-- <h5> Индекс активности: </h5> -->
               </div>
               <div
                 class="d-flex flex-column align-items-start mt-2">
@@ -259,14 +257,14 @@
                   :to="{ name: 'card', params: { card_number: product.number } }"
                   class="btn-wishlist mb-1 mw-100 p-1 min-w">
                   <feather-icon
-                    icon="EditIcon"
+                    icon="SettingsIcon"
                     class="mr-50" />
                   Настроить карту
                 </b-button>
 
                 <b-button
                   v-if="product.card_status_id !== 'BLOCK'"
-                  :disabled="product.card_status_id == 'FINANCE'"
+                  :disabled="getDisabledStatus(product)"
                   variant="light"
                   tag="a"
                   class="btn-wishlist mb-1 mw-100 p-1 min-w"
@@ -278,7 +276,7 @@
                 </b-button>
                 <b-button
                   v-else
-                  :disabled="product.card_status_id == 'FINANCE'"
+                  :disabled="product.card_status_id !== 'FINANCE'"
                   variant="success"
                   tag="a"
                   class="btn-wishlist mb-1 mw-100 p-1 min-w"
@@ -292,11 +290,11 @@
                   variant="light"
                   tag="a"
                   class="btn-wishlist mb-1 mw-100 p-1 min-w"
-                  @click="cardDate(product.number)">
+                  @click="getRequests(product.number)">
                   <feather-icon
-                    icon="NavigationIcon"
+                    icon="EditIcon"
                     class="mr-50" />
-                  Карта заправок
+                  Заявки по карте
                 </b-button>
                 <b-button
                   variant="light"
@@ -357,13 +355,13 @@
         <section
           class="views">
           <b-card
-            v-for="(product, index) in products.data.result"
-            :key="index"
+            v-for="(product) in products.data.result"
+            :key="product.pin"
             :class="[product.card_status_id !== 'ACTIVE'?'':'ecommerce-card', 'mb-1', 'position-relative', getWidth === 'xl'?'mr-9':'']"
             no-body>
             <b-button
               v-if="product.card_status_id !== 'BLOCK'"
-              :disabled="product.card_status_id == 'FINANCE'"
+              :disabled="getDisabledStatus(product)"
               variant="danger"
               class="mt-1"
               @click="getLockCard(product)">
@@ -389,7 +387,7 @@
                 :src="require(`../assets/images/cards-icon/${product.emitent.code}.svg`)" />
 
               <b-badge
-                v-if="getStatusRequests(product.request_status)"
+                v-if="getStatusRequests(product.request_edit_status)"
                 class="badge-glow position-absolute mar"
                 pill
                 variant="warning">
@@ -569,6 +567,8 @@ export default {
 
           // if (filters.value !== '') {
           //   products.value.data.result = response.data.data.result.filter((product) => product.number.includes(filters.value));
+          //   console.log(products.value.data.result);
+          //   totalRows.value = products.value.data.result.length;
           // }
         }
       });
@@ -625,6 +625,9 @@ export default {
     getAllLimits() {
       return this.products.data.result;
     },
+    getRequestStatus() {
+      return this.getStatusRequests(this.cardData.data.request_edit_status);
+    },
 
   },
   watch: {
@@ -679,6 +682,8 @@ export default {
           if (val !== '') {
             this.products = response.data;
             this.products.data.result = this.products.data.result.filter((product) => product.number.includes(val));
+            this.totalRows = this.products.data.result.length;
+            console.log(this.products.data.result.length);
           }
         }
       });
@@ -706,6 +711,10 @@ export default {
     getTransactions(val) {
       this.$store.dispatch('getCardNumber', val);
       this.$router.push({ name: 'transactions' });
+    },
+    getRequests(val) {
+      this.$store.dispatch('getCardNumber', val);
+      this.$router.push({ name: 'requests' });
     },
 
     cardDate(params) {
@@ -750,6 +759,7 @@ export default {
                     variant: 'success',
                   },
                 });
+                item.request_block_status = !item.request_block_status;
               } else {
                 this.$toast({
                   component: ToastificationContent,
@@ -806,9 +816,15 @@ export default {
         });
     },
     getStatusRequests(item) {
-      if (item === 'PROCESSING' || item === 'CREATED') {
+      if (item) {
         return true;
       } return false;
+    },
+    getDisabledStatus(item) {
+      if ((item.card_status_id !== 'FINANCE') && (!item.request_block_status)) {
+        return false;
+      }
+      return true;
     },
 
     getValue(item) {

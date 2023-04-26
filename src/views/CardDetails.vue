@@ -33,7 +33,7 @@
                 require(`../assets/images/cards-icon/${cardData.data.emitent.code}.svg`)
               " />
             <b-badge
-              v-if="getStatusRequests(cardData.data.request_status)"
+              v-if="getStatusRequests(cardData.data.request_edit_status)"
               :class="['badge-glow position-absolute',{'xs-margin':getWidth === 'xs'},{'md-margin':getWidth === 'md'},{'sm-margin':getWidth === 'sm'}, {'lg-margin':getWidth === 'lg'},{'xl-margin':getWidth === 'xl'}]"
               pill
               variant="warning">
@@ -73,8 +73,9 @@
             <b-button
               v-if="cardData.data.card_status_id==='ACTIVE'"
               variant="danger"
+              :disabled="getDisabledActive"
               :class="['btn' ,{'mb-2':getWidth !== 'xs'}]"
-              @click="getLockCard()">
+              @click="getLockCard">
               Заблокировать карту
               <feather-icon
                 icon="LockIcon"
@@ -83,7 +84,7 @@
             <b-button
               v-if="cardData.data.card_status_id !=='ACTIVE'"
               variant="success"
-              :disabled="cardData.data.card_status_id ==='FINANCE'"
+              :disabled="getDisabledBlock"
               :class="['btn' ,{'mb-2':getWidth !== 'xs'}]"
               @click="getUnlockCard(product)">
               Разблокировать карту
@@ -105,7 +106,7 @@
             </div> -->
             <div class="mb-2">
               <h6 v-if="getWidth !== 'xs'">
-                Последнее изменения:<br>
+                Последняя активность:<br>
                 {{ cardData.data.emitent.last_updated | formatDate }}
               </h6>
             </div>
@@ -543,10 +544,16 @@
               События по карте № {{ cardData.data.number }} за период c
               {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
             </h4>
+            <!-- <h4
+              v-else
+              class="text-center">
+              События по карте № {{ cardData.data.number }} за период c
+              {{ firstDayOfMonth }} по {{ lastDay }} есть!!!!
+            </h4> -->
             <b-table
               v-else
               hover
-              :items="requests.data.result"
+              :items="requests.result"
               responsive
               :filter="filter"
               :per-page="perPage"
@@ -736,7 +743,7 @@
             </div>
             <div class="mb-2">
               <h6>
-                Последнее изменения:<br>
+                Последняя активность в этом месяце:<br>
                 {{ cardData.data.emitent.last_updated | formatDate }}
               </h6>
             </div>
@@ -855,10 +862,16 @@
               События по карте № {{ cardData.data.number }} за период c
               {{ firstDayOfMonth }} по {{ lastDay }} отсутствуют
             </h4>
-            <b-table
+            <h4
+              v-else
+              class="text-center">
+              События по карте № {{ cardData.data.number }} за период c
+              {{ firstDayOfMonth }} по {{ lastDay }} есть!
+            </h4>
+            <!-- <b-table
               v-else
               hover
-              :items="requests.data.result"
+              :items="requests.result"
               responsive
               :filter="filter"
               :per-page="perPage"
@@ -887,7 +900,7 @@
                   </p>
                 </b-col>
               </template>
-            </b-table>
+            </b-table> -->
           </b-tab>
           <b-tab title="Сообщить о проблеме" />
         </b-tabs>
@@ -1215,6 +1228,15 @@ export default {
         });
     };
 
+    const getRequests = () => {
+      useJwt.GetRequests(`contract_id=${contractID.value}&startDate=${start.value}&endDate=${end.value}&card_number=${number.value}`).then((response) => {
+        if (response.data.status) {
+          requests.value = response.data.data;
+          totalRequestRows.value = requests.value.result.length;
+        }
+      });
+    };
+
     const getAllPeriods = () => {
       useJwt.getAllPeriods().then((response) => {
         if (response.data.status) {
@@ -1235,8 +1257,8 @@ export default {
     const cardDate = (params) => useJwt.getCardData(params).then((response) => {
       if (response.data.status) {
         cardData.value = response.data;
+        console.log(cardData.value = response.data);
         cardEmitentCode.value = cardData.value.data.emitent.code;
-
         canGroupServeces.value = cardData.value.data.emitent.can_group_serveces;
         limitsLength.value = cardData.value.data.limits.length;
         source.value = JSON.parse(JSON.stringify(cardData.value.data.limits));
@@ -1258,6 +1280,7 @@ export default {
     getAllTransactions();
     getAllPeriods();
     getAllUnits();
+    getRequests();
 
     return {
       consumptionData,
@@ -1318,7 +1341,7 @@ export default {
       sortDirection: 'asc',
       required,
       operReport: null,
-      // userData: null,
+      blockCard: false,
       saveChange: false,
       comparison: true,
       holderComparison: true,
@@ -1347,6 +1370,20 @@ export default {
           sortable: true,
         },
       ],
+      requsestsStatus: {
+        CREATED: 'Создана',
+        PROGRESSING: 'В обработке',
+        DONE: 'Исполнена',
+        CANCELED: 'Отменена',
+        PROCCESSING: 'В обработке',
+      },
+      requsestsTypes: {
+        ADD: 'Выдача топливных карт',
+        EDIT: 'Смена лимита',
+        LOCK: 'Блокировка карты',
+        UNLOCK: 'Разблокировка карты',
+        RENAME: 'Смена держателя',
+      },
 
       // Telegram
       token: '5136675120:AAEKRZ1r_X1TGOct4vWGWhkBMB3Z1JyeXLI',
@@ -1372,7 +1409,19 @@ export default {
       return store.getters['app/currentBreakPoint'];
     },
     getRequestStatus() {
-      return this.getStatusRequests(this.cardData.data.request_status);
+      return this.getStatusRequests(this.cardData.data.request_edit_status);
+    },
+    getDisabledActive() {
+      // if ((this.cardData.data.request_block_status !== 'false') && (this.cardData.data.request_block_status !== 'null')) {
+      //   return false;
+      // } return true;
+      return this.getStatusRequests(this.cardData.data.request_block_status);
+    },
+    getDisabledBlock() {
+      if ((this.cardData.data.card_status_id === 'FINANCE') || (this.cardData.data.request_block_status === 'true')) {
+        return true;
+      }
+      return false;
     },
     ...mapGetters({
       gotStatus: 'STATUS_ORG',
@@ -1414,14 +1463,14 @@ export default {
     },
   },
   beforeMount() {
-    useJwt.getCurrenUser().then((response) => {
-      if (response.data.status) {
-        this.$store.dispatch('user/getUserData', response.data).then(() => {
-          this.userData = response.data;
-          // this.name = this.userData.company.name;
-        });
-      }
-    });
+    // useJwt.getCurrenUser().then((response) => {
+    //   if (response.data.status) {
+    //     this.$store.dispatch('user/getUserData', response.data).then(() => {
+    //       this.userData = response.data;
+    //       // this.name = this.userData.company.name;
+    //     });
+    //   }
+    // });
   },
   methods: {
     showToast() {
@@ -1436,7 +1485,7 @@ export default {
     },
 
     getStatusRequests(item) {
-      if (item === 'PROCESSING' || item === 'CREATED') {
+      if (item) {
         return true;
       } return false;
     },
@@ -1461,21 +1510,6 @@ export default {
       });
     },
     changeHolder() {
-      // if (JSON.stringify(this.cardHolder) !== JSON.stringify(this.cardHolderSource)) {
-      //   this.comparison = false;
-      //   this.changeValueHolder = true;
-      //   if (this.saveChange) {
-      //     const request = [{
-      //       card_number: this.cardData.data.number,
-      //       request_type_code: 'RENAME',
-      //       request_status_code: 'CREATED',
-      //       contract_id: this.cardData.data.contract_id,
-      //       holder: JSON.stringify(`${this.cardHolder}`),
-      //       // holder: this.cardHolder,
-      //     }];
-      //     useJwt.refreshDataUserLimits(request);
-      //   }
-      // }
       if (JSON.stringify(this.cardHolder) !== JSON.stringify(this.cardHolderSource)) {
         this.comparison = false;
         this.changeValueHolder = true;
@@ -1654,6 +1688,7 @@ export default {
                     variant: 'success',
                   },
                 });
+                this.cardData.data.request_block_status = !this.cardData.data.request_block_status; // блокирование кнопки при смене статуса
               } else {
                 this.$toast({
                   component: ToastificationContent,
@@ -1695,6 +1730,7 @@ export default {
                     variant: 'success',
                   },
                 });
+                this.cardData.data.request_block_status = !this.cardData.data.request_block_status;
               } else {
                 this.$toast({
                   component: ToastificationContent,
