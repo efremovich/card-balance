@@ -629,6 +629,7 @@ export default {
       set(value) {
         this.$store.dispatch('getContractNumber', value.number);
         this.$store.dispatch('getContractId', value.id);
+        this.$store.dispatch('getStatus', value.is_budget);
       },
     },
 

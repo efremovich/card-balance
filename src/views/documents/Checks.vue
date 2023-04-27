@@ -375,7 +375,6 @@ export default {
       useJwt.getTransactions(`contract_id=${ID}&startDate=${this.start}&endDate=${this.end}&card_holder=${holder}&card_number=${selected}`).then((response) => {
         if (response.data.status) {
           this.transactions = response.data;
-          console.log(this.transactions);
         }
         return this.order(this.transactions.data.result);
       });

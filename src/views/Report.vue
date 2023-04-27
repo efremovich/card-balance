@@ -548,7 +548,7 @@ export default {
       selectedLimit: [],
       selectedHolderOper: null,
       selectedHolder: null,
-      selectedHolderLimit: null,
+      selectedHolderLimit: [],
       available: true,
       download: false,
       totalRows: null,
@@ -1130,6 +1130,7 @@ export default {
       });
     },
     downloadOperReport() {
+      console.log('oper');
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
       const arr = newDate.join('').split('00:00:00');
@@ -1138,8 +1139,22 @@ export default {
       this.start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
       this.end = trim[1] + ' 23:59:59';
-      if (this.selected === null) {
-        axios.get(`/api/getOperReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selected}`, {
+      if (this.selectedOper !== null) {
+        axios.get(`/api/getOperReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selectedOper}`, {
+          responseType: 'blob',
+        }).then((response) => {
+          const url = URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute(
+            'download',
+            `Оперативный отчёт от ${new Date().toLocaleDateString()}.xls`,
+          );
+          document.body.appendChild(link);
+          link.click();
+        });
+      } else if (this.selectedHolderOper !== null && this.selectedOper === null) {
+        axios.get(`/api/getOperReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_holder=${this.selectedHolderOper}`, {
           responseType: 'blob',
         }).then((response) => {
           const url = URL.createObjectURL(new Blob([response.data]));
@@ -1153,6 +1168,7 @@ export default {
           link.click();
         });
       } else {
+        console.log('ALL');
         axios.get(`/api/getOperReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`, {
           responseType: 'blob',
         }).then((response) => {
@@ -1200,8 +1216,22 @@ export default {
       this.start = trim[0] + ' 00:00:00';
       // eslint-disable-next-line prefer-template
       this.end = trim[1] + ' 23:59:59';
-      if (this.selected !== null) {
+      if (this.selectedLimit !== null) {
         axios.get(`/api/getLimitReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_number=${this.selectedLimit}`, {
+          responseType: 'blob',
+        }).then((response) => {
+          const url = URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute(
+            'download',
+            `Отчёт по лимитам от ${new Date().toLocaleDateString()}.xls`,
+          );
+          document.body.appendChild(link);
+          link.click();
+        });
+      } else if (this.selectedHolderLimit !== null) {
+        axios.get(`/api/getLimitReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}&card_holder=${this.selectedHolderLimit}`, {
           responseType: 'blob',
         }).then((response) => {
           const url = URL.createObjectURL(new Blob([response.data]));

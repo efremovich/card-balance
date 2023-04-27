@@ -105,7 +105,7 @@
               </h6>
             </div> -->
             <div class="mb-2">
-              <h6 v-if="getWidth !== 'xs'">
+              <h6 :class="{'text-center mt-1': getWidth === 'xs'}">
                 Последняя активность:<br>
                 {{ cardData.data.emitent.last_updated | formatDate }}
               </h6>
@@ -1257,7 +1257,6 @@ export default {
     const cardDate = (params) => useJwt.getCardData(params).then((response) => {
       if (response.data.status) {
         cardData.value = response.data;
-        console.log(cardData.value = response.data);
         cardEmitentCode.value = cardData.value.data.emitent.code;
         canGroupServeces.value = cardData.value.data.emitent.can_group_serveces;
         limitsLength.value = cardData.value.data.limits.length;

@@ -17,7 +17,7 @@ export default new Vuex.Store({
     visible: false,
     contractNumber: null,
     contractId: null,
-    status: null,
+    status: false,
     cardsView: '',
     selectedPage: 1,
     cardNumber: null,

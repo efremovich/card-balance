@@ -34,7 +34,7 @@
             <b-input-group class="input-group-merge">
               <b-form-input
                 v-model="filters"
-                placeholder="Поиск по номеру карты"
+                placeholder="Поиск по номеру карты или держателю"
                 class="search-product" />
               <b-input-group-append is-text>
                 <feather-icon
@@ -117,7 +117,7 @@
                 <b-badge
                   :variant="colorMap[product.card_status_id]"
                   class="w-100 adge-glow mb-1 mt-1">
-                  {{ product.card_status.name }}
+                  {{ product.card_status.label }}
                 </b-badge>
               </div>
             </div>
@@ -153,7 +153,7 @@
                   <b-badge
                     :variant="colorMap[product.card_status_id]"
                     class="w-95 position-relative badge-glow b-70">
-                    {{ product.card_status.name }}
+                    {{ product.card_status.label }}
                   </b-badge>
                   <div class="item-wrapper pad mt-10">
                     <h6
@@ -245,9 +245,9 @@
                 </div>
               </div>
 
-              <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1 mt-2">
-                <h5> Держатель: {{ product.holder }} </h5>
-                <h5> Последняя активность: </h5>
+              <div class=" d-flex flex-column align-items-center w-25 mr-1 ml-1 mt-2 text-center">
+                <h5> Держатель: <br> {{ product.holder }} </h5>
+                <h5> Последняя активность: <br> {{ product.last_active | formatDate }}</h5>
                 <!-- <h5> Индекс активности: </h5> -->
               </div>
               <div
@@ -421,7 +421,7 @@
                 <b-badge
                   :variant="colorMap[product.card_status_id]"
                   class="w-100 adge-glow mb-1 mt-1">
-                  {{ product.card_status.name }}
+                  {{ product.card_status.label }}
                 </b-badge>
               </div>
             </div>
@@ -681,9 +681,20 @@ export default {
           this.totalRows = this.products.data.total;
           if (val !== '') {
             this.products = response.data;
-            this.products.data.result = this.products.data.result.filter((product) => product.number.includes(val));
-            this.totalRows = this.products.data.result.length;
-            console.log(this.products.data.result.length);
+            let holders = {};
+            let cards = {};
+            // this.products.data.result = this.products.data.result.filter((product) => product.number.includes(val));
+            // this.totalRows = this.products.data.result.length;
+            cards = this.products.data.result.filter((product) => product.number.includes(val));
+            if (cards.length > 0) {
+              this.products.data.result = cards;
+              this.totalRows = cards.length;
+            }
+            if (cards.length === 0) {
+              holders = this.products.data.result.filter((product) => product.holder.includes(val));
+              this.totalRows = holders.length;
+              this.products.data.result = holders;
+            }
           }
         }
       });
