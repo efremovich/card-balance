@@ -39,6 +39,7 @@
 /* eslint-disable global-require */
 import { BLink, BButton, BImg } from 'bootstrap-vue';
 import VuexyLogo from '@core/layouts/components/Logo.vue';
+// eslint-disable-next-line import/no-cycle
 import store from '../../store/index';
 
 export default {

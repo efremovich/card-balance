@@ -276,6 +276,7 @@ import { mapGetters } from 'vuex';
 import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+// eslint-disable-next-line import/no-cycle
 import store from '../../store';
 import { formatDate } from '../../@core/utils/filter';
 import useJwt from '../../auth/jwt/useJwt';

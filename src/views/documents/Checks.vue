@@ -170,7 +170,7 @@ import flatPickr from 'vue-flatpickr-component';
 import { Russian } from 'flatpickr/dist/l10n/ru';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
 import { mapGetters } from 'vuex';
-// eslint-disable-next-line import/extensions
+// eslint-disable-next-line import/extensions, import/no-cycle
 import store from '@/store';
 import vprint from '../vprint.vue';
 import useJwt from '../../auth/jwt/useJwt';

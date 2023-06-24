@@ -325,7 +325,7 @@ h3 {
   }
 }
 
-@media only screen and(min-device-width: 768px) and (max-device-width: 1023px) {
+@media only screen and (min-device-width: 768px) and (max-device-width: 1023px) {
   .col-4 {
     display: flex;
     flex-grow: 0;
@@ -336,7 +336,7 @@ h3 {
   }
 }
 
-@media only screen and(min-device-width: 620px) and (max-device-width: 767px) {
+@media only screen and (min-device-width: 620px) and (max-device-width: 767px) {
   .col-4 {
     display: flex;
     display: -moz-flex;

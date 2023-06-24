@@ -1130,7 +1130,6 @@ export default {
       });
     },
     downloadOperReport() {
-      console.log('oper');
       const date = this.rangeDate;
       const newDate = Array.from(date).filter((n) => n !== '—');
       const arr = newDate.join('').split('00:00:00');
@@ -1168,7 +1167,6 @@ export default {
           link.click();
         });
       } else {
-        console.log('ALL');
         axios.get(`/api/getOperReport?contract_id=${this.contractId}&startDate=${this.start}&endDate=${this.end}`, {
           responseType: 'blob',
         }).then((response) => {

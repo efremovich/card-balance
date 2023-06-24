@@ -114,7 +114,7 @@ import {
   BCard, BCardTitle, BCardText, BForm, BFormGroup, BInputGroup, BInputGroupAppend, BLink, BFormInput, BButton,
 } from 'bootstrap-vue';
 import { required } from '@validations';
-// eslint-disable-next-line import/extensions
+// eslint-disable-next-line import/extensions, import/no-cycle
 import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line import/extensions
 import store from '@/store';

@@ -19,7 +19,8 @@ import { $themeColors, $themeBreakpoints, $themeConfig } from '@themeConfig';
 import { provideToast } from 'vue-toastification/composition';
 import { watch } from '@vue/composition-api';
 import { useWindowSize, useCssVar } from '@vueuse/core';
-import useAppConfig from './@core/app-config/useAppConfig'; // @core/app-config/useAppConfig
+import useAppConfig from '@core/app-config/useAppConfig';
+// import useAppConfig from '@core/app-config/useAppConfig'; // ./@core/app-config/useAppConfig';
 import store from './store/index'; // @/store/index
 
 const LayoutVertical = () => import('@/layouts/vertical/LayoutVertical.vue');
@@ -35,6 +36,14 @@ export default {
 
     ScrollToTop,
   },
+  // data() {
+  //   return {
+  //     skin: null,
+  //     skinClasses: null,
+
+  //   };
+  // },
+
   // ! We can move this computed: layout & contentLayoutType once we get to use Vue 3
   // Currently, router.currentRoute is not reactive and doesn't trigger any change
   computed: {
@@ -58,7 +67,6 @@ export default {
       'light',
       'dark',
     ];
-
     // eslint-disable-next-line no-plusplus
     for (let i = 0, len = colors.length; i < len; i++) {
       $themeColors[colors[i]] = useCssVar(
@@ -69,7 +77,6 @@ export default {
 
     // Set Theme Breakpoints
     const breakpoints = ['xs', 'sm', 'md', 'lg', 'xl'];
-
     // eslint-disable-next-line no-plusplus
     for (let i = 0, len = breakpoints.length; i < len; i++) {
       $themeBreakpoints[breakpoints[i]] = Number(
@@ -109,10 +116,10 @@ export default {
     watch(windowWidth, (val) => {
       store.commit('app/UPDATE_WINDOW_WIDTH', val);
     });
-
     return {
       skinClasses,
       enableScrollToTop,
+
     };
   },
 };

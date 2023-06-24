@@ -946,7 +946,7 @@ import { ref, computed } from '@vue/composition-api';
 import Fuse from 'fuse.js';
 import AppEchartDoughnut from '@core/components/charts/echart/AppEchartDoughnut.vue';
 import { mapGetters } from 'vuex';
-// eslint-disable-next-line import/extensions
+// eslint-disable-next-line import/extensions, import/no-cycle
 import store from '@/store';
 // eslint-disable-next-line import/extensions
 import useJwt from '@/auth/jwt/useJwt';
@@ -1345,12 +1345,12 @@ export default {
       comparison: true,
       holderComparison: true,
       changeValueHolder: false,
-      newServices: [],
+      // newServices: [],
       newLimits: [{
         limit_period_code: 'MONTH',
         value: 0,
         limit_unit_code: 'L',
-        limit_services: this.newServices,
+        limit_services: [],
         limit_commons: [],
         consumption: 0,
         userData: null,
@@ -1526,6 +1526,10 @@ export default {
       }
     },
     sendRequest() {
+      if ((this.newLimits.length > 0) && (this.newLimits.length < 2)) {
+        const someArr = [this.newLimits[0].limit_services];
+        this.newLimits[0].limit_services = someArr;
+      }
       const request = [{
         card_number: this.cardData.data.number,
         request_type_code: 'EDIT',
@@ -1534,6 +1538,7 @@ export default {
         limits: this.newLimits,
 
       }];
+
       useJwt.refreshDataUserLimits(request);
     },
     newLimitsData() {
@@ -1623,7 +1628,6 @@ export default {
         limit_period_code: 'MONTH',
         value: 0,
         limit_unit_code: 'L',
-        // limit_services: this.newServices,
         limit_services: [],
         limit_commons: [],
         consumption: 0,
