@@ -137,6 +137,7 @@ import VuexyLogo from '@core/layouts/components/Logo.vue';
 import { required, email } from '@validations';
 
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
+// eslint-disable-next-line import/no-cycle
 import useJwt from '../../auth/jwt/useJwt';
 import { togglePasswordVisibility } from '../../@core/mixins/ui/forms';
 

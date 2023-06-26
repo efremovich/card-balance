@@ -508,7 +508,7 @@ import { Russian } from 'flatpickr/dist/l10n/ru';
 import flatPickr from 'vue-flatpickr-component'; // datapicker
 import vSelect from 'vue-select';
 import axios from '@axios';
-// eslint-disable-next-line import/extensions
+// eslint-disable-next-line import/extensions, import/no-cycle
 import store from '@/store';
 import useJwt from '../auth/jwt/useJwt';
 
