@@ -7,7 +7,7 @@ const axiosIns = axios.create({
   // You can add your headers here
   // ================================
 
-  baseURL: 'https://server.re-base.ru',
+  baseURL: 'https://localhost',
 
   timeout: 10000,
   // headers: { 'Access-Control-Allow-Origin': '*' },
