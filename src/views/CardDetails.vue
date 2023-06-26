@@ -339,8 +339,7 @@
                         <div :key="limit.ID">
                           <h4>
                             Вид топлива:
-                            {{ selectedService(limit.limit_services) }}
-                            <!-- {{ labelService[limit.limit_services] }} -->
+                            {{ labelService[limit.limit_services] }}
                           </h4>
 
                           <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
@@ -947,7 +946,7 @@ import { ref, computed } from '@vue/composition-api';
 import Fuse from 'fuse.js';
 import AppEchartDoughnut from '@core/components/charts/echart/AppEchartDoughnut.vue';
 import { mapGetters } from 'vuex';
-// eslint-disable-next-line import/extensions
+// eslint-disable-next-line import/extensions, import/no-cycle
 import store from '@/store';
 // eslint-disable-next-line import/extensions
 import useJwt from '@/auth/jwt/useJwt';
@@ -1352,7 +1351,6 @@ export default {
         value: 0,
         limit_unit_code: 'L',
         limit_services: [],
-        // limit_services: this.newServices,
         limit_commons: [],
         consumption: 0,
         userData: null,
@@ -1521,21 +1519,27 @@ export default {
             request_status_code: 'CREATED',
             contract_id: this.cardData.data.contract_id,
             holder: JSON.stringify(`${this.cardHolder}`),
-            // holder: this.cardHolder,
           }];
           useJwt.refreshDataUserLimits(request);
         }
       }
     },
     sendRequest() {
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < this.newLimits.length; i++) {
+        this.newLimits[i].limit_services = [this.newLimits[i].limit_services].flat();
+        if (typeof (this.newLimits[i].limit_services) === 'string') {
+          this.newLimits[i].limit_services = [this.newLimits[i].limit_services];
+        }
+      }
       const request = [{
         card_number: this.cardData.data.number,
         request_type_code: 'EDIT',
         request_status_code: 'CREATED',
         contract_id: this.cardData.data.contract_id,
         limits: this.newLimits,
-
       }];
+      // console.log('res', request);
       useJwt.refreshDataUserLimits(request);
     },
     newLimitsData() {
@@ -1625,7 +1629,6 @@ export default {
         limit_period_code: 'MONTH',
         value: 0,
         limit_unit_code: 'L',
-        // limit_services: this.newServices,
         limit_services: [],
         limit_commons: [],
         consumption: 0,
