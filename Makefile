@@ -1,5 +1,5 @@
 docker-build:
 	@docker build . -t my-app
 docker-run:
-	@docker run -d -p 443:443 my-app
+	@docker run -d -p 8080:80 my-app
 
