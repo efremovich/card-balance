@@ -7,7 +7,7 @@ const axiosIns = axios.create({
   // You can add your headers here
   // ================================
 
-  baseURL: 'https://secret.re-base.ru:8888',
+  baseURL: 'https://xn--e1aybc.xn--80aagg0ac7bbh.xn--p1ai:8888',
 
   timeout: 10000,
   // headers: { 'Access-Control-Allow-Origin': '*' },
