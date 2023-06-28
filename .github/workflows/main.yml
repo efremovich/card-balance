@@ -18,5 +18,5 @@ jobs:
           docker build . -t lk-app
           docker run -d -p 80:80 lk-app
         host: ${{ secrets.REMOTE_HOST }}
-        user: fima
+        user: root
         pass: ${{ secrets.SERVER_ROOT_PASSWORD}}
