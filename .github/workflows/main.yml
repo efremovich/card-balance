@@ -14,9 +14,11 @@ jobs:
       uses: fifsky/ssh-action@master
       with:
         command: |
-          cd /root/Dev/card-balance && git pull
+          cd /root/Dev/card-balance
+          git pull
           docker build . -t lk-app
           docker run -d -p 80:80 lk-app
         host: ${{ secrets.REMOTE_HOST }}
         user: root
         pass: ${{ secrets.SERVER_ROOT_PASSWORD}}
+        args: "-tt -vvv"
