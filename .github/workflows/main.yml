@@ -16,9 +16,8 @@ jobs:
         command: |
           cd /root/Dev/card-balance
           git pull
-          docker build . -t lk-app
-          docker run -d -p 80:80 lk-app
+          docker-compose up --build -d
         host: ${{ secrets.REMOTE_HOST }}
         user: root
         pass: ${{ secrets.SERVER_ROOT_PASSWORD}}
-        args: "-tt -vvv"
+        args: "-tt"
