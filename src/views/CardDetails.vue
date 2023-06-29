@@ -350,21 +350,6 @@
                         </div>
                       </template>
                     </div>
-                    <!-- <template
-                      v-for="(limit) in cardData.data.limits">
-                      <div :key="limit.ID">
-                        <h4>
-                          Вид топлива:
-                          {{ selectedService(limit.limit_services) }}
-                        </h4>
-
-                        <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
-                        <h4>
-                          Остаток: {{ (limit.value - limit.consumption).toFixed(2) }} {{ unicodeLabel[limit.limit_unit_code] }}.
-                        </h4>
-                        <hr>
-                      </div>
-                    </template> -->
                   </b-card-actions>
                 </b-overlay>
               </b-col>
