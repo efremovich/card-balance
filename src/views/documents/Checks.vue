@@ -108,28 +108,6 @@
             id="printMe"
             :transactions="transactions" />
         </div>
-        <!-- <b-pagination
-          v-if="hidden"
-          v-model="currentPage"
-          :total-rows="totalRows"
-          first-number
-          last-number
-          prev-class="prev-item"
-          next-class="next-item"
-          class="mb-0 mt-2"
-          align="center"
-          @change="selectPage">
-          <template #prev-text>
-            <feather-icon
-              icon="ChevronLeftIcon"
-              size="18" />
-          </template>
-          <template #next-text>
-            <feather-icon
-              icon="ChevronRightIcon"
-              size="18" />
-          </template>
-        </b-pagination> -->
         <b-pagination
           v-if="hidden"
           v-model="currentPage"
