@@ -129,7 +129,7 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import VuexyLogo from '@core/layouts/components/Logo.vue';
 import { required, email } from '@validations';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
-// eslint-disable-next-line import/extensions
+// eslint-disable-next-line import/extensions, import/no-cycle
 import store from '@/store'; // @/store
 // import useJwt from '../../auth/jwt/useJwt';
 // eslint-disable-next-line import/extensions
