@@ -1247,7 +1247,7 @@ export default {
         limitsLength.value = cardData.value.data.limits.length;
         source.value = JSON.parse(JSON.stringify(cardData.value.data.limits));
         cardHolderSource.value = JSON.parse(JSON.stringify(cardData.value.data.holder));
-        cardHolder.value = cardData.value.data.holder;
+        cardHolder.value = cardData.value.data.holder.replace(/["']/g, '').trim();
         // для изменения имени держателя
         getService(cardEmitentCode.value);
       }
@@ -1498,13 +1498,13 @@ export default {
         this.comparison = false;
         this.changeValueHolder = true;
         if (this.saveChange) {
-          // const holder = this.cardHolder.replace(/["']/g, '').trim(); // убираю кавычки и лишние пробелы у держателя
+          const holder = this.cardHolder.replace(/["']/g, '').trim(); // убираю кавычки и лишние пробелы у держателя
           const request = [{
             card_number: this.cardData.data.number,
             request_type_code: 'RENAME',
             request_status_code: 'CREATED',
             contract_id: this.cardData.data.contract_id,
-            holder: JSON.stringify(`${this.cardHolder.replace(/["']/g, '').trim()}`),
+            holder: JSON.stringify(`${holder}`),
           }];
           useJwt.refreshDataUserLimits(request);
         }
