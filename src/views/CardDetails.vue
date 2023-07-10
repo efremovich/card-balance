@@ -58,7 +58,7 @@
                 Держатель:
               </h6>
               <b-form-input
-                v-model="cardHolder"
+                v-model.trim="cardHolder"
                 @change="changeHolder" />
             </div>
           </div>
