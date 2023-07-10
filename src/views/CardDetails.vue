@@ -1498,14 +1498,13 @@ export default {
         this.comparison = false;
         this.changeValueHolder = true;
         if (this.saveChange) {
-          const holder = String(this.cardHolder.replace(/["']/g, '').trim()); // убираю кавычки и лишние пробелы у держателя
+          // const holder = this.cardHolder.replace(/["']/g, '').trim(); // убираю кавычки и лишние пробелы у держателя
           const request = [{
             card_number: this.cardData.data.number,
             request_type_code: 'RENAME',
             request_status_code: 'CREATED',
             contract_id: this.cardData.data.contract_id,
-            // holder: JSON.stringify(`${this.cardHolder}`),
-            holder,
+            holder: JSON.stringify(`${this.cardHolder.replace(/["']/g, '').trim()}`),
           }];
           useJwt.refreshDataUserLimits(request);
         }
