@@ -1506,7 +1506,7 @@ export default {
             contract_id: this.cardData.data.contract_id,
             holder,
           }];
-          useJwt.refreshDataUserLimits(JSON.stringify(request));
+          useJwt.refreshDataUserLimits(request);
         }
       }
     },
