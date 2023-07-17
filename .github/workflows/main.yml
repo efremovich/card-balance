@@ -1,24 +1,23 @@
+---
 name: lk-app
-
 on:
   push:
-    branches: [ "master" ]
+      branches: [master]
   pull_request:
-    branches: [ "master" ]
-
+    branches: [master]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Restart app
-      uses: fifsky/ssh-action@master
-      with:
-        command: |
-          cd /root/Dev/card-balance
-          git pull
-          docker-compose build --no-cache &&
-          docker-compose up -d --force-recreat
-        host: ${{ secrets.REMOTE_HOST }}
-        user: root
-        pass: ${{ secrets.SERVER_ROOT_PASSWORD}}
-        args: "-tt"
+      - name: Restart app
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd /root/Dev/card-balance
+            git pull
+            docker-compose build --no-cache &&
+            docker-compose up -d --force-recreat
+          host: ${{ secrets.REMOTE_HOST }}
+          user: root
+          pass: ${{ secrets.SERVER_ROOT_PASSWORD}}
+          args: -tt
