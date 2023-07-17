@@ -58,7 +58,7 @@
                 Держатель:
               </h6>
               <b-form-input
-                v-model="cardHolder"
+                v-model.trim="cardHolder"
                 @change="changeHolder" />
             </div>
           </div>
@@ -350,21 +350,6 @@
                         </div>
                       </template>
                     </div>
-                    <!-- <template
-                      v-for="(limit) in cardData.data.limits">
-                      <div :key="limit.ID">
-                        <h4>
-                          Вид топлива:
-                          {{ selectedService(limit.limit_services) }}
-                        </h4>
-
-                        <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
-                        <h4>
-                          Остаток: {{ (limit.value - limit.consumption).toFixed(2) }} {{ unicodeLabel[limit.limit_unit_code] }}.
-                        </h4>
-                        <hr>
-                      </div>
-                    </template> -->
                   </b-card-actions>
                 </b-overlay>
               </b-col>
@@ -704,7 +689,7 @@
                 Держатель:
               </h6>
               <b-form-input
-                v-model="cardHolder" />
+                v-model.trim="cardHolder" />
             </div>
           </div>
 
@@ -1513,12 +1498,13 @@ export default {
         this.comparison = false;
         this.changeValueHolder = true;
         if (this.saveChange) {
+          const holder = (this.cardHolder.trim()); // убираю кавычки и лишние пробелы у держателя
           const request = [{
             card_number: this.cardData.data.number,
             request_type_code: 'RENAME',
             request_status_code: 'CREATED',
             contract_id: this.cardData.data.contract_id,
-            holder: JSON.stringify(`${this.cardHolder}`),
+            holder,
           }];
           useJwt.refreshDataUserLimits(request);
         }

@@ -11,13 +11,6 @@
       <b-card>
         <!-- media -->
         <b-media no-body>
-          <!-- <b-link>
-          <b-img
-            ref="previewEl"
-            rounded
-            :src="getInfo.account.name"
-            height="104" />
-        </b-link> -->
           <b-avatar
             ref="preview"
             :src="image"
@@ -121,25 +114,7 @@
                     placeholder="Организация" />
                 </b-form-group>
               </b-col>
-              <!-- <b-col
-                sm="6"
-                class="mb-1">
-                <b-button
-                  :disabled="comparison"
-                  variant="primary"
-                  class="mt-2 mr-1"
-                  @click="onSubmit">
-                  Сохранить
-                </b-button>
-                <b-button
-                  :disabled="comparison"
-                  variant="outline-secondary"
-                  type="reset"
-                  class="mt-2"
-                  @click.prevent="undoChange">
-                  Отмена
-                </b-button>
-              </b-col> -->
+
               <b-col
                 sm="6"
                 class="mt-2">
@@ -338,7 +313,7 @@ import {
 } from '@validations';
 // import { useStore } from 'vuex';
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue';
-// eslint-disable-next-line import/extensions
+// eslint-disable-next-line import/extensions, import/no-cycle
 import useJwt from '@/auth/jwt/useJwt';
 // eslint-disable-next-line import/extensions
 import { useInputImageRenderer } from '@core/comp-functions/forms/form-utils';

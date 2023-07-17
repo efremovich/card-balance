@@ -155,30 +155,6 @@
                 </b-col>
               </template>
 
-              <!-- <template #row-details="row">
-                <b-card
-                  @click="row.toggleDetails">
-                  <b-row class="mb-2">
-
-                    <b-col
-                      md="4"
-                      class="mb-1">
-                      <strong>Дата/время : </strong>{{ row.item.date | formatDate }}
-                    </b-col>
-                    <b-col
-                      md="4"
-                      class="mb-1">
-                      <strong>Количество : </strong>{{ row.item.quantity }}
-                    </b-col>
-                    <b-col
-                      md="4"
-                      class="mb-1">
-                      <strong>Товар/Услуга : </strong>{{ row.item.service.full_name }}
-                    </b-col>
-                  </b-row>
-                </b-card>
-              </template> -->
-
               <template #cell(period)="row">
                 <b-col @click="row.toggleDetails">
                   {{ row.item.date | formatDate }}
@@ -287,29 +263,6 @@
                     inline
                     :options="pageOptions" />
                 </b-form-group>
-
-                <!-- pagination -->
-
-                <!-- <b-pagination
-                  v-model="currentPage"
-                  :total-rows="totalRows"
-                  :per-page="perPage"
-                  first-number
-                  last-number
-                  prev-class="prev-item"
-                  next-class="next-item"
-                  class="mb-0">
-                  <template #prev-text>
-                    <feather-icon
-                      icon="ChevronLeftIcon"
-                      size="18" />
-                  </template>
-                  <template #next-text>
-                    <feather-icon
-                      icon="ChevronRightIcon"
-                      size="18" />
-                  </template>
-                </b-pagination> -->
               </b-card-body>
               <!-- КОНЕЦ ТАБЛИЦЫ -->
             </b-table>

@@ -145,32 +145,6 @@
                 </b-input-group>
               </b-form-group>
             </div>
-            <!-- <div v-if="selectable!==null">
-              <div class="w-100">
-                <label
-                  class="mt-2"
-                  for="selectCard">Выберете карту:</label>
-                <v-select
-                  id="selectCard"
-                  v-model="selected"
-                  :disabled="selectedHolder !== null"
-                  multiple
-                  :options="option"
-                  class="w-50"
-                  @input="onChange" />
-                <label
-                  class="mt-2"
-                  for="selectCard">Выберете держателя:</label>
-                <v-select
-                  id="selectCard"
-                  v-model="selectedHolder"
-                  :disabled="selected !== null"
-                  multiple
-                  :options="holders"
-                  class="w-50"
-                  @input="getHolder" />
-              </div>
-            </div> -->
 
             <div v-if="selectable==='транзакционный'">
               <div class="w-100">
@@ -215,11 +189,6 @@
                     {{ row.item.date | formatDate }}
                   </b-col>
                 </template>
-                <!-- <template #cell(quantity)="row">
-                  <b-col>
-                    {{ parseFloat(row.item.quantity).toLocaleString('ru-RU') }}
-                  </b-col>
-                </template> -->
                 <template
                   #cell(quantity)="row">
                   <b-col>
@@ -313,12 +282,6 @@
                 </b-col>
               </template>
 
-              <!-- <template #cell(quantity)="row">
-                <b-col @click="row.toggleDetails">
-                  {{ parseFloat(row.item.quantity).toLocaleString('ru-RU') }}
-                </b-col>
-              </template> -->
-
               <template
                 #cell(quantity)="row">
                 <b-col>
@@ -334,7 +297,6 @@
 
               <template #cell(AllSumm)="row">
                 <b-col @click="row.toggleDetails">
-                  <!-- {{ parseFloat(row.item.AllSumm).toLocaleString('ru-RU') }} -->
                   {{ (parseFloat(row.item.AllSumm).toFixed(2)).replace('.', ',') }}
                 </b-col>
               </template>
@@ -434,30 +396,18 @@
                   </router-link>
                 </b-col>
               </template>
-              <!-- <template #cell(value)="row">
-                <b-col>
-                  {{ (parseFloat(row.item.value).toFixed(2)).replace('.', ',') }}
-                </b-col>
-              </template> -->
+
               <template #cell(consumption)="row">
                 <b-col>
-                  <!-- {{ parseFloat(row.item.AllSumm).toLocaleString('ru-RU') }} -->
                   {{ (parseFloat(row.item.consumption).toFixed(2)).replace('.', ',') }}
                 </b-col>
               </template>
               <template #cell(remains)="row">
                 <b-col>
-                  <!-- {{ parseFloat(row.item.AllSumm).toLocaleString('ru-RU') }} -->
                   {{ (parseFloat(row.item.remains).toFixed(2)).replace('.', ',') }}
                 </b-col>
               </template>
             </b-table>
-            <!-- <b-button
-              variant="primary"
-              class="ml-2"
-              @click="downloadLimitReport">
-              <span class="align-middle">Скачать</span>
-            </b-button> -->
 
             <b-pagination
               v-model="currentPage"
