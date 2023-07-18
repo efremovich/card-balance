@@ -1498,7 +1498,8 @@ export default {
         this.comparison = false;
         this.changeValueHolder = true;
         if (this.saveChange) {
-          const holder = (this.cardHolder.trim()); // убираю кавычки и лишние пробелы у держателя
+          const holder = (this.cardHolder.replace(/[ '"]+/g, ' ').trim()); // убираю кавычки и лишние пробелы у держателя
+          console.log('holder', holder, holder.length);
           const request = [{
             card_number: this.cardData.data.number,
             request_type_code: 'RENAME',
