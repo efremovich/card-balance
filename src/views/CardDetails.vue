@@ -1139,7 +1139,6 @@ export default {
         // eslint-disable-next-line prefer-destructuring
         allLabelsS.value[length[i][0]] = length[i][1];
       }
-      console.log(allLabelsS.value);
       allLabelService.value = Object.entries(labelService.value);
     };
 
@@ -1150,13 +1149,6 @@ export default {
         const idService = id;
         const label = services.value.map((el) => el.label);
         getAllLabelService(idService, label);
-        // const obj = allLabelService.value.reduce((accumulator, v) => ({ ...accumulator, i: v }), {});
-        // console.log(obj);
-        // eslint-disable-next-line no-plusplus
-        // for (let i = 0; i < idService.length; i++) {
-        //   labelService.value[idService[i]] = label[i];
-        // }
-        // allLabelService.value = Object.entries(labelService.value); // приведение к массиву
       });
     }
 
@@ -1666,17 +1658,6 @@ export default {
       }
 
       return label.split('').slice(0, -2).join('');
-    },
-    // eslint-disable-next-line consistent-return
-    selectedSingleService(arrService) { // параметр функции у нас объект,
-      if (arrService === null || arrService === undefined) {
-        return '';
-      }
-      // console.log(typeof (arrService), arrService);
-      if (typeof (arrService) === 'object') {
-        return this.allLabelsS[(Object.entries(arrService))[0][1]];
-      }
-      return arrService;
     },
     // Смена статуса карты
     getLockCard() {
