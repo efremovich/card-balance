@@ -339,9 +339,9 @@
                         <div :key="limit.ID">
                           <h4>
                             Вид топлива:
-                            {{ labelService[limit.limit_services] }}
+                            {{ getLabels(limit.limit_services) }}
                           </h4>
-
+                          <!-- [limit.limit_services] -->
                           <h4>Лимит:  {{ periodLabel[limit.limit_period_code] }}.</h4>
                           <h4>
                             Остаток: {{ (limit.value - limit.consumption).toFixed(2) }} {{ unicodeLabel[limit.limit_unit_code] }}.
@@ -976,6 +976,7 @@ export default {
     const dataCharts = ref([]);
     const summAllTransactions = ref(null);
     const allConsumptionSumm = ref(null);
+    const allLabelsS = ref({});
     // const unfulfilledRequest = ref(null); // неисполненная заявка
     const product = ref(null);
     const value = ref(null);
@@ -987,14 +988,13 @@ export default {
     const firstDayOfMonth = ref(null);
     const labelService = ref({});
     const perPage = 5;
-    // const optionService = ref(null);
     const pageOptions = [3, 5, 10];
     const currentPage = 1;
     const filter = ref(null);
     const units = ref([]);
     const periods = ref([]);
     const services = ref([]);
-    const showLoading = ref(true);
+    const showLoading = ref(false);
     const download = ref(false);
     const quantity = ref(null);
     const start = ref(null);
@@ -1126,22 +1126,39 @@ export default {
       return firstDay;
     };
 
-    const getService = (params) => {
-      useJwt.getServiceFromEmitent(`emitent_code=${params}`).then((response) => {
-        if (response.data.status) {
-          services.value = response.data.data;
-          const id = services.value.map((el) => el.id);
-          const idService = Array.from(id);
-          const label = Array.from(services.value.map((el) => el.label));
-          // eslint-disable-next-line no-plusplus
-          for (let i = 0; i < idService.length; i++) {
-            labelService.value[idService[i]] = label[i];
-          }
-          // console.log('LABEL', labelService.value['c9562951-8641-11e7-9453-7054d2199b65']);
-          allLabelService.value = Object.entries(labelService.value); // приведение к массиву
-        }
-      });
+    const getAllLabelService = (someArr, arrLabel) => {
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < someArr.length; i++) {
+        labelService.value[someArr[i]] = arrLabel[i];
+      }
+
+      const label = (JSON.stringify(labelService.value));
+      const length = Object.entries(JSON.parse(label));
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < length.length; i++) {
+        // eslint-disable-next-line prefer-destructuring
+        allLabelsS.value[length[i][0]] = length[i][1];
+      }
+      console.log(allLabelsS.value);
+      allLabelService.value = Object.entries(labelService.value);
     };
+
+    async function getService(params) {
+      await useJwt.getServiceFromEmitent(`emitent_code=${params}`).then((response) => {
+        services.value = response.data.data;
+        const id = services.value.map((el) => el.id);
+        const idService = id;
+        const label = services.value.map((el) => el.label);
+        getAllLabelService(idService, label);
+        // const obj = allLabelService.value.reduce((accumulator, v) => ({ ...accumulator, i: v }), {});
+        // console.log(obj);
+        // eslint-disable-next-line no-plusplus
+        // for (let i = 0; i < idService.length; i++) {
+        //   labelService.value[idService[i]] = label[i];
+        // }
+        // allLabelService.value = Object.entries(labelService.value); // приведение к массиву
+      });
+    }
 
     const transactionsSumm = ref(null);
     // const consumptionData = ref([]);
@@ -1260,13 +1277,14 @@ export default {
       download.value = true;
       showLoading.value = true;
     };
+
     fetchProduct();
     getAllTransactions();
     getAllPeriods();
     getAllUnits();
     getRequests();
-
     return {
+      allLabelsS,
       consumptionData,
       canGroupServeces,
       allLabelService,
@@ -1324,6 +1342,7 @@ export default {
       sortDesc: false,
       sortDirection: 'asc',
       required,
+      all: null,
       operReport: null,
       blockCard: false,
       saveChange: false,
@@ -1446,16 +1465,6 @@ export default {
       }
     },
   },
-  beforeMount() {
-    // useJwt.getCurrenUser().then((response) => {
-    //   if (response.data.status) {
-    //     this.$store.dispatch('user/getUserData', response.data).then(() => {
-    //       this.userData = response.data;
-    //       // this.name = this.userData.company.name;
-    //     });
-    //   }
-    // });
-  },
   methods: {
     showToast() {
       this.$toast({
@@ -1499,7 +1508,6 @@ export default {
         this.changeValueHolder = true;
         if (this.saveChange) {
           const holder = (this.cardHolder.replace(/[ '"]+/g, ' ').trim()); // убираю кавычки и лишние пробелы у держателя
-          // console.log('holder', holder, holder.length);
           const request = [{
             card_number: this.cardData.data.number,
             request_type_code: 'RENAME',
@@ -1526,7 +1534,6 @@ export default {
         contract_id: this.cardData.data.contract_id,
         limits: this.newLimits,
       }];
-      // console.log('res', request);
       useJwt.refreshDataUserLimits(request);
     },
     newLimitsData() {
@@ -1610,6 +1617,15 @@ export default {
     getRandom() {
       return Math.floor(Math.random() * 10000);
     },
+    getLabels(arr) {
+      // console.log(this.allLabelService);
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < this.allLabelService.length; i++) {
+        // eslint-disable-next-line no-unused-expressions
+        this.allLabelService[i];
+      }
+      return this.allLabelsS[arr];
+    },
     // Передать в качестве значений объекта значения из v-model карточки
     addLimit() {
       this.newLimit = {
@@ -1650,6 +1666,17 @@ export default {
       }
 
       return label.split('').slice(0, -2).join('');
+    },
+    // eslint-disable-next-line consistent-return
+    selectedSingleService(arrService) { // параметр функции у нас объект,
+      if (arrService === null || arrService === undefined) {
+        return '';
+      }
+      // console.log(typeof (arrService), arrService);
+      if (typeof (arrService) === 'object') {
+        return this.allLabelsS[(Object.entries(arrService))[0][1]];
+      }
+      return arrService;
     },
     // Смена статуса карты
     getLockCard() {
