@@ -1,7 +1,7 @@
 FROM node:latest as build-stage
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 COPY ./ .
 # Используем старую версию ноды
 ENV NODE_OPTIONS=--openssl-legacy-provider
